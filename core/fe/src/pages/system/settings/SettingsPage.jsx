@@ -38,6 +38,8 @@ export default function SettingsPage() {
   const groups = useMemo(() => settingsQuery.data?.data ?? [], [settingsQuery.data]);
 
   useEffect(() => {
+    // Chua co data thi Form chua render (dang PageLoading) -> khong goi setFieldsValue
+    if (groups.length === 0) return;
     const initial = Object.fromEntries(
       groups.flatMap((g) => g.items.map((s) => [s.key, fromDb(s)])),
     );

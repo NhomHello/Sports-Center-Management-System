@@ -82,7 +82,7 @@ core/fe/src/
 ├── theme/theme.js            design token antd + SPACING (Khôi/Khải chốt design system ở đây)
 ├── services/                 http.js (axios: gắn token, unwrap, xử lý 401) · <entity>.service.js
 ├── stores/authStore.js       zustand: token (persist), user, permissions
-├── hooks/                    useAuth · usePermission · useTableQuery
+├── hooks/                    useAuth (đọc store) · useAuthProfile (nạp /me, chỉ ProtectedRoute dùng) · usePermission · useTableQuery
 ├── utils/                    permission.js · format.js · apiClientError.js
 ├── router/
 │   ├── routeRegistry.jsx     ★ khai báo trang + permission + menu (sidebar tự sinh)

@@ -46,6 +46,7 @@ export function UserFormModal({ open, onClose }) {
       okText="Tạo"
       cancelText="Huỷ"
       confirmLoading={createMutation.isPending}
+      forceRender
       onOk={form.submit}
       onCancel={onClose}
       destroyOnHidden

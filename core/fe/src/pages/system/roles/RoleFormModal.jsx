@@ -55,6 +55,7 @@ export function RoleFormModal({ open, role, onClose }) {
       confirmLoading={saveMutation.isPending}
       onOk={form.submit}
       onCancel={onClose}
+      forceRender
       destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={saveMutation.mutate}>
