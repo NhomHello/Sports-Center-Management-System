@@ -1,0 +1,6 @@
+{
+  "core/be/**/*.{js,mjs}": ["npm run lint:fix -w @scms/be --"],
+  "core/fe/**/*.{js,jsx}": ["npm run lint:fix -w @scms/fe --"],
+  "core/shared/**/*.js": ["npm run lint:fix -w @scms/shared --"],
+  "*.{json,md,yml,yaml}": ["prettier --write"]
+}

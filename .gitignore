@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.npm/
+
+# env - KHONG BAO GIO commit
+.env
+.env.*
+!.env.example
+
+# build
+dist/
+build/
+coverage/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# prisma
+core/be/prisma/*.db
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# misc
+*.tgz
+.cache/

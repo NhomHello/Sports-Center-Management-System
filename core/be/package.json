@@ -1,0 +1,49 @@
+{
+  "name": "@scms/be",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend Express.js - Sports Center Management System",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.js",
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "node --env-file-if-exists=.env prisma/seed/index.js",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "@scms/shared": "*",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-check-file": "^3.3.2",
+    "eslint-plugin-jsdoc": "^64.3.6",
+    "globals": "^17.12.0",
+    "pino-pretty": "^13.0.0",
+    "prisma": "^7.10.0",
+    "supertest": "^7.2.2",
+    "vitest": "^5.0.0"
+  }
+}

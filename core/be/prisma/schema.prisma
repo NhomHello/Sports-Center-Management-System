@@ -1,0 +1,132 @@
+// ============================================================
+// Prisma schema - Sports Center Management System (MySQL)
+// Quy uoc:
+//  - Model: PascalCase so it (User), bang: snake_case so nhieu (@@map("users"))
+//  - Cot: camelCase trong code, snake_case trong DB (@map)
+//  - Moi bang co createdAt / updatedAt
+//  - Model nghiep vu (MembershipPlan, Class, Invoice...) team them vao sau,
+//    moi model mot khoi rieng + comment dau khoi.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ---------------- ENUMS ----------------
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+}
+
+// ---------------- AUTH & RBAC (dynamic) ----------------
+
+/// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique @db.VarChar(191)
+  phone        String?    @unique @db.VarChar(20)
+  passwordHash String     @map("password_hash") @db.VarChar(255)
+  fullName     String     @map("full_name") @db.VarChar(100)
+  status       UserStatus @default(ACTIVE)
+  roleId       Int        @map("role_id")
+  role         Role       @relation(fields: [roleId], references: [id])
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@index([roleId])
+  @@map("users")
+}
+
+/// Vai tro: tap hop permission. Tao/sua/xoa hoan toan qua UI (tru isSystem khong duoc xoa).
+model Role {
+  id          Int              @id @default(autoincrement())
+  code        String           @unique @db.VarChar(50)
+  name        String           @db.VarChar(100)
+  description String?          @db.VarChar(255)
+  /// Role seed san, khong cho xoa (van cho sua quyen)
+  isSystem    Boolean          @default(false) @map("is_system")
+  /// Role gan cho tai khoan tu dang ky. Chi mot role duoc isDefault = true
+  isDefault   Boolean          @default(false) @map("is_default")
+  permissions RolePermission[]
+  users       User[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+/// Permission = mot hanh dong he thong cho phep. Seed tu core/shared/src/permissions.js
+model Permission {
+  id          Int              @id @default(autoincrement())
+  code        String           @unique @db.VarChar(100)
+  module      String           @db.VarChar(50)
+  moduleLabel String           @map("module_label") @db.VarChar(100)
+  action      String           @db.VarChar(50)
+  label       String           @db.VarChar(255)
+  roles       RolePermission[]
+
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       Int        @map("role_id")
+  permissionId Int        @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ---------------- SYSTEM SETTINGS (khong hardcode so nghiep vu) ----------------
+
+/// Cau hinh he thong. Seed tu core/shared/src/settings.js, Center Manager sua qua UI.
+model SystemSetting {
+  key         String      @id @db.VarChar(100)
+  value       String      @db.Text
+  type        SettingType
+  label       String      @db.VarChar(255)
+  description String?     @db.VarChar(500)
+  group       String      @db.VarChar(50)
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+// ---------------- AUDIT LOG ----------------
+
+/// Nhat ky thao tac quan trong (Center Manager xem).
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   @db.VarChar(50)
+  entity    String   @db.VarChar(50)
+  entityId  String?  @map("entity_id") @db.VarChar(50)
+  meta      Json?
+  ip        String?  @db.VarChar(45)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+// ---------------- NGHIEP VU (team them dan theo flow) ----------------
+// Flow 1: MembershipPlan, Membership
+// Flow 2: Subject, Room, GymClass (tranh dat ten "Class" trung tu khoa JS), ClassSession, Enrollment
+// Flow 3: Invoice, Payment, PaymentWebhookLog

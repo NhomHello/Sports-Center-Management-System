@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": [
+    { "directory": "core/be", "changeProcessCWD": true },
+    { "directory": "core/fe", "changeProcessCWD": true },
+    { "directory": "core/shared", "changeProcessCWD": true }
+  ],
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "files.eol": "\n",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
+}
