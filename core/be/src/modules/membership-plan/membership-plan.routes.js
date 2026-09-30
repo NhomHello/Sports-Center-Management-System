@@ -29,6 +29,8 @@ router.post(
   controller.create,
 );
 
+router.get('/selling', authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ), controller.listSelling);
+
 router.get(
   '/:id',
   authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ),
@@ -42,10 +44,12 @@ router.put(
   validate(updateMembershipPlanSchema),
   controller.update,
 );
+
 router.delete(
   '/:id',
   authorize(PERMISSIONS.MEMBERSHIP_PLAN_DELETE),
   validate(membershipPlanIdSchema),
   controller.remove,
 );
+
 export default router;

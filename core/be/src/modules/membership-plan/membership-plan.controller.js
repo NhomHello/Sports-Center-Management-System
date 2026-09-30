@@ -7,6 +7,12 @@ export const list = async (req, res) => {
   sendSuccess(res, { data, meta });
 };
 
+/** GET /membership-plans/selling */
+export const listSelling = async (req, res) => {
+  const data = await membershipPlanService.listSelling();
+  sendSuccess(res, { data });
+};
+
 /** GET /membership-plans/:id */
 export const getById = async (req, res) => {
   const data = await membershipPlanService.getById(req.validated.params.id);
@@ -16,6 +22,7 @@ export const getById = async (req, res) => {
 /** POST /membership-plans */
 export const create = async (req, res) => {
   const data = await membershipPlanService.create(req.validated.body, req.user);
+
   sendCreated(res, data, 'Tạo gói tập thành công');
 };
 

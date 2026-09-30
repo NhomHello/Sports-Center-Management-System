@@ -29,6 +29,20 @@ export const list = async (query) => {
 };
 
 /**
+ * Lấy các gói tập đang được bán.
+ * @returns {Promise<object[]>}
+ */
+export const listSelling = async () =>
+  prisma.membershipPlan.findMany({
+    where: {
+      status: MembershipPlanStatus.SELLING,
+    },
+    orderBy: {
+      id: 'desc',
+    },
+  });
+
+/**
  * Lấy chi tiết gói tập.
  * @param {number} id
  * @returns {Promise<object>}
