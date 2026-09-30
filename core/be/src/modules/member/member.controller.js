@@ -11,6 +11,12 @@ export const list = async (req, res) => {
   });
 };
 
+/** GET /members/:id */
+export const getById = async (req, res) => {
+  const member = await memberService.getById(req.validated.params.id);
+  sendSuccess(res, { data: member });
+};
+
 /** POST /members */
 export const create = async (req, res) => {
   const member = await memberService.create(req.validated.body, req.user);

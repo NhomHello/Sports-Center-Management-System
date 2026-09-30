@@ -1,5 +1,6 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { prisma } from '../../config/db.js';
+import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 import * as userService from '../user/user.service.js';
 
 /**
@@ -48,4 +49,27 @@ export const list = async (query) => {
     ...query,
     roleId: defaultRole.id,
   });
+};
+
+/**
+ * Lấy chi tiết hội viên.
+ * @param {number} id
+ * @returns {Promise<object>}
+ */
+export const getById = async (id) => {
+  const defaultRole = await getDefaultMemberRole();
+
+  const member = await prisma.user.findFirst({
+    where: {
+      id,
+      roleId: defaultRole.id,
+    },
+    include: USER_WITH_ROLE,
+  });
+
+  if (!member) {
+    throw ApiError.notFound('Không tìm thấy hội viên');
+  }
+
+  return toPublicUser(member);
 };
