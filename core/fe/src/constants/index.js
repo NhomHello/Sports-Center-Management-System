@@ -15,6 +15,8 @@ export const ROUTES = Object.freeze({
   SYSTEM_ROLES: '/system/roles',
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
+  MEMBERSHIP_PLANS: '/membership-plans',
+  MEMBERS: '/members',
 });
 
 /** Key cho React Query - moi entity mot key goc de invalidate dong bo */
@@ -24,6 +26,8 @@ export const QUERY_KEYS = Object.freeze({
   PERMISSIONS: ['permissions'],
   USERS: ['users'],
   SETTINGS: ['settings'],
+  MEMBERS: ['members'],
+  MEMBERSHIP_PLANS: ['membershipPlans'],
 });
 
 export const HTTP_STATUS = Object.freeze({
@@ -55,6 +59,13 @@ export const USER_STATUS = Object.freeze({
 export const USER_STATUS_META = Object.freeze({
   ACTIVE: { color: 'green', label: 'Hoạt động' },
   INACTIVE: { color: 'red', label: 'Đã khoá' },
+});
+
+export const MEMBERSHIP_STATUS_META = Object.freeze({
+  ACTIVE: { color: 'green', label: 'Đang hoạt động' },
+  PENDING: { color: 'orange', label: 'Chờ xử lý' },
+  EXPIRED: { color: 'red', label: 'Hết hạn' },
+  CANCELLED: { color: 'default', label: 'Đã huỷ' },
 });
 
 export const FORM_LAYOUT = Object.freeze({
