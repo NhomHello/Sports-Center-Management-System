@@ -6,17 +6,21 @@ const memberIdParam = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+const memberProfileFields = {
+  fullName: z
+    .string()
+    .trim()
+    .min(VALIDATION.NAME_MIN_LENGTH, 'Họ tên quá ngắn')
+    .max(VALIDATION.NAME_MAX_LENGTH, 'Họ tên quá dài'),
+
+  email: z.string().trim().email('Email không hợp lệ'),
+
+  phone: z.string().trim().regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ'),
+};
+
 export const createMemberSchema = {
   body: z.object({
-    fullName: z
-      .string()
-      .trim()
-      .min(VALIDATION.NAME_MIN_LENGTH, 'Họ tên quá ngắn')
-      .max(VALIDATION.NAME_MAX_LENGTH, 'Họ tên quá dài'),
-
-    email: z.string().trim().email('Email không hợp lệ'),
-
-    phone: z.string().trim().regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ'),
+    ...memberProfileFields,
 
     password: z
       .string()
@@ -37,4 +41,19 @@ export const listMembersSchema = {
 
 export const memberIdSchema = {
   params: memberIdParam,
+};
+
+export const updateMemberSchema = {
+  params: memberIdParam,
+
+  body: z
+    .object({
+      fullName: memberProfileFields.fullName.optional(),
+      email: memberProfileFields.email.optional(),
+      phone: memberProfileFields.phone.optional(),
+    })
+    .refine(
+      (data) => Object.keys(data).length > 0,
+      'Cần cung cấp ít nhất một thông tin để cập nhật',
+    ),
 };

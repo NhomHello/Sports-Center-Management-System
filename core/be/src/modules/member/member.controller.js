@@ -22,3 +22,13 @@ export const create = async (req, res) => {
   const member = await memberService.create(req.validated.body, req.user);
   sendCreated(res, member, 'Đăng ký hội viên thành công');
 };
+
+/** PUT /members/:id */
+export const update = async (req, res) => {
+  const member = await memberService.update(req.validated.params.id, req.validated.body, req.user);
+
+  sendSuccess(res, {
+    data: member,
+    message: 'Cập nhật hội viên thành công',
+  });
+};

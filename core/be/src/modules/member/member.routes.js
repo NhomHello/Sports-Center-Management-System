@@ -4,7 +4,12 @@ import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import * as controller from './member.controller.js';
-import { createMemberSchema, listMembersSchema, memberIdSchema } from './member.validation.js';
+import {
+  createMemberSchema,
+  listMembersSchema,
+  memberIdSchema,
+  updateMemberSchema,
+} from './member.validation.js';
 
 const router = Router();
 
@@ -24,6 +29,13 @@ router.get(
   authorize(PERMISSIONS.MEMBER_READ),
   validate(memberIdSchema),
   controller.getById,
+);
+
+router.put(
+  '/:id',
+  authorize(PERMISSIONS.MEMBER_UPDATE),
+  validate(updateMemberSchema),
+  controller.update,
 );
 
 export default router;

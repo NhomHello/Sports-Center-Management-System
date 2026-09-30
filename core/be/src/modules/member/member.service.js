@@ -1,5 +1,7 @@
 import { ApiError } from '../../common/errors/api-error.js';
+import { recordAudit } from '../../common/utils/audit.js';
 import { prisma } from '../../config/db.js';
+import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 import * as userService from '../user/user.service.js';
 
@@ -70,6 +72,32 @@ export const getById = async (id) => {
   if (!member) {
     throw ApiError.notFound('Không tìm thấy hội viên');
   }
+
+  return toPublicUser(member);
+};
+
+/**
+ * Cập nhật thông tin hội viên.
+ * @param {number} id
+ * @param {{ fullName?: string, email?: string, phone?: string }} data
+ * @param {{ id: number }} actor
+ * @returns {Promise<object>}
+ */
+export const update = async (id, data, actor) => {
+  await getById(id);
+
+  const member = await prisma.user.update({
+    where: { id },
+    data,
+    include: USER_WITH_ROLE,
+  });
+
+  recordAudit({
+    userId: actor.id,
+    action: AUDIT_ACTIONS.UPDATE,
+    entity: ENTITIES.USER,
+    entityId: id,
+  });
 
   return toPublicUser(member);
 };
