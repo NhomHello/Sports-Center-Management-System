@@ -7,3 +7,13 @@ export const getCurrentByMemberId = async (req, res) => {
 
   sendSuccess(res, { data });
 };
+
+/** POST /memberships/purchase */
+export const purchaseOrRenew = async (req, res) => {
+  const data = await membershipService.purchaseOrRenew(req.validated.body);
+
+  sendSuccess(res, {
+    data,
+    message: 'Mua hoặc gia hạn gói tập thành công',
+  });
+};
