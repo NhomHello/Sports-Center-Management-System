@@ -1,3 +1,4 @@
+import { MembershipPlanStatus } from '@prisma/client';
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
@@ -83,6 +84,35 @@ export const update = async (id, data, actor) => {
     action: AUDIT_ACTIONS.UPDATE,
     entity: ENTITIES.MEMBERSHIP_PLAN,
     entityId: id,
+  });
+
+  return plan;
+};
+
+/**
+ * Ngừng bán gói tập.
+ * @param {number} id
+ * @param {{ id: number }} actor
+ * @returns {Promise<object>}
+ */
+export const remove = async (id, actor) => {
+  await getById(id);
+
+  const plan = await prisma.membershipPlan.update({
+    where: { id },
+    data: {
+      status: MembershipPlanStatus.STOPPED,
+    },
+  });
+
+  recordAudit({
+    userId: actor.id,
+    action: AUDIT_ACTIONS.DELETE,
+    entity: ENTITIES.MEMBERSHIP_PLAN,
+    entityId: id,
+    meta: {
+      status: MembershipPlanStatus.STOPPED,
+    },
   });
 
   return plan;

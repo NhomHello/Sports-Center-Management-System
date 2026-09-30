@@ -42,5 +42,10 @@ router.put(
   validate(updateMembershipPlanSchema),
   controller.update,
 );
-
+router.delete(
+  '/:id',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_DELETE),
+  validate(membershipPlanIdSchema),
+  controller.remove,
+);
 export default router;

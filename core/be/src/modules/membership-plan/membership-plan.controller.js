@@ -32,3 +32,13 @@ export const update = async (req, res) => {
     message: 'Cập nhật gói tập thành công',
   });
 };
+
+/** DELETE /membership-plans/:id */
+export const remove = async (req, res) => {
+  const data = await membershipPlanService.remove(req.validated.params.id, req.user);
+
+  sendSuccess(res, {
+    data,
+    message: 'Đã ngừng bán gói tập',
+  });
+};
