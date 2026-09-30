@@ -17,6 +17,10 @@ datasource db {
 }
 
 // ---------------- ENUMS ----------------
+enum MembershipPlanStatus {
+  SELLING
+  STOPPED
+}
 
 enum UserStatus {
   ACTIVE
@@ -127,6 +131,21 @@ model AuditLog {
 }
 
 // ---------------- NGHIEP VU (team them dan theo flow) ----------------
+/// Goi tap cua trung tam.
+model MembershipPlan {
+  id           Int                  @id @default(autoincrement())
+  name         String               @unique @db.VarChar(100)
+  description  String?              @db.VarChar(500)
+  price        Int
+  durationDays Int                  @map("duration_days")
+  status       MembershipPlanStatus @default(SELLING)
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("membership_plans")
+}
+
 // Flow 1: MembershipPlan, Membership
 // Flow 2: Subject, Room, GymClass (tranh dat ten "Class" trung tu khoa JS), ClassSession, Enrollment
 // Flow 3: Invoice, Payment, PaymentWebhookLog
