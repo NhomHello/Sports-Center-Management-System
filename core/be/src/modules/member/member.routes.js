@@ -4,11 +4,13 @@ import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import * as controller from './member.controller.js';
-import { createMemberSchema } from './member.validation.js';
+import { createMemberSchema, listMembersSchema } from './member.validation.js';
 
 const router = Router();
 
 router.use(authenticate);
+
+router.get('/', authorize(PERMISSIONS.MEMBER_READ), validate(listMembersSchema), controller.list);
 
 router.post(
   '/',

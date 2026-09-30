@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { paginationQuerySchema } from '../../common/utils/pagination.js';
 import { VALIDATION } from '../../constants/index.js';
 
 export const createMemberSchema = {
@@ -17,5 +18,15 @@ export const createMemberSchema = {
       .string()
       .min(VALIDATION.PASSWORD_MIN_LENGTH, 'Mật khẩu quá ngắn')
       .max(VALIDATION.PASSWORD_MAX_LENGTH, 'Mật khẩu quá dài'),
+  }),
+};
+
+export const listMembersSchema = {
+  query: paginationQuerySchema.extend({
+    search: z
+      .string()
+      .trim()
+      .max(VALIDATION.SEARCH_MAX_LENGTH, 'Từ khóa tìm kiếm quá dài')
+      .optional(),
   }),
 };
