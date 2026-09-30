@@ -6,6 +6,14 @@ const memberIdParam = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+const emailSchema = z
+  .string()
+  .trim()
+  .email('Email không hợp lệ')
+  .transform((value) => value.toLowerCase());
+
+const phoneSchema = z.string().trim().regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ');
+
 const memberProfileFields = {
   fullName: z
     .string()
@@ -13,9 +21,9 @@ const memberProfileFields = {
     .min(VALIDATION.NAME_MIN_LENGTH, 'Họ tên quá ngắn')
     .max(VALIDATION.NAME_MAX_LENGTH, 'Họ tên quá dài'),
 
-  email: z.string().trim().email('Email không hợp lệ'),
+  email: emailSchema.optional(),
 
-  phone: z.string().trim().regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ'),
+  phone: phoneSchema,
 };
 
 export const createMemberSchema = {
@@ -49,8 +57,8 @@ export const updateMemberSchema = {
   body: z
     .object({
       fullName: memberProfileFields.fullName.optional(),
-      email: memberProfileFields.email.optional(),
-      phone: memberProfileFields.phone.optional(),
+      email: emailSchema.optional(),
+      phone: phoneSchema.optional(),
     })
     .refine(
       (data) => Object.keys(data).length > 0,

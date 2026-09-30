@@ -5,6 +5,11 @@ import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 import * as userService from '../user/user.service.js';
 
+const MEMBERSHIP_STATUS = Object.freeze({
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+});
+
 /**
  * Lấy role mặc định dành cho hội viên.
  * @returns {Promise<object>}
@@ -22,12 +27,70 @@ const getDefaultMemberRole = async () => {
 };
 
 /**
+ * Kiểm tra email và số điện thoại chưa được sử dụng.
+ * @param {{ email?: string, phone?: string }} data
+ * @param {number} [excludeId]
+ * @returns {Promise<void>}
+ */
+const ensureUniqueIdentity = async ({ email, phone }, excludeId) => {
+  if (email) {
+    const emailOwner = await prisma.user.findFirst({
+      where: {
+        email,
+        ...(excludeId && { id: { not: excludeId } }),
+      },
+    });
+
+    if (emailOwner) {
+      throw ApiError.conflict('Email đã được sử dụng');
+    }
+  }
+
+  if (phone) {
+    const phoneOwner = await prisma.user.findFirst({
+      where: {
+        phone,
+        ...(excludeId && { id: { not: excludeId } }),
+      },
+    });
+
+    if (phoneOwner) {
+      throw ApiError.conflict('Số điện thoại đã được sử dụng');
+    }
+  }
+};
+
+/**
+ * Lấy membership gần nhất và tính trạng thái hiện tại.
+ * @param {number} memberId
+ * @returns {Promise<object|null>}
+ */
+const getMembershipSummary = async (memberId) => {
+  const membership = await prisma.membership.findFirst({
+    where: { userId: memberId },
+    include: { plan: true },
+    orderBy: { endDate: 'desc' },
+  });
+
+  if (!membership) {
+    return null;
+  }
+
+  return {
+    ...membership,
+    status: membership.endDate >= new Date() ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED,
+  };
+};
+
+/**
  * Đăng ký hội viên tại quầy bằng vai trò mặc định của hệ thống.
- * @param {{ email: string, password: string, fullName: string, phone: string }} data
+ * @param {{ email?: string, password: string, fullName: string, phone: string }} data
  * @param {{ id: number }} actor
  * @returns {Promise<object>}
  */
 export const create = async (data, actor) => {
+  await ensureUniqueIdentity(data);
+
   const defaultRole = await getDefaultMemberRole();
 
   return userService.create(
@@ -40,21 +103,33 @@ export const create = async (data, actor) => {
 };
 
 /**
- * Tìm kiếm danh sách hội viên có phân trang.
+ * Tìm kiếm danh sách hội viên có phân trang và membership gần nhất.
  * @param {{ page: number, pageSize: number, search?: string }} query
  * @returns {Promise<{ items: object[], meta: object }>}
  */
 export const list = async (query) => {
   const defaultRole = await getDefaultMemberRole();
 
-  return userService.list({
+  const result = await userService.list({
     ...query,
     roleId: defaultRole.id,
   });
+
+  const items = await Promise.all(
+    result.items.map(async (member) => ({
+      ...member,
+      membership: await getMembershipSummary(member.id),
+    })),
+  );
+
+  return {
+    items,
+    meta: result.meta,
+  };
 };
 
 /**
- * Lấy chi tiết hội viên.
+ * Lấy chi tiết hội viên và membership gần nhất.
  * @param {number} id
  * @returns {Promise<object>}
  */
@@ -73,7 +148,10 @@ export const getById = async (id) => {
     throw ApiError.notFound('Không tìm thấy hội viên');
   }
 
-  return toPublicUser(member);
+  return {
+    ...toPublicUser(member),
+    membership: await getMembershipSummary(id),
+  };
 };
 
 /**
@@ -84,7 +162,9 @@ export const getById = async (id) => {
  * @returns {Promise<object>}
  */
 export const update = async (id, data, actor) => {
-  await getById(id);
+  const oldMember = await getById(id);
+
+  await ensureUniqueIdentity(data, id);
 
   const member = await prisma.user.update({
     where: { id },
@@ -92,12 +172,18 @@ export const update = async (id, data, actor) => {
     include: USER_WITH_ROLE,
   });
 
+  const publicMember = toPublicUser(member);
+
   recordAudit({
     userId: actor.id,
     action: AUDIT_ACTIONS.UPDATE,
     entity: ENTITIES.USER,
     entityId: id,
+    meta: {
+      oldValue: oldMember,
+      newValue: publicMember,
+    },
   });
 
-  return toPublicUser(member);
+  return publicMember;
 };
