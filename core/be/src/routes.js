@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { HEALTH_PATH } from './constants/index.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import healthRoutes from './modules/health/health.routes.js';
+import memberRoutes from './modules/member/member.routes.js';
 import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
@@ -22,5 +23,6 @@ router.use('/roles', roleRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
 router.use('/membership-plans', membershipPlanRoutes);
+router.use('/members', memberRoutes);
 
 export default router;
