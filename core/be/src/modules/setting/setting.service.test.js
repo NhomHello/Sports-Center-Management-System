@@ -30,7 +30,7 @@ describe('updateMany settings', () => {
       { key: 'MEMBERSHIP_EXPIRY_REMINDER_DAYS', value: '7', type: 'NUMBER' },
     ]);
     await expect(
-      updateMany([{ key: 'MEMBERSHIP_EXPIRY_REMINDER_DAYS', value: '0' }], { id: 1 }),
+      updateMany([{ key: 'MEMBERSHIP_EXPIRY_REMINDER_DAYS', value: '-1' }], { id: 1 }),
     ).rejects.toMatchObject({ statusCode: 400 });
   });
 

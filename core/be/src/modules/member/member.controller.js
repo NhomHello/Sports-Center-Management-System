@@ -1,19 +1,46 @@
-import { sendSuccess } from '../../common/utils/api-response.js';
-import * as service from './member.service.js';
+import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
+import * as memberService from './member.service.js';
+import * as ownService from './member-own.service.js';
 
 /** GET /members/me */
 export const getOwn = async (req, res) =>
-  sendSuccess(res, { data: await service.getOwn(req.user) });
+  sendSuccess(res, { data: await ownService.getOwn(req.user) });
 
 /** PATCH /members/me */
 export const updateOwn = async (req, res) =>
   sendSuccess(res, {
-    data: await service.updateOwn(req.user, req.validated.body),
+    data: await ownService.updateOwn(req.user, req.validated.body),
     message: 'Cập nhật hồ sơ thành công',
   });
 
-/** GET /members; chỉ dùng khi có member.read. */
+/** GET /members */
 export const list = async (req, res) => {
-  const { items, meta } = await service.list(req.validated.query);
-  sendSuccess(res, { data: items, meta });
+  const { items, meta } = await memberService.list(req.validated.query);
+
+  sendSuccess(res, {
+    data: items,
+    meta,
+  });
+};
+
+/** GET /members/:id */
+export const getById = async (req, res) => {
+  const member = await memberService.getById(req.validated.params.id);
+  sendSuccess(res, { data: member });
+};
+
+/** POST /members */
+export const create = async (req, res) => {
+  const member = await memberService.create(req.validated.body, req.user);
+  sendCreated(res, member, 'Đăng ký hội viên thành công');
+};
+
+/** PUT /members/:id */
+export const update = async (req, res) => {
+  const member = await memberService.update(req.validated.params.id, req.validated.body, req.user);
+
+  sendSuccess(res, {
+    data: member,
+    message: 'Cập nhật hội viên thành công',
+  });
 };
