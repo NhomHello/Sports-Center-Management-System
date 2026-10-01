@@ -7,7 +7,16 @@ import prismaPkg from '@prisma/client';
 import { env, isDev } from './env.js';
 
 // @prisma/client la CommonJS nen phai import default roi destructure
-const { PrismaClient, UserStatus, SettingType } = prismaPkg;
+const {
+  PrismaClient,
+  UserStatus,
+  SettingType,
+  MembershipStatus,
+  InvoiceStatus,
+  InvoiceChannel,
+  NotificationKind,
+  PaymentProvider,
+} = prismaPkg;
 
 const DEFAULT_MYSQL_PORT = 3306;
 const CONNECTION_LIMIT = 10;
@@ -36,4 +45,12 @@ export const prisma = new PrismaClient({
 });
 
 /** Enum sinh tu schema.prisma - dung Enums.UserStatus.ACTIVE thay vi chuoi 'ACTIVE'. */
-export const Enums = Object.freeze({ UserStatus, SettingType });
+export const Enums = Object.freeze({
+  UserStatus,
+  SettingType,
+  MembershipStatus,
+  InvoiceStatus,
+  InvoiceChannel,
+  NotificationKind,
+  PaymentProvider,
+});

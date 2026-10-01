@@ -12,6 +12,7 @@ const USER_SELECT = {
   fullName: true,
   status: true,
   roleId: true,
+  tokenVersion: true,
 };
 
 /**
@@ -53,6 +54,9 @@ export const authenticate = async (req, _res, next) => {
   const payload = decodeOrThrow(token);
   const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: USER_SELECT });
   if (!user) throw ApiError.unauthorized('Tài khoản không tồn tại');
+  if ((payload.ver ?? 0) !== user.tokenVersion) {
+    throw ApiError.unauthorized('Phiên đăng nhập không còn hiệu lực');
+  }
   if (user.status !== Enums.UserStatus.ACTIVE) {
     throw ApiError.forbidden('Tài khoản đã bị khoá', ERROR_CODES.ACCOUNT_INACTIVE);
   }

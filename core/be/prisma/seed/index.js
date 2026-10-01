@@ -86,10 +86,16 @@ async function seedAdminUser() {
 /** Tao setting con thieu voi gia tri mac dinh (khong ghi de gia tri manager da sua). */
 async function seedSettings() {
   for (const def of SETTING_DEFINITIONS) {
+    const { defaultValue, unit: _unit, minValue: _min, maxValue: _max, ...data } = def;
     await prisma.systemSetting.upsert({
       where: { key: def.key },
-      create: { ...def, value: def.defaultValue, defaultValue: undefined },
-      update: { label: def.label, description: def.description, group: def.group, type: def.type },
+      create: { ...data, value: defaultValue },
+      update: {
+        label: def.label,
+        description: def.description,
+        group: def.group,
+        type: def.type,
+      },
     });
   }
   logger.info({ count: SETTING_DEFINITIONS.length }, 'Seed settings xong');

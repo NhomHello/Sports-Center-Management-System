@@ -18,3 +18,9 @@ export const me = async (req, res) => {
   const data = await authService.getMe(req.user.id);
   sendSuccess(res, { data });
 };
+
+/** POST /auth/password-changes */
+export const changePassword = async (req, res) => {
+  await authService.changePassword(req.user.id, req.validated.body);
+  sendSuccess(res, { message: 'Đổi mật khẩu thành công, vui lòng đăng nhập lại' });
+};
