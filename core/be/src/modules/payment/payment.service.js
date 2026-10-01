@@ -1,7 +1,7 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
-import { activatePaidInvoice } from '../membership/membership.service.js';
+import { activatePaidInvoice } from '../membership/membership-invoice.service.js';
 import { INVOICE_INCLUDE } from './invoice.service.js';
 
 /** BR-PAY-14/3.2: đúng giá gốc; chuyển PAID, thu tiền và kích hoạt cùng transaction. */

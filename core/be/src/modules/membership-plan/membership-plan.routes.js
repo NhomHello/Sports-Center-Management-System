@@ -1,18 +1,54 @@
-import { Router } from 'express';
 import { PERMISSIONS } from '@scms/shared';
+import { Router } from 'express';
 import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
-import { sendSuccess } from '../../common/utils/api-response.js';
-import { prisma } from '../../config/db.js';
+import { validate } from '../../common/middlewares/validate.middleware.js';
+import * as controller from './membership-plan.controller.js';
+import {
+  createMembershipPlanSchema,
+  listMembershipPlanSchema,
+  membershipPlanIdSchema,
+  updateMembershipPlanSchema,
+} from './membership-plan.validation.js';
 
 const router = Router();
+
 router.use(authenticate);
-router.get('/', authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ), async (_req, res) => {
-  sendSuccess(res, {
-    data: await prisma.membershipPlan.findMany({
-      where: { isActive: true },
-      orderBy: { name: 'asc' },
-    }),
-  });
-});
+
+router.get(
+  '/',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ),
+  validate(listMembershipPlanSchema),
+  controller.list,
+);
+
+router.post(
+  '/',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_CREATE),
+  validate(createMembershipPlanSchema),
+  controller.create,
+);
+
+router.get('/selling', authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ), controller.listSelling);
+
+router.get(
+  '/:id',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_READ),
+  validate(membershipPlanIdSchema),
+  controller.getById,
+);
+
+router.put(
+  '/:id',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_UPDATE),
+  validate(updateMembershipPlanSchema),
+  controller.update,
+);
+
+router.delete(
+  '/:id',
+  authorize(PERMISSIONS.MEMBERSHIP_PLAN_DELETE),
+  validate(membershipPlanIdSchema),
+  controller.remove,
+);
 export default router;

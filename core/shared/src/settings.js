@@ -69,7 +69,7 @@ export const SETTING_DEFINITIONS = [
     description: 'Gửi thông báo nhắc gia hạn trước ngày hết hạn gói',
     group: SETTING_GROUPS.MEMBERSHIP,
     unit: 'ngày',
-    minValue: 1,
+    minValue: 0,
     maxValue: 365,
   },
   {

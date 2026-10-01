@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@scms/shared';
 import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
-import * as membershipService from '../membership/membership.service.js';
+import * as membershipService from '../membership/membership-invoice.service.js';
 import * as invoiceService from './invoice.service.js';
 import * as paymentService from './payment.service.js';
 /** GET /invoices/:id/receipt */

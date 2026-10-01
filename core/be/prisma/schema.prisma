@@ -18,6 +18,11 @@ datasource db {
 
 // ---------------- ENUMS ----------------
 
+enum MembershipPlanStatus {
+  SELLING
+  STOPPED
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -88,14 +93,17 @@ model User {
 
 /// Vai tro: tap hop permission. Tao/sua/xoa hoan toan qua UI (tru isSystem khong duoc xoa).
 model Role {
-  id          Int              @id @default(autoincrement())
-  code        String           @unique @db.VarChar(50)
-  name        String           @db.VarChar(100)
-  description String?          @db.VarChar(255)
+  id          Int     @id @default(autoincrement())
+  code        String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
+
   /// Role seed san, khong cho xoa (van cho sua quyen)
-  isSystem    Boolean          @default(false) @map("is_system")
+  isSystem Boolean @default(false) @map("is_system")
+
   /// Role gan cho tai khoan tu dang ky. Chi mot role duoc isDefault = true
-  isDefault   Boolean          @default(false) @map("is_default")
+  isDefault Boolean @default(false) @map("is_default")
+
   permissions RolePermission[]
   users       User[]
   createdAt   DateTime         @default(now()) @map("created_at")
@@ -163,25 +171,29 @@ model AuditLog {
 }
 
 // ---------------- NGHIEP VU (team them dan theo flow) ----------------
+
 // Flow 1: MembershipPlan, Membership
 // Flow 2: Subject, Room, GymClass (tranh dat ten "Class" trung tu khoa JS), ClassSession, Enrollment
 // Flow 3: Invoice, Payment, PaymentWebhookLog
 
 /// Danh mục gói dùng bởi hóa đơn tại quầy; không xóa gói đã được tham chiếu.
 model MembershipPlan {
-  id           Int          @id @default(autoincrement())
-  code         String       @unique @db.VarChar(50)
-  name         String       @db.VarChar(100)
-  durationDays Int          @map("duration_days")
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique @db.VarChar(50)
+  name         String               @unique @db.VarChar(100)
+  description  String?              @db.VarChar(500)
+  durationDays Int                  @map("duration_days")
   price        Int
   benefits     Json?
-  isActive     Boolean      @default(true) @map("is_active")
+  isActive     Boolean              @default(true) @map("is_active")
+  status       MembershipPlanStatus @default(SELLING)
   memberships  Membership[]
   invoices     Invoice[]
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
 
   @@index([isActive])
+  @@index([status])
   @@map("membership_plans")
 }
 
