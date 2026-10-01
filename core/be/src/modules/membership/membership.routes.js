@@ -20,6 +20,12 @@ router.post(
 );
 
 router.get(
+  '/me',
+  authorize(PERMISSIONS.MEMBERSHIP_READ_OWN, PERMISSIONS.MEMBERSHIP_READ_ALL),
+  controller.getMyCurrent,
+);
+
+router.get(
   '/me/current',
   authorize(PERMISSIONS.MEMBERSHIP_READ_OWN, PERMISSIONS.MEMBERSHIP_READ_ALL),
   controller.getMyCurrent,
