@@ -24,6 +24,7 @@ export const VALIDATION = Object.freeze({
   PASSWORD_MAX_LENGTH: 72,
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
+  DESCRIPTION_MAX_LENGTH: 500,
   SEARCH_MAX_LENGTH: 100,
   /** So dien thoai VN: 0xxxxxxxxx hoac +84xxxxxxxxx */
   PHONE_REGEX: /^(0|\+84)\d{9}$/,
@@ -45,6 +46,7 @@ export const ENTITIES = Object.freeze({
   USER: 'User',
   ROLE: 'Role',
   SETTING: 'SystemSetting',
+  MEMBERSHIP_PLAN: 'MembershipPlan',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
