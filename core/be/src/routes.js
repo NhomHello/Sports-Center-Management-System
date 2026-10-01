@@ -10,6 +10,12 @@ import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import settingRoutes from './modules/setting/setting.routes.js';
 import userRoutes from './modules/user/user.routes.js';
+import memberRoutes from './modules/member/member.routes.js';
+import notificationRoutes from './modules/notification/notification.routes.js';
+import invoiceRoutes from './modules/payment/invoice.routes.js';
+import paymentRoutes from './modules/payment/payment.routes.js';
+import membershipRoutes from './modules/membership/membership.routes.js';
+import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 
 const router = Router();
 
@@ -19,5 +25,11 @@ router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
+router.use('/members', memberRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/invoices', invoiceRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/memberships', membershipRoutes);
+router.use('/membership-plans', membershipPlanRoutes);
 
 export default router;

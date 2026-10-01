@@ -12,6 +12,7 @@ export const PAGINATION = Object.freeze({
 export const TIME = Object.freeze({
   MS_PER_SECOND: 1000,
   MS_PER_MINUTE: 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
 });
 
 export const AUTH = Object.freeze({
@@ -25,6 +26,7 @@ export const VALIDATION = Object.freeze({
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
   SEARCH_MAX_LENGTH: 100,
+  INVOICE_SEQUENCE_WIDTH: 6,
   /** So dien thoai VN: 0xxxxxxxxx hoac +84xxxxxxxxx */
   PHONE_REGEX: /^(0|\+84)\d{9}$/,
   /** Ma role: IN_HOA_SNAKE, 3-50 ky tu */
@@ -45,6 +47,9 @@ export const ENTITIES = Object.freeze({
   USER: 'User',
   ROLE: 'Role',
   SETTING: 'SystemSetting',
+  INVOICE: 'Invoice',
+  MEMBERSHIP: 'Membership',
+  PAYMENT: 'Payment',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
