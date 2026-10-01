@@ -1,0 +1,815 @@
+/* Lớp hoàn thiện dùng chung cho các flow; màu lấy từ hệ token SportHub. */
+:root {
+  --scms-canvas: #f6f8fc;
+  --scms-text: #17243b;
+  --scms-muted: #65758d;
+  --scms-border: #e4eaf3;
+  --scms-soft-blue: #eef4ff;
+  --scms-surface: #fff;
+  --scms-surface-soft: #fbfcff;
+  --scms-calendar-canvas: #f8faff;
+  --scms-calendar-today: #f1f6ff;
+  --scms-calendar-today-border: #b9d0fa;
+  --scms-calendar-event-border: #e5ebf4;
+  --scms-calendar-accent: #8bb0f4;
+  --scms-calendar-registered: #f2f7ff;
+  --scms-calendar-registered-border: #dce8ff;
+  --scms-calendar-empty: #94a1b4;
+  --scms-panel-shadow: 0 18px 40px -38px rgb(15 23 42 / 48%);
+}
+body {
+  background: var(--scms-canvas);
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+:where(a, button, input, textarea, [role='button']):focus-visible {
+  outline: 3px solid rgb(37 99 235 / 38%);
+  outline-offset: 3px;
+}
+.scms-app-shell {
+  background: radial-gradient(circle at 88% 0%, #eaf0ff, transparent 27%), var(--scms-canvas);
+}
+.scms-app-content {
+  padding-top: clamp(25px, 3vw, 42px);
+  padding-bottom: clamp(40px, 5vw, 70px);
+}
+.ant-layout-header.scms-main-header {
+  box-shadow: 0 9px 28px -27px rgb(15 23 42 / 50%);
+}
+.scms-main-header .scms-brand__name {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-weight: 800;
+}
+.scms-main-nav .ant-menu-item,
+.scms-main-nav .ant-menu-submenu {
+  display: inline-flex;
+  height: 40px;
+  align-items: center;
+  margin-inline: 3px;
+  padding-inline: 15px;
+  border-radius: 999px;
+  line-height: 40px;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease;
+}
+.scms-main-nav.ant-menu-horizontal > .ant-menu-item,
+.scms-main-nav.ant-menu-horizontal > .ant-menu-submenu {
+  border-radius: 999px !important;
+}
+.scms-main-nav .ant-menu-submenu-title {
+  height: 40px;
+  line-height: 40px;
+}
+.scms-main-nav.ant-menu-horizontal > .ant-menu-item-selected,
+.scms-main-nav.ant-menu-horizontal > .ant-menu-submenu-selected {
+  color: #fff !important;
+  background: #1d4ed8 !important;
+}
+.scms-main-nav .ant-menu-submenu,
+.scms-main-nav .ant-menu-submenu-title {
+  color: #cbd5e1;
+}
+.scms-main-nav .ant-menu-submenu-selected,
+.scms-main-nav .ant-menu-submenu-selected .ant-menu-submenu-title {
+  color: #fff;
+}
+.scms-main-nav .ant-menu-submenu:hover {
+  color: #fff;
+  background: #263958;
+}
+.scms-main-nav .ant-menu-submenu:hover .ant-menu-submenu-title {
+  color: #fff;
+}
+.scms-header-actions .ant-btn-text,
+.scms-header-actions .scms-mobile-nav {
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #cbd5e1 !important;
+}
+.scms-header-actions .scms-mobile-nav {
+  background: transparent;
+  border-color: #334155;
+}
+.scms-header-actions .ant-btn-text:hover,
+.scms-header-actions .scms-mobile-nav:hover {
+  background: var(--scms-soft-blue);
+}
+.scms-header-actions .ant-btn-text:hover,
+.scms-header-actions .scms-mobile-nav:hover {
+  color: #fff;
+  background: #263958;
+}
+.scms-nav-drawer .ant-drawer-header {
+  padding: 22px 24px;
+}
+.scms-nav-drawer .ant-drawer-title {
+  color: var(--scms-navy);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+.scms-nav-drawer .ant-drawer-body {
+  padding: 12px;
+}
+.scms-nav-drawer .ant-menu {
+  border-inline-end: 0 !important;
+}
+.scms-nav-drawer .ant-menu-item,
+.scms-nav-drawer .ant-menu-submenu-title {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 650;
+}
+.scms-nav-drawer .ant-menu-item-selected {
+  color: var(--scms-blue);
+  background: var(--scms-soft-blue);
+}
+
+.scms-page-header:not(.scms-plans-heading .scms-page-header) {
+  min-height: 144px;
+  padding: clamp(23px, 2.8vw, 34px);
+  background: linear-gradient(110deg, #fff 65%, #f0f5ff);
+  border: 1px solid var(--scms-border);
+  border-radius: 26px;
+  box-shadow: var(--scms-panel-shadow);
+}
+.scms-page-header__eyebrow {
+  padding: 5px 10px;
+  color: #285cbd;
+  background: #eaf1ff;
+  border: 1px solid #dbe8ff;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.11em;
+}
+.scms-page-header h2.ant-typography {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: clamp(27px, 2.7vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+.scms-page-header__copy {
+  max-width: 800px;
+}
+.scms-page-header .ant-typography-secondary {
+  color: var(--scms-muted);
+}
+.scms-app-content .ant-card {
+  border-color: var(--scms-border);
+  box-shadow: var(--scms-panel-shadow);
+}
+.scms-app-content .ant-card .ant-card-head-title {
+  color: var(--scms-navy);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-weight: 750;
+}
+.scms-app-content .ant-empty-description {
+  color: var(--scms-muted);
+}
+.ant-btn-primary:not(:disabled) {
+  font-weight: 700;
+}
+.ant-btn-default:not(:disabled):hover {
+  border-color: #91b2ef;
+  background: #f7faff;
+}
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-picker {
+  border-radius: 12px !important;
+}
+.ant-form-item-explain-error {
+  font-size: 12px;
+}
+.scms-data-table .ant-table-thead > tr > th {
+  color: #60718c;
+  background: #f5f8fd;
+}
+.scms-data-table .ant-table-tbody > tr > td {
+  border-bottom-color: #edf1f7;
+}
+.scms-data-card__toolbar h4.ant-typography {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+}
+
+.scms-workspace-card.ant-card {
+  border-radius: 26px;
+}
+.scms-workspace-card > .ant-card-body {
+  padding: 24px;
+}
+.scms-workspace-card .ant-tabs-nav {
+  margin-bottom: 25px;
+}
+.scms-workspace-card .ant-tabs-nav::before {
+  display: none;
+}
+.scms-workspace-card .ant-tabs-nav-list {
+  gap: 4px;
+  padding: 5px;
+  background: #f0f4fa;
+  border: 1px solid #e6ecf5;
+  border-radius: 999px;
+}
+.scms-workspace-card .ant-tabs-tab {
+  margin: 0 !important;
+  padding: 9px 16px;
+  border-radius: 999px;
+  color: #65758d;
+  font-weight: 650;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+.scms-workspace-card .ant-tabs-tab:hover {
+  color: var(--scms-blue);
+}
+.scms-workspace-card .ant-tabs-tab-active {
+  background: #fff;
+  box-shadow: 0 3px 10px -7px rgb(15 23 42 / 55%);
+}
+.scms-workspace-card .ant-tabs-ink-bar {
+  display: none;
+}
+.scms-workspace-card .ant-tabs-content-holder {
+  min-width: 0;
+}
+.scms-workspace-card .ant-table-thead > tr > th {
+  color: #61718c;
+  background: #f6f8fc;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+.scms-workspace-card .ant-table-tbody > tr > td {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+.scms-workspace-card .ant-table-tbody > tr:hover > td {
+  background: #f6f9ff !important;
+}
+.scms-schedule-list .ant-list-item {
+  margin-bottom: 10px;
+  padding: 16px 18px;
+  background: #fafcff;
+  border: 1px solid #edf1f7 !important;
+  border-radius: 15px;
+}
+.scms-schedule-list .ant-list-item-meta-title {
+  margin-bottom: 6px;
+}
+.scms-schedule-calendar {
+  overflow: hidden;
+  padding: 22px;
+  background: linear-gradient(145deg, var(--scms-surface), var(--scms-surface-soft));
+  border: 1px solid var(--scms-border);
+  border-radius: 22px;
+}
+.scms-schedule-calendar__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.scms-schedule-calendar__title {
+  display: grid;
+  gap: 5px;
+}
+.scms-schedule-calendar__title > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--scms-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.scms-schedule-calendar__title > span .anticon {
+  color: var(--scms-blue);
+}
+.scms-schedule-calendar__title > strong {
+  color: var(--scms-navy);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scms-schedule-calendar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scms-calendar-source {
+  min-width: 150px;
+}
+.scms-schedule-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.scms-schedule-calendar__controls .ant-btn {
+  min-width: 38px;
+  height: 38px;
+  border-color: var(--scms-border);
+  border-radius: 12px;
+}
+.scms-schedule-calendar__scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-color: #c8d5e8 transparent;
+  scrollbar-width: thin;
+}
+.scms-schedule-calendar__grid {
+  display: grid;
+  min-width: 980px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+.scms-calendar-day {
+  min-height: 260px;
+  padding: 12px;
+  background: var(--scms-calendar-canvas);
+  border: 1px solid var(--scms-border);
+  border-radius: 16px;
+}
+.scms-calendar-day--today {
+  background: var(--scms-calendar-today);
+  border-color: var(--scms-calendar-today-border);
+  box-shadow: inset 0 3px 0 var(--scms-blue);
+}
+.scms-calendar-day__heading {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--scms-border);
+}
+.scms-calendar-day__heading > span {
+  color: var(--scms-muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.scms-calendar-day__heading > strong {
+  color: var(--scms-navy);
+  font-size: 20px;
+  line-height: 1.15;
+}
+.scms-calendar-day__heading .ant-tag {
+  margin: 1px 0 0;
+  padding-inline: 7px;
+  border-radius: 999px;
+  font-size: 10px;
+}
+.scms-calendar-day__events {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding-top: 10px;
+}
+.scms-calendar-day__empty {
+  padding-top: 14px;
+  color: var(--scms-calendar-empty);
+  font-size: 11px;
+  text-align: center;
+}
+.scms-calendar-event {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 10px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-calendar-event-border);
+  border-left: 3px solid var(--scms-calendar-accent);
+  border-radius: 11px;
+  box-shadow: 0 5px 13px -12px rgb(15 23 42 / 55%);
+}
+.scms-calendar-event--registered {
+  background: var(--scms-calendar-registered);
+  border-color: var(--scms-calendar-registered-border);
+  border-left-color: var(--scms-blue);
+}
+.scms-calendar-event > strong {
+  overflow: hidden;
+  color: var(--scms-navy);
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+.scms-calendar-event > span:not(.scms-calendar-event__time) {
+  overflow: hidden;
+  color: var(--scms-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scms-calendar-event__time {
+  color: var(--scms-blue);
+  font-size: 10px;
+  font-weight: 750;
+}
+.scms-calendar-event__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 4px;
+  margin: 1px -5px -5px;
+}
+.scms-calendar-event__actions .ant-btn-link {
+  padding-inline: 5px;
+  font-size: 10px;
+}
+.scms-calendar-event__actions .ant-tag {
+  margin: 0;
+  padding-inline: 6px;
+  font-size: 9px;
+}
+.scms-calendar-notice {
+  margin: -5px 0 14px;
+  padding: 10px 13px;
+  color: var(--scms-muted);
+  background: #f6f8fc;
+  border: 1px solid var(--scms-border);
+  border-radius: 12px;
+  font-size: 12px;
+}
+.scms-schedule-calendar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-top: 14px;
+  color: var(--scms-muted);
+  font-size: 11px;
+}
+.scms-schedule-calendar__legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.scms-calendar-legend__dot {
+  width: 8px;
+  height: 8px;
+  background: var(--scms-calendar-accent);
+  border-radius: 50%;
+}
+.scms-calendar-legend__dot--registered {
+  background: var(--scms-blue);
+}
+.scms-training-grid {
+  margin-top: 18px;
+}
+.scms-training-plan.ant-card {
+  height: 100%;
+  border-radius: 19px;
+}
+.scms-training-plan .ant-list-item {
+  gap: 10px;
+}
+.scms-training-empty {
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  margin-top: 17px;
+  padding: 24px;
+  background: #fbfcff;
+  border: 1px dashed #dce5f2;
+  border-radius: 18px;
+}
+
+.scms-plans-heading .scms-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center !important;
+  gap: 20px;
+  margin-bottom: 25px !important;
+  padding: 20px 0 10px;
+  text-align: center;
+}
+.scms-plans-heading .scms-page-header__copy {
+  align-items: center;
+}
+.scms-plans-heading .scms-page-header h2.ant-typography {
+  font-size: clamp(30px, 3.6vw, 44px);
+}
+.scms-plans-heading .scms-page-header .ant-typography-secondary {
+  font-size: 15px;
+}
+.scms-plan-card.ant-card {
+  border-radius: 25px;
+}
+.scms-plan-card h3.ant-typography {
+  margin: 0;
+  color: var(--scms-navy);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.scms-plan-card .scms-plan-card__price.ant-typography {
+  margin: 0;
+  color: var(--scms-navy);
+  font-size: clamp(28px, 2.7vw, 35px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+.scms-plan-card__code,
+.scms-plan-card__duration {
+  color: #7888a0;
+}
+.scms-plan-card__benefit {
+  color: #465770;
+  line-height: 1.5;
+}
+.scms-plan-card__actions {
+  display: grid;
+  gap: 12px;
+}
+.scms-plan-card__actions > .ant-btn {
+  width: 100%;
+}
+.scms-plan-card__manage {
+  justify-content: center;
+}
+.scms-plan-card--featured h3.ant-typography,
+.scms-plan-card--featured .scms-plan-card__price.ant-typography,
+.scms-plan-card--featured .scms-plan-card__benefit {
+  color: #fff;
+}
+.scms-plan-card--featured .scms-plan-card__code,
+.scms-plan-card--featured .scms-plan-card__duration {
+  color: #c7d6ec;
+}
+.scms-plan-card--featured .scms-plan-card__price span {
+  color: #c7d6ec;
+}
+.scms-plan-card--featured .scms-plan-card__manage .ant-btn-default {
+  color: #fff;
+  background: rgb(255 255 255 / 9%);
+  border-color: rgb(255 255 255 / 25%);
+}
+
+.scms-auth-form-panel {
+  background: radial-gradient(circle at 100% 0%, #f5f8ff, transparent 31%), #fff;
+}
+.scms-auth-title.ant-typography {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+.scms-auth-form-wrap .ant-input,
+.scms-auth-form-wrap .ant-input-affix-wrapper {
+  min-height: 50px;
+}
+.scms-auth-form-wrap .ant-btn-primary {
+  min-height: 50px;
+}
+.scms-auth-form-wrap .ant-form-item-label > label {
+  font-size: 11px;
+}
+.scms-login-help {
+  margin: -6px 0 18px;
+  text-align: right;
+}
+.scms-login-help a {
+  font-size: 13px;
+  font-weight: 700;
+}
+.scms-login-register {
+  margin: 15px 0 0;
+  text-align: center;
+}
+.scms-auth-quote {
+  box-shadow: 0 30px 60px -45px rgb(0 0 0 / 55%);
+}
+.scms-auth-quote h2.ant-typography {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+.scms-notification-panel {
+  max-width: calc(100vw - 32px);
+}
+.scms-notification-panel .ant-list-item {
+  align-items: flex-start;
+  gap: 8px;
+  padding: 13px 4px;
+}
+.scms-notification-panel .ant-list-item-meta {
+  min-width: 0;
+}
+.scms-notification-list .ant-list-item {
+  gap: 16px;
+  padding: 18px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+}
+.scms-notification-list .ant-list-item-meta {
+  min-width: 0;
+}
+.scms-notification-list .ant-list-item-meta-title {
+  margin-bottom: 6px;
+  color: var(--scms-navy);
+}
+.scms-notification-list .ant-list-item-meta-description {
+  overflow-wrap: anywhere;
+}
+.scms-notification-list .ant-list-item-meta-description .ant-typography {
+  margin-bottom: 5px;
+}
+.scms-notification-list__item--unread {
+  background: #f4f7ff !important;
+  border-color: #e5ecfb !important;
+}
+.scms-notification-list--compact .ant-list-item {
+  padding: 11px 4px;
+}
+.scms-notification-list--compact .ant-list-item-action {
+  margin-inline-start: 8px;
+}
+.scms-notification-list--compact .ant-list-item-action li {
+  padding-inline: 0;
+}
+.scms-notification-message {
+  margin: 0 !important;
+  color: #596a84;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.scms-notification-panel__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--scms-border);
+  font-size: 13px;
+  font-weight: 700;
+}
+.scms-notification-page__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: var(--scms-navy);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 750;
+}
+.scms-notification-page__count {
+  padding: 6px 11px;
+  color: #3159a1;
+  background: #f0f5ff;
+  border: 1px solid #e1eaff;
+  border-radius: 999px;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+.scms-notification-page__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: #f8faff;
+  border: 1px solid var(--scms-border);
+  border-radius: 13px;
+}
+.scms-password-page {
+  max-width: 700px;
+  margin-inline: auto;
+}
+.scms-password-page .ant-alert,
+.scms-profile-form .ant-alert,
+.scms-workspace-card > .ant-card-body > .ant-alert {
+  margin-bottom: 18px;
+}
+.scms-invoice-toolbar,
+.scms-invoice-filters {
+  display: flex;
+  margin-bottom: 18px;
+}
+.scms-invoice-filters .ant-input-search {
+  width: min(320px, 100%);
+}
+.scms-invoice-filters .ant-select {
+  min-width: 200px;
+}
+.scms-list-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+@media (max-width: 1280px) {
+  .scms-desktop-nav {
+    display: none;
+  }
+  .scms-main-header__inner {
+    justify-content: space-between;
+  }
+  .scms-header-actions .scms-mobile-nav {
+    display: inline-grid;
+  }
+}
+@media (max-width: 760px) {
+  .scms-auth-shell {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .scms-auth-brand {
+    min-height: 0;
+  }
+  .scms-page-header:not(.scms-plans-heading .scms-page-header) {
+    min-height: 0;
+    padding: 22px;
+    border-radius: 20px;
+  }
+  .scms-workspace-card > .ant-card-body {
+    padding: 17px;
+  }
+  .scms-workspace-card .ant-tabs-nav {
+    margin-bottom: 18px;
+  }
+  .scms-workspace-card .ant-tabs-nav-list {
+    border-radius: 15px;
+  }
+  .scms-workspace-card .ant-tabs-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .scms-schedule-list .ant-list-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .scms-schedule-list .ant-list-item-action {
+    margin-left: 0;
+  }
+  .scms-plans-heading .scms-page-header {
+    padding-top: 0;
+  }
+  .scms-schedule-calendar {
+    padding: 15px;
+    border-radius: 18px;
+  }
+  .scms-schedule-calendar__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+  }
+  .scms-schedule-calendar__controls {
+    align-self: flex-end;
+  }
+  .scms-schedule-calendar__title > strong {
+    font-size: 18px;
+  }
+  .scms-schedule-calendar__grid {
+    min-width: 920px;
+  }
+  .scms-calendar-day {
+    min-height: 235px;
+    padding: 9px;
+  }
+  .scms-notification-list .ant-list-item {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 8px;
+  }
+  .scms-notification-list .ant-list-item-action {
+    align-self: flex-end;
+    margin: 0;
+  }
+  .scms-notification-page__summary {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 15px;
+  }
+  .scms-notification-page__actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scms-main-nav .ant-menu-item,
+  .scms-workspace-card .ant-tabs-tab {
+    transition: none;
+  }
+  .ant-btn.ant-btn-primary:hover,
+  .scms-plan-card:hover {
+    transform: none;
+  }
+}

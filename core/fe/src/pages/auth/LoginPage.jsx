@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { App, Button, Form, Input, Typography } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { ROUTES } from '@/constants';
@@ -10,12 +10,14 @@ export function LoginPage() {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const setSession = useAuthStore((state) => state.setSession);
   const [form] = Form.useForm();
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: ({ data, message: msg }) => {
+      queryClient.clear();
       setSession(data);
       message.success(msg);
       navigate(location.state?.from?.pathname ?? ROUTES.DASHBOARD, { replace: true });

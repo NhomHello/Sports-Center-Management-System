@@ -5,10 +5,14 @@
  *  - menu: bo qua neu trang khong hien tren sidebar (vd: trang chi tiet /classes/:id).
  */
 import {
+  CreditCardOutlined,
   DashboardOutlined,
   SafetyOutlined,
   SettingOutlined,
   TeamOutlined,
+  UserOutlined,
+  LockOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
@@ -18,8 +22,13 @@ const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage'));
 const RolesPage = lazy(() => import('@/pages/system/roles/RolesPage'));
 const UsersPage = lazy(() => import('@/pages/system/users/UsersPage'));
 const SettingsPage = lazy(() => import('@/pages/system/settings/SettingsPage'));
+const ProfilePage = lazy(() => import('@/pages/member/ProfilePage'));
+const ChangePasswordPage = lazy(() => import('@/pages/member/ChangePasswordPage'));
+const NotificationsPage = lazy(() => import('@/pages/member/NotificationsPage'));
+const PaymentsPage = lazy(() => import('@/pages/payments/PaymentsPage'));
 
 const GROUP_SYSTEM = 'Hệ thống';
+const GROUP_ACCOUNT = 'Tài khoản cá nhân';
 
 export const routeRegistry = [
   {
@@ -27,6 +36,27 @@ export const routeRegistry = [
     element: <DashboardPage />,
     permission: PERMISSIONS.DASHBOARD_VIEW,
     menu: { label: 'Tổng quan', icon: <DashboardOutlined /> },
+  },
+  {
+    path: ROUTES.PROFILE,
+    element: <ProfilePage />,
+    menu: { label: 'Hồ sơ cá nhân', icon: <UserOutlined />, group: GROUP_ACCOUNT },
+  },
+  {
+    path: ROUTES.CHANGE_PASSWORD,
+    element: <ChangePasswordPage />,
+    menu: { label: 'Đổi mật khẩu', icon: <LockOutlined />, group: GROUP_ACCOUNT },
+  },
+  {
+    path: ROUTES.NOTIFICATIONS,
+    element: <NotificationsPage />,
+    menu: { label: 'Thông báo', icon: <BellOutlined />, group: GROUP_ACCOUNT },
+  },
+  {
+    path: ROUTES.PAYMENTS,
+    element: <PaymentsPage />,
+    permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
+    menu: { label: 'Hoá đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
   },
   {
     path: ROUTES.SYSTEM_USERS,
@@ -46,7 +76,4 @@ export const routeRegistry = [
     permission: PERMISSIONS.SETTING_READ,
     menu: { label: 'Cấu hình', icon: <SettingOutlined />, group: GROUP_SYSTEM },
   },
-  // ---- Flow 1 / 2 / 3: team them route o day, vi du:
-  // { path: ROUTES.MEMBERSHIP_PLANS, element: <MembershipPlansPage />, permission: PERMISSIONS.MEMBERSHIP_PLAN_READ,
-  //   menu: { label: 'Gói tập', icon: <GiftOutlined />, group: 'Hội viên' } },
 ];
