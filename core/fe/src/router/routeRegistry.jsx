@@ -13,6 +13,7 @@ import {
   UserOutlined,
   LockOutlined,
   BellOutlined,
+  GiftOutlined,
 } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
@@ -29,6 +30,10 @@ const PaymentsPage = lazy(() => import('@/pages/payments/PaymentsPage'));
 
 const GROUP_SYSTEM = 'Hệ thống';
 const GROUP_ACCOUNT = 'Tài khoản cá nhân';
+const MembershipPlansPage = lazy(() => import('@/pages/membership/MembershipPlansPage'));
+const MembersPage = lazy(() => import('@/pages/members/MembersPage'));
+
+const GROUP_MEMBER = 'Hội viên';
 
 export const routeRegistry = [
   {
@@ -57,6 +62,18 @@ export const routeRegistry = [
     element: <PaymentsPage />,
     permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
     menu: { label: 'Hoá đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
+  },
+  {
+    path: ROUTES.MEMBERSHIP_PLANS,
+    element: <MembershipPlansPage />,
+    permission: PERMISSIONS.MEMBERSHIP_PLAN_READ,
+    menu: { label: 'Gói tập', icon: <GiftOutlined />, group: GROUP_MEMBER },
+  },
+  {
+    path: ROUTES.MEMBERS,
+    element: <MembersPage />,
+    permission: PERMISSIONS.MEMBER_READ,
+    menu: { label: 'Quản lý hội viên', icon: <TeamOutlined />, group: GROUP_MEMBER },
   },
   {
     path: ROUTES.SYSTEM_USERS,
