@@ -137,7 +137,7 @@ export const list = async (query) => {
   const items = await Promise.all(
     result.items.map(async (member) => ({
       ...member,
-      membership: await getMembershipSummary(member.id),
+      currentMembership: await getMembershipSummary(member.id),
     })),
   );
 
@@ -167,14 +167,14 @@ export const getById = async (id) => {
     throw ApiError.notFound('Không tìm thấy hội viên');
   }
 
-  const [membership, membershipHistory] = await Promise.all([
+  const [currentMembership, membershipHistory] = await Promise.all([
     getMembershipSummary(id),
     getMembershipHistory(id),
   ]);
 
   return {
     ...toPublicUser(member),
-    membership,
+    currentMembership,
     membershipHistory,
   };
 };

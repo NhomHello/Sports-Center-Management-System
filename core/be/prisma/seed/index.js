@@ -2,12 +2,12 @@
  * Seed idempotent: chay bao nhieu lan cung an toan (upsert), khong xoa du lieu.
  * Chay: npm run db:seed   (tu dong chay trong `npm run dev` o thu muc goc)
  */
-import { listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
+import { getSettingValidationError, listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
 import { hashPassword } from '../../src/common/utils/password.js';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
 import { logger } from '../../src/config/logger.js';
-import { seedMockUsers } from './mock/index.js';
+import { seedMockData } from './mock/index.js';
 import { SEED_ADMIN_ROLE_CODE, SEED_ROLES } from './roles.seed.js';
 
 /** Dong bo registry permission vao DB (them moi + cap nhat label). */
@@ -94,13 +94,22 @@ async function seedSettings() {
       integer: _integer,
       required: _required,
       format: _format,
+      minLength: _minLength,
       maxLength: _maxLength,
       ...record
     } = def;
+    const existing = await prisma.systemSetting.findUnique({ where: { key: def.key } });
+    const repairValue = existing && getSettingValidationError(def, existing.value);
     await prisma.systemSetting.upsert({
       where: { key: def.key },
       create: { ...record, value: defaultValue },
-      update: { label: def.label, description: def.description, group: def.group, type: def.type },
+      update: {
+        label: def.label,
+        description: def.description,
+        group: def.group,
+        type: def.type,
+        ...(repairValue && { value: defaultValue }),
+      },
     });
   }
   logger.info({ count: SETTING_DEFINITIONS.length }, 'Seed settings xong');
@@ -111,7 +120,7 @@ async function main() {
   await seedRoles(permissions);
   await seedAdminUser();
   await seedSettings();
-  if (env.SEED_MOCK_DATA) await seedMockUsers();
+  if (env.SEED_MOCK_DATA) await seedMockData();
 }
 
 main()

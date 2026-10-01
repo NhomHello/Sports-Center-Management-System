@@ -1,4 +1,4 @@
-import { EditOutlined, ShoppingCartOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { EditOutlined, EyeOutlined, ShoppingCartOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Avatar, Button, Space, Typography, Tooltip, Tag } from 'antd';
@@ -64,7 +64,7 @@ const MEMBER_COLUMNS = [
     render: (_, member) => {
       const status = member.currentMembership?.status;
       return status ? (
-        <Space direction="vertical" size={2}>
+        <Space orientation="vertical" size={2}>
           <StatusTag value={status} meta={MEMBERSHIP_STATUS_META} />
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
             Tới: {formatDate(member.currentMembership?.endDate)}
@@ -77,7 +77,7 @@ const MEMBER_COLUMNS = [
   },
 ];
 
-const getMemberColumns = (canManage, onPurchase, onViewDetail) => [
+const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail) => [
   ...MEMBER_COLUMNS,
   {
     title: '',
@@ -85,10 +85,11 @@ const getMemberColumns = (canManage, onPurchase, onViewDetail) => [
     align: 'right',
     render: (_, member) => (
       <Space size="middle">
-        <Tooltip title="Xem & Sửa hồ sơ">
+        <Tooltip title={canUpdate ? 'Xem và sửa hồ sơ' : 'Xem hồ sơ'}>
           <Button 
             shape="circle" 
-            icon={<EditOutlined />} 
+            icon={canUpdate ? <EditOutlined /> : <EyeOutlined />}
+            aria-label={`${canUpdate ? 'Xem và sửa' : 'Xem'} hồ sơ ${member.fullName}`}
             onClick={() => onViewDetail(member)}
             style={{ color: '#595959', background: '#f5f5f5', border: 'none' }}
           />
@@ -121,10 +122,17 @@ export default function MembersPage() {
     queryFn: () => memberService.listMembers(table.params),
   });
   
-  const canManageMembership = can(PERMISSIONS.MEMBERSHIP_MANAGE) || true;
+  const canManageMembership = can(PERMISSIONS.MEMBERSHIP_MANAGE);
+  const canUpdateMember = can(PERMISSIONS.MEMBER_UPDATE);
   const columns = useMemo(
-    () => getMemberColumns(canManageMembership, setSelectedPurchaseMember, setSelectedDetailMember),
-    [canManageMembership],
+    () =>
+      getMemberColumns(
+        canManageMembership,
+        canUpdateMember,
+        setSelectedPurchaseMember,
+        setSelectedDetailMember,
+      ),
+    [canManageMembership, canUpdateMember],
   );
 
   return (
@@ -161,6 +169,7 @@ export default function MembersPage() {
         member={selectedDetailMember}
         open={Boolean(selectedDetailMember)}
         onClose={() => setSelectedDetailMember(undefined)}
+        onUpdated={setSelectedDetailMember}
       />
       
       <style>{`

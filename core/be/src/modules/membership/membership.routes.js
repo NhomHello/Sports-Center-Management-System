@@ -6,7 +6,10 @@ import { validate } from '../../common/middlewares/validate.middleware.js';
 import { createCounterOrder } from '../payment/payment.controller.js';
 import { createCounterOrderSchema } from '../payment/payment.validation.js';
 import * as controller from './membership.controller.js';
-import { memberMembershipSchema, purchaseMembershipSchema } from './membership.validation.js';
+import {
+  createOwnOrderSchema,
+  memberMembershipSchema,
+} from './membership.validation.js';
 
 const router = Router();
 
@@ -31,6 +34,13 @@ router.get(
   controller.getMyCurrent,
 );
 
+router.post(
+  '/me/orders',
+  authorize(PERMISSIONS.MEMBERSHIP_PURCHASE),
+  validate(createOwnOrderSchema),
+  controller.createOwnOrder,
+);
+
 router.get(
   '/member/:memberId/current',
   authorize(PERMISSIONS.MEMBERSHIP_READ_ALL),
@@ -38,10 +48,4 @@ router.get(
   controller.getCurrentByMemberId,
 );
 
-router.post(
-  '/purchase',
-  authorize(PERMISSIONS.MEMBERSHIP_MANAGE),
-  validate(purchaseMembershipSchema),
-  controller.purchaseOrRenew,
-);
 export default router;

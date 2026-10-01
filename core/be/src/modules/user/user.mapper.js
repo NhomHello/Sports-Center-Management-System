@@ -4,7 +4,7 @@
 
 /** Prisma include dung chung khi can user kem role */
 export const USER_WITH_ROLE = {
-  role: { select: { id: true, code: true, name: true } },
+  role: { select: { id: true, code: true, name: true, isDefault: true } },
 };
 
 /**

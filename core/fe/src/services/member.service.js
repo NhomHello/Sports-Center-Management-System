@@ -18,4 +18,4 @@ export const updateOwnProfile = (payload) => http.patch(`${BASE}/me`, payload);
 export const createMember = (payload) => http.post(BASE, payload);
 
 /** @param {number} id @param {object} payload */
-export const updateMember = (id, payload) => http.patch(`${BASE}/${id}`, payload);
+export const updateMember = (id, payload) => http.put(`${BASE}/${id}`, payload);

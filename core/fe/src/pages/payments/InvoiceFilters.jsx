@@ -1,4 +1,5 @@
-import { Button, Input, Select, Space } from 'antd';
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Select } from 'antd';
 import { useState } from 'react';
 import { INVOICE_STATUS_META } from '@/constants';
 
@@ -10,16 +11,25 @@ const STATUS_OPTIONS = Object.entries(INVOICE_STATUS_META).map(([value, meta]) =
 /** Bộ lọc truyền thẳng đến API phân trang; không lọc riêng một trang dữ liệu. */
 export function InvoiceFilters({ filters, onChange, loading }) {
   const [search, setSearch] = useState(filters.search ?? '');
+
+  const applySearch = () => onChange({ search: search.trim() || undefined });
+
   return (
-    <Space wrap className="scms-invoice-filters">
-      <Input.Search
+    <div className="scms-invoice-filters">
+      <Input
         aria-label="Tìm hóa đơn"
         placeholder="Mã hóa đơn hoặc tên hội viên"
+        prefix={<SearchOutlined />}
         value={search}
         allowClear
-        onChange={(event) => setSearch(event.target.value)}
-        onSearch={(value) => onChange({ search: value.trim() || undefined })}
-        loading={loading}
+        disabled={loading}
+        onChange={(event) => {
+          const value = event.target.value;
+          setSearch(value);
+          if (!value) onChange({ search: undefined });
+        }}
+        onPressEnter={applySearch}
+        onBlur={applySearch}
       />
       <Select
         aria-label="Lọc trạng thái hóa đơn"
@@ -30,13 +40,16 @@ export function InvoiceFilters({ filters, onChange, loading }) {
         onChange={(status) => onChange({ status })}
       />
       <Button
+        type="text"
+        icon={<CloseCircleOutlined />}
+        disabled={!search && !filters.status}
         onClick={() => {
           setSearch('');
           onChange({ search: undefined, status: undefined });
         }}
       >
-        Xóa bộ lọc
+        Xóa lọc
       </Button>
-    </Space>
+    </div>
   );
 }

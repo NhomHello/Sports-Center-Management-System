@@ -29,6 +29,7 @@ export function MemberFormModal({ open, onClose }) {
   return (
     <Modal
       open={open}
+      centered
       title="Đăng ký hội viên tại quầy"
       okText="Đăng ký"
       cancelText="Huỷ"

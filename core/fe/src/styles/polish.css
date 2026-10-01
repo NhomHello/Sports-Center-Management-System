@@ -20,6 +20,33 @@
 body {
   background: var(--scms-canvas);
 }
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b7c3d4 transparent;
+}
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #b7c3d4;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #8fa0b7;
+  background-clip: padding-box;
+  border: 1px solid transparent;
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
 button,
 input,
 textarea {
@@ -699,16 +726,35 @@ a {
 .scms-workspace-card > .ant-card-body > .ant-alert {
   margin-bottom: 18px;
 }
-.scms-invoice-toolbar,
+.scms-invoice-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.scms-invoice-toolbar__primary,
 .scms-invoice-filters {
   display: flex;
-  margin-bottom: 18px;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
 }
-.scms-invoice-filters .ant-input-search {
-  width: min(320px, 100%);
+.scms-invoice-toolbar__primary {
+  flex: 1;
+}
+.scms-invoice-filters .ant-input-affix-wrapper {
+  width: 300px;
+}
+.scms-invoice-filters .ant-input-prefix {
+  margin-inline-end: 8px;
+  color: #8a99af;
 }
 .scms-invoice-filters .ant-select {
-  min-width: 200px;
+  width: 210px;
+}
+.scms-invoice-filters .ant-btn-text {
+  color: #64748b;
 }
 .scms-list-pagination {
   display: flex;
@@ -811,5 +857,572 @@ a {
   .ant-btn.ant-btn-primary:hover,
   .scms-plan-card:hover {
     transform: none;
+  }
+}
+
+/* Ant Design Pro inspired application shell: light sidebar, compact top bar, calm surfaces. */
+.scms-app-shell {
+  min-height: 100vh;
+  flex-direction: row;
+  background: #f5f7fb;
+}
+.scms-app-frame {
+  min-width: 0;
+  min-height: 100vh;
+  background: transparent;
+}
+.scms-sidebar.ant-layout-sider {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  height: 100vh;
+  overflow: hidden auto;
+  background: #fff;
+  border-right: 1px solid #e8edf5;
+  box-shadow: 8px 0 28px -28px rgb(15 23 42 / 38%);
+}
+.scms-sidebar .ant-layout-sider-children {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+.scms-sidebar__brand {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  padding: 0 22px;
+  border-bottom: 1px solid #eef1f6;
+}
+.scms-sidebar .scms-brand > span:last-child,
+.scms-nav-drawer .scms-brand > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+.scms-sidebar .scms-brand__name,
+.scms-nav-drawer .scms-brand__name {
+  color: #18233a;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.04em;
+}
+.scms-brand__caption {
+  color: #91a0b6;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.scms-sidebar-nav.ant-menu {
+  flex: 1;
+  padding: 14px 12px;
+  background: transparent;
+  border-inline-end: 0 !important;
+}
+.scms-sidebar-nav .ant-menu-item,
+.scms-sidebar-nav .ant-menu-submenu-title {
+  min-height: 42px;
+  margin-block: 3px;
+  border-radius: 10px;
+  color: #526078;
+  font-size: 13px;
+  font-weight: 600;
+}
+.scms-sidebar-nav .ant-menu-item-selected {
+  color: #1d4ed8;
+  background: #edf3ff;
+}
+.scms-sidebar-nav .ant-menu-submenu-title:hover,
+.scms-sidebar-nav .ant-menu-item:hover {
+  color: #1d4ed8 !important;
+  background: #f5f8ff !important;
+}
+.scms-sidebar-nav .ant-menu-sub.ant-menu-inline {
+  background: transparent;
+}
+.scms-sidebar__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px;
+  padding: 13px 14px;
+  color: #34435c;
+  background: #f7f9fd;
+  border: 1px solid #e8edf5;
+  border-radius: 12px;
+}
+.scms-sidebar__status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgb(34 197 94 / 12%);
+}
+.scms-sidebar__status > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.scms-sidebar__status strong {
+  font-size: 11px;
+}
+.scms-sidebar__status small {
+  overflow: hidden;
+  color: #8190a6;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scms-sidebar.ant-layout-sider,
+.scms-sidebar__brand,
+.scms-app-frame {
+  transition:
+    width 0.2s ease,
+    min-width 0.2s ease,
+    max-width 0.2s ease;
+}
+.scms-sidebar.ant-layout-sider-collapsed .scms-sidebar__brand {
+  justify-content: center;
+  padding-inline: 0;
+}
+.scms-sidebar.ant-layout-sider-collapsed .scms-brand > span:last-child,
+.scms-sidebar.ant-layout-sider-collapsed .scms-sidebar__status > span:last-child {
+  display: none;
+}
+.scms-sidebar.ant-layout-sider-collapsed .scms-sidebar-nav.ant-menu {
+  padding-inline: 8px;
+}
+.scms-sidebar.ant-layout-sider-collapsed .scms-sidebar__status {
+  justify-content: center;
+  padding-inline: 0;
+}
+.ant-layout-header.scms-main-header {
+  position: sticky;
+  z-index: 25;
+  top: 0;
+  height: 72px;
+  padding: 0 30px;
+  color: var(--scms-text);
+  background: rgb(255 255 255 / 92%);
+  border-bottom: 1px solid #e8edf5;
+  box-shadow: 0 8px 30px -30px rgb(15 23 42 / 42%);
+  backdrop-filter: blur(16px);
+}
+.scms-main-header__inner {
+  justify-content: space-between;
+  max-width: none;
+}
+.scms-header-context {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.scms-header-context > .ant-typography:first-child {
+  color: #1a263d;
+  font-size: 13px;
+}
+.scms-header-context > .ant-typography:last-child {
+  font-size: 11px;
+}
+.scms-main-header .ant-btn-text {
+  color: #526078;
+}
+.scms-sidebar-toggle.ant-btn {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #526078;
+  border-radius: 10px;
+  font-size: 17px;
+}
+.scms-sidebar-toggle.ant-btn:hover {
+  color: #1d4ed8;
+  background: #edf3ff;
+}
+.scms-main-header .scms-account {
+  padding: 5px 7px 5px 10px;
+  color: #1b273d;
+  background: #f8faff;
+  border: 1px solid #e9edf5;
+  border-radius: 999px;
+}
+.scms-main-header .scms-account__copy {
+  align-items: flex-end;
+}
+.scms-main-header .scms-account__role {
+  color: #718096;
+}
+.scms-main-header .scms-account__avatar {
+  border: 0;
+}
+.scms-app-content {
+  flex: 1;
+  padding: 30px clamp(24px, 3vw, 44px) 48px;
+}
+.scms-app-content__inner {
+  max-width: 1360px;
+}
+.scms-app-footer {
+  padding-inline: clamp(24px, 3vw, 44px);
+  background: transparent;
+}
+.scms-page-header:not(.scms-plans-heading .scms-page-header) {
+  min-height: 116px;
+  padding: 24px 28px;
+  background: #fff;
+  border-radius: 16px;
+}
+.scms-page-header h2.ant-typography {
+  font-size: clamp(25px, 2.3vw, 32px);
+}
+.scms-app-content .ant-card {
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -28px rgb(15 23 42 / 42%);
+}
+.scms-dashboard-hero {
+  min-height: 260px;
+  padding: clamp(30px, 4vw, 48px);
+  border-radius: 20px;
+}
+.scms-dashboard-metrics {
+  margin-bottom: 26px;
+}
+.scms-dashboard-metrics .ant-card {
+  height: 100%;
+}
+.scms-dashboard-metrics .ant-statistic-title {
+  color: #718096;
+  font-size: 12px;
+}
+.scms-dashboard-metrics .ant-statistic-content {
+  color: #17243b;
+  font-size: 24px;
+}
+
+.scms-page-enter {
+  animation: scms-page-enter 0.28s ease-out;
+}
+@keyframes scms-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.scms-empty-card .ant-empty {
+  padding: 70px 0;
+}
+.scms-current-membership.ant-card {
+  margin-bottom: 24px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 86% 15%, rgb(96 165 250 / 28%), transparent 30%),
+    linear-gradient(120deg, #111d35, #1d4e9f);
+  border-radius: 18px;
+}
+.scms-current-membership .ant-card-body {
+  padding: 24px 28px;
+}
+.scms-current-membership .ant-typography {
+  color: #fff;
+}
+.scms-current-membership h3.ant-typography {
+  margin: 2px 0 4px;
+}
+.scms-current-membership__icon {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  color: #fff;
+  background: rgb(255 255 255 / 12%);
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 14px;
+  font-size: 23px;
+}
+.scms-current-membership__eyebrow {
+  display: block;
+  color: #bfd3f6 !important;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+}
+.scms-plan-card .ant-card-body {
+  display: flex;
+  height: 100%;
+  padding: 26px;
+}
+.scms-plan-card > .ant-card-body > .ant-space {
+  width: 100%;
+}
+.scms-plan-card__description {
+  min-height: 42px;
+  margin: 8px 0 0 !important;
+  color: #718096;
+  font-size: 13px;
+}
+.scms-plan-card__price {
+  display: block;
+}
+.scms-plan-card__duration {
+  display: block;
+  margin-top: 4px;
+}
+.scms-plan-card__benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.scms-plan-card__benefit .ant-typography {
+  color: inherit;
+}
+.scms-plan-card__featured-tag {
+  align-self: flex-start;
+  margin: -4px 0 -3px;
+  color: #dbeafe;
+  background: rgb(255 255 255 / 10%);
+  border-color: rgb(255 255 255 / 15%);
+}
+.scms-plan-card--featured .scms-plan-card__description,
+.scms-plan-card--featured .scms-plan-card__duration {
+  color: #bfcee5;
+}
+.scms-plan-card--featured .scms-plan-card__manage .ant-btn {
+  color: #fff;
+  background: rgb(255 255 255 / 8%);
+  border-color: rgb(255 255 255 / 22%);
+}
+.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary,
+.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:hover,
+.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:focus-visible,
+.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:active {
+  color: #173a78 !important;
+  background: #fff !important;
+  border-color: #fff !important;
+  box-shadow: none;
+}
+.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary .anticon {
+  color: inherit;
+}
+
+/* Pricing board: cùng cấu trúc gói dịch vụ tham chiếu, giữ nhận diện xanh SportHub. */
+.scms-pricing-surface {
+  padding: 24px;
+  color: #f8fafc;
+  background:
+    radial-gradient(circle at 75% 0%, rgb(59 130 246 / 12%), transparent 34%),
+    #11151d;
+  border: 1px solid #242b38;
+  border-radius: 22px;
+  box-shadow: 0 24px 54px -42px rgb(15 23 42 / 70%);
+}
+.scms-pricing-surface .scms-plan-card.ant-card {
+  min-height: 520px;
+  overflow: hidden;
+  color: #f8fafc;
+  background: #191e27;
+  border: 1px solid #363e4c;
+  border-radius: 18px;
+  box-shadow: none;
+}
+.scms-pricing-surface .scms-plan-card.ant-card:hover {
+  border-color: #536176;
+  box-shadow: 0 24px 48px -34px rgb(0 0 0 / 80%);
+}
+.scms-pricing-surface .scms-plan-card--featured.ant-card {
+  background:
+    radial-gradient(circle at 82% 4%, rgb(96 165 250 / 22%), transparent 28%),
+    linear-gradient(155deg, #17283e, #203e63);
+  border-color: #3b82f6;
+}
+.scms-pricing-surface .scms-plan-card::before {
+  display: none;
+}
+.scms-pricing-surface .scms-plan-card .ant-card-body {
+  padding: 24px;
+}
+.scms-pricing-surface .scms-plan-card__topline {
+  min-height: 26px;
+}
+.scms-pricing-surface .scms-plan-card__code,
+.scms-pricing-surface .scms-plan-card__term {
+  color: #dce7f8;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+.scms-pricing-surface .scms-plan-card__term {
+  padding: 5px 8px;
+  color: #9cc3ff;
+  background: rgb(59 130 246 / 12%);
+  border: 1px solid rgb(96 165 250 / 18%);
+  border-radius: 999px;
+}
+.scms-pricing-surface .scms-plan-card h3.ant-typography,
+.scms-pricing-surface .scms-plan-card .scms-plan-card__price.ant-typography,
+.scms-pricing-surface .scms-plan-card__benefits-title,
+.scms-pricing-surface .scms-plan-card__benefit,
+.scms-pricing-surface .scms-plan-card__benefit .ant-typography {
+  color: #f8fafc;
+}
+.scms-pricing-surface .scms-plan-card h3.ant-typography {
+  font-size: 21px;
+  letter-spacing: -0.03em;
+}
+.scms-pricing-surface .scms-plan-card__description {
+  min-height: 44px;
+  color: #aab6c8;
+  line-height: 1.6;
+}
+.scms-pricing-surface .scms-plan-card__actions {
+  display: flex;
+  min-height: 78px;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 0;
+}
+.scms-pricing-surface .scms-plan-card__actions > .ant-btn {
+  min-height: 40px;
+  color: #172033;
+  background: #f8fafc;
+  border-color: #f8fafc;
+  border-radius: 999px;
+  box-shadow: none;
+}
+.scms-pricing-surface .scms-plan-card__actions > .ant-btn:hover {
+  color: #174ea6;
+  background: #eaf2ff;
+  border-color: #eaf2ff;
+}
+.scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary,
+.scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:hover,
+.scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:focus-visible {
+  color: #fff !important;
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+.scms-pricing-surface .scms-plan-card__pending {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: #93c5fd;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.scms-pricing-surface .scms-plan-card__manage {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.scms-pricing-surface .scms-plan-card__manage .ant-space-item,
+.scms-pricing-surface .scms-plan-card__manage .ant-btn {
+  width: 100%;
+}
+.scms-pricing-surface .scms-plan-card__manage .ant-btn {
+  color: #e2e8f0;
+  background: rgb(255 255 255 / 4%);
+  border-color: #465267;
+}
+.scms-pricing-surface .scms-plan-card__manage .ant-btn-dangerous {
+  color: #fda4af;
+  border-color: rgb(251 113 133 / 42%);
+}
+.scms-pricing-surface .scms-plan-card__pricing {
+  display: flex;
+  min-height: 66px;
+  align-items: flex-end;
+  gap: 12px;
+}
+.scms-pricing-surface .scms-plan-card .scms-plan-card__price.ant-typography {
+  font-size: clamp(26px, 2.3vw, 34px);
+  line-height: 1;
+  white-space: nowrap;
+}
+.scms-pricing-surface .scms-plan-card__billing {
+  display: flex;
+  padding-bottom: 1px;
+  color: #d2d9e5;
+  flex-direction: column;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.scms-pricing-surface .scms-plan-card__billing small {
+  color: #8f9caf;
+  font-size: 9px;
+}
+.scms-pricing-surface .scms-plan-card__rule {
+  background: #343d4c;
+}
+.scms-pricing-surface .scms-plan-card__benefits-title {
+  font-size: 11px;
+  font-weight: 700;
+}
+.scms-pricing-surface .scms-plan-card__benefits {
+  flex: 1;
+}
+.scms-pricing-surface .scms-plan-card__benefit {
+  font-size: 12px;
+}
+.scms-pricing-surface .scms-plan-card__check {
+  color: #60a5fa;
+}
+.scms-pricing-assurance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 20px;
+  color: #9eabbf;
+  font-size: 11px;
+  text-align: center;
+}
+.scms-pricing-assurance .anticon {
+  color: #60a5fa;
+}
+
+/* Mọi form/modal luôn nằm trong viewport; chỉ nội dung giữa được cuộn. */
+@media screen {
+  .ant-modal-root .ant-modal-wrap {
+    overflow: hidden;
+    padding-block: 24px;
+  }
+  .ant-modal-root .ant-modal {
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vh - 48px);
+    padding-bottom: 0;
+  }
+  .ant-modal-root .ant-modal-content,
+  .ant-modal-root .ant-modal-container {
+    display: flex;
+    max-height: calc(100vh - 48px);
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .ant-modal-root .ant-modal-header,
+  .ant-modal-root .ant-modal-footer {
+    flex: 0 0 auto;
+  }
+  .ant-modal-root .ant-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 1100px) {
+  .scms-sidebar.ant-layout-sider {
+    display: none;
+  }
+  .scms-mobile-nav {
+    display: inline-flex;
+  }
+  .scms-sidebar-toggle {
+    display: none !important;
   }
 }

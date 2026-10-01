@@ -162,7 +162,7 @@ function InvoiceDetails({
     0,
   );
   return (
-    <Space direction="vertical" size="middle" className="scms-full-width">
+    <Space orientation="vertical" size="middle" className="scms-full-width">
       <div
         className={
           canPrintInvoice({ invoice, canExport, centerName: centerInfo?.name })
@@ -260,6 +260,7 @@ export function InvoiceReceiptModal({
   return (
     <Modal
       open={open}
+      centered
       title="Chi tiết hoá đơn"
       footer={null}
       onCancel={onClose}

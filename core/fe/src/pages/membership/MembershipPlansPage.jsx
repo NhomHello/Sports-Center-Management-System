@@ -4,8 +4,9 @@ import { Alert, Button, Card, Col, Empty, Row, Typography } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
 import { useMembershipPlans } from '@/hooks/useMembershipPlans';
+import { CurrentMembershipCard } from './CurrentMembershipCard';
 import { MembershipPlanFormModal } from './MembershipPlanFormModal';
-import { CurrentMembershipCard, PlanGrid } from './MembershipCards';
+import { PlanGrid } from './MembershipCards';
 
 const PlansContent = ({ plansQuery, plans, mutations }) => {
   if (plansQuery.isError) {
@@ -15,7 +16,7 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
   }
   if (plans.length === 0 && !plansQuery.isPending) {
     return (
-      <Card bordered={false} style={{ borderRadius: 16, boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+      <Card variant="borderless" className="scms-empty-card">
         <Empty 
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description={<Typography.Text type="secondary" style={{ fontSize: 15 }}>Chưa có gói tập nào được mở bán.</Typography.Text>}
@@ -28,7 +29,9 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
     <PlanGrid
       plans={plans}
       canPurchase={mutations.canPurchase}
+      pendingInvoiceByPlanId={mutations.pendingInvoiceByPlanId}
       onPurchase={mutations.purchaseMutation.mutate}
+      onContinuePayment={mutations.continuePayment}
       onEdit={mutations.canUpdate ? mutations.openEdit : null}
       onDelete={mutations.canDelete ? mutations.confirmDelete : null}
     />
@@ -38,21 +41,20 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
 /** Trang bảng giá gói tập: Tông màu chủ đạo ấn tượng, hiện đại */
 export default function MembershipPlansPage() {
   const hooks = useMembershipPlans();
-  const currentMembership = hooks.ownMemberships?.find((m) => m.status === 'ACTIVE' || m.status === 'PENDING');
+  const currentMembership = hooks.ownMembership;
 
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+    <div className="scms-page-enter">
       <PageHeader
-        title="Bảng Giá Dịch Vụ"
-        subtitle="Khám phá các gói tập luyện cao cấp và lựa chọn hành trình phù hợp nhất."
+        title="Gói tập"
+        subtitle="Chọn gói phù hợp hoặc quản lý danh mục dịch vụ đang mở bán."
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBERSHIP_PLAN_CREATE}>
-            <Button 
+            <Button
               type="primary"
               size="large"
-              icon={<PlusOutlined />} 
+              icon={<PlusOutlined />}
               onClick={hooks.openCreate}
-              style={{ borderRadius: 8, fontWeight: 600, boxShadow: '0 4px 12px rgba(22,119,255,0.3)' }}
             >
               Thêm gói mới
             </Button>
@@ -60,7 +62,7 @@ export default function MembershipPlansPage() {
         }
       />
 
-      <div style={{ marginTop: 40 }}>
+      <div>
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
         
         <PlansContent plansQuery={hooks.plansQuery} plans={hooks.plans} mutations={hooks} />
@@ -69,7 +71,7 @@ export default function MembershipPlansPage() {
           <Row gutter={[32, 32]} align="stretch" style={{ marginTop: 32 }}>
             {[1, 2, 3].map((item) => (
               <Col key={item} xs={24} md={12} lg={8}>
-                <Card loading bordered={false} style={{ borderRadius: 16, boxShadow: '0 4px 16px rgba(0,0,0,0.04)', height: 400 }} />
+                <Card loading variant="borderless" className="scms-plan-card" />
               </Col>
             ))}
           </Row>
@@ -83,13 +85,6 @@ export default function MembershipPlansPage() {
         onClose={hooks.closeForm}
         onSubmit={(values) => hooks.saveMutation.mutate({ plan: hooks.editingPlan, values })}
       />
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(15px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }

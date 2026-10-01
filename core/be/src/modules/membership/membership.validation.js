@@ -6,10 +6,8 @@ export const memberMembershipSchema = {
   }),
 };
 
-export const purchaseMembershipSchema = {
+export const createOwnOrderSchema = {
   body: z.object({
-    memberId: z.coerce.number().int().positive(),
     planId: z.coerce.number().int().positive(),
-    paidAt: z.coerce.date(),
-  }),
+  }).strict(),
 };

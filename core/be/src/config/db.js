@@ -11,6 +11,7 @@ const {
   PrismaClient,
   UserStatus,
   SettingType,
+  MembershipPlanStatus,
   MembershipStatus,
   InvoiceStatus,
   InvoiceChannel,
@@ -52,6 +53,7 @@ export const prisma = new PrismaClient({
 export const Enums = Object.freeze({
   UserStatus,
   SettingType,
+  MembershipPlanStatus,
   MembershipStatus,
   InvoiceStatus,
   InvoiceChannel,

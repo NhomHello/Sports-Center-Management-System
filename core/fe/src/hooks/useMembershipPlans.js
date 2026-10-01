@@ -3,12 +3,52 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { App, Modal } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { QUERY_KEYS, ROUTES } from '@/constants';
+import { INVOICE_STATUS, QUERY_KEYS, ROUTES } from '@/constants';
+import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import * as membershipPlanService from '@/services/membershipPlan.service';
 import * as membershipService from '@/services/membership.service';
+import * as paymentService from '@/services/payment.service';
 
 const PLAN_PAGE_SIZE = 50;
+const PENDING_INVOICE_PAGE_SIZE = 100;
+
+const listValidPendingInvoices = async () => {
+  const response = await paymentService.listInvoices(
+    { page: 1, pageSize: PENDING_INVOICE_PAGE_SIZE, status: INVOICE_STATUS.PENDING },
+    true,
+  );
+  const now = Date.now();
+  return {
+    ...response,
+    data: (response.data ?? []).filter(
+      (invoice) => !invoice.expiresAt || new Date(invoice.expiresAt).getTime() > now,
+    ),
+  };
+};
+
+const useMemberPlanContext = (canPurchase, userId) => {
+  const ownMembershipQuery = useQuery({
+    queryKey: ['ownMembership'],
+    queryFn: membershipService.listOwnMemberships,
+    enabled: canPurchase,
+  });
+  const pendingInvoicesQuery = useQuery({
+    queryKey: [...QUERY_KEYS.INVOICES, 'pending-by-plan', userId],
+    queryFn: listValidPendingInvoices,
+    enabled: canPurchase,
+  });
+  const pendingInvoiceByPlanId = useMemo(
+    () => new Map((pendingInvoicesQuery.data?.data ?? []).map((invoice) => [invoice.planId, invoice])),
+    [pendingInvoicesQuery.data],
+  );
+  return {
+    ownMembershipQuery,
+    ownMembership: ownMembershipQuery.data?.data ?? null,
+    pendingInvoicesQuery,
+    pendingInvoiceByPlanId,
+  };
+};
 
 const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   const { message } = App.useApp();
@@ -43,6 +83,7 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   });
   const confirmDelete = (plan) =>
     Modal.confirm({
+      centered: true,
       title: `Xoá gói ${plan.name}?`,
       content: 'Gói đã có lịch sử sẽ được ngừng bán để giữ dữ liệu.',
       okText: 'Xoá',
@@ -56,10 +97,12 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
 /** Quản lý query, quyền và mutation của màn hình gói tập. */
 export function useMembershipPlans() {
   const { can } = usePermission();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [editingPlan, setEditingPlan] = useState(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const canManage = can(PERMISSIONS.MEMBERSHIP_PLAN_CREATE, PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
-  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE);
+  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE) && user?.role?.isDefault === true;
   const canUpdate = can(PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
   const canDelete = can(PERMISSIONS.MEMBERSHIP_PLAN_DELETE);
   const plansQuery = useQuery({
@@ -72,14 +115,9 @@ export function useMembershipPlans() {
       }),
   });
   
-  const ownMembershipQuery = useQuery({
-    queryKey: ['ownMembership'],
-    queryFn: membershipService.listOwnMemberships,
-    enabled: canPurchase,
-  });
+  const memberContext = useMemberPlanContext(canPurchase, user?.id);
 
   const plans = useMemo(() => plansQuery.data?.data ?? [], [plansQuery.data]);
-  const ownMemberships = useMemo(() => ownMembershipQuery.data?.data ?? [], [ownMembershipQuery.data]);
   
   const mutations = usePlanMutations({ setEditingPlan, setFormOpen });
   const openCreate = () => {
@@ -97,8 +135,7 @@ export function useMembershipPlans() {
   return {
     plans,
     plansQuery,
-    ownMembershipQuery,
-    ownMemberships,
+    ...memberContext,
     editingPlan,
     formOpen,
     canPurchase,
@@ -107,6 +144,7 @@ export function useMembershipPlans() {
     openCreate,
     openEdit,
     closeForm,
+    continuePayment: (invoice) => navigate(`${ROUTES.PAYMENTS}?invoice=${invoice.id}`),
     ...mutations,
   };
 }

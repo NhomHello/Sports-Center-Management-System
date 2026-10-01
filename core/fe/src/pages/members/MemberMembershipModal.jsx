@@ -13,7 +13,7 @@ const InvoiceAlert = ({ invoice }) => (
     type="info" 
     showIcon 
     message={
-      <Space direction="vertical">
+      <Space orientation="vertical">
         <Typography.Text strong>Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ</Typography.Text>
         <Typography.Text>Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.</Typography.Text>
       </Space>
@@ -74,7 +74,6 @@ export function MemberMembershipModal({ member, open, onClose }) {
 
   const handleClose = () => { 
     setInvoice(undefined); 
-    form.resetFields(); 
     onClose(); 
   };
 
@@ -87,6 +86,7 @@ export function MemberMembershipModal({ member, open, onClose }) {
   return (
     <Modal
       open={open}
+      centered
       title={`Mua / gia hạn gói cho ${member?.fullName ?? ''}`}
       okText={invoice ? 'Xác nhận đã thu tiền' : 'Tạo hoá đơn'}
       cancelText="Huỷ"

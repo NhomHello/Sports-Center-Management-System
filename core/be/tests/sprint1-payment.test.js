@@ -38,6 +38,21 @@ describe('Sprint 1: hóa đơn và thanh toán tại quầy', () => {
     expect(await prisma.membership.count({ where: { userId: fixture.member.id } })).toBe(0);
   });
 
+  it('hội viên tự tạo yêu cầu mua cho chính mình, không thể chèn memberId khác', async () => {
+    const own = await api
+      .post(apiPath('/memberships/me/orders'))
+      .set(bearer(fixture.otherToken))
+      .send({ planId: plan.id });
+    expect(own.status).toBe(201);
+    expect(own.body.data.userId).toBe(fixture.other.id);
+    expect(own.body.data.status).toBe(Enums.InvoiceStatus.PENDING);
+    const tampered = await api
+      .post(apiPath('/memberships/me/orders'))
+      .set(bearer(fixture.otherToken))
+      .send({ planId: plan.id, memberId: fixture.member.id });
+    expect(tampered.status).toBe(400);
+  });
+
   it('từ chối số tiền client tự sửa và người không có quyền thu', async () => {
     const order = await createOrder();
     const id = order.body.data.id;
@@ -75,6 +90,15 @@ describe('Sprint 1: hóa đơn và thanh toán tại quầy', () => {
         where: { userId: fixture.member.id, status: Enums.MembershipStatus.ACTIVE },
       }),
     ).toBe(1);
+    const members = await api
+      .get(apiPath(`/members?search=${encodeURIComponent(fixture.member.email)}`))
+      .set(bearer(fixture.adminToken));
+    expect(members.status).toBe(200);
+    expect(members.body.data[0].currentMembership.id).toBe(paid.membership.id);
+    const detail = await api
+      .get(apiPath(`/members/${fixture.member.id}`))
+      .set(bearer(fixture.adminToken));
+    expect(detail.body.data.currentMembership.id).toBe(paid.membership.id);
     expect((await collectCash(id)).status).toBe(200);
     expect(await prisma.payment.count({ where: { invoiceId: id } })).toBe(1);
     const audit = await prisma.auditLog.findFirst({

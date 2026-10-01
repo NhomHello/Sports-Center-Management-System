@@ -30,6 +30,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
   return (
     <Modal
       open={open}
+      centered
       title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
       okText="Lưu"
       cancelText="Huỷ"
@@ -43,9 +44,13 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
           <Form.Item
             name="code"
             label="Mã gói"
-            rules={[{ required: true, message: 'Vui lòng nhập mã gói' }]}
+            normalize={(value) => value?.toUpperCase().replaceAll(' ', '_')}
+            rules={[
+              { required: true, message: 'Vui lòng nhập mã gói' },
+              { pattern: /^[A-Z0-9_]+$/, message: 'Chỉ dùng chữ in hoa, số và dấu gạch dưới' },
+            ]}
           >
-            <Input placeholder="Ví dụ: MONTHLY_1" />
+            <Input maxLength={50} placeholder="Ví dụ: STARTER_30" />
           </Form.Item>
         )}
         <Form.Item
@@ -67,7 +72,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
           label="Giá tiền (VNĐ)"
           rules={[{ required: true, message: 'Vui lòng nhập giá tiền' }]}
         >
-          <InputNumber min={0} style={{ width: '100%' }} placeholder="Ví dụ: 500000" />
+          <InputNumber min={1} style={{ width: '100%' }} placeholder="Ví dụ: 500000" />
         </Form.Item>
         <Form.Item name="benefitsText" label="Quyền lợi (mỗi dòng một quyền lợi)">
           <Input.TextArea rows={4} placeholder="Ví dụ:&#10;Tập gym không giới hạn thời gian&#10;Tham gia mọi lớp Yoga" />

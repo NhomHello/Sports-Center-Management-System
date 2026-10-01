@@ -2,8 +2,9 @@
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, Button, Card, Segmented, Space } from 'antd';
+import { Alert, Button, Card, Segmented } from 'antd';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { PageHeader } from '@/components/common/PageHeader';
 import { QUERY_KEYS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
@@ -55,18 +56,26 @@ function InvoiceWorkspace({
 }) {
   const notice = query.isError ? getInvoiceListErrorNotice(query.error, !isOwn) : null;
   return (
-    <Card bordered={false} className="scms-workspace-card">
-      <Space wrap className="scms-invoice-toolbar">
-        {canReadAll && (
-          <Segmented
-            value={showOwn}
-            options={[
-              { value: false, label: 'Mọi hóa đơn' },
-              { value: true, label: 'Hóa đơn của tôi' },
-            ]}
-            onChange={onScopeChange}
+    <Card variant="borderless" className="scms-workspace-card">
+      <div className="scms-invoice-toolbar">
+        <div className="scms-invoice-toolbar__primary">
+          {canReadAll && (
+            <Segmented
+              value={showOwn}
+              options={[
+                { value: false, label: 'Mọi hóa đơn' },
+                { value: true, label: 'Hóa đơn của tôi' },
+              ]}
+              onChange={onScopeChange}
+            />
+          )}
+          <InvoiceFilters
+            key={`${isOwn}:${table.filters.search ?? ''}`}
+            filters={table.filters}
+            onChange={table.setFilters}
+            loading={query.isFetching}
           />
-        )}
+        </div>
         <Button
           icon={<ReloadOutlined />}
           loading={query.isFetching}
@@ -75,12 +84,7 @@ function InvoiceWorkspace({
         >
           Làm mới
         </Button>
-      </Space>
-      <InvoiceFilters
-        filters={table.filters}
-        onChange={table.setFilters}
-        loading={query.isFetching}
-      />
+      </div>
       <InvoiceListContent
         query={query}
         isOwn={isOwn}
@@ -97,8 +101,12 @@ export default function PaymentsPage() {
   const { can } = usePermission();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const table = useTableQuery();
-  const [invoiceId, setInvoiceId] = useState(null);
+  const requestedInvoiceId = Number(searchParams.get('invoice'));
+  const [invoiceId, setInvoiceId] = useState(
+    Number.isSafeInteger(requestedInvoiceId) && requestedInvoiceId > 0 ? requestedInvoiceId : null,
+  );
   const [cashInvoiceId, setCashInvoiceId] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [showOwn, setShowOwn] = useState(false);
@@ -119,6 +127,14 @@ export default function PaymentsPage() {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES });
     if (can(PERMISSIONS.PAYMENT_RECORD_CASH)) setCashInvoiceId(id);
     else setInvoiceId(id);
+  };
+  const closeReceipt = () => {
+    setInvoiceId(null);
+    if (searchParams.has('invoice')) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('invoice');
+      setSearchParams(next, { replace: true });
+    }
   };
   return (
     <>
@@ -168,7 +184,7 @@ export default function PaymentsPage() {
       <InvoiceReceiptModal
         invoiceId={invoiceId}
         open={Boolean(invoiceId)}
-        onClose={() => setInvoiceId(null)}
+        onClose={closeReceipt}
         canExport={can(PERMISSIONS.INVOICE_EXPORT)}
         onCash={(id) => {
           setInvoiceId(null);

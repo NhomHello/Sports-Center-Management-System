@@ -99,6 +99,7 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
   return (
     <Modal
       open={Boolean(invoiceId)}
+      centered
       title="Xác nhận thu tiền mặt"
       okText="Đã nhận đủ tiền"
       cancelText="Hủy"

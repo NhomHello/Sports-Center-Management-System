@@ -1,12 +1,14 @@
 import {
+  BellOutlined,
+  LockOutlined,
   LogoutOutlined,
+  MenuFoldOutlined,
   MenuOutlined,
+  MenuUnfoldOutlined,
   ThunderboltFilled,
   UserOutlined,
-  LockOutlined,
-  BellOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, Typography } from 'antd';
+import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { NotificationBell } from '@/components/common/NotificationBell';
@@ -24,8 +26,79 @@ const getInitials = (name) =>
     .join('')
     .toUpperCase() || 'SH';
 
-/** Thanh điều hướng ngang, chỉ nhận các route đã được lọc theo quyền. */
-export function MainHeader({ groupedNavItems, selectedKey, user, onNavigate, onLogout }) {
+function Brand() {
+  return (
+    <Link className="scms-brand" to={ROUTES.DASHBOARD} aria-label={`${env.APP_NAME} - trang chủ`}>
+      <span className="scms-brand__mark">
+        <ThunderboltFilled />
+      </span>
+      <span>
+        <Typography.Text className="scms-brand__name">{env.APP_NAME}</Typography.Text>
+        <Typography.Text className="scms-brand__caption">SPORT CENTER</Typography.Text>
+      </span>
+    </Link>
+  );
+}
+
+function SidebarToggle({ collapsed, onToggle }) {
+  const label = collapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên';
+  return (
+    <Tooltip title={label}>
+      <Button
+        className="scms-sidebar-toggle"
+        type="text"
+        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        aria-label={label}
+        aria-expanded={!collapsed}
+        onClick={onToggle}
+      />
+    </Tooltip>
+  );
+}
+
+/** Thanh điều hướng dọc desktop theo cấu trúc ứng dụng Ant Design Pro. */
+export function MainSidebar({ groupedNavItems, selectedKey, user, onNavigate, collapsed }) {
+  return (
+    <Layout.Sider
+      className="scms-sidebar"
+      theme="light"
+      width={248}
+      collapsedWidth={80}
+      collapsed={collapsed}
+      trigger={null}
+    >
+      <div className="scms-sidebar__brand">
+        <Brand />
+      </div>
+      <Menu
+        className="scms-sidebar-nav"
+        mode="inline"
+        items={groupedNavItems}
+        selectedKeys={selectedKey ? [selectedKey] : []}
+        defaultOpenKeys={groupedNavItems.filter((item) => item.children).map((item) => item.key)}
+        onClick={({ key }) => onNavigate(key)}
+      />
+      <div className="scms-sidebar__status">
+        <span className="scms-sidebar__status-dot" />
+        <span>
+          <strong>Hệ thống sẵn sàng</strong>
+          <small>{user?.role?.name || 'Tài khoản SportHub'}</small>
+        </span>
+      </div>
+    </Layout.Sider>
+  );
+}
+
+/** Top bar gọn nhẹ; điều hướng mobile nằm trong Drawer và dùng chung danh sách quyền. */
+export function MainHeader({
+  groupedNavItems,
+  selectedKey,
+  user,
+  onNavigate,
+  onLogout,
+  sidebarCollapsed,
+  onToggleSidebar,
+}) {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const profileMenu = {
     items: [
@@ -45,26 +118,8 @@ export function MainHeader({ groupedNavItems, selectedKey, user, onNavigate, onL
   return (
     <Layout.Header className="scms-main-header">
       <div className="scms-main-header__inner">
-        <Link
-          className="scms-brand"
-          to={ROUTES.DASHBOARD}
-          aria-label={`${env.APP_NAME} - trang chủ`}
-        >
-          <span className="scms-brand__mark">
-            <ThunderboltFilled />
-          </span>
-          <Typography.Text className="scms-brand__name">{env.APP_NAME}</Typography.Text>
-        </Link>
-        <nav className="scms-desktop-nav" aria-label="Điều hướng chính">
-          <Menu
-            className="scms-main-nav"
-            mode="horizontal"
-            items={groupedNavItems}
-            selectedKeys={selectedKey ? [selectedKey] : []}
-            onClick={({ key }) => onNavigate(key)}
-          />
-        </nav>
-        <Flex className="scms-header-actions" align="center" gap={8}>
+        <Flex align="center" gap={12}>
+          <SidebarToggle collapsed={sidebarCollapsed} onToggle={onToggleSidebar} />
           <Button
             className="scms-mobile-nav"
             icon={<MenuOutlined />}
@@ -72,25 +127,29 @@ export function MainHeader({ groupedNavItems, selectedKey, user, onNavigate, onL
             aria-expanded={isNavigationOpen}
             onClick={() => setIsNavigationOpen(true)}
           />
+          <div className="scms-header-context">
+            <Typography.Text strong>Không gian quản trị</Typography.Text>
+            <Typography.Text type="secondary">Theo dõi và vận hành trung tâm</Typography.Text>
+          </div>
+        </Flex>
+        <Flex className="scms-header-actions" align="center" gap={8}>
           <NotificationBell />
           <Dropdown menu={profileMenu} trigger={['click']} placement="bottomRight">
             <button className="scms-account" type="button" aria-label="Mở menu tài khoản">
+              <Avatar className="scms-account__avatar">{getInitials(user?.fullName)}</Avatar>
               <span className="scms-account__copy">
                 <span className="scms-account__name">{user?.fullName || 'Tài khoản'}</span>
                 <span className="scms-account__role">{user?.role?.name}</span>
               </span>
-              <Avatar className="scms-account__avatar" icon={<UserOutlined />}>
-                {getInitials(user?.fullName)}
-              </Avatar>
             </button>
           </Dropdown>
         </Flex>
       </div>
       <Drawer
         className="scms-nav-drawer"
-        title="Điều hướng SportHub"
-        placement="right"
-        width="min(360px, 92vw)"
+        title={<Brand />}
+        placement="left"
+        size="min(360px, 92vw)"
         open={isNavigationOpen}
         onClose={() => setIsNavigationOpen(false)}
       >

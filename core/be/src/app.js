@@ -2,6 +2,7 @@
  * Khoi tao Express app: middleware toan cuc -> routes -> 404 -> error handler.
  * File nay KHONG listen; server.js moi listen (de test bang supertest).
  */
+import { ERROR_CODES } from '@scms/shared';
 import cors from 'cors';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
@@ -33,6 +34,11 @@ app.use(
     limit: env.RATE_LIMIT_MAX,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
+    message: {
+      success: false,
+      code: ERROR_CODES.RATE_LIMITED,
+      message: `Bạn thao tác quá nhanh. Vui lòng thử lại sau ${env.RATE_LIMIT_WINDOW_MINUTES} phút.`,
+    },
   }),
 );
 
