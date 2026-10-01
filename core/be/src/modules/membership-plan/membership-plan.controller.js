@@ -4,18 +4,21 @@ import * as membershipPlanService from './membership-plan.service.js';
 /** GET /membership-plans */
 export const list = async (req, res) => {
   const { data, meta } = await membershipPlanService.list(req.validated.query);
+
   sendSuccess(res, { data, meta });
 };
 
 /** GET /membership-plans/selling */
 export const listSelling = async (req, res) => {
   const data = await membershipPlanService.listSelling();
+
   sendSuccess(res, { data });
 };
 
 /** GET /membership-plans/:id */
 export const getById = async (req, res) => {
   const data = await membershipPlanService.getById(req.validated.params.id);
+
   sendSuccess(res, { data });
 };
 
@@ -46,6 +49,6 @@ export const remove = async (req, res) => {
 
   sendSuccess(res, {
     data,
-    message: 'Đã ngừng bán gói tập',
+    message: data ? 'Đã ngừng bán gói tập' : 'Đã xoá gói tập',
   });
 };

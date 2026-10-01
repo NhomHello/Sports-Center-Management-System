@@ -66,7 +66,9 @@ export const getById = async (id) => {
  * @returns {Promise<object>}
  */
 export const create = async (data, actor) => {
-  const plan = await prisma.membershipPlan.create({ data });
+  const plan = await prisma.membershipPlan.create({
+    data,
+  });
 
   recordAudit({
     userId: actor.id,
@@ -104,15 +106,42 @@ export const update = async (id, data, actor) => {
 };
 
 /**
- * Ngừng bán gói tập.
+ * Xoá hoặc ngừng bán gói tập.
+ * Gói chưa được sử dụng thì xoá hẳn.
+ * Gói đã có membership tham chiếu thì chỉ chuyển sang STOPPED.
  * @param {number} id
  * @param {{ id: number }} actor
- * @returns {Promise<object>}
+ * @returns {Promise<object|null>}
  */
 export const remove = async (id, actor) => {
-  await getById(id);
+  const plan = await getById(id);
 
-  const plan = await prisma.membershipPlan.update({
+  const referenceCount = await prisma.membership.count({
+    where: {
+      planId: id,
+    },
+  });
+
+  if (referenceCount === 0) {
+    await prisma.membershipPlan.delete({
+      where: { id },
+    });
+
+    recordAudit({
+      userId: actor.id,
+      action: AUDIT_ACTIONS.DELETE,
+      entity: ENTITIES.MEMBERSHIP_PLAN,
+      entityId: id,
+      meta: {
+        deleted: true,
+        oldValue: plan,
+      },
+    });
+
+    return null;
+  }
+
+  const stoppedPlan = await prisma.membershipPlan.update({
     where: { id },
     data: {
       status: MembershipPlanStatus.STOPPED,
@@ -125,9 +154,10 @@ export const remove = async (id, actor) => {
     entity: ENTITIES.MEMBERSHIP_PLAN,
     entityId: id,
     meta: {
+      deleted: false,
       status: MembershipPlanStatus.STOPPED,
     },
   });
 
-  return plan;
+  return stoppedPlan;
 };
