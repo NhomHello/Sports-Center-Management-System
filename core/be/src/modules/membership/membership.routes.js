@@ -11,8 +11,14 @@ const router = Router();
 router.use(authenticate);
 
 router.get(
+  '/me/current',
+  authorize(PERMISSIONS.MEMBERSHIP_READ_OWN, PERMISSIONS.MEMBERSHIP_READ_ALL),
+  controller.getMyCurrent,
+);
+
+router.get(
   '/member/:memberId/current',
-  authorize(PERMISSIONS.MEMBERSHIP_READ_ALL, PERMISSIONS.MEMBERSHIP_READ_OWN),
+  authorize(PERMISSIONS.MEMBERSHIP_READ_ALL),
   validate(memberMembershipSchema),
   controller.getCurrentByMemberId,
 );
