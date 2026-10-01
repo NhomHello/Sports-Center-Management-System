@@ -33,7 +33,12 @@ const planFields = {
 };
 
 export const listMembershipPlanSchema = {
-  query: paginationQuerySchema,
+  query: paginationQuerySchema.extend({
+    isActive: z
+      .enum(['true', 'false'])
+      .transform((value) => value === 'true')
+      .optional(),
+  }),
 };
 
 export const membershipPlanIdSchema = {

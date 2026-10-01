@@ -7,19 +7,26 @@ import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 
 /**
  * Lấy danh sách gói tập có phân trang.
- * @param {{ page: number, pageSize: number }} query
+ * @param {{ page: number, pageSize: number, isActive?: boolean }} query
  * @returns {Promise<{ data: object[], meta: object }>}
  */
 export const list = async (query) => {
   const { page, pageSize } = query;
   const pagination = toPrismaPage(query);
+  const where =
+    query.isActive === undefined
+      ? {}
+      : query.isActive
+        ? { isActive: true, status: MembershipPlanStatus.SELLING }
+        : { OR: [{ isActive: false }, { status: MembershipPlanStatus.STOPPED }] };
 
   const [data, total] = await prisma.$transaction([
     prisma.membershipPlan.findMany({
+      where,
       ...pagination,
       orderBy: { id: 'desc' },
     }),
-    prisma.membershipPlan.count(),
+    prisma.membershipPlan.count({ where }),
   ]);
 
   return {
@@ -129,11 +136,11 @@ export const update = async (id, data, actor) => {
 export const remove = async (id, actor) => {
   const plan = await getById(id);
 
-  const referenceCount = await prisma.membership.count({
-    where: {
-      planId: id,
-    },
-  });
+  const [membershipReferenceCount, invoiceReferenceCount] = await prisma.$transaction([
+    prisma.membership.count({ where: { planId: id } }),
+    prisma.invoice.count({ where: { planId: id } }),
+  ]);
+  const referenceCount = membershipReferenceCount + invoiceReferenceCount;
 
   if (referenceCount === 0) {
     await prisma.membershipPlan.delete({

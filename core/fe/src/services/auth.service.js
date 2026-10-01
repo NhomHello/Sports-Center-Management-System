@@ -2,7 +2,7 @@ import { http } from './http';
 
 const BASE = '/auth';
 
-/** @param {{ email: string, password: string }} payload */
+/** @param {{ email: string, password: string }} payload - email cũng nhận số điện thoại. */
 export const login = (payload) => http.post(`${BASE}/login`, payload);
 
 /** @param {{ email: string, password: string, fullName: string, phone?: string }} payload */

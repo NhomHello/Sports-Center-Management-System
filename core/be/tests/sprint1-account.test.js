@@ -1,3 +1,4 @@
+import { ERROR_CODES } from '@scms/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '../src/config/db.js';
 import { api, apiPath, bearer, loginAs } from './helpers/api.js';
@@ -88,6 +89,66 @@ describe('Sprint 1: đăng ký và hồ sơ chính chủ', () => {
     expect((await api.patch(apiPath('/members/me')).send({ fullName: 'Tên mới' })).status).toBe(
       401,
     );
+  });
+});
+
+describe('Sprint 1: đăng nhập, cập nhật và khóa/mở khóa tài khoản', () => {
+  it('hội viên không có email có thể đăng nhập bằng số điện thoại', async () => {
+    const phone = `09${String(fixture.member.id).padStart(8, '0').slice(-8)}`;
+    await prisma.user.update({
+      where: { id: fixture.member.id },
+      data: { email: null, phone },
+    });
+    const login = await api
+      .post(apiPath('/auth/login'))
+      .send({ email: `+84${phone.slice(1)}`, password: fixture.password });
+    expect(login.status).toBe(200);
+    expect(login.body.data.user.phone).toBe(phone);
+    await prisma.user.update({
+      where: { id: fixture.member.id },
+      data: { email: fixture.member.email },
+    });
+  });
+
+  it('quản lý cập nhật hội viên bằng PUT đúng contract', async () => {
+    const updated = await api
+      .put(apiPath(`/members/${fixture.other.id}`))
+      .set(bearer(fixture.adminToken))
+      .send({ fullName: 'Hội viên đã cập nhật' });
+    expect(updated.status).toBe(200);
+    expect(updated.body.data.fullName).toBe('Hội viên đã cập nhật');
+    expect(
+      (await api.patch(apiPath(`/members/${fixture.other.id}`)).set(bearer(fixture.adminToken)))
+        .status,
+    ).toBe(404);
+  });
+
+  it('tài khoản bị khóa không đăng nhập được và có thể được mở khóa lại', async () => {
+    const lock = await api
+      .patch(apiPath(`/users/${fixture.other.id}/status`))
+      .set(bearer(fixture.adminToken))
+      .send({ status: 'INACTIVE' });
+    expect(lock.status).toBe(200);
+    expect(lock.body.message).toContain('khóa');
+    const blocked = await api
+      .post(apiPath('/auth/login'))
+      .send({ email: fixture.other.email, password: fixture.password });
+    expect(blocked.status).toBe(403);
+    expect(blocked.body.code).toBe(ERROR_CODES.ACCOUNT_INACTIVE);
+
+    const unlock = await api
+      .patch(apiPath(`/users/${fixture.other.id}/status`))
+      .set(bearer(fixture.adminToken))
+      .send({ status: 'ACTIVE' });
+    expect(unlock.status).toBe(200);
+    expect(unlock.body.message).toContain('mở khóa');
+    expect(
+      (
+        await api
+          .post(apiPath('/auth/login'))
+          .send({ email: fixture.other.email, password: fixture.password })
+      ).status,
+    ).toBe(200);
   });
 });
 

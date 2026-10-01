@@ -33,7 +33,7 @@ import { ProfileMemberships } from './ProfileMemberships';
 
 function ProfileSummary({ profile }) {
   return (
-    <Card className="scms-profile-card" bordered={false}>
+    <Card className="scms-profile-card" variant="borderless">
       <div className="scms-profile-card__identity">
         <Avatar size={88} className="scms-profile-card__avatar">
           {profile.fullName?.slice(0, 1)}
@@ -222,7 +222,7 @@ export default function ProfilePage() {
           <ProfileContent query={profileQuery} />
         </Col>
         <Col xs={24} lg={16}>
-          <Space direction="vertical" size={SPACING.LG} className="scms-full-width">
+          <Space orientation="vertical" size={SPACING.LG} className="scms-full-width">
             {hasProfile && <ProfileForm form={form} profile={profile} mutation={mutation} />}
             {hasProfile && <ProfileMemberships profile={profile} />}
           </Space>

@@ -32,7 +32,7 @@ export default function NotificationsPage() {
         title="Thông báo"
         subtitle="Nội dung, sự kiện và trạng thái đọc của tài khoản hiện tại"
       />
-      <Card bordered={false} className="scms-workspace-card">
+      <Card variant="borderless" className="scms-workspace-card">
         <NotificationFilters
           table={table}
           query={query}

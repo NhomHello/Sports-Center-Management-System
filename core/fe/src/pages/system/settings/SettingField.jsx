@@ -28,6 +28,7 @@ function SettingDescription({ setting }) {
   const details = [
     setting.unit && `Đơn vị: ${setting.unit}`,
     range,
+    setting.minLength !== undefined && `Tối thiểu ${setting.minLength} ký tự`,
     setting.maxLength !== undefined && `Tối đa ${setting.maxLength} ký tự`,
   ]
     .filter(Boolean)

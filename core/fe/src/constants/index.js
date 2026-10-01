@@ -40,6 +40,7 @@ export const HTTP_STATUS = Object.freeze({
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  TOO_MANY_REQUESTS: 429,
 });
 
 export const TABLE = Object.freeze({

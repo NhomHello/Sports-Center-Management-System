@@ -10,16 +10,22 @@ import * as permissionService from '../permission/permission.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 
 /**
- * Dang nhap bang email + mat khau.
+ * Đăng nhập bằng email hoặc số điện thoại và mật khẩu.
  * @param {{ email: string, password: string }} credentials
  * @param {{ ip?: string }} [context]
  * @returns {Promise<{ accessToken: string, user: object }>}
  */
 export const login = async ({ email, password }, { ip } = {}) => {
-  const user = await prisma.user.findUnique({ where: { email }, include: USER_WITH_ROLE });
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ email }, { phone: email }] },
+    include: USER_WITH_ROLE,
+  });
   const passwordOk = user && (await comparePassword(password, user.passwordHash));
   if (!passwordOk) {
-    throw ApiError.unauthorized('Email hoặc mật khẩu không đúng', ERROR_CODES.INVALID_CREDENTIALS);
+    throw ApiError.unauthorized(
+      'Email, số điện thoại hoặc mật khẩu không đúng',
+      ERROR_CODES.INVALID_CREDENTIALS,
+    );
   }
   if (user.status !== Enums.UserStatus.ACTIVE) {
     throw ApiError.forbidden('Tài khoản đã bị khoá', ERROR_CODES.ACCOUNT_INACTIVE);

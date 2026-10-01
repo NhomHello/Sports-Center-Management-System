@@ -1,6 +1,6 @@
 import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
-import { Button, Drawer, Form, Input, Space, Typography, Descriptions, Tabs, Tag, App } from 'antd';
+import { App, Button, Descriptions, Drawer, Form, Input, Space, Tabs, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
@@ -8,8 +8,6 @@ import { usePermission } from '@/hooks/usePermission';
 import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
 import { formatDate } from '@/utils/format';
-
-const { TabPane } = Tabs;
 
 const MemberInfoForm = ({ form, onSubmit }) => (
   <Form form={form} layout="vertical" onFinish={onSubmit}>
@@ -63,31 +61,31 @@ const MemberMembershipView = ({ member }) => {
   );
 };
 
-export function MemberDetailDrawer({ member, open, onClose }) {
+export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
   const { can } = usePermission();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const { message } = App.useApp();
   const queryClient = useQueryClient();
 
-  const canUpdate = can(PERMISSIONS.MEMBER_UPDATE) || true; // Placeholder for actual permission check
+  const canUpdate = can(PERMISSIONS.MEMBER_UPDATE);
 
   useEffect(() => {
-    if (member && open) {
+    if (member && open && isEditing) {
       form.setFieldsValue({
         fullName: member.fullName,
         email: member.email,
         phone: member.phone,
       });
-      // Removing setState from effect to prevent cascading render warnings
     }
-  }, [member, open, form]);
+  }, [member, open, isEditing, form]);
 
   const updateMutation = useMutation({
     mutationFn: (values) => memberService.updateMember(member.id, values),
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       message.success('Cập nhật hồ sơ thành công');
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MEMBERS });
+      onUpdated?.({ ...member, ...data });
       setIsEditing(false);
     },
     onError: (error) => message.error(error.message || 'Có lỗi xảy ra'),
@@ -120,24 +118,31 @@ export function MemberDetailDrawer({ member, open, onClose }) {
   return (
     <Drawer
       title="Chi tiết hội viên"
-      width={600}
+      size={640}
       open={open}
       onClose={handleClose}
       extra={extraButtons}
-      destroyOnClose
+      destroyOnHidden
     >
-      <Tabs defaultActiveKey="info">
-        <TabPane tab="Thông tin cơ bản" key="info">
-          {isEditing ? (
-            <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
-          ) : (
-            <MemberInfoView member={member} />
-          )}
-        </TabPane>
-        <TabPane tab="Membership" key="membership">
-          <MemberMembershipView member={member} />
-        </TabPane>
-      </Tabs>
+      <Tabs
+        defaultActiveKey="info"
+        items={[
+          {
+            key: 'info',
+            label: 'Thông tin cơ bản',
+            children: isEditing ? (
+              <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
+            ) : (
+              <MemberInfoView member={member} />
+            ),
+          },
+          {
+            key: 'membership',
+            label: 'Gói tập',
+            children: <MemberMembershipView member={member} />,
+          },
+        ]}
+      />
     </Drawer>
   );
 }

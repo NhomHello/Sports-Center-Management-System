@@ -122,6 +122,7 @@ export function CounterInvoiceModal({ open, onClose, onCreated }) {
   return (
     <Modal
       open={open}
+      centered
       forceRender
       title="Tạo hóa đơn tại quầy"
       okText="Tạo hóa đơn"

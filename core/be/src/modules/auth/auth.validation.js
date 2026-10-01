@@ -7,9 +7,10 @@ import {
 } from '../../common/validators/account-fields.js';
 
 const email = emailField;
+const loginIdentity = z.union([emailField, phoneField]);
 export const loginSchema = {
   body: z.object({
-    email,
+    email: loginIdentity,
     password: z.string().min(1, 'Vui lòng nhập mật khẩu'),
   }),
 };

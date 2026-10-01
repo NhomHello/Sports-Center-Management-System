@@ -1,4 +1,5 @@
-import { sendSuccess } from '../../common/utils/api-response.js';
+import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
+import * as membershipInvoiceService from './membership-invoice.service.js';
 import * as membershipService from './membership.service.js';
 
 /** GET /memberships/me/current */
@@ -15,12 +16,13 @@ export const getCurrentByMemberId = async (req, res) => {
   sendSuccess(res, { data });
 };
 
-/** POST /memberships/purchase */
-export const purchaseOrRenew = async (req, res) => {
-  const data = await membershipService.purchaseOrRenew(req.validated.body);
-
-  sendSuccess(res, {
-    data,
-    message: 'Mua hoặc gia hạn gói tập thành công',
-  });
-};
+/** POST /memberships/me/orders */
+export const createOwnOrder = async (req, res) =>
+  sendCreated(
+    res,
+    await membershipInvoiceService.createCounterOrder(
+      { memberId: req.user.id, planId: req.validated.body.planId },
+      req.user,
+    ),
+    'Đã tạo hóa đơn chờ thanh toán',
+  );

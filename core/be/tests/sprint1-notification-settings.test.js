@@ -92,6 +92,18 @@ describe('Sprint 1: metadata, validation và quyền cấu hình', () => {
       .flatMap((group) => group.items)
       .find((item) => item.key === SETTING_KEYS.INVOICE_CODE_PREFIX);
     expect(prefix.maxLength).toBe(30);
+    const centerSettings = list.body.data
+      .flatMap((group) => group.items)
+      .filter((item) => [SETTING_KEYS.CENTER_ADDRESS, SETTING_KEYS.CENTER_PHONE].includes(item.key));
+    expect(centerSettings.every((item) => item.required)).toBe(true);
+    expect(
+      (
+        await api
+          .put(apiPath('/settings'))
+          .set(bearer(fixture.adminToken))
+          .send({ items: [{ key: SETTING_KEYS.CENTER_PHONE, value: 'không-phải-số' }] })
+      ).status,
+    ).toBe(400);
     expect(
       (
         await api

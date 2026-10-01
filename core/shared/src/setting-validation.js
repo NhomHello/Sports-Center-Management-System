@@ -38,6 +38,12 @@ export const getSettingValidationError = (setting, value) => {
   if (setting.required && (value === null || value === undefined || String(value).trim() === ''))
     return 'Không được để trống';
   if (
+    setting.minLength !== undefined &&
+    typeof value === 'string' &&
+    value.trim().length < setting.minLength
+  )
+    return `Tối thiểu ${setting.minLength} ký tự`;
+  if (
     setting.maxLength !== undefined &&
     typeof value === 'string' &&
     value.length > setting.maxLength
@@ -49,6 +55,8 @@ export const getSettingValidationError = (setting, value) => {
     return 'Mã tiền tệ không được hỗ trợ';
   if (setting.format === 'invoicePrefix' && !/^[A-Za-z0-9_-]+$/.test(value))
     return 'Tiền tố chỉ chứa chữ, số, gạch ngang hoặc gạch dưới';
+  if (setting.format === 'phone' && !/^[+()\d][\d\s().-]{7,19}$/.test(value))
+    return 'Số điện thoại không hợp lệ';
   if (setting.options && !setting.options.some((option) => (option.value ?? option) === value))
     return 'Chọn giá trị trong danh sách cho phép';
   return null;

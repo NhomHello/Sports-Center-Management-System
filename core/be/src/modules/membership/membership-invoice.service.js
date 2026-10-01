@@ -6,6 +6,92 @@ import { AUDIT_ACTIONS, ENTITIES, TIME, VALIDATION } from '../../constants/index
 import { INVOICE_INCLUDE } from '../payment/invoice.service.js';
 import * as settingService from '../setting/setting.service.js';
 
+const getSellingPlan = async (tx, planId) => {
+  const plan = await tx.membershipPlan.findUnique({ where: { id: planId } });
+  if (!plan) throw ApiError.notFound('Không tìm thấy gói tập');
+  if (!plan.isActive || plan.status !== Enums.MembershipPlanStatus.SELLING) {
+    throw ApiError.businessRule('Gói tập đã ngừng bán');
+  }
+  if (plan.price <= 0 || plan.durationDays <= 0) {
+    throw ApiError.businessRule('Giá hoặc thời hạn gói chưa hợp lệ');
+  }
+  return plan;
+};
+
+const expireStalePendingInvoices = async ({ tx, memberId, planId, actorId, now }) => {
+  const stale = await tx.invoice.findMany({
+    where: {
+      userId: memberId,
+      planId,
+      status: Enums.InvoiceStatus.PENDING,
+      expiresAt: { lte: now },
+    },
+    select: { id: true },
+  });
+  if (stale.length === 0) return;
+  const ids = stale.map(({ id }) => id);
+  await tx.invoice.updateMany({
+    where: { id: { in: ids }, status: Enums.InvoiceStatus.PENDING },
+    data: { status: Enums.InvoiceStatus.FAILED },
+  });
+  await tx.auditLog.createMany({
+    data: ids.map((id) => ({
+      userId: actorId,
+      action: AUDIT_ACTIONS.UPDATE,
+      entity: ENTITIES.INVOICE,
+      entityId: String(id),
+      meta: {
+        before: { status: Enums.InvoiceStatus.PENDING },
+        after: { status: Enums.InvoiceStatus.FAILED },
+        reason: 'PAYMENT_TIMEOUT',
+      },
+    })),
+  });
+};
+
+const findReusablePending = (tx, memberId, planId, now) =>
+  tx.invoice.findFirst({
+    where: {
+      userId: memberId,
+      planId,
+      status: Enums.InvoiceStatus.PENDING,
+      expiresAt: { gt: now },
+    },
+    include: INVOICE_INCLUDE,
+  });
+
+const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now }) => {
+  const created = await tx.invoice.create({
+    data: {
+      code: `PENDING-${randomUUID()}`,
+      userId: memberId,
+      planId: plan.id,
+      planName: plan.name,
+      durationDays: plan.durationDays,
+      amount: plan.price,
+      channel: Enums.InvoiceChannel.COUNTER,
+      expiresAt: new Date(now.getTime() + timeout * TIME.MS_PER_MINUTE),
+    },
+  });
+  const invoice = await tx.invoice.update({
+    where: { id: created.id },
+    data: {
+      code: `${prefix}${String(created.id).padStart(VALIDATION.INVOICE_SEQUENCE_WIDTH, '0')}`,
+    },
+    include: INVOICE_INCLUDE,
+  });
+  await tx.auditLog.create({
+    data: {
+      userId: actorId,
+      action: AUDIT_ACTIONS.CREATE,
+      entity: ENTITIES.INVOICE,
+      entityId: String(invoice.id),
+      meta: { memberId, planId: plan.id, amount: invoice.amount, channel: invoice.channel },
+    },
+  });
+  return invoice;
+};
+
 /** Khóa theo hội viên, tái sử dụng hóa đơn PENDING và lấy giá từ DB. */
 export const createCounterOrder = async ({ memberId, planId }, actor) => {
   const prefix = await settingService.getValue(SETTING_KEYS.INVOICE_CODE_PREFIX);
@@ -17,51 +103,31 @@ export const createCounterOrder = async ({ memberId, planId }, actor) => {
         where: { id: memberId, role: { isDefault: true }, status: Enums.UserStatus.ACTIVE },
       });
       if (!member) throw ApiError.notFound('Không tìm thấy hội viên đang hoạt động');
-      const plan = await tx.membershipPlan.findUnique({ where: { id: planId } });
-      if (!plan) throw ApiError.notFound('Không tìm thấy gói tập');
-      if (!plan.isActive) throw ApiError.businessRule('Gói tập đã ngừng bán');
-      if (plan.price <= 0 || plan.durationDays <= 0) {
-        throw ApiError.businessRule('Giá hoặc thời hạn gói chưa hợp lệ');
-      }
-      const pending = await tx.invoice.findFirst({
-        where: { userId: memberId, planId, status: Enums.InvoiceStatus.PENDING },
-        include: INVOICE_INCLUDE,
+      const plan = await getSellingPlan(tx, planId);
+      const now = new Date();
+      await expireStalePendingInvoices({
+        tx,
+        memberId,
+        planId,
+        actorId: actor.id,
+        now,
       });
+      const pending = await findReusablePending(tx, memberId, planId, now);
       if (pending?.channel === Enums.InvoiceChannel.COUNTER) return pending;
       if (pending) {
         throw ApiError.conflict(
           'Gói này đang có hóa đơn online chờ thanh toán. Cần xử lý hóa đơn đó trước.',
         );
       }
-      const created = await tx.invoice.create({
-        data: {
-          code: `PENDING-${randomUUID()}`,
-          userId: memberId,
-          planId,
-          planName: plan.name,
-          durationDays: plan.durationDays,
-          amount: plan.price,
-          channel: Enums.InvoiceChannel.COUNTER,
-          expiresAt: new Date(Date.now() + timeout * TIME.MS_PER_MINUTE),
-        },
+      return createInvoice({
+        tx,
+        memberId,
+        plan,
+        prefix,
+        timeout,
+        actorId: actor.id,
+        now,
       });
-      const invoice = await tx.invoice.update({
-        where: { id: created.id },
-        data: {
-          code: `${prefix}${String(created.id).padStart(VALIDATION.INVOICE_SEQUENCE_WIDTH, '0')}`,
-        },
-        include: INVOICE_INCLUDE,
-      });
-      await tx.auditLog.create({
-        data: {
-          userId: actor.id,
-          action: AUDIT_ACTIONS.CREATE,
-          entity: ENTITIES.INVOICE,
-          entityId: String(invoice.id),
-          meta: { memberId, planId, amount: invoice.amount, channel: invoice.channel },
-        },
-      });
-      return invoice;
     },
     { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
   );

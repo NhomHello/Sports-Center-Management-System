@@ -27,10 +27,10 @@ export function ProfileMemberships({ profile }) {
     );
   }
   return (
-    <Space direction="vertical" size="middle" className="scms-full-width">
+    <Space orientation="vertical" size="middle" className="scms-full-width">
       <Card title="Gói hiện tại" className="scms-profile-membership">
         {membership ? (
-          <Space direction="vertical">
+          <Space orientation="vertical">
             <Typography.Title level={4} style={{ margin: 0 }}>
               {membership.plan?.name}
             </Typography.Title>

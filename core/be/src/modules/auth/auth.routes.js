@@ -1,3 +1,4 @@
+import { ERROR_CODES } from '@scms/shared';
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { authenticate } from '../../common/middlewares/auth.middleware.js';
@@ -15,6 +16,11 @@ const authLimiter = rateLimit({
   limit: env.AUTH_RATE_LIMIT_MAX,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  message: {
+    success: false,
+    code: ERROR_CODES.RATE_LIMITED,
+    message: `Bạn đã thử quá nhiều lần. Vui lòng thử lại sau ${env.RATE_LIMIT_WINDOW_MINUTES} phút.`,
+  },
 });
 
 router.post('/login', authLimiter, validate(loginSchema), controller.login);
