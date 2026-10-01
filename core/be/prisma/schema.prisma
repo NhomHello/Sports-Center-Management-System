@@ -30,21 +30,52 @@ enum SettingType {
   JSON
 }
 
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum InvoiceChannel {
+  ONLINE
+  COUNTER
+}
+
+enum NotificationKind {
+  MEMBERSHIP_EXPIRY_REMINDER
+  CLASS_CHANGED
+  CLASS_CANCELLED
+}
+
+enum PaymentProvider {
+  COUNTER
+}
+
 // ---------------- AUTH & RBAC (dynamic) ----------------
 
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 model User {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique @db.VarChar(191)
-  phone        String?    @unique @db.VarChar(20)
-  passwordHash String     @map("password_hash") @db.VarChar(255)
-  fullName     String     @map("full_name") @db.VarChar(100)
-  status       UserStatus @default(ACTIVE)
-  roleId       Int        @map("role_id")
-  role         Role       @relation(fields: [roleId], references: [id])
-  auditLogs    AuditLog[]
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  id            Int            @id @default(autoincrement())
+  email         String         @unique @db.VarChar(191)
+  phone         String?        @unique @db.VarChar(20)
+  passwordHash  String         @map("password_hash") @db.VarChar(255)
+  fullName      String         @map("full_name") @db.VarChar(100)
+  status        UserStatus     @default(ACTIVE)
+  roleId        Int            @map("role_id")
+  role          Role           @relation(fields: [roleId], references: [id])
+  tokenVersion  Int            @default(0) @map("token_version")
+  auditLogs     AuditLog[]
+  memberships   Membership[]
+  invoices      Invoice[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
 
   @@index([roleId])
   @@map("users")
@@ -130,3 +161,95 @@ model AuditLog {
 // Flow 1: MembershipPlan, Membership
 // Flow 2: Subject, Room, GymClass (tranh dat ten "Class" trung tu khoa JS), ClassSession, Enrollment
 // Flow 3: Invoice, Payment, PaymentWebhookLog
+
+model MembershipPlan {
+  id           Int          @id @default(autoincrement())
+  code         String       @unique @db.VarChar(50)
+  name         String       @db.VarChar(100)
+  durationDays Int          @map("duration_days")
+  price        Int
+  benefits     Json?
+  isActive     Boolean      @default(true) @map("is_active")
+  memberships  Membership[]
+  invoices     Invoice[]
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("membership_plans")
+}
+
+model Membership {
+  id            Int              @id @default(autoincrement())
+  userId        Int              @map("user_id")
+  planId        Int              @map("plan_id")
+  startDate     DateTime         @map("start_date")
+  endDate       DateTime         @map("end_date")
+  status        MembershipStatus @default(ACTIVE)
+  user          User             @relation(fields: [userId], references: [id])
+  plan          MembershipPlan   @relation(fields: [planId], references: [id])
+  invoices      Invoice[]
+  notifications Notification[]
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@index([userId, status, endDate])
+  @@index([planId])
+  @@map("memberships")
+}
+
+model Invoice {
+  id           Int            @id @default(autoincrement())
+  code         String         @unique @db.VarChar(50)
+  userId       Int            @map("user_id")
+  planId       Int            @map("plan_id")
+  membershipId Int?           @map("membership_id")
+  amount       Int
+  status       InvoiceStatus  @default(PENDING)
+  channel      InvoiceChannel @default(ONLINE)
+  expiresAt    DateTime       @map("expires_at")
+  paidAt       DateTime?      @map("paid_at")
+  user         User           @relation(fields: [userId], references: [id])
+  plan         MembershipPlan @relation(fields: [planId], references: [id])
+  membership   Membership?    @relation(fields: [membershipId], references: [id])
+  payments     Payment[]
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  @@index([userId, planId, status])
+  @@index([status, expiresAt])
+  @@map("invoices")
+}
+
+model Payment {
+  id              Int             @id @default(autoincrement())
+  invoiceId       Int             @map("invoice_id")
+  provider        PaymentProvider
+  requestedAmount Int             @map("requested_amount")
+  receivedAmount  Int             @map("received_amount")
+  reference       String?         @db.VarChar(100)
+  paidAt          DateTime        @map("paid_at")
+  actorId         Int?            @map("actor_id")
+  invoice         Invoice         @relation(fields: [invoiceId], references: [id])
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  @@index([invoiceId, paidAt])
+  @@map("payments")
+}
+
+model Notification {
+  id           Int              @id @default(autoincrement())
+  userId       Int              @map("user_id")
+  membershipId Int?             @map("membership_id")
+  kind         NotificationKind
+  title        String           @db.VarChar(150)
+  message      String           @db.VarChar(500)
+  readAt       DateTime?        @map("read_at")
+  dedupeKey    String?          @unique @map("dedupe_key") @db.VarChar(191)
+  user         User             @relation(fields: [userId], references: [id])
+  membership   Membership?      @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}

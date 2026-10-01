@@ -24,7 +24,7 @@ export const login = async ({ email, password }, { ip } = {}) => {
     throw ApiError.forbidden('Tài khoản đã bị khoá', ERROR_CODES.ACCOUNT_INACTIVE);
   }
 
-  const accessToken = signAccessToken({ sub: user.id });
+  const accessToken = signAccessToken({ sub: user.id, ver: user.tokenVersion });
   recordAudit({
     userId: user.id,
     action: AUDIT_ACTIONS.LOGIN,
@@ -57,6 +57,29 @@ export const register = async ({ password, ...data }) => {
     entityId: user.id,
   });
   return toPublicUser(user);
+};
+
+/**
+ * Đổi mật khẩu và tăng phiên bản token để vô hiệu hoá mọi access token cũ.
+ * @param {number} userId
+ * @param {{ currentPassword: string, password: string }} data
+ */
+export const changePassword = async (userId, { currentPassword, password }) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || !(await comparePassword(currentPassword, user.passwordHash))) {
+    throw ApiError.businessRule('Mật khẩu hiện tại không đúng');
+  }
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: await hashPassword(password), tokenVersion: { increment: 1 } },
+  });
+  await recordAudit({
+    userId,
+    action: AUDIT_ACTIONS.UPDATE,
+    entity: ENTITIES.USER,
+    entityId: userId,
+    meta: { passwordChanged: true, invalidatedSessions: true },
+  });
 };
 
 /**

@@ -1,3 +1,4 @@
+import { SETTING_DEFINITIONS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
 import { Enums, prisma } from '../../config/db.js';
@@ -6,6 +7,7 @@ import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
 
 /** @type {Map<string, { value: unknown, expiresAt: number }>} */
 const cache = new Map();
+const definitions = new Map(SETTING_DEFINITIONS.map((item) => [item.key, item]));
 
 /** Parser theo type; nem loi neu gia tri khong hop le. */
 const PARSERS = {
@@ -29,7 +31,14 @@ const PARSERS = {
  */
 const parseValue = (setting, raw) => {
   try {
-    return PARSERS[setting.type](raw);
+    const value = PARSERS[setting.type](raw);
+    const definition = definitions.get(setting.key);
+    if (typeof value === 'number' && definition?.minValue !== undefined) {
+      if (value < definition.minValue || value > definition.maxValue) {
+        throw new Error(`phải từ ${definition.minValue} đến ${definition.maxValue}`);
+      }
+    }
+    return value;
   } catch (err) {
     throw ApiError.badRequest(`Giá trị của ${setting.key} ${err.message}`, { key: setting.key });
   }
@@ -63,8 +72,11 @@ export const listGrouped = async () => {
   });
   const groups = new Map();
   for (const setting of settings) {
-    if (!groups.has(setting.group)) groups.set(setting.group, { group: setting.group, items: [] });
-    groups.get(setting.group).items.push(setting);
+    if (!groups.has(setting.group)) {
+      groups.set(setting.group, { group: setting.group, timeZone: TIME.VIETNAM_ZONE, items: [] });
+    }
+    const { unit, minValue, maxValue } = definitions.get(setting.key) ?? {};
+    groups.get(setting.group).items.push({ ...setting, unit, minValue, maxValue });
   }
   return [...groups.values()];
 };
@@ -89,11 +101,13 @@ export const updateMany = async (items, actor) => {
     items.map(({ key, value }) => prisma.systemSetting.update({ where: { key }, data: { value } })),
   );
   keys.forEach((key) => cache.delete(key));
-  recordAudit({
+  await recordAudit({
     userId: actor.id,
     action: AUDIT_ACTIONS.UPDATE,
     entity: ENTITIES.SETTING,
-    meta: { items },
+    meta: {
+      changes: items.map(({ key, value }) => ({ key, before: byKey.get(key).value, after: value })),
+    },
   });
   return listGrouped();
 };
