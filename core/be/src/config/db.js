@@ -4,7 +4,7 @@
  */
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import prismaPkg from '@prisma/client';
-import { env, isDev } from './env.js';
+import { env, isDev, isProd } from './env.js';
 
 // @prisma/client la CommonJS nen phai import default roi destructure
 const {
@@ -14,8 +14,9 @@ const {
   MembershipStatus,
   InvoiceStatus,
   InvoiceChannel,
-  NotificationKind,
   PaymentProvider,
+  NotificationKind,
+  Prisma,
 } = prismaPkg;
 
 const DEFAULT_MYSQL_PORT = 3306;
@@ -34,6 +35,9 @@ const parseDatabaseUrl = (databaseUrl) => {
     password: decodeURIComponent(url.password),
     database: url.pathname.replace(/^\//, ''),
     connectionLimit: CONNECTION_LIMIT,
+    // MySQL 8 caching_sha2_password requires its RSA key on local non-TLS connections.
+    // Production must use a trusted TLS connection or a pinned server key instead.
+    allowPublicKeyRetrieval: !isProd,
   };
 };
 
@@ -51,6 +55,7 @@ export const Enums = Object.freeze({
   MembershipStatus,
   InvoiceStatus,
   InvoiceChannel,
-  NotificationKind,
   PaymentProvider,
+  NotificationKind,
+  TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
 });

@@ -1,13 +1,19 @@
-import { SETTING_DEFINITIONS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
-import { recordAudit } from '../../common/utils/audit.js';
+import { SETTING_DEFINITIONS, getSettingValidationError } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { env } from '../../config/env.js';
 import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
 
 /** @type {Map<string, { value: unknown, expiresAt: number }>} */
 const cache = new Map();
-const definitions = new Map(SETTING_DEFINITIONS.map((item) => [item.key, item]));
+const DEFINITIONS_BY_KEY = new Map(
+  SETTING_DEFINITIONS.map((definition) => [definition.key, definition]),
+);
+const enrichSetting = (setting) => ({
+  ...DEFINITIONS_BY_KEY.get(setting.key),
+  ...setting,
+  defaultValue: undefined,
+});
 
 /** Parser theo type; nem loi neu gia tri khong hop le. */
 const PARSERS = {
@@ -30,15 +36,13 @@ const PARSERS = {
  * @param {string} raw
  */
 const parseValue = (setting, raw) => {
+  const validationError = getSettingValidationError(enrichSetting(setting), raw);
+  if (validationError)
+    throw ApiError.badRequest(`${setting.label ?? setting.key}: ${validationError}`, [
+      { field: setting.key, message: validationError },
+    ]);
   try {
-    const value = PARSERS[setting.type](raw);
-    const definition = definitions.get(setting.key);
-    if (typeof value === 'number' && definition?.minValue !== undefined) {
-      if (value < definition.minValue || value > definition.maxValue) {
-        throw new Error(`phải từ ${definition.minValue} đến ${definition.maxValue}`);
-      }
-    }
-    return value;
+    return PARSERS[setting.type](raw);
   } catch (err) {
     throw ApiError.badRequest(`Giá trị của ${setting.key} ${err.message}`, { key: setting.key });
   }
@@ -75,8 +79,7 @@ export const listGrouped = async () => {
     if (!groups.has(setting.group)) {
       groups.set(setting.group, { group: setting.group, timeZone: TIME.VIETNAM_ZONE, items: [] });
     }
-    const { unit, minValue, maxValue } = definitions.get(setting.key) ?? {};
-    groups.get(setting.group).items.push({ ...setting, unit, minValue, maxValue });
+    groups.get(setting.group).items.push(enrichSetting(setting));
   }
   return [...groups.values()];
 };
@@ -97,17 +100,18 @@ export const updateMany = async (items, actor) => {
     parseValue(setting, item.value);
   }
 
-  await prisma.$transaction(
-    items.map(({ key, value }) => prisma.systemSetting.update({ where: { key }, data: { value } })),
-  );
-  keys.forEach((key) => cache.delete(key));
-  await recordAudit({
-    userId: actor.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity: ENTITIES.SETTING,
-    meta: {
-      changes: items.map(({ key, value }) => ({ key, before: byKey.get(key).value, after: value })),
-    },
+  await prisma.$transaction(async (tx) => {
+    for (const { key, value } of items)
+      await tx.systemSetting.update({ where: { key }, data: { value } });
+    await tx.auditLog.create({
+      data: {
+        userId: actor.id,
+        action: AUDIT_ACTIONS.UPDATE,
+        entity: ENTITIES.SETTING,
+        meta: { before: settings.map(({ key, value }) => ({ key, value })), after: items },
+      },
+    });
   });
+  keys.forEach((key) => cache.delete(key));
   return listGrouped();
 };

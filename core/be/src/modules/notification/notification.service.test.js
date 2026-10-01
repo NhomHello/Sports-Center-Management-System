@@ -7,7 +7,15 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../../config/db.js', () => ({ prisma: { notification: mocks.notification } }));
+vi.mock('../../config/db.js', () => ({
+  Enums: {
+    SettingType: { STRING: 'STRING', NUMBER: 'NUMBER', BOOLEAN: 'BOOLEAN', JSON: 'JSON' },
+    MembershipStatus: { ACTIVE: 'ACTIVE' },
+    NotificationKind: { MEMBERSHIP_EXPIRY_REMINDER: 'MEMBERSHIP_EXPIRY_REMINDER' },
+  },
+  prisma: { notification: mocks.notification },
+}));
+vi.mock('../../config/env.js', () => ({ env: { SETTING_CACHE_TTL_SECONDS: 60 } }));
 
 const { markManyRead } = await import('./notification.service.js');
 

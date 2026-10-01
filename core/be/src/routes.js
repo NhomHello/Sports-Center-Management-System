@@ -14,6 +14,8 @@ import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import settingRoutes from './modules/setting/setting.routes.js';
 import userRoutes from './modules/user/user.routes.js';
+import membershipRoutes from './modules/membership/membership.routes.js';
+import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 
 const router = Router();
 
@@ -27,5 +29,7 @@ router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
+router.use('/memberships', membershipRoutes);
+router.use('/membership-plans', membershipPlanRoutes);
 
 export default router;

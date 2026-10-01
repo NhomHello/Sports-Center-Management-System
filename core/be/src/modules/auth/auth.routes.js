@@ -5,7 +5,7 @@ import { validate } from '../../common/middlewares/validate.middleware.js';
 import { env } from '../../config/env.js';
 import { TIME } from '../../constants/index.js';
 import * as controller from './auth.controller.js';
-import { loginSchema, passwordChangeSchema, registerSchema } from './auth.validation.js';
+import { loginSchema, registerSchema, changePasswordSchema } from './auth.validation.js';
 
 const router = Router();
 
@@ -19,12 +19,13 @@ const authLimiter = rateLimit({
 
 router.post('/login', authLimiter, validate(loginSchema), controller.login);
 router.post('/register', authLimiter, validate(registerSchema), controller.register);
+router.get('/me', authenticate, controller.me);
 router.post(
   '/password-changes',
   authenticate,
-  validate(passwordChangeSchema),
+  authLimiter,
+  validate(changePasswordSchema),
   controller.changePassword,
 );
-router.get('/me', authenticate, controller.me);
 
 export default router;

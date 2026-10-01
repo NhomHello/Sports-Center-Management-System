@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
-  update: vi.fn(),
+  updateMany: vi.fn(),
+  auditCreate: vi.fn(),
   comparePassword: vi.fn(),
   hashPassword: vi.fn(),
   recordAudit: vi.fn(),
@@ -10,7 +11,14 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../../config/db.js', () => ({
   Enums: { UserStatus: { ACTIVE: 'ACTIVE' } },
-  prisma: { user: { findUnique: mocks.findUnique, update: mocks.update } },
+  prisma: {
+    user: { findUniqueOrThrow: mocks.findUnique },
+    $transaction: (callback) =>
+      callback({
+        user: { updateMany: mocks.updateMany },
+        auditLog: { create: mocks.auditCreate },
+      }),
+  },
 }));
 vi.mock('../../common/utils/password.js', () => ({
   comparePassword: mocks.comparePassword,
@@ -23,14 +31,15 @@ const { changePassword } = await import('./auth.service.js');
 
 describe('changePassword', () => {
   it('TC-F1-05: đổi hash và tăng tokenVersion để vô hiệu hoá token cũ', async () => {
-    mocks.findUnique.mockResolvedValue({ id: 7, passwordHash: 'old-hash' });
+    mocks.findUnique.mockResolvedValue({ id: 7, passwordHash: 'old-hash', tokenVersion: 2 });
     mocks.comparePassword.mockResolvedValue(true);
     mocks.hashPassword.mockResolvedValue('new-hash');
-    mocks.update.mockResolvedValue({ id: 7 });
+    mocks.updateMany.mockResolvedValue({ count: 1 });
+    mocks.auditCreate.mockResolvedValue({ id: 1 });
     mocks.recordAudit.mockResolvedValue();
     await changePassword(7, { currentPassword: 'old-password', password: 'new-password' });
-    expect(mocks.update).toHaveBeenCalledWith({
-      where: { id: 7 },
+    expect(mocks.updateMany).toHaveBeenCalledWith({
+      where: { id: 7, tokenVersion: 2 },
       data: { passwordHash: 'new-hash', tokenVersion: { increment: 1 } },
     });
   });

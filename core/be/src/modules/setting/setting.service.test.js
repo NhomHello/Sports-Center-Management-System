@@ -3,19 +3,24 @@ import { describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   findMany: vi.fn(),
   update: vi.fn(),
+  auditCreate: vi.fn(),
   transaction: vi.fn(),
-  recordAudit: vi.fn(),
 }));
 
 vi.mock('../../config/db.js', () => ({
   Enums: { SettingType: { STRING: 'STRING', NUMBER: 'NUMBER', BOOLEAN: 'BOOLEAN', JSON: 'JSON' } },
   prisma: {
     systemSetting: { findMany: mocks.findMany, update: mocks.update },
-    $transaction: mocks.transaction,
+    $transaction: (callback) =>
+      typeof callback === 'function'
+        ? callback({
+            systemSetting: { update: mocks.update },
+            auditLog: { create: mocks.auditCreate },
+          })
+        : mocks.transaction(callback),
   },
 }));
 vi.mock('../../config/env.js', () => ({ env: { SETTING_CACHE_TTL_SECONDS: 60 } }));
-vi.mock('../../common/utils/audit.js', () => ({ recordAudit: mocks.recordAudit }));
 
 const { updateMany } = await import('./setting.service.js');
 
@@ -31,13 +36,16 @@ describe('updateMany settings', () => {
 
   it('TC-F1-07: audit giá trị trước và sau khi cập nhật', async () => {
     mocks.findMany.mockResolvedValue([{ key: 'CENTER_NAME', value: 'Cũ', type: 'STRING' }]);
-    mocks.transaction.mockResolvedValue([]);
-    mocks.recordAudit.mockResolvedValue();
+    mocks.update.mockResolvedValue({});
+    mocks.auditCreate.mockResolvedValue({ id: 1 });
     await updateMany([{ key: 'CENTER_NAME', value: 'Mới' }], { id: 1 });
-    expect(mocks.recordAudit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        meta: { changes: [{ key: 'CENTER_NAME', before: 'Cũ', after: 'Mới' }] },
+    expect(mocks.auditCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        meta: {
+          before: [{ key: 'CENTER_NAME', value: 'Cũ' }],
+          after: [{ key: 'CENTER_NAME', value: 'Mới' }],
+        },
       }),
-    );
+    });
   });
 });

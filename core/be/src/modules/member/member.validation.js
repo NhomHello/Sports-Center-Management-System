@@ -1,18 +1,21 @@
 import { z } from 'zod';
-import { emailSchema, phoneSchema } from '../../common/validators/identity.schema.js';
+import { fullNameField, emailField, phoneField } from '../../common/validators/account-fields.js';
+import { paginationQuerySchema } from '../../common/utils/pagination.js';
 import { VALIDATION } from '../../constants/index.js';
 
 export const updateOwnProfileSchema = {
   body: z
     .object({
-      email: emailSchema.optional(),
-      fullName: z
-        .string()
-        .trim()
-        .min(VALIDATION.NAME_MIN_LENGTH)
-        .max(VALIDATION.NAME_MAX_LENGTH)
-        .optional(),
-      phone: phoneSchema.nullable().optional(),
+      fullName: fullNameField.optional(),
+      email: emailField.optional(),
+      phone: phoneField.nullable().optional(),
     })
-    .refine((data) => Object.keys(data).length > 0, 'Cần ít nhất một trường để cập nhật'),
+    .strict()
+    .refine((data) => Object.keys(data).length > 0, 'Cần ít nhất một trường cập nhật'),
+};
+
+export const listMembersSchema = {
+  query: paginationQuerySchema.extend({
+    search: z.string().trim().max(VALIDATION.SEARCH_MAX_LENGTH).optional(),
+  }),
 };

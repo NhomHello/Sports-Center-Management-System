@@ -1,54 +1,87 @@
-import { ApiError } from '../../common/errors/api-error.js';
-import { recordAudit } from '../../common/utils/audit.js';
+import { PERMISSIONS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
-import { toPublicUser } from '../user/user.mapper.js';
+import { ensureUniqueContacts } from '../../common/utils/account-contacts.js';
+import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
+import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
+import * as permissionService from '../permission/permission.service.js';
 
-const buildProfileInclude = () => ({
-  role: { select: { id: true, name: true } },
-  memberships: {
-    where: { status: Enums.MembershipStatus.ACTIVE, endDate: { gt: new Date() } },
-    include: { plan: true },
-    orderBy: { endDate: 'desc' },
-    take: 1,
-  },
-});
-
-const toProfile = ({ memberships, ...user }) => ({
-  ...toPublicUser(user),
-  currentMembership: memberships[0] ?? null,
-});
-
-const contactFields = ({ fullName, email, phone }) => ({ fullName, email, phone });
-
-/** Lấy đúng hồ sơ của tài khoản đang đăng nhập cùng membership hiện tại. */
-export const getOwn = async (userId) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: buildProfileInclude(),
+/** Hồ sơ luôn lấy id từ token; membership chỉ hiện khi có quyền đọc tương ứng. */
+export const getOwn = async (actor) => {
+  const granted = await permissionService.getCodesByRoleId(actor.roleId);
+  const membershipAccess =
+    granted.has(PERMISSIONS.MEMBERSHIP_READ_OWN) || granted.has(PERMISSIONS.MEMBERSHIP_READ_ALL);
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: actor.id },
+    include: {
+      ...USER_WITH_ROLE,
+      ...(membershipAccess && {
+        memberships: { include: { plan: true }, orderBy: { endDate: 'desc' } },
+      }),
+    },
   });
-  if (!user) throw ApiError.notFound('Không tìm thấy tài khoản');
-  return toProfile(user);
+  const { memberships: storedMemberships = [], ...profile } = user;
+  const memberships = storedMemberships.map((item) => ({
+    ...item,
+    status: item.endDate <= new Date() ? Enums.MembershipStatus.EXPIRED : item.status,
+  }));
+  return {
+    ...toPublicUser(profile),
+    membershipAccess,
+    memberships,
+    currentMembership:
+      memberships.find(
+        (item) => item.status === Enums.MembershipStatus.ACTIVE && item.endDate > new Date(),
+      ) ?? null,
+  };
 };
 
-/** Chỉ cập nhật các trường hồ sơ cho phép và lưu giá trị trước/sau vào audit. */
-export const updateOwn = async (userId, data) => {
-  const before = await prisma.user.findUnique({
-    where: { id: userId },
-    include: buildProfileInclude(),
+/** BR-0.2: chỉ sửa thông tin liên hệ; audit giá trị cũ/mới cùng transaction. */
+export const updateOwn = async (actor, fields) => {
+  await prisma.$transaction(async (tx) => {
+    await ensureUniqueContacts(fields, actor.id, tx);
+    const before = await tx.user.findUniqueOrThrow({
+      where: { id: actor.id },
+      select: { fullName: true, email: true, phone: true },
+    });
+    const after = await tx.user.update({
+      where: { id: actor.id },
+      data: fields,
+      select: { fullName: true, email: true, phone: true },
+    });
+    await tx.auditLog.create({
+      data: {
+        userId: actor.id,
+        action: AUDIT_ACTIONS.UPDATE,
+        entity: ENTITIES.USER,
+        entityId: String(actor.id),
+        meta: { before, after },
+      },
+    });
   });
-  if (!before) throw ApiError.notFound('Không tìm thấy tài khoản');
-  const after = await prisma.user.update({
-    where: { id: userId },
-    data,
-    include: buildProfileInclude(),
-  });
-  await recordAudit({
-    userId,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity: ENTITIES.USER,
-    entityId: userId,
-    meta: { before: contactFields(before), after: contactFields(after) },
-  });
-  return toProfile(after);
+  return getOwn(actor);
+};
+
+/** Danh sách định danh hội viên dùng để chọn người nhận hóa đơn tại quầy. */
+export const list = async (query) => {
+  const where = {
+    role: { isDefault: true },
+    ...(query.search && {
+      OR: [
+        { fullName: { contains: query.search } },
+        { email: { contains: query.search } },
+        { phone: { contains: query.search } },
+      ],
+    }),
+  };
+  const [items, total] = await prisma.$transaction([
+    prisma.user.findMany({
+      where,
+      select: { id: true, fullName: true, email: true, phone: true, status: true },
+      orderBy: { id: 'desc' },
+      ...toPrismaPage(query),
+    }),
+    prisma.user.count({ where }),
+  ]);
+  return { items, meta: buildPageMeta({ ...query, total }) };
 };
