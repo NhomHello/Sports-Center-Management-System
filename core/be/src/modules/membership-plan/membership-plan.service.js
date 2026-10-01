@@ -88,7 +88,7 @@ export const create = async (data, actor) => {
  * @returns {Promise<object>}
  */
 export const update = async (id, data, actor) => {
-  await getById(id);
+  const oldPlan = await getById(id);
 
   const plan = await prisma.membershipPlan.update({
     where: { id },
@@ -100,6 +100,10 @@ export const update = async (id, data, actor) => {
     action: AUDIT_ACTIONS.UPDATE,
     entity: ENTITIES.MEMBERSHIP_PLAN,
     entityId: id,
+    meta: {
+      oldValue: oldPlan,
+      newValue: plan,
+    },
   });
 
   return plan;

@@ -1,10 +1,34 @@
 import { z } from 'zod';
 import { paginationQuerySchema } from '../../common/utils/pagination.js';
 import { VALIDATION } from '../../constants/index.js';
-
+const VIETNAM_PHONE_PREFIX_LENGTH = 3;
 const memberIdParam = z.object({
   id: z.coerce.number().int().positive(),
 });
+
+const normalizePhone = (value) => {
+  const phone = value.trim();
+
+  if (phone.startsWith('+84')) {
+    return `0${phone.slice(VIETNAM_PHONE_PREFIX_LENGTH)}`;
+  }
+
+  return phone;
+};
+
+const normalizeSearch = (value) => {
+  const search = value.trim();
+
+  if (VALIDATION.PHONE_REGEX.test(search)) {
+    return normalizePhone(search);
+  }
+
+  if (search.includes('@')) {
+    return search.toLowerCase();
+  }
+
+  return search;
+};
 
 const emailSchema = z
   .string()
@@ -12,7 +36,11 @@ const emailSchema = z
   .email('Email không hợp lệ')
   .transform((value) => value.toLowerCase());
 
-const phoneSchema = z.string().trim().regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ');
+const phoneSchema = z
+  .string()
+  .trim()
+  .regex(VALIDATION.PHONE_REGEX, 'Số điện thoại không hợp lệ')
+  .transform(normalizePhone);
 
 const memberProfileFields = {
   fullName: z
@@ -43,6 +71,7 @@ export const listMembersSchema = {
       .string()
       .trim()
       .max(VALIDATION.SEARCH_MAX_LENGTH, 'Từ khóa tìm kiếm quá dài')
+      .transform(normalizeSearch)
       .optional(),
   }),
 };

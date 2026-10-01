@@ -61,7 +61,17 @@ const ensureUniqueIdentity = async ({ email, phone }, excludeId) => {
 };
 
 /**
- * Lấy membership gần nhất và tính trạng thái hiện tại.
+ * Bổ sung trạng thái ACTIVE/EXPIRED cho membership.
+ * @param {object} membership
+ * @returns {object}
+ */
+const toMembershipView = (membership) => ({
+  ...membership,
+  status: membership.endDate >= new Date() ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED,
+});
+
+/**
+ * Lấy membership gần nhất của hội viên.
  * @param {number} memberId
  * @returns {Promise<object|null>}
  */
@@ -72,14 +82,23 @@ const getMembershipSummary = async (memberId) => {
     orderBy: { endDate: 'desc' },
   });
 
-  if (!membership) {
-    return null;
-  }
+  return membership ? toMembershipView(membership) : null;
+};
 
-  return {
-    ...membership,
-    status: membership.endDate >= new Date() ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED,
-  };
+/**
+ * Lấy lịch sử membership của hội viên.
+ * Gói STOPPED vẫn được include để không làm mất lịch sử.
+ * @param {number} memberId
+ * @returns {Promise<object[]>}
+ */
+const getMembershipHistory = async (memberId) => {
+  const memberships = await prisma.membership.findMany({
+    where: { userId: memberId },
+    include: { plan: true },
+    orderBy: { startDate: 'desc' },
+  });
+
+  return memberships.map(toMembershipView);
 };
 
 /**
@@ -129,7 +148,7 @@ export const list = async (query) => {
 };
 
 /**
- * Lấy chi tiết hội viên và membership gần nhất.
+ * Lấy chi tiết hội viên, membership gần nhất và lịch sử membership.
  * @param {number} id
  * @returns {Promise<object>}
  */
@@ -148,9 +167,15 @@ export const getById = async (id) => {
     throw ApiError.notFound('Không tìm thấy hội viên');
   }
 
+  const [membership, membershipHistory] = await Promise.all([
+    getMembershipSummary(id),
+    getMembershipHistory(id),
+  ]);
+
   return {
     ...toPublicUser(member),
-    membership: await getMembershipSummary(id),
+    membership,
+    membershipHistory,
   };
 };
 
