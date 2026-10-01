@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { MembershipPlanStatus } from '@prisma/client';
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
@@ -69,7 +68,10 @@ export const getById = async (id) => {
  */
 export const create = async (data, actor) => {
   const plan = await prisma.membershipPlan.create({
-    data: { ...data, code: `PLAN-${randomUUID()}` },
+    data: {
+      ...data,
+      status: data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
+    },
   });
 
   recordAudit({
@@ -94,7 +96,12 @@ export const update = async (id, data, actor) => {
 
   const plan = await prisma.membershipPlan.update({
     where: { id },
-    data,
+    data: {
+      ...data,
+      ...(data.isActive !== undefined && {
+        status: data.isActive ? MembershipPlanStatus.SELLING : MembershipPlanStatus.STOPPED,
+      }),
+    },
   });
 
   recordAudit({
