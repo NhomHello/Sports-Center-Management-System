@@ -16,11 +16,14 @@ Windows: nên bật WSL2 backend cho Docker; chạy lệnh trong PowerShell ho�
 ```bash
 git clone https://github.com/NhomHello/Sports-Center-Management-System.git
 cd Sports-Center-Management-System
-npm run setup      # ~2-3 phút lần đầu
 npm run dev
 ```
 
-`npm run dev` làm gì: tạo `.env` từ `.env.example` (nếu thiếu) → `docker compose up mysql` → chờ healthy → `prisma generate` → apply migration → seed (permission, role, admin, settings, user mẫu) → chạy BE (`node --watch`) và FE (`vite`) trong 1 terminal, Ctrl+C tắt cả hai.
+`npm run dev` dùng chung trên Windows, macOS và Linux: tự cài dependency khi thiếu → tạo
+`.env` từ `.env.example` (nếu thiếu) → `docker compose up mysql` → chờ healthy →
+`prisma generate` → apply migration → seed (permission, role, admin, settings, user mẫu) →
+in bộ tài khoản demo → chạy BE (`node --watch`) và FE (`vite`) trong một terminal.
+Nhấn Ctrl+C để tắt cả hai server; dữ liệu MySQL vẫn được giữ trong Docker volume.
 
 | Địa chỉ                                   | Là gì                    |
 | ----------------------------------------- | ------------------------ |
@@ -28,7 +31,8 @@ npm run dev
 | http://localhost:3000/api/v1/health       | Backend health           |
 | `npm run db:studio` → http://localhost:5555 | Prisma Studio (xem DB) |
 
-Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạy MySQL riêng, sửa `DATABASE_URL`), `--no-seed`.
+Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạy MySQL riêng,
+sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/seed mà không mở server.
 
 ## 3. Tài khoản mẫu (dev)
 
