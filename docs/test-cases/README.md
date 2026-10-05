@@ -33,6 +33,6 @@ npx vitest --project ... -t "TC-RBAC-02"   # một case (trong core/be)
 | File                                     | Phạm vi                                       | Test tự động                    |
 | ---------------------------------------- | --------------------------------------------- | ------------------------------- |
 | [TC-AUTH-RBAC.md](TC-AUTH-RBAC.md)       | Đăng nhập, đăng ký, /me, phân quyền động, role CRUD | `tests/auth.test.js`, `tests/rbac.test.js`, `tests/role.test.js` |
-| TC-F1-membership.md                      | (Flow 1 – Nhanh/Bảo viết)                     |                                 |
+| [TC-F1-membership.md](TC-F1-membership.md) | Auth/profile/settings/notification Sprint 1 | Unit test cạnh module |
 | TC-F2-class-booking.md                   | (Flow 2 – Bảo viết)                           |                                 |
-| TC-F3-payment-report.md                  | (Flow 3 – Nhanh viết, gồm SePay webhook)      |                                 |
+| [TC-F3-payment-report.md](TC-F3-payment-report.md) | Cash payment và invoice Sprint 1 | Unit test cạnh module |

@@ -18,3 +18,9 @@ export const me = async (req, res) => {
   const data = await authService.getMe(req.user.id);
   sendSuccess(res, { data });
 };
+
+/** POST /auth/password-changes; không trả hoặc lưu mật khẩu trong response/audit. */
+export const changePassword = async (req, res) => {
+  const data = await authService.changePassword(req.user.id, req.validated.body);
+  sendSuccess(res, { data, message: 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.' });
+};

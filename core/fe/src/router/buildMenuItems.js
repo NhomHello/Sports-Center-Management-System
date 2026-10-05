@@ -16,7 +16,12 @@ export const buildMenuItems = (routes, can) => {
       continue;
     }
     if (!groups.has(route.menu.group)) {
-      const group = { key: `group:${route.menu.group}`, label: route.menu.group, children: [] };
+      const group = {
+        key: `group:${route.menu.group}`,
+        icon: route.menu.icon,
+        label: route.menu.group,
+        children: [],
+      };
       groups.set(route.menu.group, group);
       items.push(group);
     }
