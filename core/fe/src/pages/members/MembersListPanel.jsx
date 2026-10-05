@@ -38,7 +38,9 @@ export function MembersListPanel({ membersQuery, table, columns }) {
             <Typography.Title level={4}>
               <IdcardOutlined /> Danh sách hồ sơ
             </Typography.Title>
-            <Typography.Text type="secondary">Quản lý thông tin và gói tập của hội viên</Typography.Text>
+            <Typography.Text type="secondary">
+              Quản lý thông tin và gói tập của hội viên
+            </Typography.Text>
           </span>
           <Input.Search
             allowClear

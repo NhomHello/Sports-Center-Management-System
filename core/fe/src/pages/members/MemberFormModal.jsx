@@ -53,8 +53,8 @@ export function MemberFormModal({ open, onClose }) {
         >
           <Input placeholder="Không bắt buộc nếu có số điện thoại" />
         </Form.Item>
-        <Form.Item 
-          name="phone" 
+        <Form.Item
+          name="phone"
           label="Số điện thoại"
           rules={[{ required: true, message: 'Nhập số điện thoại' }]}
         >
