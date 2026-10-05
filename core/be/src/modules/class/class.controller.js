@@ -5,15 +5,19 @@ import { enrichClassView } from './class-booking-policy.service.js';
 const context = (req) => ({ user: req.user, permissions: req.permissions });
 /** Danh sách lớp có phạm vi xác thực. */
 export const list = async (req, res) => {
+  const memberId = readService.resolveBookingMember(req.validated.query, context(req));
   const result = await readService.list(req.validated.query, context(req));
-  const data = await Promise.all(result.data.map((item) => enrichClassView(item, req.user.id)));
+  const data = await Promise.all(result.data.map((item) => enrichClassView(item, memberId)));
   sendSuccess(res, { ...result, data });
 };
 /** Chi tiết lớp. */
 export const getById = async (req, res) => {
+  const memberId = readService.resolveBookingMember(req.validated.query, context(req));
   const item = await readService.getById(req.validated.params.id, context(req));
-  sendSuccess(res, { data: await enrichClassView(item, req.user.id) });
+  sendSuccess(res, { data: await enrichClassView(item, memberId) });
 };
+/** Bộ lọc quản lý theo phạm vi quyền. */
+export const filters = async (req, res) => sendSuccess(res, { data: await readService.getFilters(context(req)) });
 /** Danh sách HLV cho cấu hình lớp. */
 export const listCoaches = async (_req, res) =>
   sendSuccess(res, { data: await readService.listCoaches() });
