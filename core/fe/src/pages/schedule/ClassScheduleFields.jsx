@@ -37,7 +37,7 @@ export function ClassScheduleFields() {
             {fields.map((field) => (
               <Space key={field.key} wrap align="start">
                 <Form.Item name={[field.name, 'dayOfWeek']} label="Thứ" rules={required}>
-                  <Select options={WEEKDAYS} style={{ minWidth: 120 }} />
+                  <Select options={WEEKDAYS} virtual={false} style={{ minWidth: 120 }} />
                 </Form.Item>
                 <Form.Item name={[field.name, 'startTime']} label="Giờ bắt đầu" rules={timeRules}>
                   <Input placeholder="18:00" />

@@ -15,6 +15,7 @@ export function ResourceFormModal({ item, resource, loading, onSubmit, onClose }
       <Form
         form={form}
         layout="vertical"
+        scrollToFirstError={{ focus: true }}
         initialValues={item || { isActive: true }}
         onFinish={onSubmit}
       >

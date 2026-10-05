@@ -11,13 +11,13 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
         <Input maxLength={120} />
       </Form.Item>
       <Form.Item name="subjectId" label="Bộ môn" rules={required}>
-        <Select options={options(subjects)} />
+        <Select options={options(subjects)} virtual={false} />
       </Form.Item>
       <Form.Item name="roomId" label="Phòng tập" rules={required}>
-        <Select options={options(rooms)} />
+        <Select options={options(rooms)} virtual={false} />
       </Form.Item>
       <Form.Item name="coachId" label="Huấn luyện viên" rules={required}>
-        <Select options={options(coaches)} />
+        <Select options={options(coaches)} virtual={false} />
       </Form.Item>
       <Form.Item
         name="capacity"

@@ -51,6 +51,7 @@ export function ClassFormModal({ item, onClose }) {
       <Form
         form={form}
         layout="vertical"
+        scrollToFirstError={{ focus: true }}
         initialValues={classFormValues(item)}
         onFinish={save.mutate}
       >
