@@ -1,6 +1,31 @@
 import { useEffect } from 'react';
 import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
 
+const MembershipIdentityFields = ({ plan }) => (
+  <>
+    {!plan && (
+      <Form.Item
+        name="code"
+        label="Mã gói"
+        normalize={(value) => value?.toUpperCase().replaceAll(' ', '_')}
+        rules={[
+          { required: true, message: 'Vui lòng nhập mã gói' },
+          { pattern: /^[A-Z0-9_]+$/, message: 'Chỉ dùng chữ in hoa, số và dấu gạch dưới' },
+        ]}
+      >
+        <Input maxLength={50} placeholder="Ví dụ: STARTER_30" />
+      </Form.Item>
+    )}
+    <Form.Item
+      name="name"
+      label="Tên gói"
+      rules={[{ required: true, message: 'Vui lòng nhập tên gói' }]}
+    >
+      <Input placeholder="Ví dụ: Gói 1 tháng" />
+    </Form.Item>
+  </>
+);
+
 /** Modal tạo hoặc sửa thông tin gói tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
 export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading }) {
   const [form] = Form.useForm();
@@ -40,26 +65,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
       destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
-        {!plan && (
-          <Form.Item
-            name="code"
-            label="Mã gói"
-            normalize={(value) => value?.toUpperCase().replaceAll(' ', '_')}
-            rules={[
-              { required: true, message: 'Vui lòng nhập mã gói' },
-              { pattern: /^[A-Z0-9_]+$/, message: 'Chỉ dùng chữ in hoa, số và dấu gạch dưới' },
-            ]}
-          >
-            <Input maxLength={50} placeholder="Ví dụ: STARTER_30" />
-          </Form.Item>
-        )}
-        <Form.Item
-          name="name"
-          label="Tên gói"
-          rules={[{ required: true, message: 'Vui lòng nhập tên gói' }]}
-        >
-          <Input placeholder="Ví dụ: Gói 1 tháng" />
-        </Form.Item>
+        <MembershipIdentityFields plan={plan} />
         <Form.Item
           name="durationDays"
           label="Thời hạn (ngày)"
@@ -75,7 +81,10 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
           <InputNumber min={1} style={{ width: '100%' }} placeholder="Ví dụ: 500000" />
         </Form.Item>
         <Form.Item name="benefitsText" label="Quyền lợi (mỗi dòng một quyền lợi)">
-          <Input.TextArea rows={4} placeholder="Ví dụ:&#10;Tập gym không giới hạn thời gian&#10;Tham gia mọi lớp Yoga" />
+          <Input.TextArea
+            rows={4}
+            placeholder="Ví dụ:&#10;Tập gym không giới hạn thời gian&#10;Tham gia mọi lớp Yoga"
+          />
         </Form.Item>
         <Form.Item name="isActive" label="Đang mở bán" valuePropName="checked">
           <Switch />

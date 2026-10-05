@@ -1211,9 +1211,7 @@ a {
 .scms-pricing-surface {
   padding: 24px;
   color: #f8fafc;
-  background:
-    radial-gradient(circle at 75% 0%, rgb(59 130 246 / 12%), transparent 34%),
-    #11151d;
+  background: radial-gradient(circle at 75% 0%, rgb(59 130 246 / 12%), transparent 34%), #11151d;
   border: 1px solid #242b38;
   border-radius: 22px;
   box-shadow: 0 24px 54px -42px rgb(15 23 42 / 70%);
@@ -1298,7 +1296,10 @@ a {
 }
 .scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary,
 .scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:hover,
-.scms-pricing-surface .scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary:focus-visible {
+.scms-pricing-surface
+  .scms-plan-card--featured
+  .scms-plan-card__actions
+  > .ant-btn-primary:focus-visible {
   color: #fff !important;
   background: #3b82f6 !important;
   border-color: #3b82f6 !important;
