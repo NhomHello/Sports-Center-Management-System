@@ -4,6 +4,7 @@ import { env } from '../../../src/config/env.js';
 import { logger } from '../../../src/config/logger.js';
 import { SEED_MOCK_USERS } from './users.mock.js';
 import { SEED_MOCK_PLANS } from './plans.mock.js';
+import { seedMockClasses } from './classes.mock.js';
 
 /** Tao user mau (bo qua neu da ton tai). Chay khi SEED_MOCK_DATA=true. */
 export async function seedMockUsers() {
@@ -42,4 +43,5 @@ async function seedMockMembershipPlans() {
 export async function seedMockData() {
   await seedMockUsers();
   await seedMockMembershipPlans();
+  await seedMockClasses();
 }
