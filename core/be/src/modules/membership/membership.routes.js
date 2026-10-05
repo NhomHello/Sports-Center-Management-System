@@ -6,10 +6,7 @@ import { validate } from '../../common/middlewares/validate.middleware.js';
 import { createCounterOrder } from '../payment/payment.controller.js';
 import { createCounterOrderSchema } from '../payment/payment.validation.js';
 import * as controller from './membership.controller.js';
-import {
-  createOwnOrderSchema,
-  memberMembershipSchema,
-} from './membership.validation.js';
+import { createOwnOrderSchema, memberMembershipSchema } from './membership.validation.js';
 
 const router = Router();
 

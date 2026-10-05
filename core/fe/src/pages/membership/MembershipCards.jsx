@@ -38,29 +38,29 @@ const ManageActions = ({ plan, onEdit, onDelete }) => {
   if (!onEdit && !onDelete) return null;
   return (
     <Space className="scms-plan-card__manage">
-        {onEdit && (
-          <Tooltip title="Chỉnh sửa gói tập">
-            <Button
-              icon={<EditOutlined />}
-              aria-label={`Chỉnh sửa ${plan.name}`}
-              onClick={() => onEdit(plan)}
-            >
-              Chỉnh sửa
-            </Button>
-          </Tooltip>
-        )}
-        {onDelete && (
-          <Tooltip title={plan.isActive ? 'Xóa hoặc ngừng bán' : 'Xóa gói tập'}>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              aria-label={`Xóa hoặc ngừng bán ${plan.name}`}
-              onClick={() => onDelete(plan)}
-            >
-              {plan.isActive ? 'Ngừng bán' : 'Xóa'}
-            </Button>
-          </Tooltip>
-        )}
+      {onEdit && (
+        <Tooltip title="Chỉnh sửa gói tập">
+          <Button
+            icon={<EditOutlined />}
+            aria-label={`Chỉnh sửa ${plan.name}`}
+            onClick={() => onEdit(plan)}
+          >
+            Chỉnh sửa
+          </Button>
+        </Tooltip>
+      )}
+      {onDelete && (
+        <Tooltip title={plan.isActive ? 'Xóa hoặc ngừng bán' : 'Xóa gói tập'}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            aria-label={`Xóa hoặc ngừng bán ${plan.name}`}
+            onClick={() => onDelete(plan)}
+          >
+            {plan.isActive ? 'Ngừng bán' : 'Xóa'}
+          </Button>
+        </Tooltip>
+      )}
     </Space>
   );
 };
@@ -88,7 +88,9 @@ export const PlanActions = ({
 );
 
 export const PlanBenefits = ({ benefits, description }) => {
-  const items = benefits?.length ? benefits : [description || 'Liên hệ trung tâm để biết quyền lợi'];
+  const items = benefits?.length
+    ? benefits
+    : [description || 'Liên hệ trung tâm để biết quyền lợi'];
   return (
     <Space className="scms-plan-card__benefits" orientation="vertical" size={12}>
       {items.map((benefit) => (

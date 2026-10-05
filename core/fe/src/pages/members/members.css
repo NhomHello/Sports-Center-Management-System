@@ -1,0 +1,24 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.scms-member-table .ant-table-thead > tr > th {
+  background: #fafafa !important;
+  color: #595959;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 16px 32px;
+}
+.scms-member-table .ant-table-tbody > tr > td {
+  padding: 20px 32px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.scms-member-table .ant-table-tbody > tr:hover > td {
+  background: #fcfcfc;
+}

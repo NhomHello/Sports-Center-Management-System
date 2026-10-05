@@ -94,7 +94,9 @@ describe('Sprint 1: metadata, validation và quyền cấu hình', () => {
     expect(prefix.maxLength).toBe(30);
     const centerSettings = list.body.data
       .flatMap((group) => group.items)
-      .filter((item) => [SETTING_KEYS.CENTER_ADDRESS, SETTING_KEYS.CENTER_PHONE].includes(item.key));
+      .filter((item) =>
+        [SETTING_KEYS.CENTER_ADDRESS, SETTING_KEYS.CENTER_PHONE].includes(item.key),
+      );
     expect(centerSettings.every((item) => item.required)).toBe(true);
     expect(
       (
