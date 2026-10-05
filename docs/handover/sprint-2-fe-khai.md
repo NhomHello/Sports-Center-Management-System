@@ -1,44 +1,39 @@
-# Sprint 2 – FE – Khải
+# Sprint 2 · FE Khải
 
-- Nhánh: `sprint-2/fe-khai`
-- Thời gian: 06/10 → 19/10
-- Nguồn code: nhánh `khoi` (Khôi đã làm trước cho Flow 1–4)
+- Nhánh thành viên: `sprint-2/fe-khai`.
+- Nhánh chạy tích hợp: `sprint-2/integration`.
+- Thời gian kế hoạch: 06–19/10. Nền: Sprint 1 trên `origin/main`.
+- Commit triển khai chính: `0f439fb`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
 
-## Function phụ trách
+Danh mục, tạo/sửa/huỷ lớp, lớp mở và chi tiết (#29–34, #36–37).
 
-| # | US | Function | Trạng thái trên nhánh khoi | Ghi chú |
-|---|---|---|---|---|
-| 29 | UC-CB-01 | Sửa danh sách bộ môn | ✅ Khôi đã làm (BE+FE) | module subject + ResourceCatalogPanel |
-| 30 | UC-CB-14 | Danh sách phòng tập | ✅ Khôi đã làm (BE+FE) | module room + ResourceCatalogPanel |
-| 31 | UC-CB-14 | Tạo / sửa / ngừng hoạt động phòng | ✅ Khôi đã làm (BE+FE) | module room + ResourceCatalogPanel |
-| 32 | UC-CB-02 | Tạo lớp | ✅ Khôi đã làm (BE+FE) | module class + ClassFormModal |
-| 33 | UC-CB-03 | Sửa lớp / đổi lịch | ✅ Khôi đã làm (BE+FE) | module class + ClassFormModal |
-| 34 | UC-CB-04 | Huỷ lớp | ✅ Khôi đã làm (BE+FE) | DELETE /classes/:id, có gửi thông báo |
-| 36 | UC-CB-05 | Danh sách lớp đang mở | ✅ Khôi đã làm (BE+FE) |  |
-| 37 | UC-CB-15 | Chi tiết lớp | ✅ Khôi đã làm (BE+FE) |  |
+## Chức năng phụ trách
 
-## Cách làm
+| # | UC | Chức năng |
+| --- | --- | --- |
+| 29 | UC-CB-01 | Sửa danh sách bộ môn |
+| 30 | UC-CB-14 | Danh sách phòng tập |
+| 31 | UC-CB-14 | Tạo / sửa / ngừng hoạt động phòng |
+| 32 | UC-CB-02 | Tạo lớp |
+| 33 | UC-CB-03 | Sửa lớp / đổi lịch |
+| 34 | UC-CB-04 | Huỷ lớp |
+| 36 | UC-CB-05 | Danh sách lớp đang mở |
+| 37 | UC-CB-15 | Chi tiết lớp |
 
-1. Chuyển sang nhánh: `git fetch` rồi `git switch sprint-2/fe-khai`.
-2. File **lấy toàn bộ**: `git checkout origin/khoi -- <đường dẫn>`.
-3. File **lấy một phần**: xem bằng `git show origin/khoi:<đường dẫn>` và chỉ chép phần ghi ở cột "Phần cần lấy". File dùng chung (schema, routes, permissions…) nhiều người cùng sửa, nên merge theo thứ tự sprint để tránh conflict.
-4. Đọc hiểu, đối chiếu Business Rule trong file Excel, sửa chỗ còn thiếu, chạy `npm run lint` và `npm test`.
-5. Commit bằng tài khoản của mình. Commit nào dùng lại code của Khôi thì thêm dòng cuối: `Co-authored-by: kitter <longhuy0078@gmail.com>`.
-6. Mở PR vào `main`, nhờ một thành viên khác review rồi mới merge.
+## Bàn giao triển khai
 
-## File lấy toàn bộ từ nhánh khoi
+Các module/component chính: ResourceCatalogPanel, ResourceFormModal, ClassListPanel, ClassFormModal, ClassDetailDrawer và ClassSessionsTable.
 
-| File | Ghi chú |
-|---|---|
-| `core/fe/src/pages/schedule/ResourceCatalogPanel.jsx` |  |
-| `core/fe/src/pages/schedule/ResourceFormModal.jsx` |  |
-| `core/fe/src/pages/schedule/ClassFormModal.jsx` |  |
-| `core/fe/src/pages/schedule/ClassSessionsTable.jsx` |  |
+Đăng ký là **toàn lớp**. Backend trả chỗ còn lại, trạng thái đăng ký, canEnroll/canCancel, hạn huỷ và lý do từ chối. Hạn N giờ lấy từ system_settings, mặc định 12; ngoại lệ do đổi lịch chỉ cho hội viên bị xung đột thật, trước buổi xung đột đầu tiên.
 
-## File lấy một phần
+Phạm vi lớp/roster kiểm tra ở BE; HLV chỉ thấy lớp phụ trách khi không có class.read_all. FE dùng Ant Design, Axios service, TanStack Query và tải lại lớp/lịch/roster sau thay đổi. UTC ở DB, giờ Việt Nam ở giao diện.
 
-| File | Phần cần lấy |
-|---|---|
-| `core/fe/src/pages/schedule/SchedulePage.jsx` | Phần quản lý lớp và danh mục |
-| `core/fe/src/services/schedule.service.js` | subjects, rooms, classes CRUD |
-| `core/fe/src/router/routeRegistry.jsx` | Route schedule |
+Nhánh origin/khoi không tồn tại tại lúc triển khai; không áp dụng hướng dẫn checkout/copy hoặc co-author từ nhánh đó. Các migration cũ giữ nguyên; chỉ thêm migration 20261005100000_sprint2_class_booking. UC-CB-18 từng buổi thuộc Sprint 3.
+
+## Kiểm tra và tích hợp
+
+Đối chiếu [coverage 18 chức năng](sprint-2-coverage.md), [test cases](../test-cases/TC-F2-class-booking.md), [API và DTO](../sprint-2-api.md).
+
+Tích hợp local theo thứ tự BE Bảo → BE Nhanh → FE Khải → FE Khôi. Main được bảo toàn. Các bước push, PR và merge remote thuộc bàn giao riêng.
+
+Chạy từ nhánh tích hợp sau khi chuyển bằng git switch sprint-2/integration: npm run dev; npm run verify:sprint2; npm run test:e2e; npm run lint; npm run format:check; npm run build. Kết quả cuối và hướng dẫn demo nằm trong coverage.
