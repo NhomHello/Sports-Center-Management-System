@@ -37,7 +37,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
     await cleanupClassFixture(f);
     await prisma.$disconnect();
   });
-  it('hai người tranh chỗ cuối chỉ một người giữ được chỗ', async () => {
+  it('TC-F2-B01: hai người tranh chỗ cuối chỉ một người giữ được chỗ', async () => {
     const item = await create({ capacity: 1 });
     const results = await Promise.all([
       enroll(item.id, f.memberToken),
@@ -48,7 +48,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       await prisma.classEnrollment.count({ where: { classId: item.id, status: 'BOOKED' } }),
     ).toBe(1);
   });
-  it('đăng ký trùng 409, membership hết hạn bị chặn', async () => {
+  it('TC-F2-B02: đăng ký trùng 409, membership hết hạn bị chặn', async () => {
     const item = await create();
     expect((await enroll(item.id, f.memberToken)).status).toBe(201);
     expect((await enroll(item.id, f.memberToken)).status).toBe(409);
@@ -58,18 +58,18 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
     });
     expect((await enroll(item.id, f.otherToken)).status).toBe(422);
   });
-  it('lớp ngoài cửa sổ đăng ký không được giữ chỗ', async () => {
+  it('TC-F2-B03: lớp ngoài cửa sổ đăng ký không được giữ chỗ', async () => {
     const item = await create({ registrationStartAt: new Date(Date.now() + DAY_MS).toISOString() });
     expect((await enroll(item.id, f.memberToken)).status).toBe(422);
     expect(await prisma.classEnrollment.count({ where: { classId: item.id } })).toBe(0);
   });
-  it('đăng ký đồng thời hai lớp trùng giờ chỉ thành công một lớp', async () => {
+  it('TC-F2-B04: đăng ký đồng thời hai lớp trùng giờ chỉ thành công một lớp', async () => {
     const a = await create();
     const b = await create({ roomId: f.roomOther.id, coachId: f.coachOther.id });
     const results = await Promise.all([enroll(a.id, f.memberToken), enroll(b.id, f.memberToken)]);
     expect(results.map((r) => r.status).sort()).toEqual([201, 422]);
   });
-  it('đăng ký/huỷ hộ lưu đúng actor, hội viên không dùng được endpoint hộ', async () => {
+  it('TC-F2-B05: đăng ký/huỷ hộ lưu đúng actor, hội viên không dùng được endpoint hộ', async () => {
     const item = await create();
     expect(
       (await post(`/classes/${item.id}/enrollments`, f.memberToken, { memberId: f.other.id }))
@@ -84,7 +84,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
     const again = await remove(`/classes/${item.id}/enrollments/${f.member.id}`, f.adminToken);
     expect(again.body.data.cancelledAt).toBe(cancelled.body.data.cancelledAt);
   });
-  it('huỷ quá hạn giữ booking, kể cả người quản lý huỷ hộ', async () => {
+  it('TC-F2-B06: huỷ quá hạn giữ booking, kể cả người quản lý huỷ hộ', async () => {
     const item = await create();
     await enroll(item.id, f.memberToken);
     await prisma.classSession.updateMany({
@@ -106,7 +106,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       'BOOKED',
     );
   });
-  it('membership hết hạn giữa kỳ vẫn xem lịch cũ, không xem lịch của người khác', async () => {
+  it('TC-F2-B07: membership hết hạn giữa kỳ vẫn xem lịch cũ, không xem lịch của người khác', async () => {
     const item = await create();
     await enroll(item.id, f.memberToken);
     await prisma.membership.updateMany({
@@ -128,13 +128,14 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       .get(apiPath('/schedule/me'))
       .query({ weekStart: monday })
       .set(bearer(f.otherToken));
-    expect(other.body.data).toEqual([]);
+    expect(other.body.data.some((s) => s.classId === item.id)).toBe(false);
+    expect(other.body.data.every((s) => s.gymClass.enrollment.memberId === f.other.id)).toBe(true);
     expect(
       (await api.get(apiPath(`/members/${f.member.id}/enrollments`)).set(bearer(f.otherToken)))
         .status,
     ).toBe(403);
   });
-  it('HLV chỉ xem lớp/roster được phân công, roster không có dữ liệu bí mật', async () => {
+  it('TC-F2-B08: HLV chỉ xem lớp/roster được phân công, roster không có dữ liệu bí mật', async () => {
     const item = await create();
     await enroll(item.id, f.memberToken);
     const roster = await api.get(apiPath(`/classes/${item.id}/roster`)).set(bearer(f.coachToken));
@@ -150,7 +151,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
     expect(list.body.data.every((c) => c.coachId === f.coachOther.id)).toBe(true);
     expect(list.body.data.some((c) => c.id === item.id)).toBe(false);
   });
-  it('ngoại lệ chỉ được tạo bởi đổi lịch gây xung đột thực sự', async () => {
+  it('TC-F2-B09: ngoại lệ chỉ được tạo bởi đổi lịch gây xung đột thực sự', async () => {
     const a = await create();
     const b = await create({
       roomId: f.roomOther.id,

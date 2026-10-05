@@ -14,7 +14,7 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
     await cleanupClassFixture(f);
     await prisma.$disconnect();
   });
-  it('tạo lịch UTC, chỉ trả thông tin HLV công khai', async () => {
+  it('TC-F2-C01: tạo lịch UTC, chỉ trả thông tin HLV công khai', async () => {
     const result = await api
       .post(apiPath('/classes'))
       .set(bearer(f.adminToken))
@@ -25,7 +25,7 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
     expect(item.sessions[0].startAt).toContain('T11:00:00');
     expect(item.coach).not.toHaveProperty('passwordHash');
   });
-  it('chặn trùng phòng/HLV nhưng cho phép hai buổi liền nhau', async () => {
+  it('TC-F2-C02: chặn trùng phòng/HLV nhưng cho phép hai buổi liền nhau', async () => {
     const blocked = await api
       .post(apiPath('/classes'))
       .set(bearer(f.adminToken))
@@ -41,7 +41,7 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
       );
     expect(adjacent.status).toBe(201);
   });
-  it('không ngừng phòng/bộ môn hoặc khoá HLV còn lớp đang dùng', async () => {
+  it('TC-F2-C03: không ngừng phòng/bộ môn hoặc khoá HLV còn lớp đang dùng', async () => {
     expect(
       (await api.delete(apiPath(`/rooms/${f.room.id}`)).set(bearer(f.adminToken))).status,
     ).toBe(422);
@@ -57,7 +57,7 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
       ).status,
     ).toBe(422);
   });
-  it('đổi lịch giữ phiên bản cũ và gửi thông báo idempotent', async () => {
+  it('TC-F2-C04: đổi lịch giữ phiên bản cũ và gửi thông báo idempotent', async () => {
     await prisma.classEnrollment.create({
       data: {
         classId: item.id,
@@ -81,7 +81,30 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
       await prisma.notification.count({ where: { userId: f.member.id, kind: 'CLASS_CHANGED' } }),
     ).toBe(1);
   });
-  it('huỷ lớp giữ lịch sử đăng ký, huỷ lại không thêm thông báo', async () => {
+  it('TC-F2-C05: đổi lịch giữ nguyên buổi đã diễn ra cùng snapshot phòng/HLV cũ', async () => {
+    const past = await prisma.classSession.create({
+      data: {
+        classId: item.id,
+        startAt: new Date(Date.now() - 7200000),
+        endAt: new Date(Date.now() - 3600000),
+        status: 'COMPLETED',
+        roomName: 'Phòng lịch sử',
+        coachName: 'HLV lịch sử',
+      },
+    });
+    const changed = await api
+      .put(apiPath(`/classes/${item.id}`))
+      .set(bearer(f.adminToken))
+      .send(
+        classPayload(f, {
+          weeklySchedule: [{ ...item.weeklySchedule[0], startTime: '21:00', endTime: '22:00' }],
+        }),
+      );
+    expect(changed.status).toBe(200);
+    const retained = await prisma.classSession.findUniqueOrThrow({ where: { id: past.id } });
+    expect(retained).toEqual(past);
+  });
+  it('TC-F2-C06: huỷ lớp giữ lịch sử đăng ký, huỷ lại không thêm thông báo', async () => {
     expect(
       (await api.delete(apiPath(`/classes/${item.id}`)).set(bearer(f.adminToken))).status,
     ).toBe(200);
@@ -90,6 +113,9 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
     ).toBe(200);
     const booking = await prisma.classEnrollment.findFirst({ where: { classId: item.id } });
     expect(booking.status).toBe('CANCELLED');
+    expect(
+      await prisma.classSession.count({ where: { classId: item.id, status: 'COMPLETED' } }),
+    ).toBe(1);
     await drainClassEvents();
     expect(
       await prisma.notification.count({ where: { userId: f.member.id, kind: 'CLASS_CANCELLED' } }),
