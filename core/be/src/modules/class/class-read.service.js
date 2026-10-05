@@ -27,6 +27,10 @@ export const list = async (query, context) => {
   const where = {
     AND: [
       scope,
+      ...(context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) &&
+      !context.permissions.has(PERMISSIONS.CLASS_READ_ALL)
+        ? [{ coachId: context.user.id }]
+        : []),
       {
         ...(query.status && { status: query.status }),
         ...(query.subjectId && { subjectId: query.subjectId }),
@@ -69,6 +73,8 @@ export const getById = async (id, context) => {
     context.permissions.has(PERMISSIONS.CLASS_READ_ALL) ||
     (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) &&
       item.coachId === context.user.id);
+  if (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) && !privileged)
+    throw ApiError.forbidden();
   if (!privileged && !enrolled && item.status !== Enums.ClassStatus.OPEN)
     throw ApiError.forbidden();
   const events = await prisma.classEvent.findMany({
