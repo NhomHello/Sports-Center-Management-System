@@ -1,53 +1,40 @@
-# Sprint 2 – BE – Nhanh
+# Sprint 2 · BE Nhanh
 
-- Nhánh: `sprint-2/be-nhanh`
-- Thời gian: 06/10 → 19/10
-- Nguồn code: nhánh `khoi` (Khôi đã làm trước cho Flow 1–4)
+- Nhánh thành viên: `sprint-2/be-nhanh`.
+- Nhánh chạy tích hợp: `sprint-2/integration`.
+- Thời gian kế hoạch: 06–19/10. Nền: Sprint 1 trên `origin/main`.
+- Commit triển khai chính: `227cfbe, 8b574b1`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
 
-## Function phụ trách
+Đăng ký/huỷ toàn lớp, phân quyền quản lý, roster và lịch (#38–46).
 
-| # | US | Function | Trạng thái trên nhánh khoi | Ghi chú |
-|---|---|---|---|---|
-| 38 | UC-CB-17 | Danh sách lớp (quản lý) | ✅ Khôi đã làm (BE+FE) |  |
-| 39 | UC-CB-17 | Chi tiết lớp và học viên (quản lý) | ✅ Khôi đã làm (BE+FE) |  |
-| 40 | UC-CB-06 | Đăng ký lớp | ✅ Khôi đã làm (BE+FE) |  |
-| 41 | UC-CB-07 | Huỷ đăng ký lớp | ✅ Khôi đã làm (BE+FE) |  |
-| 42 | UC-CB-09 | Đăng ký lớp hộ hội viên | ✅ Khôi đã làm (BE+FE) |  |
-| 43 | UC-CB-10 | Huỷ đăng ký hộ hội viên | ✅ Khôi đã làm (BE+FE) |  |
-| 44 | UC-CB-16 | Lịch tập cá nhân | ✅ Khôi đã làm (BE+FE) |  |
-| 45 | UC-CB-11 | Lịch dạy | ✅ Khôi đã làm (BE+FE) |  |
-| 46 | UC-CB-12 | Danh sách học viên của lớp | ✅ Khôi đã làm (BE+FE) |  |
+## Chức năng phụ trách
 
-## Cách làm
+| # | UC | Chức năng |
+| --- | --- | --- |
+| 38 | UC-CB-17 | Danh sách lớp (quản lý) |
+| 39 | UC-CB-17 | Chi tiết lớp và học viên (quản lý) |
+| 40 | UC-CB-06 | Đăng ký lớp |
+| 41 | UC-CB-07 | Huỷ đăng ký lớp |
+| 42 | UC-CB-09 | Đăng ký lớp hộ hội viên |
+| 43 | UC-CB-10 | Huỷ đăng ký hộ hội viên |
+| 44 | UC-CB-16 | Lịch tập cá nhân |
+| 45 | UC-CB-11 | Lịch dạy |
+| 46 | UC-CB-12 | Danh sách học viên của lớp |
 
-1. Chuyển sang nhánh: `git fetch` rồi `git switch sprint-2/be-nhanh`.
-2. File **lấy toàn bộ**: `git checkout origin/khoi -- <đường dẫn>`.
-3. File **lấy một phần**: xem bằng `git show origin/khoi:<đường dẫn>` và chỉ chép phần ghi ở cột "Phần cần lấy". File dùng chung (schema, routes, permissions…) nhiều người cùng sửa, nên merge theo thứ tự sprint để tránh conflict.
-4. Đọc hiểu, đối chiếu Business Rule trong file Excel, sửa chỗ còn thiếu, chạy `npm run lint` và `npm test`.
-5. Commit bằng tài khoản của mình. Commit nào dùng lại code của Khôi thì thêm dòng cuối: `Co-authored-by: kitter <longhuy0078@gmail.com>`.
-6. Mở PR vào `main`, nhờ một thành viên khác review rồi mới merge.
+## Bàn giao triển khai
 
-## File lấy toàn bộ từ nhánh khoi
+Các module/component chính: class-read, class-booking-policy, class-enrollment, class-exception, class-roster và schedule; permission class.read_all.
 
-| File | Ghi chú |
-|---|---|
-| `core/be/src/modules/class/class-enrollment.service.js` |  |
-| `core/be/src/modules/schedule/schedule.controller.js` |  |
-| `core/be/src/modules/schedule/schedule.routes.js` |  |
-| `core/be/src/modules/schedule/schedule.service.js` |  |
-| `core/be/src/modules/schedule/schedule.validation.js` |  |
-| `core/be/tests/helpers/schedule-week-assertions.js` |  |
+Đăng ký là **toàn lớp**. Backend trả chỗ còn lại, trạng thái đăng ký, canEnroll/canCancel, hạn huỷ và lý do từ chối. Hạn N giờ lấy từ system_settings, mặc định 12; ngoại lệ do đổi lịch chỉ cho hội viên bị xung đột thật, trước buổi xung đột đầu tiên.
 
-## File lấy một phần
+Phạm vi lớp/roster kiểm tra ở BE; HLV chỉ thấy lớp phụ trách khi không có class.read_all. FE dùng Ant Design, Axios service, TanStack Query và tải lại lớp/lịch/roster sau thay đổi. UTC ở DB, giờ Việt Nam ở giao diện.
 
-| File | Phần cần lấy |
-|---|---|
-| `core/be/prisma/schema.prisma` | Model Enrollment (đối chiếu với Bảo) |
-| `core/shared/src/permissions.js` | CLASS_ENROLL_*, CLASS_CANCEL_SELF, CLASS_VIEW_ROSTER, SCHEDULE_* |
-| `core/be/src/routes.js` | Đăng ký /schedule |
-| `core/be/src/modules/class/class.service.js` | getRoster |
-| `core/be/src/modules/class/class-session.service.js` | getRoster |
-| `core/be/src/modules/class/class.controller.js` | enrollSelf, enrollForMember, cancelSelf, cancelForMember, roster |
-| `core/be/src/modules/class/class.routes.js` | /sessions/:id/roster, /sessions/:sessionId/enrollments... |
-| `core/be/src/modules/class/class.validation.js` | sessionIdSchema, enrollForMemberSchema, rosterSchema |
-| `core/be/tests/flows.test.js` | Test đăng ký / huỷ / lịch tuần |
+Nhánh origin/khoi không tồn tại tại lúc triển khai; không áp dụng hướng dẫn checkout/copy hoặc co-author từ nhánh đó. Các migration cũ giữ nguyên; chỉ thêm migration 20261005100000_sprint2_class_booking. UC-CB-18 từng buổi thuộc Sprint 3.
+
+## Kiểm tra và tích hợp
+
+Đối chiếu [coverage 18 chức năng](sprint-2-coverage.md), [test cases](../test-cases/TC-F2-class-booking.md), [API và DTO](../sprint-2-api.md).
+
+Tích hợp local theo thứ tự BE Bảo → BE Nhanh → FE Khải → FE Khôi. Main được bảo toàn. Các bước push, PR và merge remote thuộc bàn giao riêng.
+
+Chạy từ nhánh tích hợp sau khi chuyển bằng git switch sprint-2/integration: npm run dev; npm run verify:sprint2; npm run test:e2e; npm run lint; npm run format:check; npm run build. Kết quả cuối và hướng dẫn demo nằm trong coverage.
