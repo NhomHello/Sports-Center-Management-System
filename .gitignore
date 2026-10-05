@@ -31,3 +31,5 @@ Thumbs.db
 # misc
 *.tgz
 .cache/
+test-results/
+playwright-report/

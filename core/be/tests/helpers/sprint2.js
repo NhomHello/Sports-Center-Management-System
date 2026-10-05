@@ -4,14 +4,20 @@ import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
 import { hashPassword } from '../../src/common/utils/password.js';
 import { createSprintFixture, cleanupSprintFixture } from './sprint1.js';
-import { loginAs } from './api.js';
+
+async function attachCoachTokens(f, withApi) {
+  if (!withApi) return;
+  const { loginAs } = await import('./api.js');
+  f.coachToken = await loginAs(f.coach.email, f.password);
+  f.coachOtherToken = await loginAs(f.coachOther.email, f.password);
+}
 
 const DAY_MS = 86400000;
 const FIXTURE_DAYS = Object.freeze({ membership: 90, start: 14, end: 35, registrationEnd: 10 });
 
 /** Fixture Flow 2 riêng từng suite, không sửa dữ liệu demo/quyền hệ thống. */
-export const createClassFixture = async () => {
-  const f = await createSprintFixture();
+export const createClassFixture = async ({ withApi = true } = {}) => {
+  const f = await createSprintFixture({ withApi });
   f.admin = await prisma.user.findUniqueOrThrow({ where: { email: env.SEED_ADMIN_EMAIL } });
   const role = await prisma.role.create({
     data: {
@@ -45,8 +51,7 @@ export const createClassFixture = async () => {
     },
   });
   f.userIds.push(f.coach.id, f.coachOther.id);
-  f.coachToken = await loginAs(f.coach.email, f.password);
-  f.coachOtherToken = await loginAs(f.coachOther.email, f.password);
+  await attachCoachTokens(f, withApi);
   f.subject = await prisma.subject.create({ data: { name: `${f.prefix} Subject` } });
   f.room = await prisma.room.create({ data: { name: `${f.prefix} Room`, capacity: 10 } });
   f.roomOther = await prisma.room.create({
@@ -95,7 +100,10 @@ export const cleanupClassFixture = async (f) => {
   const classes = await prisma.gymClass.findMany({ where: { subjectId: f.subject.id } });
   const ids = classes.map((c) => c.id);
   const classWhere = { classId: { in: ids } };
-  const enrollmentRows = await prisma.classEnrollment.findMany({ where: classWhere, select: { id: true } });
+  const enrollmentRows = await prisma.classEnrollment.findMany({
+    where: classWhere,
+    select: { id: true },
+  });
   await prisma.classEvent.deleteMany({ where: classWhere });
   await prisma.classEnrollment.deleteMany({ where: classWhere });
   await prisma.classSession.deleteMany({ where: classWhere });
@@ -104,7 +112,7 @@ export const cleanupClassFixture = async (f) => {
     where: {
       OR: [
         { entity: 'GymClass', entityId: { in: ids.map(String) } },
-      { entity: 'ClassEnrollment', entityId: { in: enrollmentRows.map((e) => String(e.id)) } },
+        { entity: 'ClassEnrollment', entityId: { in: enrollmentRows.map((e) => String(e.id)) } },
       ],
     },
   });
