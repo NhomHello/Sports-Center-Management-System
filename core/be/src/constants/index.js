@@ -13,6 +13,7 @@ export const TIME = Object.freeze({
   MS_PER_SECOND: 1000,
   MS_PER_MINUTE: 60 * 1000,
   MS_PER_DAY: 24 * 60 * 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
   VIETNAM_ZONE: 'Asia/Ho_Chi_Minh',
 });
 
@@ -67,3 +68,16 @@ export const PRISMA_ERROR = Object.freeze({
 });
 
 export const HEALTH_PATH = '/health';
+
+export const CLASS_LIMITS = Object.freeze({
+  MAX_SCHEDULE_DAYS: 366,
+  DAYS_PER_WEEK: 7,
+  LAST_WEEKDAY: 6,
+  TX_TIMEOUT_MS: 30000,
+  TX_MAX_WAIT_MS: 30000,
+  OUTBOX_INTERVAL_MS: 5000,
+  OUTBOX_BATCH_SIZE: 50,
+  ERROR_LENGTH: 500,
+  NAME_LENGTH: 120,
+  DESCRIPTION_LENGTH: 1000,
+});
