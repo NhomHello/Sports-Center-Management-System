@@ -1,11 +1,11 @@
-# Sprint 2 · BE Bảo
+# Sprint 2 · FE Khải
 
-- Nhánh thành viên: `sprint-2/be-bao`.
+- Nhánh thành viên: `sprint-2/fe-khai`.
 - Nhánh chạy tích hợp: `sprint-2/integration`.
 - Thời gian kế hoạch: 06–19/10. Nền: Sprint 1 trên `origin/main`.
-- Commit triển khai chính: `7414006`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
+- Commit triển khai chính: `0f439fb`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
 
-Danh mục, cấu hình lớp và outbox (#29–37).
+Danh mục, tạo/sửa/huỷ lớp, lớp mở và chi tiết (#29–34, #36–37).
 
 ## Chức năng phụ trách
 
@@ -17,13 +17,12 @@ Danh mục, cấu hình lớp và outbox (#29–37).
 | 32 | UC-CB-02 | Tạo lớp |
 | 33 | UC-CB-03 | Sửa lớp / đổi lịch |
 | 34 | UC-CB-04 | Huỷ lớp |
-| 35 | UC-CB-13 | Gửi thông báo thay đổi lớp (hệ thống) |
 | 36 | UC-CB-05 | Danh sách lớp đang mở |
 | 37 | UC-CB-15 | Chi tiết lớp |
 
 ## Bàn giao triển khai
 
-Các module/component chính: catalog, subject, room, class CRUD/schedule/event; additive migration; coach availability guard.
+Các module/component chính: ResourceCatalogPanel, ResourceFormModal, ClassListPanel, ClassFormModal, ClassDetailDrawer và ClassSessionsTable.
 
 Đăng ký là **toàn lớp**. Backend trả chỗ còn lại, trạng thái đăng ký, canEnroll/canCancel, hạn huỷ và lý do từ chối. Hạn N giờ lấy từ system_settings, mặc định 12; ngoại lệ do đổi lịch chỉ cho hội viên bị xung đột thật, trước buổi xung đột đầu tiên.
 

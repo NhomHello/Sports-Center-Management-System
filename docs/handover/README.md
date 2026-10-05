@@ -1,6 +1,6 @@
 # Phân chia lại theo sprint
 
-Nhánh `khoi` chứa code Flow 1–4 do Khôi làm trước. Code được tách lại theo sprint và theo người để mỗi thành viên nhận, đọc hiểu, hoàn thiện và commit phần của mình. Chi tiết từng nhánh nằm trong file `docs/handover/<nhánh>.md` trên chính nhánh đó.
+Các handover ban đầu mô tả việc tách code từ nhánh `khoi`. **Sprint 2 hiện triển khai trên nền Sprint 1 từ origin/main**, vì origin/khoi không tồn tại lúc triển khai. Bản chạy local nằm trên `sprint-2/integration`; xem [coverage 18 chức năng](sprint-2-coverage.md). Các dòng Sprint 1/3/4 bên dưới giữ thông tin phân công ban đầu; số file lấy từ khoi không phải bằng chứng triển khai hiện tại.
 
 Phân vai: BE = Nhanh + Bảo, FE = Khôi + Khải, mỗi sprint đủ 4 người.
 
@@ -10,10 +10,10 @@ Phân vai: BE = Nhanh + Bảo, FE = Khôi + Khải, mỗi sprint đủ 4 ngườ
 | 1 | BE | Bảo | `sprint-1/be-bao` | 9 | 0 | 19 |
 | 1 | FE | Khôi | `sprint-1/fe-khoi` | 11 | 0 | 32 |
 | 1 | FE | Khải | `sprint-1/fe-khai` | 9 | 0 | 11 |
-| 2 | BE | Bảo | `sprint-2/be-bao` | 9 | 0 | 21 |
-| 2 | BE | Nhanh | `sprint-2/be-nhanh` | 9 | 0 | 15 |
-| 2 | FE | Khải | `sprint-2/fe-khai` | 8 | 0 | 7 |
-| 2 | FE | Khôi | `sprint-2/fe-khoi` | 9 | 0 | 6 |
+| 2 | BE | Bảo | `sprint-2/be-bao` | 9 | Xem coverage | 0 |
+| 2 | BE | Nhanh | `sprint-2/be-nhanh` | 9 | Xem coverage | 0 |
+| 2 | FE | Khải | `sprint-2/fe-khai` | 8 | Xem coverage | 0 |
+| 2 | FE | Khôi | `sprint-2/fe-khoi` | 9 | Xem coverage | 0 |
 | 3 | BE | Nhanh | `sprint-3/be-nhanh` | 7 | 0 | 19 |
 | 3 | BE | Bảo | `sprint-3/be-bao` | 8 | 3 | 23 |
 | 3 | FE | Khải | `sprint-3/fe-khai` | 6 | 0 | 8 |
@@ -23,6 +23,6 @@ Phân vai: BE = Nhanh + Bảo, FE = Khôi + Khải, mỗi sprint đủ 4 ngườ
 | 4 | FE | Khải | `sprint-4/fe-khai` | 8 | 1 | 8 |
 | 4 | FE | Khôi | `sprint-4/fe-khoi` | 7 | 7 | 0 |
 
-Thứ tự merge vào `main`: Sprint 1 → 2 → 3 → 4; trong mỗi sprint merge BE trước FE.
+Thứ tự Sprint 2 đã áp dụng vào nhánh tích hợp local: BE Bảo → BE Nhanh → FE Khải → FE Khôi. Main được bảo toàn; push/PR/merge remote là bước bàn giao riêng.
 
 Commit dùng lại code của Khôi phải có dòng `Co-authored-by: kitter <longhuy0078@gmail.com>` để ghi nhận đúng người viết.

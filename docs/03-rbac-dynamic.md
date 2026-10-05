@@ -30,7 +30,7 @@ FE ẩn nút chỉ để đẹp; **BE luôn là nơi quyết định**. Không b
 ```js
 import { PERMISSIONS } from '@scms/shared';
 router.post('/', authorize(PERMISSIONS.CLASS_CREATE), validate(createClassSchema), controller.create);
-router.get('/:id/roster', authorize(PERMISSIONS.CLASS_VIEW_ROSTER, PERMISSIONS.CLASS_READ), …); // có 1 trong 2 là được
+router.get('/:id/roster', authorize(PERMISSIONS.CLASS_VIEW_ROSTER, PERMISSIONS.CLASS_READ_ALL), …); // service kiểm tra thêm phân công
 ```
 Cần logic "chỉ xem của chính mình" (member xem gói của mình): permission `membership.read_own` + trong service lọc theo `req.user.id`. Quyền `read_all` thì không lọc. Đây là cách tách **quyền** (RBAC) và **phạm vi dữ liệu** (ownership) mà không đụng tên role.
 
@@ -91,7 +91,7 @@ Xem `core/shared/src/permissions.js` (nguồn sự thật). Tóm tắt theo flow
 | membership_plan   | read, create, update, delete                                                                 | 1    |
 | membership        | read_own, purchase, manage, read_all                                                         | 1    |
 | subject, room     | read, create, update, delete                                                                 | 2    |
-| class             | read, create, update, delete, enroll_self, cancel_self, enroll_for_member, view_roster        | 2    |
+| class             | read, read_all, create, update, delete, enroll_self, cancel_self, enroll_for_member, view_roster | 2    |
 | schedule          | view_own, view_teaching                                                                      | 2    |
 | payment           | checkout, record_cash, read_own, read_all                                                    | 3    |
 | invoice           | read_own, read_all, export                                                                   | 3    |
@@ -102,3 +102,12 @@ Role seed ban đầu (`prisma/seed/roles.seed.js`): Quản lý trung tâm (ALL),
 ## 7. Test đã có
 
 `core/be/tests/rbac.test.js`: role trống → 403; cấp quyền qua API → 200 ngay; thu hồi → 403; `/auth/me` phản ánh đúng. Chạy `npm test -w @scms/be` (cần MySQL).
+
+## 8. Phạm vi lớp và lịch Sprint 2
+
+- `class.read_all` mở phạm vi quản lý toàn trung tâm và roster. Seed cấp cho role quản trị; role đã có của nhân viên/HLV giữ quyền manager đã cấu hình.
+- `class.read` mở lớp đang đăng ký, không cấp phạm vi quản lý. HLV có `schedule.view_teaching` mà không có `class.read_all` chỉ xem lớp được phân công, kể cả truy cập chi tiết bằng URL.
+- `class.view_roster` vẫn cần HLV phụ trách lớp; quyền này tự nó không mở roster mọi lớp. `class.enroll_for_member` cho đăng ký/huỷ hộ và đọc điều kiện booking của member được chọn, không cấp quyền roster.
+- `schedule.view_own` luôn lấy userId từ token. `schedule.view_teaching` lọc theo coachId của người đăng nhập. `class.read_all` không làm endpoint `/schedule/me` đọc lịch của người khác.
+
+Xem [hợp đồng Sprint 2](sprint-2-api.md) và [test phân quyền](test-cases/TC-F2-class-booking.md).
