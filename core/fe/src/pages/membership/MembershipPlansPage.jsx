@@ -11,15 +11,24 @@ import { PlanGrid } from './MembershipCards';
 const PlansContent = ({ plansQuery, plans, mutations }) => {
   if (plansQuery.isError) {
     return (
-      <Alert type="error" showIcon message="Chưa tải được danh sách gói tập" action={<Button onClick={() => plansQuery.refetch()}>Thử lại</Button>} />
+      <Alert
+        type="error"
+        showIcon
+        message="Chưa tải được danh sách gói tập"
+        action={<Button onClick={() => plansQuery.refetch()}>Thử lại</Button>}
+      />
     );
   }
   if (plans.length === 0 && !plansQuery.isPending) {
     return (
       <Card variant="borderless" className="scms-empty-card">
-        <Empty 
+        <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={<Typography.Text type="secondary" style={{ fontSize: 15 }}>Chưa có gói tập nào được mở bán.</Typography.Text>}
+          description={
+            <Typography.Text type="secondary" style={{ fontSize: 15 }}>
+              Chưa có gói tập nào được mở bán.
+            </Typography.Text>
+          }
           style={{ padding: '60px 0' }}
         />
       </Card>
@@ -50,12 +59,7 @@ export default function MembershipPlansPage() {
         subtitle="Chọn gói phù hợp hoặc quản lý danh mục dịch vụ đang mở bán."
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBERSHIP_PLAN_CREATE}>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={hooks.openCreate}
-            >
+            <Button type="primary" size="large" icon={<PlusOutlined />} onClick={hooks.openCreate}>
               Thêm gói mới
             </Button>
           </PermissionGate>
@@ -64,7 +68,7 @@ export default function MembershipPlansPage() {
 
       <div>
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
-        
+
         <PlansContent plansQuery={hooks.plansQuery} plans={hooks.plans} mutations={hooks} />
 
         {hooks.plansQuery.isPending && (

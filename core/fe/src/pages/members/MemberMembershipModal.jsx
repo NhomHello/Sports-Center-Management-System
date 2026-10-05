@@ -9,15 +9,19 @@ import * as paymentService from '@/services/payment.service';
 const PLAN_PAGE_SIZE = 50;
 
 const InvoiceAlert = ({ invoice }) => (
-  <Alert 
-    type="info" 
-    showIcon 
+  <Alert
+    type="info"
+    showIcon
     message={
       <Space orientation="vertical">
-        <Typography.Text strong>Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ</Typography.Text>
-        <Typography.Text>Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.</Typography.Text>
+        <Typography.Text strong>
+          Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ
+        </Typography.Text>
+        <Typography.Text>
+          Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.
+        </Typography.Text>
       </Space>
-    } 
+    }
   />
 );
 
@@ -49,32 +53,38 @@ export function MemberMembershipModal({ member, open, onClose }) {
 
   const plansQuery = useQuery({
     queryKey: [...QUERY_KEYS.MEMBERSHIP_PLANS, 'active-for-counter'],
-    queryFn: () => membershipPlanService.listMembershipPlans({ page: 1, pageSize: PLAN_PAGE_SIZE, isActive: true }),
+    queryFn: () =>
+      membershipPlanService.listMembershipPlans({
+        page: 1,
+        pageSize: PLAN_PAGE_SIZE,
+        isActive: true,
+      }),
     enabled: open,
   });
 
   const orderMutation = useMutation({
-    mutationFn: ({ planId }) => membershipService.createMemberOrder({ memberId: member.id, planId }),
-    onSuccess: ({ data, message: text }) => { 
-      message.success(text || 'Tạo đơn hàng thành công'); 
-      setInvoice(data); 
+    mutationFn: ({ planId }) =>
+      membershipService.createMemberOrder({ memberId: member.id, planId }),
+    onSuccess: ({ data, message: text }) => {
+      message.success(text || 'Tạo đơn hàng thành công');
+      setInvoice(data);
     },
     onError: (error) => message.error(error.message || 'Lỗi khi tạo đơn hàng'),
   });
 
   const collectMutation = useMutation({
     mutationFn: paymentService.collectCash,
-    onSuccess: () => { 
-      message.success('Đã thu tiền và kích hoạt gói hội viên'); 
-      client.invalidateQueries({ queryKey: QUERY_KEYS.MEMBERS }); 
-      handleClose(); 
+    onSuccess: () => {
+      message.success('Đã thu tiền và kích hoạt gói hội viên');
+      client.invalidateQueries({ queryKey: QUERY_KEYS.MEMBERS });
+      handleClose();
     },
     onError: (error) => message.error(error.message || 'Lỗi khi thu tiền'),
   });
 
-  const handleClose = () => { 
-    setInvoice(undefined); 
-    onClose(); 
+  const handleClose = () => {
+    setInvoice(undefined);
+    onClose();
   };
 
   useEffect(() => {
