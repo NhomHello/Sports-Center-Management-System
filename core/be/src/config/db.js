@@ -4,10 +4,24 @@
  */
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import prismaPkg from '@prisma/client';
-import { env, isDev } from './env.js';
+import { env, isDev, isProd } from './env.js';
 
 // @prisma/client la CommonJS nen phai import default roi destructure
-const { PrismaClient, UserStatus, SettingType } = prismaPkg;
+const {
+  PrismaClient,
+  UserStatus,
+  SettingType,
+  MembershipPlanStatus,
+  MembershipStatus,
+  InvoiceStatus,
+  InvoiceChannel,
+  PaymentProvider,
+  NotificationKind,
+  ClassStatus,
+  SessionStatus,
+  EnrollmentStatus,
+  Prisma,
+} = prismaPkg;
 
 const DEFAULT_MYSQL_PORT = 3306;
 const CONNECTION_LIMIT = 10;
@@ -25,6 +39,9 @@ const parseDatabaseUrl = (databaseUrl) => {
     password: decodeURIComponent(url.password),
     database: url.pathname.replace(/^\//, ''),
     connectionLimit: CONNECTION_LIMIT,
+    // MySQL 8 caching_sha2_password requires its RSA key on local non-TLS connections.
+    // Production must use a trusted TLS connection or a pinned server key instead.
+    allowPublicKeyRetrieval: !isProd,
   };
 };
 
@@ -36,4 +53,17 @@ export const prisma = new PrismaClient({
 });
 
 /** Enum sinh tu schema.prisma - dung Enums.UserStatus.ACTIVE thay vi chuoi 'ACTIVE'. */
-export const Enums = Object.freeze({ UserStatus, SettingType });
+export const Enums = Object.freeze({
+  UserStatus,
+  SettingType,
+  MembershipPlanStatus,
+  MembershipStatus,
+  InvoiceStatus,
+  InvoiceChannel,
+  PaymentProvider,
+  NotificationKind,
+  ClassStatus,
+  SessionStatus,
+  EnrollmentStatus,
+  TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
+});

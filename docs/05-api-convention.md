@@ -76,8 +76,12 @@ curl http://localhost:3000/api/v1/health
 | Module     | Endpoint                                                                   | Permission                     |
 | ---------- | -------------------------------------------------------------------------- | ------------------------------ |
 | health     | `GET /health`                                                              | –                              |
-| auth       | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`                  | – / – / đăng nhập              |
+| auth       | `POST /auth/login`, `POST /auth/register`, `POST /auth/password-changes`, `GET /auth/me` | – / – / đăng nhập / đăng nhập |
 | permission | `GET /permissions`                                                         | role.read                      |
 | role       | `GET/POST /roles`, `GET/PUT/DELETE /roles/:id`, `PATCH /roles/:id/default` | role.read / create / update / delete |
 | user       | `GET/POST /users`, `GET /users/:id`, `PATCH /users/:id/role`, `PATCH /users/:id/status` | user.read / create / assign_role / update |
 | setting    | `GET /settings`, `PUT /settings`                                           | setting.read / update          |
+| member     | `GET/PATCH /members/me`                                                    | đăng nhập                      |
+| notification | `GET /notifications`, `PATCH /notifications/read`, `PATCH /notifications/:id/read` | đăng nhập              |
+| payment    | `POST /payments/invoices/:invoiceId/cash`                                  | payment.record_cash            |
+| invoice    | `GET /invoices/:id`, `GET /invoices/:id/receipt`                           | invoice.read_own/read_all hoặc invoice.export |

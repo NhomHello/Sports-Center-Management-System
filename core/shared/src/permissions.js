@@ -83,6 +83,7 @@ export const PERMISSION_MODULES = [
     label: 'Lớp học',
     actions: {
       read: 'Xem danh sách lớp',
+      read_all: 'Xem mọi lớp trong phạm vi quản lý',
       create: 'Tạo lớp',
       update: 'Sửa lớp / lịch',
       delete: 'Huỷ lớp',
