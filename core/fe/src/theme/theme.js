@@ -44,7 +44,7 @@ export const theme = {
 };
 
 /**
- * Design token antd v6. 
+ * Design token antd v6.
  * Đã được tinh chỉnh sang phong cách siêu hiện đại (Modern SaaS / iOS style).
  */
 export const alternateTheme = {
@@ -55,19 +55,19 @@ export const alternateTheme = {
     colorWarning: '#f59e0b',
     colorError: '#ef4444',
     colorInfo: '#3b82f6',
-    
+
     // Bo góc lớn mềm mại chuẩn xu hướng
     borderRadius: 12,
     borderRadiusLG: 16,
     borderRadiusSM: 8,
-    
+
     // Font chữ
     fontFamily: "'Plus Jakarta Sans', Inter, 'Segoe UI', system-ui, sans-serif",
     fontSize: 14,
-    
+
     // Màu nền tổng thể
     colorBgLayout: '#f8fafc', // Xám nhạt siêu sang
-    
+
     // Đổ bóng (Shadows) mượt mà hơn
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
     boxShadowSecondary: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
@@ -118,7 +118,7 @@ export const alternateTheme = {
       headerColor: '#64748b',
       borderRadiusLG: 16,
       borderColor: '#e2e8f0',
-    }
+    },
   },
 };
 
