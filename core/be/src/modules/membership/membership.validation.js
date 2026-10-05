@@ -7,7 +7,9 @@ export const memberMembershipSchema = {
 };
 
 export const createOwnOrderSchema = {
-  body: z.object({
-    planId: z.coerce.number().int().positive(),
-  }).strict(),
+  body: z
+    .object({
+      planId: z.coerce.number().int().positive(),
+    })
+    .strict(),
 };
