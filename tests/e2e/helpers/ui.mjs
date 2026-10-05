@@ -7,8 +7,8 @@ export const card = (page, name) =>
     .filter({ has: page.locator('.ant-card-head-title', { hasText: name }) });
 
 /** Đăng nhập qua giao diện và xác nhận API thành công. */
-export async function login(page, user, password) {
-  await page.goto('/schedule');
+export async function login(page, user, password, entry = '/schedule') {
+  await page.goto(entry);
   await page.getByLabel('Email hoặc số điện thoại', { exact: true }).fill(user.email);
   await page.getByLabel('Mật khẩu', { exact: true }).fill(password);
   const authenticated = page.waitForResponse(

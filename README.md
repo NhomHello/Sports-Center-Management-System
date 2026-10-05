@@ -32,6 +32,11 @@ Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop/Engine có Compose v2, Git.
 **Tài khoản mẫu** (mật khẩu trong `core/be/.env`): `admin@scms.local` (Center Manager), `letan@scms.local`,
 `coach.yoga@scms.local`, `member1@scms.local`… xem `core/be/prisma/seed/mock/users.mock.js`.
 
+Frontend local hỗ trợ `localhost:5173` và `127.0.0.1:5173`. Nếu đăng nhập báo "Không thể kết nối máy chủ"
+trong khi health vẫn trả `database: up`, kiểm tra `CORS_ORIGINS` trong `core/be/.env`: phải có origin
+đúng với địa chỉ đang mở. Mẫu `.env.example` khai báo cả hai địa chỉ; với `.env` cũ, bổ sung địa chỉ
+còn thiếu rồi khởi động lại backend. Health kiểm tra API/DB; đăng nhập qua trình duyệt còn cần CORS hợp lệ.
+
 ## Cấu trúc
 
 ```

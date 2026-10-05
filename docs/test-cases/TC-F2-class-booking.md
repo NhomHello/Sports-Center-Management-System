@@ -40,6 +40,7 @@ Bản tích hợp: `sprint-2/integration`. Dữ liệu test có prefix `TEST_`, 
 | TC-F2-V02 | Lịch rỗng, loading, lỗi 503, bấm thử lại phục hồi | Cùng suite |
 | TC-F2-V03 | Membership hết hạn hiển thị lý do và disable đăng ký | Cùng suite |
 | TC-UI-S1-01 | Hồi quy tìm/sửa hội viên và tạo gói sau khi tách component Sprint 1 | `tests/e2e/sprint1-regression.spec.mjs` |
+| TC-LOCAL-AUTH | Lễ tân, hai HLV và hội viên đăng nhập từ localhost/127.0.0.1 trên desktop/mobile; login và tải quyền thành công | `tests/e2e/local-login.spec.mjs` |
 
 Đường dẫn BE trong bảng tính từ `core/be`; đường dẫn E2E tính từ repo. U/V và hồi quy Sprint 1 chạy cả desktop 1366×900 và mobile 320×780. Mỗi ca kiểm tra không có lỗi JavaScript runtime và không tràn chiều ngang trang. FE có thêm 3 test thuần cho wall time, biên tuần Việt Nam và offset form trong `core/fe/src/utils/schedule.test.js`.
 
@@ -60,5 +61,9 @@ git diff --check
 ```
 
 MySQL phải chạy và tài khoản DATABASE_URL có quyền CREATE/DROP DATABASE cho lệnh verify. Nếu chỉ có quyền trong DB ứng dụng, chạy `npm test` và `npm run test:e2e`; phần migration dùng một DB kiểm thử riêng có quyền phù hợp. Playwright tự bật/tắt server riêng, không dùng cổng 3000/5173. Có thể đổi `E2E_API_PORT`/`E2E_FE_PORT`. Fixture UI cần registry permission/setting đã seed.
+
+Kiểm tra riêng lỗi đăng nhập local bằng `npm run test:e2e -- tests/e2e/local-login.spec.mjs`.
+Server E2E lấy danh sách CORS từ cấu hình BE rồi đổi cổng local sang cổng test; không tự thay danh sách
+bằng origin của test runner. Cách này giữ khả năng phát hiện `.env` thiếu một trong hai địa chỉ demo.
 
 Kết quả nghiệm thu cuối được ghi tại [bảng 18 chức năng](../handover/sprint-2-coverage.md). HTML report/trace/ảnh UI được tạo trong `playwright-report/`, `test-results/`; xem bằng `npx playwright show-report`.

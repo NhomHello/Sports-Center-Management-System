@@ -74,6 +74,21 @@ Bằng chứng HTML của lượt đầy đủ nằm ở `.cache/sprint2-accepta
 
 Nền Sprint 1 được chuẩn hoá format và tách các component quá giới hạn trong commit e6de092, đưa về nhánh nền bằng b1bed6c. Các nhánh chỉ bổ sung migration, không sửa hoặc reset migration cũ.
 
+### Bổ sung kiểm tra đăng nhập local ngày 05/10/2026
+
+Lỗi người dùng báo đã được tái hiện trên `http://127.0.0.1:5173`: CORS trong `.env` chỉ có
+`http://localhost:5173`, nên preflight không trả Access-Control-Allow-Origin và trình duyệt báo
+"Không thể kết nối máy chủ". Health và đăng nhập bằng HTTP client không phát hiện được lỗi này;
+cấu hình server E2E trước đó tự cấp origin của runner cũng che mất lỗi cấu hình demo.
+
+Đã bổ sung cả hai origin vào `.env` local và `.env.example`, khởi động lại BE, thử HLV Yoga trực tiếp
+trên hai URL demo và xác nhận vào lịch dạy thành công. E2E giờ dùng CORS từ cấu hình BE, chỉ đổi cổng
+cho server test. Các domain ngoài danh sách tiếp tục không nhận header cho phép CORS.
+
+Kiểm tra bổ sung: 11 test auth đạt; 4 ca TC-LOCAL-AUTH đạt trên desktop/mobile, gồm 16 lượt đăng nhập
+độc lập của lễ tân, HLV Yoga, HLV Gym và member1 qua localhost/127.0.0.1. Log nằm ở
+`.cache/local-login-e2e.log`; ảnh bản demo HLV ở `.cache/login-127.0.0.1.png` và `.cache/login-localhost.png`.
+
 ## Chạy và demo
 
 ```bash

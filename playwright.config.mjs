@@ -7,6 +7,16 @@ process.env.PORT = apiPort;
 const frontend = `http://127.0.0.1:${fePort}`;
 const backend = `http://127.0.0.1:${apiPort}`;
 const apiUrl = `${backend}${process.env.API_PREFIX || '/api/v1'}`;
+// Dùng cấu hình CORS thật, chỉ đổi cổng cho server test để không che lỗi demo.
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .filter((origin) => origin.trim())
+  .map((origin) => {
+    const url = new URL(origin.trim());
+    if (['localhost', '127.0.0.1'].includes(url.hostname)) url.port = fePort;
+    return url.origin;
+  })
+  .join(',');
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
@@ -23,7 +33,7 @@ export default defineConfig({
     {
       command: 'node --env-file-if-exists=core/be/.env core/be/src/server.js',
       url: `${apiUrl}/health`,
-      env: { NODE_ENV: 'test', PORT: apiPort, CORS_ORIGINS: frontend },
+      env: { NODE_ENV: 'test', PORT: apiPort, CORS_ORIGINS: corsOrigins },
       reuseExistingServer: false,
       timeout: 60000,
     },
