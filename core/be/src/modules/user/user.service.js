@@ -2,7 +2,9 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { hashPassword } from '../../common/utils/password.js';
-import { prisma } from '../../config/db.js';
+import { withScheduleTransaction } from '../../common/utils/schedule-transaction.js';
+import { Enums, prisma } from '../../config/db.js';
+import { assertCoachCanBeDisabled } from '../class/coach-availability.service.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from './user.mapper.js';
 
@@ -97,10 +99,9 @@ export const updateRole = async (id, roleId, actor) => {
  */
 export const updateStatus = async (id, status, actor) => {
   if (id === actor.id) throw ApiError.businessRule('Không thể tự khoá tài khoản của chính mình');
-  const user = await prisma.user.update({
-    where: { id },
-    data: { status },
-    include: USER_WITH_ROLE,
+  const user = await withScheduleTransaction(async (db) => {
+    if (status === Enums.UserStatus.INACTIVE) await assertCoachCanBeDisabled(db, id);
+    return db.user.update({ where: { id }, data: { status }, include: USER_WITH_ROLE });
   });
   recordAudit({
     userId: actor.id,
