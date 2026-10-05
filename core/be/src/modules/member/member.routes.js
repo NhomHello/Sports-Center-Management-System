@@ -4,6 +4,7 @@ import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import * as controller from './member.controller.js';
+import { memberEnrollments } from '../class/class-enrollment.controller.js';
 import {
   createMemberSchema,
   listMembersSchema,
@@ -15,6 +16,12 @@ import {
 const router = Router();
 
 router.use(authenticate);
+router.get(
+  '/:id/enrollments',
+  authorize(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER, PERMISSIONS.CLASS_READ_ALL),
+  validate(memberIdSchema),
+  memberEnrollments,
+);
 
 router.get('/me', controller.getOwn);
 router.patch('/me', validate(updateOwnProfileSchema), controller.updateOwn);

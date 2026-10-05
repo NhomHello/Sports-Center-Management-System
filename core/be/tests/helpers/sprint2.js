@@ -95,6 +95,7 @@ export const cleanupClassFixture = async (f) => {
   const classes = await prisma.gymClass.findMany({ where: { subjectId: f.subject.id } });
   const ids = classes.map((c) => c.id);
   const classWhere = { classId: { in: ids } };
+  const enrollmentRows = await prisma.classEnrollment.findMany({ where: classWhere, select: { id: true } });
   await prisma.classEvent.deleteMany({ where: classWhere });
   await prisma.classEnrollment.deleteMany({ where: classWhere });
   await prisma.classSession.deleteMany({ where: classWhere });
@@ -103,7 +104,7 @@ export const cleanupClassFixture = async (f) => {
     where: {
       OR: [
         { entity: 'GymClass', entityId: { in: ids.map(String) } },
-        { entity: 'ClassEnrollment', meta: { path: '$.classId', array_contains: ids } },
+      { entity: 'ClassEnrollment', entityId: { in: enrollmentRows.map((e) => String(e.id)) } },
       ],
     },
   });

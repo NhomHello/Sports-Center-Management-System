@@ -4,6 +4,8 @@ import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import * as controller from './class.controller.js';
+import * as booking from './class-enrollment.controller.js';
+import { enrollForMemberSchema, cancelForMemberSchema } from './class-enrollment.validation.js';
 import {
   classIdSchema,
   createClassSchema,
@@ -12,6 +14,36 @@ import {
 } from './class.validation.js';
 const router = Router();
 router.use(authenticate);
+router.post(
+  '/:id/enrollments/me',
+  authorize(P.CLASS_ENROLL_SELF),
+  validate(classIdSchema),
+  booking.enrollSelf,
+);
+router.delete(
+  '/:id/enrollments/me',
+  authorize(P.CLASS_CANCEL_SELF),
+  validate(classIdSchema),
+  booking.cancelSelf,
+);
+router.post(
+  '/:id/enrollments',
+  authorize(P.CLASS_ENROLL_FOR_MEMBER),
+  validate(enrollForMemberSchema),
+  booking.enrollForMember,
+);
+router.delete(
+  '/:id/enrollments/:memberId',
+  authorize(P.CLASS_ENROLL_FOR_MEMBER),
+  validate(cancelForMemberSchema),
+  booking.cancelForMember,
+);
+router.get(
+  '/:id/roster',
+  authorize(P.CLASS_VIEW_ROSTER, P.CLASS_READ_ALL),
+  validate(classIdSchema),
+  booking.roster,
+);
 router.get(
   '/',
   authorize(P.CLASS_READ, P.CLASS_READ_ALL),
