@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Descriptions, Drawer, List, Space, Tag, Typography } from 'antd';
+import { Descriptions, Drawer, Space, Tag, Timeline, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
 import * as service from '@/services/schedule.service';
@@ -47,20 +47,17 @@ export function ClassDetailDrawer({ id, memberId, onClose, renderActions }) {
             <Typography.Title level={5}>Các buổi học</Typography.Title>
             <ClassSessionsTable sessions={item.sessions} />
             <Typography.Title level={5}>Thay đổi lịch</Typography.Title>
-            <List
-              dataSource={item.events || []}
-              locale={{ emptyText: 'Chưa có thay đổi lịch' }}
-              renderItem={(event) => (
-                <List.Item>
-                  <Space vertical>
-                    <Typography.Text strong>
-                      {event.title} · {formatDateTime(event.createdAt)}
-                    </Typography.Text>
-                    <Typography.Text>{event.message}</Typography.Text>
-                  </Space>
-                </List.Item>
-              )}
-            />
+            {item.events?.length ? (
+              <Timeline
+                items={item.events.map((event) => ({
+                  key: event.id,
+                  title: `${event.title} · ${formatDateTime(event.createdAt)}`,
+                  content: event.message,
+                }))}
+              />
+            ) : (
+              <Typography.Text type="secondary">Chưa có thay đổi lịch</Typography.Text>
+            )}
           </Space>
         )}
       </QueryState>

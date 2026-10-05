@@ -71,23 +71,25 @@ enum NotificationKind {
 
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String?        @unique @db.VarChar(191)
-  phone         String?        @unique @db.VarChar(20)
-  passwordHash  String         @map("password_hash") @db.VarChar(255)
-  tokenVersion  Int            @default(0) @map("token_version")
-  fullName      String         @map("full_name") @db.VarChar(100)
-  status        UserStatus     @default(ACTIVE)
-  roleId        Int            @map("role_id")
-  role          Role           @relation(fields: [roleId], references: [id])
-  auditLogs     AuditLog[]
-  memberships   Membership[]
-  invoices      Invoice[]
-  notifications Notification[]
-  coachedClasses GymClass[]
-  classEnrollments ClassEnrollment[]
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
+  id                     Int               @id @default(autoincrement())
+  email                  String?           @unique @db.VarChar(191)
+  phone                  String?           @unique @db.VarChar(20)
+  passwordHash           String            @map("password_hash") @db.VarChar(255)
+  tokenVersion           Int               @default(0) @map("token_version")
+  fullName               String            @map("full_name") @db.VarChar(100)
+  status                 UserStatus        @default(ACTIVE)
+  roleId                 Int               @map("role_id")
+  role                   Role              @relation(fields: [roleId], references: [id])
+  auditLogs              AuditLog[]
+  memberships            Membership[]
+  invoices               Invoice[]
+  notifications          Notification[]
+  coachedClasses         GymClass[]
+  classEnrollments       ClassEnrollment[] @relation("ClassMember")
+  enrolledClassBookings  ClassEnrollment[] @relation("ClassEnrolledBy")
+  cancelledClassBookings ClassEnrollment[] @relation("ClassCancelledBy")
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
 
   @@index([roleId])
   @@map("users")
@@ -300,50 +302,53 @@ enum EnrollmentStatus {
 
 /// Danh mục đã tồn tại trong migration Flow 2; không tạo lại bảng.
 model Subject {
-  id Int @id @default(autoincrement())
-  name String @unique @db.VarChar(100)
-  description String? @db.VarChar(500)
-  isActive Boolean @default(true) @map("is_active")
-  classes GymClass[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  description String?    @db.VarChar(500)
+  isActive    Boolean    @default(true) @map("is_active")
+  classes     GymClass[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
   @@map("subjects")
 }
 
 model Room {
-  id Int @id @default(autoincrement())
-  name String @unique @db.VarChar(100)
-  capacity Int
-  description String? @db.VarChar(500)
-  isActive Boolean @default(true) @map("is_active")
-  classes GymClass[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  capacity    Int
+  description String?    @db.VarChar(500)
+  isActive    Boolean    @default(true) @map("is_active")
+  classes     GymClass[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
   @@map("rooms")
 }
 
 model GymClass {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(120)
-  description String? @db.VarChar(1000)
-  subjectId Int @map("subject_id")
-  roomId Int @map("room_id")
-  coachId Int @map("coach_id")
-  capacity Int
-  startsOn DateTime @map("starts_on") @db.Date
-  endsOn DateTime @map("ends_on") @db.Date
-  weeklySchedule Json @map("weekly_schedule")
-  registrationStartAt DateTime @map("registration_start_at")
-  registrationEndAt DateTime @map("registration_end_at")
-  status ClassStatus @default(OPEN)
-  subject Subject @relation(fields: [subjectId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
-  coach User @relation(fields: [coachId], references: [id])
-  sessions ClassSession[]
-  enrollments ClassEnrollment[]
-  events ClassEvent[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                  Int               @id @default(autoincrement())
+  name                String            @db.VarChar(120)
+  description         String?           @db.VarChar(1000)
+  subjectId           Int               @map("subject_id")
+  roomId              Int               @map("room_id")
+  coachId             Int               @map("coach_id")
+  capacity            Int
+  startsOn            DateTime          @map("starts_on") @db.Date
+  endsOn              DateTime          @map("ends_on") @db.Date
+  weeklySchedule      Json              @map("weekly_schedule")
+  registrationStartAt DateTime          @map("registration_start_at")
+  registrationEndAt   DateTime          @map("registration_end_at")
+  status              ClassStatus       @default(OPEN)
+  subject             Subject           @relation(fields: [subjectId], references: [id])
+  room                Room              @relation(fields: [roomId], references: [id])
+  coach               User              @relation(fields: [coachId], references: [id])
+  sessions            ClassSession[]
+  enrollments         ClassEnrollment[]
+  events              ClassEvent[]
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
   @@index([subjectId, status])
   @@index([coachId, status])
   @@map("gym_classes")
@@ -351,16 +356,17 @@ model GymClass {
 
 /// Snapshot phòng/HLV bảo toàn lịch cũ khi lớp chuyển phòng hoặc đổi người dạy.
 model ClassSession {
-  id Int @id @default(autoincrement())
-  classId Int @map("class_id")
-  startAt DateTime @map("start_at")
-  endAt DateTime @map("end_at")
-  roomName String? @map("room_name") @db.VarChar(100)
-  coachName String? @map("coach_name") @db.VarChar(100)
-  status SessionStatus @default(SCHEDULED)
-  gymClass GymClass @relation(fields: [classId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        Int           @id @default(autoincrement())
+  classId   Int           @map("class_id")
+  startAt   DateTime      @map("start_at")
+  endAt     DateTime      @map("end_at")
+  roomName  String?       @map("room_name") @db.VarChar(100)
+  coachName String?       @map("coach_name") @db.VarChar(100)
+  status    SessionStatus @default(SCHEDULED)
+  gymClass  GymClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
   @@index([startAt, endAt, status])
   @@index([classId, startAt])
   @@map("class_sessions")
@@ -368,19 +374,22 @@ model ClassSession {
 
 /// Đăng ký toàn lớp; bảng enrollments từng buổi và FK điểm danh cũ được giữ nguyên.
 model ClassEnrollment {
-  id Int @id @default(autoincrement())
-  classId Int @map("class_id")
-  memberId Int @map("member_id")
-  status EnrollmentStatus @default(BOOKED)
-  enrolledBy Int @map("enrolled_by")
-  cancelledBy Int? @map("cancelled_by")
-  enrolledAt DateTime @default(now()) @map("enrolled_at")
-  cancelledAt DateTime? @map("cancelled_at")
-  exceptionUntil DateTime? @map("exception_until")
-  gymClass GymClass @relation(fields: [classId], references: [id])
-  member User @relation(fields: [memberId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id              Int              @id @default(autoincrement())
+  classId         Int              @map("class_id")
+  memberId        Int              @map("member_id")
+  status          EnrollmentStatus @default(BOOKED)
+  enrolledBy      Int              @map("enrolled_by")
+  cancelledBy     Int?             @map("cancelled_by")
+  enrolledAt      DateTime         @default(now()) @map("enrolled_at")
+  cancelledAt     DateTime?        @map("cancelled_at")
+  exceptionUntil  DateTime?        @map("exception_until")
+  gymClass        GymClass         @relation(fields: [classId], references: [id], onUpdate: Restrict)
+  member          User             @relation("ClassMember", fields: [memberId], references: [id], onUpdate: Restrict)
+  enrolledByUser  User             @relation("ClassEnrolledBy", fields: [enrolledBy], references: [id], onUpdate: Restrict)
+  cancelledByUser User?            @relation("ClassCancelledBy", fields: [cancelledBy], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
   @@unique([classId, memberId])
   @@index([memberId, status])
   @@map("class_enrollments")
@@ -388,18 +397,19 @@ model ClassEnrollment {
 
 /// Outbox bền vững, đồng thời là lịch sử thay đổi lớp.
 model ClassEvent {
-  id Int @id @default(autoincrement())
-  classId Int @map("class_id")
-  kind NotificationKind
-  title String @db.VarChar(150)
-  message String @db.VarChar(500)
-  recipientIds Json @map("recipient_ids")
-  changes Json
-  attempts Int @default(0)
-  sentAt DateTime? @map("sent_at")
-  lastError String? @map("last_error") @db.VarChar(500)
-  gymClass GymClass @relation(fields: [classId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
+  id           Int              @id @default(autoincrement())
+  classId      Int              @map("class_id")
+  kind         NotificationKind
+  title        String           @db.VarChar(150)
+  message      String           @db.VarChar(500)
+  recipientIds Json             @map("recipient_ids")
+  changes      Json
+  attempts     Int              @default(0)
+  sentAt       DateTime?        @map("sent_at")
+  lastError    String?          @map("last_error") @db.VarChar(500)
+  gymClass     GymClass         @relation(fields: [classId], references: [id], onUpdate: Restrict)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
   @@index([sentAt, id])
   @@map("class_events")
 }
@@ -407,5 +417,6 @@ model ClassEvent {
 /// Một khoá chung tuần tự hoá các phép ghi lịch để bảo vệ xung đột liên lớp.
 model ScheduleLock {
   id Int @id
+
   @@map("schedule_locks")
 }
