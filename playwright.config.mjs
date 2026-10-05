@@ -33,7 +33,14 @@ export default defineConfig({
     {
       command: 'node --env-file-if-exists=core/be/.env core/be/src/server.js',
       url: `${apiUrl}/health`,
-      env: { NODE_ENV: 'test', PORT: apiPort, CORS_ORIGINS: corsOrigins },
+      env: {
+        NODE_ENV: 'test',
+        PORT: apiPort,
+        CORS_ORIGINS: corsOrigins,
+        // Bộ E2E đăng nhập nhiều role liên tục từ cùng một IP.
+        RATE_LIMIT_MAX: '5000',
+        AUTH_RATE_LIMIT_MAX: '1000',
+      },
       reuseExistingServer: false,
       timeout: 60000,
     },

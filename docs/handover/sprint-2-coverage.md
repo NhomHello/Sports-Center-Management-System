@@ -89,10 +89,23 @@ Kiểm tra bổ sung: 11 test auth đạt; 4 ca TC-LOCAL-AUTH đạt trên deskt
 độc lập của lễ tân, HLV Yoga, HLV Gym và member1 qua localhost/127.0.0.1. Log nằm ở
 `.cache/local-login-e2e.log`; ảnh bản demo HLV ở `.cache/login-127.0.0.1.png` và `.cache/login-localhost.png`.
 
+### Kiểm tra bản bàn giao ngày 06/10/2026
+
+Lượt chạy đầy đủ đạt 139 test BE/FE và 20/20 ca UI trên desktop/mobile 320px, bao gồm đăng nhập
+qua cả localhost và 127.0.0.1. Migration mới và nâng cấp đạt; 24 bảng lịch sử và 36 FK cũ được giữ.
+Lint, format, build, Prisma validate/migrate status và git diff --check đều đạt.
+
+Bộ UI chạy nhiều lượt đăng nhập từ cùng IP nên vượt ngưỡng auth 20 lượt của cấu hình mặc định.
+Playwright đặt ngưỡng request/auth riêng cho server E2E cổng riêng. Log kết quả đầy đủ nằm ở
+`.cache/push-sprint2-verify.log` và `.cache/push-sprint2-e2e-final.log`; HTML report nằm ở
+`playwright-report/index.html`. Artifact được tạo local; code kiểm thử nằm trong repository.
+
 ## Chạy và demo
 
+Nhánh bàn giao trên GitHub là `sprint-2/fe-khoi`, chứa bản Sprint 2 đã tích hợp cùng sửa lỗi đăng nhập.
+
 ```bash
-git switch sprint-2/integration
+git switch sprint-2/fe-khoi
 npm run dev
 ```
 

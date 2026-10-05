@@ -66,4 +66,7 @@ Kiểm tra riêng lỗi đăng nhập local bằng `npm run test:e2e -- tests/e2
 Server E2E lấy danh sách CORS từ cấu hình BE rồi đổi cổng local sang cổng test; không tự thay danh sách
 bằng origin của test runner. Cách này giữ khả năng phát hiện `.env` thiếu một trong hai địa chỉ demo.
 
+Server E2E dùng ngưỡng riêng cho tổng request và đăng nhập để chạy liên tục các role trên cùng IP.
+Các ngưỡng này nằm trong cấu hình Playwright, áp dụng cho server test cổng riêng.
+
 Kết quả nghiệm thu cuối được ghi tại [bảng 18 chức năng](../handover/sprint-2-coverage.md). HTML report/trace/ảnh UI được tạo trong `playwright-report/`, `test-results/`; xem bằng `npx playwright show-report`.
