@@ -13,6 +13,29 @@ export const managementScope = ({ user, permissions }) => {
   throw ApiError.forbidden();
 };
 
+/** Chỉ nhân viên có quyền xử lý booking được đánh giá điều kiện của hội viên khác. */
+export const resolveBookingMember = (query, context) => {
+  if (query.memberId === undefined) return context.user.id;
+  if (
+    !context.permissions.has(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) &&
+    !context.permissions.has(PERMISSIONS.CLASS_READ_ALL)
+  )
+    throw ApiError.forbidden();
+  return query.memberId;
+};
+
+/** Bộ lọc quản lý chỉ chứa tài nguyên trong phạm vi lớp được phép xem. */
+export const getFilters = async (context) => {
+  const rows = await prisma.gymClass.findMany({
+    where: managementScope(context),
+    select: { subject: { select: { id: true, name: true } }, coach: { select: PUBLIC_PERSON } },
+  });
+  return {
+    subjects: [...new Map(rows.map((r) => [r.subject.id, r.subject])).values()],
+    coaches: [...new Map(rows.map((r) => [r.coach.id, r.coach])).values()],
+  };
+};
+
 /** Phân trang có điều kiện ngày/trạng thái/bộ môn/HLV và phạm vi quyền. */
 export const list = async (query, context) => {
   const now = new Date();
@@ -62,17 +85,22 @@ export const list = async (query, context) => {
   return { data: items.map(toClassView), meta: buildPageMeta({ ...query, total }) };
 };
 
-/** Lớp không mở chỉ đọc được khi phụ trách, quản lý hoặc đã có đăng ký của chính mình. */
-export const getById = async (id, context) => {
+const canManageClass = (item, context) =>
+  context.permissions.has(PERMISSIONS.CLASS_READ_ALL) ||
+  (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) && item.coachId === context.user.id);
+
+/** Lớp không mở chỉ đọc được khi phụ trách, quản lý hoặc đã có đăng ký được phép xử lý. */
+export const getById = async (id, context, memberId = context.user.id) => {
+  const bookingMemberId = resolveBookingMember(
+    memberId === context.user.id ? {} : { memberId },
+    context,
+  );
   const item = await prisma.gymClass.findUnique({ where: { id }, include: CLASS_INCLUDE });
   if (!item) throw ApiError.notFound('Không tìm thấy lớp');
   const enrolled = await prisma.classEnrollment.findUnique({
-    where: { classId_memberId: { classId: id, memberId: context.user.id } },
+    where: { classId_memberId: { classId: id, memberId: bookingMemberId } },
   });
-  const privileged =
-    context.permissions.has(PERMISSIONS.CLASS_READ_ALL) ||
-    (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) &&
-      item.coachId === context.user.id);
+  const privileged = canManageClass(item, context);
   if (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) && !privileged)
     throw ApiError.forbidden();
   if (!privileged && !enrolled && item.status !== Enums.ClassStatus.OPEN)
