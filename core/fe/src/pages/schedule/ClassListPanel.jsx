@@ -13,14 +13,15 @@ import { ClassFormModal } from './ClassFormModal';
 import { QueryState } from './QueryState';
 
 /** Container danh sách lớp mở; scope management và action dùng chung với FE Khôi. */
-export function ClassListPanel({ scope = 'open', renderActions, renderFilters }) {
+export function ClassListPanel({ scope = 'open', memberId, renderActions, renderFilters }) {
   const { can } = usePermission();
   const table = useTableQuery({ scope });
+  const params = { ...table.params, memberId };
   const [detailId, setDetailId] = useState(null);
   const [editing, setEditing] = useState(null);
   const query = useQuery({
-    queryKey: [...QUERY_KEYS.SCHEDULE, 'classes', table.params],
-    queryFn: () => service.listClasses(table.params),
+    queryKey: [...QUERY_KEYS.SCHEDULE, 'classes', params],
+    queryFn: () => service.listClasses(params),
   });
   const cancel = useScheduleMutation(service.cancelClass);
   const items = query.data?.data || [];
@@ -42,9 +43,17 @@ export function ClassListPanel({ scope = 'open', renderActions, renderFilters })
       <QueryState query={query} isEmpty={!items.length}>
         <div className="scms-class-grid">
           {items.map((item) => (
-            <ClassCard key={item.id} item={item} can={can} onDetail={() => setDetailId(item.id)}
-              onEdit={() => setEditing(item)} onCancel={() => cancel.mutate(item.id)}
-              loading={cancel.isPending}>{renderActions?.(item)}</ClassCard>
+            <ClassCard
+              key={item.id}
+              item={item}
+              can={can}
+              onDetail={() => setDetailId(item.id)}
+              onEdit={() => setEditing(item)}
+              onCancel={() => cancel.mutate(item.id)}
+              loading={cancel.isPending}
+            >
+              {renderActions?.(item)}
+            </ClassCard>
           ))}
         </div>
       </QueryState>
@@ -55,6 +64,7 @@ export function ClassListPanel({ scope = 'open', renderActions, renderFilters })
       {detailId && (
         <ClassDetailDrawer
           id={detailId}
+          memberId={memberId}
           onClose={() => setDetailId(null)}
           renderActions={renderActions}
         />

@@ -8,10 +8,10 @@ import { QueryState } from './QueryState';
 import { ClassSessionsTable } from './ClassSessionsTable';
 
 /** Container chi tiết lớp, extension dùng chung cho booking/roster ở FE Khôi. */
-export function ClassDetailDrawer({ id, onClose, renderActions }) {
+export function ClassDetailDrawer({ id, memberId, onClose, renderActions }) {
   const query = useQuery({
-    queryKey: [...QUERY_KEYS.SCHEDULE, 'detail', id],
-    queryFn: () => service.getClass(id),
+    queryKey: [...QUERY_KEYS.SCHEDULE, 'detail', id, memberId],
+    queryFn: () => service.getClass(id, { memberId }),
   });
   const item = query.data?.data;
   return (

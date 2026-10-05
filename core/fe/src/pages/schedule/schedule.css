@@ -30,6 +30,34 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.scms-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+.scms-schedule-day {
+  min-width: 0;
+  padding: 8px;
+  background: var(--scms-surface, #fff);
+  border-radius: 12px;
+}
+.scms-class-filters .ant-select {
+  min-width: 150px;
+}
+.scms-member-select {
+  width: 100%;
+  max-width: 560px;
+}
+@media (max-width: 1000px) {
+  .scms-week-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .scms-week-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 480px) {
   .scms-schedule .ant-space {
     max-width: 100%;
