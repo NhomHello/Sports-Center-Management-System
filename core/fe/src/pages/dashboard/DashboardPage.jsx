@@ -60,8 +60,7 @@ const getInitials = (name) =>
     .join('')
     .toUpperCase() || 'SH';
 
-const getPrimaryPath = (shortcuts) =>
-  shortcuts.length > 0 ? shortcuts[0].path : ROUTES.PROFILE;
+const getPrimaryPath = (shortcuts) => (shortcuts.length > 0 ? shortcuts[0].path : ROUTES.PROFILE);
 
 /** Trang chào theo hướng Ant Design Pro, chỉ hiển thị lối tắt đúng quyền hiện có. */
 export default function DashboardPage() {
@@ -78,8 +77,8 @@ export default function DashboardPage() {
           </Typography.Text>
           <Typography.Title level={1}>Chào mừng trở lại, {user?.fullName}</Typography.Title>
           <Typography.Paragraph>
-            Mọi công cụ của Sprint 1 đã sẵn sàng trong một không gian quản trị rõ ràng, nhất quán
-            và đúng phạm vi quyền của bạn.
+            Mọi công cụ của Sprint 1 đã sẵn sàng trong một không gian quản trị rõ ràng, nhất quán và
+            đúng phạm vi quyền của bạn.
           </Typography.Paragraph>
           <Space wrap>
             <Link to={getPrimaryPath(shortcuts)}>
