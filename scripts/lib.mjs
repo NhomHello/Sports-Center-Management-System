@@ -14,6 +14,7 @@ export const MYSQL_CONTAINER = 'scms-mysql';
 const MYSQL_WAIT_MAX_TRIES = 60;
 const MYSQL_WAIT_INTERVAL_MS = 2000;
 const MIN_NODE_MAJOR = 22;
+const resolveCommand = (command) => (IS_WINDOWS && command === 'npm' ? 'npm.cmd' : command);
 
 const COLORS = {
   cyan: '\x1b[36m',
@@ -39,8 +40,8 @@ export const run = (cmd, args, { cwd = ROOT, shell = IS_WINDOWS } = {}) => {
   if (result.status !== 0) fail(`Lenh that bai: ${cmd} ${args.join(' ')}`);
 };
 
-/** npm phai chay qua shell tren Windows (npm.cmd) */
-export const npm = (args, cwd = ROOT) => run('npm', args, { cwd, shell: true });
+/** Goi npm truc tiep de tranh shell quoting khac nhau giua cac he dieu hanh. */
+export const npm = (args, cwd = ROOT) => run(resolveCommand('npm'), args, { cwd, shell: false });
 
 export const checkNodeVersion = () => {
   const major = Number(process.versions.node.split('.')[0]);
@@ -105,7 +106,11 @@ export const prepareDatabase = ({ seed = true } = {}) => {
 
 /** Chay process con, gan tien to mau cho tung dong output */
 export const spawnPrefixed = (name, color, cmd, args, cwd) => {
-  const child = spawn(cmd, args, { cwd, shell: true, stdio: ['inherit', 'pipe', 'pipe'] });
+  const child = spawn(resolveCommand(cmd), args, {
+    cwd,
+    shell: false,
+    stdio: ['inherit', 'pipe', 'pipe'],
+  });
   const prefix = `${color}[${name}]${COLORS.reset} `;
   const pipe = (stream, out) => {
     let buffer = '';
