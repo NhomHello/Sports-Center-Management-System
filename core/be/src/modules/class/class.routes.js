@@ -8,12 +8,14 @@ import * as booking from './class-enrollment.controller.js';
 import { enrollForMemberSchema, cancelForMemberSchema } from './class-enrollment.validation.js';
 import {
   classIdSchema,
+  classDetailSchema,
   createClassSchema,
   listClassSchema,
   updateClassSchema,
 } from './class.validation.js';
 const router = Router();
 router.use(authenticate);
+router.get('/filters', authorize(P.CLASS_READ, P.CLASS_READ_ALL), controller.filters);
 router.post(
   '/:id/enrollments/me',
   authorize(P.CLASS_ENROLL_SELF),
@@ -58,7 +60,7 @@ router.get(
 router.get(
   '/:id',
   authorize(P.CLASS_READ, P.CLASS_READ_ALL),
-  validate(classIdSchema),
+  validate(classDetailSchema),
   controller.getById,
 );
 router.post('/', authorize(P.CLASS_CREATE), validate(createClassSchema), controller.create);
