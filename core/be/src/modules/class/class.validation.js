@@ -14,6 +14,7 @@ const weeklySlot = z
   .strict()
   .refine((v) => v.endTime > v.startTime, 'Giờ kết thúc phải sau giờ bắt đầu');
 export const classIdSchema = { params: z.object({ id }) };
+export const classDetailSchema = { ...classIdSchema, query: z.object({ memberId: id.optional() }) };
 export const classBody = z
   .object({
     name: z.string().trim().min(VALIDATION.NAME_MIN_LENGTH).max(CLASS_LIMITS.NAME_LENGTH),
@@ -42,6 +43,7 @@ export const listClassSchema = {
     search: z.string().trim().max(VALIDATION.SEARCH_MAX_LENGTH).optional(),
     subjectId: id.optional(),
     coachId: id.optional(),
+    memberId: id.optional(),
     date: z.iso.date().optional(),
     status: z.nativeEnum(Enums.ClassStatus).optional(),
     scope: z.enum(['open', 'management']).default('open'),
