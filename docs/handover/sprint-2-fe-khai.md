@@ -1,29 +1,28 @@
-# Sprint 2 · BE Nhanh
+# Sprint 2 · FE Khải
 
-- Nhánh thành viên: `sprint-2/be-nhanh`.
+- Nhánh thành viên: `sprint-2/fe-khai`.
 - Nhánh chạy tích hợp: `sprint-2/integration`.
 - Thời gian kế hoạch: 06–19/10. Nền: Sprint 1 trên `origin/main`.
-- Commit triển khai chính: `227cfbe, 8b574b1`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
+- Commit triển khai chính: `0f439fb`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
 
-Đăng ký/huỷ toàn lớp, phân quyền quản lý, roster và lịch (#38–46).
+Danh mục, tạo/sửa/huỷ lớp, lớp mở và chi tiết (#29–34, #36–37).
 
 ## Chức năng phụ trách
 
 | # | UC | Chức năng |
 | --- | --- | --- |
-| 38 | UC-CB-17 | Danh sách lớp (quản lý) |
-| 39 | UC-CB-17 | Chi tiết lớp và học viên (quản lý) |
-| 40 | UC-CB-06 | Đăng ký lớp |
-| 41 | UC-CB-07 | Huỷ đăng ký lớp |
-| 42 | UC-CB-09 | Đăng ký lớp hộ hội viên |
-| 43 | UC-CB-10 | Huỷ đăng ký hộ hội viên |
-| 44 | UC-CB-16 | Lịch tập cá nhân |
-| 45 | UC-CB-11 | Lịch dạy |
-| 46 | UC-CB-12 | Danh sách học viên của lớp |
+| 29 | UC-CB-01 | Sửa danh sách bộ môn |
+| 30 | UC-CB-14 | Danh sách phòng tập |
+| 31 | UC-CB-14 | Tạo / sửa / ngừng hoạt động phòng |
+| 32 | UC-CB-02 | Tạo lớp |
+| 33 | UC-CB-03 | Sửa lớp / đổi lịch |
+| 34 | UC-CB-04 | Huỷ lớp |
+| 36 | UC-CB-05 | Danh sách lớp đang mở |
+| 37 | UC-CB-15 | Chi tiết lớp |
 
 ## Bàn giao triển khai
 
-Các module/component chính: class-read, class-booking-policy, class-enrollment, class-exception, class-roster và schedule; permission class.read_all.
+Các module/component chính: ResourceCatalogPanel, ResourceFormModal, ClassListPanel, ClassFormModal, ClassDetailDrawer và ClassSessionsTable.
 
 Đăng ký là **toàn lớp**. Backend trả chỗ còn lại, trạng thái đăng ký, canEnroll/canCancel, hạn huỷ và lý do từ chối. Hạn N giờ lấy từ system_settings, mặc định 12; ngoại lệ do đổi lịch chỉ cho hội viên bị xung đột thật, trước buổi xung đột đầu tiên.
 
