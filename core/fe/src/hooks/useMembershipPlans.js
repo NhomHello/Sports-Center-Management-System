@@ -39,7 +39,8 @@ const useMemberPlanContext = (canPurchase, userId) => {
     enabled: canPurchase,
   });
   const pendingInvoiceByPlanId = useMemo(
-    () => new Map((pendingInvoicesQuery.data?.data ?? []).map((invoice) => [invoice.planId, invoice])),
+    () =>
+      new Map((pendingInvoicesQuery.data?.data ?? []).map((invoice) => [invoice.planId, invoice])),
     [pendingInvoicesQuery.data],
   );
   return {
@@ -70,7 +71,10 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   });
   const purchaseMutation = useMutation({
     mutationFn: (plan) => membershipService.createOwnOrder({ planId: plan.id }),
-    onSuccess: ({ data, message: text }) => { message.success(text); navigate(`${ROUTES.PAYMENTS}?invoice=${data.id}`); },
+    onSuccess: ({ data, message: text }) => {
+      message.success(text);
+      navigate(`${ROUTES.PAYMENTS}?invoice=${data.id}`);
+    },
     onError: (error) => message.error(error.message),
   });
   const removeMutation = useMutation({
@@ -114,11 +118,11 @@ export function useMembershipPlans() {
         isActive: canManage ? undefined : true,
       }),
   });
-  
+
   const memberContext = useMemberPlanContext(canPurchase, user?.id);
 
   const plans = useMemo(() => plansQuery.data?.data ?? [], [plansQuery.data]);
-  
+
   const mutations = usePlanMutations({ setEditingPlan, setFormOpen });
   const openCreate = () => {
     setEditingPlan(undefined);
