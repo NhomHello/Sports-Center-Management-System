@@ -4,7 +4,7 @@ import { env } from '../../config/env.js';
 /**
  * Ky access token. Payload toi thieu: { sub: userId }. KHONG bo role/permission vao token
  * (quyen doc tu DB moi request de doi quyen co hieu luc ngay).
- * @param {{ sub: number }} payload
+ * @param {{ sub: number, ver?: number }} payload
  * @returns {string}
  */
 export const signAccessToken = (payload) =>
@@ -13,6 +13,6 @@ export const signAccessToken = (payload) =>
 /**
  * Xac thuc token, nem loi cua jsonwebtoken neu sai/het han.
  * @param {string} token
- * @returns {{ sub: number, iat: number, exp: number }}
+ * @returns {{ sub: number, ver?: number, iat: number, exp: number }}
  */
 export const verifyAccessToken = (token) => jwt.verify(token, env.JWT_SECRET);

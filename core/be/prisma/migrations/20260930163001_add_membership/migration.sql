@@ -1,0 +1,2 @@
+-- Bảng memberships đã được tạo bởi migration Flow 1 dùng chung.
+-- Migration rỗng này giữ nguyên thứ tự lịch sử từ nhánh BE Bảo.
