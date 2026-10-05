@@ -1,11 +1,11 @@
-# Sprint 2 · BE Nhanh
+# Sprint 2 · FE Khôi
 
-- Nhánh thành viên: `sprint-2/be-nhanh`.
+- Nhánh thành viên: `sprint-2/fe-khoi`.
 - Nhánh chạy tích hợp: `sprint-2/integration`.
 - Thời gian kế hoạch: 06–19/10. Nền: Sprint 1 trên `origin/main`.
-- Commit triển khai chính: `227cfbe, 8b574b1`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
+- Commit triển khai chính: `3845131`; thay đổi nghiệm thu tiếp theo xem log nhánh tích hợp.
 
-Đăng ký/huỷ toàn lớp, phân quyền quản lý, roster và lịch (#38–46).
+9 chức năng thuộc 8 UC; UC-CB-17 có hai màn hình (#38–46).
 
 ## Chức năng phụ trách
 
@@ -23,7 +23,7 @@
 
 ## Bàn giao triển khai
 
-Các module/component chính: class-read, class-booking-policy, class-enrollment, class-exception, class-roster và schedule; permission class.read_all.
+Các module/component chính: ClassFilters, ClassBookingActions, StaffBookingPanel, ScheduleCalendar, ScheduleList, ScheduleToolbar, ClassRosterModal và useScheduleCalendar.
 
 Đăng ký là **toàn lớp**. Backend trả chỗ còn lại, trạng thái đăng ký, canEnroll/canCancel, hạn huỷ và lý do từ chối. Hạn N giờ lấy từ system_settings, mặc định 12; ngoại lệ do đổi lịch chỉ cho hội viên bị xung đột thật, trước buổi xung đột đầu tiên.
 

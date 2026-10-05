@@ -16,7 +16,7 @@ Trạng thái: `Pass` / `Fail` / `Blocked` / `Chưa chạy`. Cập nhật khi re
 1. Mỗi **business rule** trong kế hoạch = ít nhất 1 test case dương + 1 âm (ví dụ BR "không đăng ký khi lớp đầy": TC đăng ký lớp còn chỗ → 201; TC lớp đầy → 422).
 2. Luôn có test **không có quyền → 403** cho mỗi endpoint mới.
 3. Test API dùng supertest + DB dev (docker). Dữ liệu tạo trong test có tiền tố `TEST_` và tự dọn trong `afterAll`.
-4. Test FE chỉ cho logic thuần (utils, hooks không phụ thuộc DOM). UI test thủ công theo file `.md`, đính ảnh vào PR.
+4. Test FE bằng Vitest cho logic thuần; Playwright cho luồng UI gọi API/DB thật, loading/error và desktop/mobile. Báo cáo, ảnh/trace nằm trong `playwright-report/`, `test-results/`.
 5. Không test thứ thư viện đã đảm bảo (antd render đúng, Prisma ghi được).
 
 ## Chạy
@@ -25,6 +25,8 @@ Trạng thái: `Pass` / `Fail` / `Blocked` / `Chưa chạy`. Cập nhật khi re
 npm test                    # tất cả workspace
 npm test -w @scms/be        # BE (cần MySQL đang chạy: npm run db:up)
 npm test -w @scms/fe        # FE
+npm run verify:sprint2     # toàn bộ test và migration trên DB tạm
+npm run test:e2e           # bốn vai trò, desktop + mobile 320px
 npx vitest --project ... -t "TC-RBAC-02"   # một case (trong core/be)
 ```
 
@@ -34,5 +36,5 @@ npx vitest --project ... -t "TC-RBAC-02"   # một case (trong core/be)
 | ---------------------------------------- | --------------------------------------------- | ------------------------------- |
 | [TC-AUTH-RBAC.md](TC-AUTH-RBAC.md)       | Đăng nhập, đăng ký, /me, phân quyền động, role CRUD | `tests/auth.test.js`, `tests/rbac.test.js`, `tests/role.test.js` |
 | [TC-F1-membership.md](TC-F1-membership.md) | Auth/profile/settings/notification Sprint 1 | Unit test cạnh module |
-| TC-F2-class-booking.md                   | (Flow 2 – Bảo viết)                           |                                 |
+| [TC-F2-class-booking.md](TC-F2-class-booking.md) | 18 chức năng Sprint 2, booking toàn lớp, phạm vi lịch/roster, outbox và migration | `sprint2-*.test.js`, `tests/e2e/*.spec.mjs` |
 | [TC-F3-payment-report.md](TC-F3-payment-report.md) | Cash payment và invoice Sprint 1 | Unit test cạnh module |
