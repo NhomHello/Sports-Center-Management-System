@@ -17,6 +17,7 @@ export const SETTING_GROUPS = Object.freeze({
   MEMBERSHIP: 'MEMBERSHIP',
   CLASS: 'CLASS',
   PAYMENT: 'PAYMENT',
+  AI: 'AI',
 });
 
 /**
@@ -27,6 +28,9 @@ export const SETTING_GROUPS = Object.freeze({
  * @property {string} label
  * @property {string} description
  * @property {string} group - một trong SETTING_GROUPS
+ * @property {string} [unit]
+ * @property {number} [minValue]
+ * @property {number} [maxValue]
  */
 
 /** @type {SettingDefinition[]} */
@@ -36,22 +40,29 @@ export const SETTING_DEFINITIONS = [
     type: SETTING_TYPES.STRING,
     defaultValue: 'Sports Center',
     label: 'Tên trung tâm',
+    required: true,
     description: 'Hiển thị trên giao diện và hoá đơn',
     group: SETTING_GROUPS.CENTER,
   },
   {
     key: 'CENTER_ADDRESS',
     type: SETTING_TYPES.STRING,
-    defaultValue: '',
+    defaultValue: 'Khu đô thị ĐHQG TP.HCM, Dĩ An, Bình Dương',
     label: 'Địa chỉ trung tâm',
+    required: true,
+    minLength: 10,
+    maxLength: 255,
     description: 'In trên hoá đơn',
     group: SETTING_GROUPS.CENTER,
   },
   {
     key: 'CENTER_PHONE',
     type: SETTING_TYPES.STRING,
-    defaultValue: '',
+    defaultValue: '028 7300 5588',
     label: 'Số điện thoại',
+    required: true,
+    format: 'phone',
+    maxLength: 20,
     description: 'In trên hoá đơn',
     group: SETTING_GROUPS.CENTER,
   },
@@ -60,8 +71,12 @@ export const SETTING_DEFINITIONS = [
     type: SETTING_TYPES.NUMBER,
     defaultValue: '7',
     label: 'Nhắc gia hạn trước (ngày)',
+    integer: true,
     description: 'Gửi thông báo nhắc gia hạn trước ngày hết hạn gói',
     group: SETTING_GROUPS.MEMBERSHIP,
+    unit: 'ngày',
+    minValue: 0,
+    maxValue: 365,
   },
   {
     key: 'CLASS_CANCEL_MIN_HOURS_BEFORE',
@@ -70,6 +85,9 @@ export const SETTING_DEFINITIONS = [
     label: 'Huỷ đăng ký lớp trước tối thiểu (giờ)',
     description: 'Hội viên chỉ được huỷ đăng ký trước giờ học số giờ này',
     group: SETTING_GROUPS.CLASS,
+    unit: 'giờ',
+    minValue: 0,
+    maxValue: 168,
   },
   {
     key: 'PAYMENT_ONLINE_TIMEOUT_MINUTES',
@@ -78,12 +96,18 @@ export const SETTING_DEFINITIONS = [
     label: 'Thời gian chờ thanh toán online (phút)',
     description: 'Quá thời gian này chưa nhận webhook thì giao dịch chuyển Failed',
     group: SETTING_GROUPS.PAYMENT,
+    unit: 'phút',
+    minValue: 1,
+    maxValue: 1440,
   },
   {
     key: 'INVOICE_CODE_PREFIX',
     type: SETTING_TYPES.STRING,
     defaultValue: 'INV',
     label: 'Tiền tố mã hoá đơn',
+    required: true,
+    format: 'invoicePrefix',
+    maxLength: 30,
     description: 'Mã hoá đơn = tiền tố + số tăng dần, dùng làm nội dung chuyển khoản',
     group: SETTING_GROUPS.PAYMENT,
   },
@@ -92,8 +116,21 @@ export const SETTING_DEFINITIONS = [
     type: SETTING_TYPES.STRING,
     defaultValue: 'VND',
     label: 'Đơn vị tiền tệ',
+    required: true,
+    format: 'currency',
     description: 'Mã tiền tệ hiển thị',
     group: SETTING_GROUPS.PAYMENT,
+  },
+  {
+    key: 'AI_DAILY_REQUEST_LIMIT',
+    type: SETTING_TYPES.NUMBER,
+    defaultValue: '20',
+    label: 'Giới hạn yêu cầu AI mỗi ngày',
+    description: 'Số yêu cầu AI tối đa cho một tài khoản trong một ngày Việt Nam',
+    group: SETTING_GROUPS.AI,
+    unit: 'yêu cầu/ngày',
+    minValue: 1,
+    maxValue: 1000,
   },
 ];
 

@@ -14,6 +14,18 @@ export const http = axios.create({
   timeout: env.REQUEST_TIMEOUT_MS,
 });
 
+const getErrorMessage = (body, status) => {
+  if (body?.message) return body.message;
+  if (status === HTTP_STATUS.TOO_MANY_REQUESTS)
+    return 'Bạn đã thử quá nhiều lần. Vui lòng chờ một lúc rồi thử lại.';
+  return 'Không thể kết nối máy chủ, vui lòng thử lại';
+};
+
+const getErrorCode = (body, status) => {
+  if (body?.code) return body.code;
+  return status === HTTP_STATUS.TOO_MANY_REQUESTS ? 'RATE_LIMITED' : undefined;
+};
+
 http.interceptors.request.use((config) => {
   const { accessToken } = useAuthStore.getState();
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
@@ -31,8 +43,8 @@ http.interceptors.response.use(
 
     return Promise.reject(
       new ApiClientError({
-        message: body?.message ?? 'Không thể kết nối máy chủ, vui lòng thử lại',
-        code: body?.code,
+        message: getErrorMessage(body, status),
+        code: getErrorCode(body, status),
         status,
         details: body?.details,
       }),

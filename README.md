@@ -14,16 +14,20 @@ thanh toán SePay & báo cáo (Flow 3). Phân quyền **RBAC động hoàn toàn
 | Database | MySQL 8 (Docker)                                                          |
 | Tooling  | npm workspaces, ESLint 10, Prettier, Husky + lint-staged, Commitlint, Vitest |
 
-## Chạy nhanh (3 lệnh)
+## Chạy local bằng một script
 
 ```bash
 git clone https://github.com/NhomHello/Sports-Center-Management-System.git
 cd Sports-Center-Management-System
-npm run setup     # cài deps, tạo .env, bật MySQL (Docker), migrate, seed
-npm run dev       # bật Docker MySQL + BE (:3000) + FE (:5173) trong một terminal
+npm run dev
 ```
 
-Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop, Git. Chi tiết: [docs/06-onboarding.md](docs/06-onboarding.md).
+`npm run dev` tự cài dependency khi thiếu, tạo các file `.env` từ mẫu, bật MySQL,
+chờ database healthy, generate Prisma, apply migration, seed tài khoản cho mọi role rồi
+chạy BE (`:3000`) và FE (`:5173`). Script dùng được trên Windows, macOS và Linux.
+
+Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop/Engine có Compose v2, Git. Chi tiết:
+[docs/06-onboarding.md](docs/06-onboarding.md).
 
 **Tài khoản mẫu** (mật khẩu trong `core/be/.env`): `admin@scms.local` (Center Manager), `letan@scms.local`,
 `coach.yoga@scms.local`, `member1@scms.local`… xem `core/be/prisma/seed/mock/users.mock.js`.
@@ -51,7 +55,8 @@ scripts       npm run dev / setup
 
 | Lệnh                    | Việc                                                     |
 | ----------------------- | -------------------------------------------------------- |
-| `npm run dev`           | Docker MySQL + BE + FE. Thêm `--be-only` / `--fe-only` / `--no-docker` |
+| `npm run dev`           | Chuẩn bị toàn bộ local, seed tài khoản, chạy MySQL + BE + FE            |
+| `npm run dev -- --prepare-only` | Chỉ chuẩn bị DB/seed để kiểm tra, không chiếm cổng BE/FE         |
 | `npm run db:migrate`    | Tạo migration mới sau khi sửa `schema.prisma` (hỏi tên)  |
 | `npm run db:seed`       | Đồng bộ permission / role / settings / mock user vào DB  |
 | `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
