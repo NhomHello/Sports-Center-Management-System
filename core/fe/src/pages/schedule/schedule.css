@@ -1,0 +1,40 @@
+.scms-schedule {
+  min-width: 0;
+}
+.scms-schedule-stack {
+  width: 100%;
+  min-width: 0;
+}
+.scms-class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 16px;
+}
+.scms-class-grid .ant-card-head-title {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.scms-class-grid .ant-card {
+  min-width: 0;
+}
+.scms-schedule .ant-input-search {
+  max-width: 100%;
+}
+.scms-schedule .ant-pagination {
+  flex-wrap: wrap;
+}
+.scms-schedule .ant-tabs-content-holder {
+  min-width: 0;
+}
+.scms-schedule-stack .ant-space-item {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .scms-schedule .ant-space {
+    max-width: 100%;
+  }
+  .scms-class-grid .ant-card-body {
+    padding: 16px;
+  }
+}

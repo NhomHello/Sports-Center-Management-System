@@ -14,6 +14,7 @@ import {
   LockOutlined,
   BellOutlined,
   GiftOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
@@ -32,10 +33,22 @@ const GROUP_SYSTEM = 'Hệ thống';
 const GROUP_ACCOUNT = 'Tài khoản cá nhân';
 const MembershipPlansPage = lazy(() => import('@/pages/membership/MembershipPlansPage'));
 const MembersPage = lazy(() => import('@/pages/members/MembersPage'));
+const SchedulePage = lazy(() => import('@/pages/schedule/SchedulePage'));
 
 const GROUP_MEMBER = 'Hội viên';
 
 export const routeRegistry = [
+  {
+    path: ROUTES.SCHEDULE,
+    element: <SchedulePage />,
+    permission: [
+      PERMISSIONS.CLASS_READ,
+      PERMISSIONS.CLASS_READ_ALL,
+      PERMISSIONS.SCHEDULE_VIEW_OWN,
+      PERMISSIONS.SCHEDULE_VIEW_TEACHING,
+    ],
+    menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: 'Lịch tập' },
+  },
   {
     path: ROUTES.DASHBOARD,
     element: <DashboardPage />,
