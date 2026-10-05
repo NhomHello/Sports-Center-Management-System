@@ -1,5 +1,6 @@
 import { PERMISSIONS as P } from '@scms/shared';
-import { Tabs } from 'antd';
+import { useState } from 'react';
+import { Select, Tabs } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { usePermission } from '@/hooks/usePermission';
 import { ClassListPanel } from './ClassListPanel';
@@ -42,9 +43,7 @@ function catalogTabs(can) {
     }));
 }
 
-/** Trang Flow 2: tab và thao tác theo permission, không so sánh tên role. */
-export default function SchedulePage() {
-  const { can, canAll } = usePermission();
+function buildTabs(can, canAll) {
   const actions = (item) => <ClassBookingActions item={item} />;
   const management = (
     <ClassListPanel
@@ -85,13 +84,30 @@ export default function SchedulePage() {
   if (can(P.SCHEDULE_VIEW_TEACHING) && !can(P.CLASS_READ_ALL))
     items.push({ key: 'assigned', label: 'Lớp phụ trách', children: management });
   items.push(...catalogTabs(can));
+  return items;
+}
+
+/** Trang Flow 2: tab và thao tác theo permission, không so sánh tên role. */
+export default function SchedulePage() {
+  const { can, canAll } = usePermission();
+  const [selected, setSelected] = useState(null);
+  const items = buildTabs(can, canAll);
+  const activeKey = selected || items[0]?.key;
   return (
     <div className="scms-page-enter scms-schedule">
       <PageHeader
         title="Lớp học và lịch tập"
         subtitle="Chọn lớp phù hợp và theo dõi lịch theo giờ Việt Nam."
       />
-      <Tabs items={items} destroyOnHidden />
+      <Select
+        className="scms-schedule-mobile-nav"
+        aria-label="Chọn màn hình lịch"
+        virtual={false}
+        value={activeKey}
+        onChange={setSelected}
+        options={items.map(({ key, label }) => ({ value: key, label }))}
+      />
+      <Tabs activeKey={activeKey} onChange={setSelected} items={items} destroyOnHidden />
     </div>
   );
 }

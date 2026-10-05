@@ -1,6 +1,9 @@
 .scms-schedule {
   min-width: 0;
 }
+.scms-schedule-mobile-nav {
+  display: none;
+}
 .scms-schedule-stack {
   width: 100%;
   min-width: 0;
@@ -54,6 +57,14 @@
   }
 }
 @media (max-width: 600px) {
+  .scms-schedule-mobile-nav {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .scms-schedule > .ant-tabs > .ant-tabs-nav {
+    display: none;
+  }
   .scms-week-grid {
     grid-template-columns: minmax(0, 1fr);
   }
