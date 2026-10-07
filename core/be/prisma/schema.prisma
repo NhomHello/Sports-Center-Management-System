@@ -59,6 +59,23 @@ enum PaymentProvider {
   SIMULATOR
 }
 
+enum ClassStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum EnrollmentStatus {
+  BOOKED
+  CANCELLED
+}
+
 enum NotificationKind {
   MEMBERSHIP_EXPIRY_REMINDER
   CLASS_CHANGED
@@ -87,6 +104,10 @@ model User {
   invoices                Invoice[]
   notifications           Notification[]
   emailVerificationTokens EmailVerificationToken[]
+  coachedClasses          GymClass[]               @relation("ClassCoach")
+  enrollments             Enrollment[]             @relation("EnrollmentMember")
+  enrolledForOthers       Enrollment[]             @relation("EnrollmentEnrolledBy")
+  cancelledForOthers      Enrollment[]             @relation("EnrollmentCancelledBy")
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
 
@@ -296,4 +317,95 @@ model Notification {
 
   @@index([userId, readAt])
   @@map("notifications")
+}
+
+// ---------------- FLOW 2: CLASS BOOKING ----------------
+// Bang da co tu migration 20260924150000_add_flows_2_4; Bao (BE) quan ly CRUD, Nhanh (BE) lo booking/lich.
+
+model Subject {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  description String?    @db.VarChar(500)
+  isActive    Boolean    @default(true) @map("is_active")
+  classes     GymClass[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("subjects")
+}
+
+model Room {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  capacity    Int
+  description String?    @db.VarChar(500)
+  isActive    Boolean    @default(true) @map("is_active")
+  classes     GymClass[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("rooms")
+}
+
+model GymClass {
+  id                  Int            @id @default(autoincrement())
+  name                String         @db.VarChar(120)
+  description         String?        @db.VarChar(1000)
+  subjectId           Int            @map("subject_id")
+  subject             Subject        @relation(fields: [subjectId], references: [id])
+  roomId              Int            @map("room_id")
+  room                Room           @relation(fields: [roomId], references: [id])
+  coachId             Int            @map("coach_id")
+  coach               User           @relation("ClassCoach", fields: [coachId], references: [id])
+  capacity            Int
+  startsOn            DateTime       @map("starts_on") @db.Date
+  endsOn              DateTime       @map("ends_on") @db.Date
+  weeklySchedule      Json           @map("weekly_schedule")
+  registrationStartAt DateTime       @map("registration_start_at")
+  registrationEndAt   DateTime       @map("registration_end_at")
+  status              ClassStatus    @default(OPEN)
+  sessions            ClassSession[]
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  @@index([subjectId, status])
+  @@index([coachId, status])
+  @@map("gym_classes")
+}
+
+model ClassSession {
+  id          Int           @id @default(autoincrement())
+  classId     Int           @map("class_id")
+  gymClass    GymClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  startAt     DateTime      @map("start_at")
+  endAt       DateTime      @map("end_at")
+  status      SessionStatus @default(SCHEDULED)
+  enrollments Enrollment[]
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([startAt, endAt, status])
+  @@index([classId, startAt])
+  @@map("class_sessions")
+}
+
+/// Dat cho theo tung buoi. enrolledBy/cancelledBy ghi nhan nhan vien lam ho (null = hoi vien tu lam).
+model Enrollment {
+  id            Int              @id @default(autoincrement())
+  sessionId     Int              @map("session_id")
+  session       ClassSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId        Int              @map("user_id")
+  user          User             @relation("EnrollmentMember", fields: [userId], references: [id])
+  status        EnrollmentStatus @default(BOOKED)
+  enrolledById  Int?             @map("enrolled_by")
+  enrolledBy    User?            @relation("EnrollmentEnrolledBy", fields: [enrolledById], references: [id], onDelete: SetNull)
+  cancelledById Int?             @map("cancelled_by")
+  cancelledBy   User?            @relation("EnrollmentCancelledBy", fields: [cancelledById], references: [id], onDelete: SetNull)
+  cancelledAt   DateTime?        @map("cancelled_at")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@unique([sessionId, userId])
+  @@index([userId, status])
+  @@map("enrollments")
 }

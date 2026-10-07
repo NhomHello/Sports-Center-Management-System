@@ -12,8 +12,16 @@ export const PAGINATION = Object.freeze({
 export const TIME = Object.freeze({
   MS_PER_SECOND: 1000,
   MS_PER_MINUTE: 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
   MS_PER_DAY: 24 * 60 * 60 * 1000,
   VIETNAM_ZONE: 'Asia/Ho_Chi_Minh',
+});
+
+export const SCHEDULE = Object.freeze({
+  DEFAULT_RANGE_DAYS: 7,
+  MAX_RANGE_DAYS: 62,
+  /** Mui gio Viet Nam (khong DST) dung de doi ngay "YYYY-MM-DD" sang moc UTC */
+  VIETNAM_OFFSET: '+07:00',
 });
 
 export const AUTH = Object.freeze({
@@ -63,6 +71,7 @@ export const ENTITIES = Object.freeze({
   MEMBERSHIP: 'Membership',
   PAYMENT: 'Payment',
   MEMBERSHIP_PLAN: 'MembershipPlan',
+  ENROLLMENT: 'Enrollment',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
