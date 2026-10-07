@@ -17,7 +17,7 @@ export function EmailVerificationBanner({ user }) {
       type="warning"
       showIcon
       style={{ marginBottom: 16 }}
-      message={`Email ${user.email} chưa được xác minh`}
+      title={`Email ${user.email} chưa được xác minh`}
       description="Mở liên kết trong email chúng tôi đã gửi để xác minh. Chưa nhận được thư?"
       action={
         <Button size="small" loading={resend.isPending} onClick={() => resend.mutate()}>
