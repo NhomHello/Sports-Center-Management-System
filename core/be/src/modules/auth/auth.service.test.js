@@ -25,6 +25,7 @@ vi.mock('../../common/utils/password.js', () => ({
   hashPassword: mocks.hashPassword,
 }));
 vi.mock('../../common/utils/audit.js', () => ({ recordAudit: mocks.recordAudit }));
+vi.mock('./email-verification.service.js', () => ({ trySendVerificationEmail: vi.fn() }));
 vi.mock('../../common/utils/jwt.js', () => ({ signAccessToken: vi.fn() }));
 
 const { changePassword } = await import('./auth.service.js');

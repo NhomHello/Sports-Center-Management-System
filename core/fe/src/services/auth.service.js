@@ -13,3 +13,11 @@ export const changePassword = (payload) => http.post(`${BASE}/password-changes`,
 
 /** Thong tin user hien tai + permissions */
 export const getMe = () => http.get(`${BASE}/me`);
+
+/** Gửi lại email xác minh; API luôn trả thành công để không lộ email nào đã đăng ký. */
+export const requestEmailVerification = (payload) =>
+  http.post(`${BASE}/email-verifications`, payload);
+
+/** @param {{ token: string }} payload token lấy từ link trong email */
+export const confirmEmailVerification = (payload) =>
+  http.post(`${BASE}/email-verifications/confirm`, payload);

@@ -11,6 +11,7 @@ export const ROUTES = Object.freeze({
   DASHBOARD: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  VERIFY_EMAIL: '/verify-email',
   PROFILE: '/profile',
   CHANGE_PASSWORD: '/change-password',
   NOTIFICATIONS: '/notifications',

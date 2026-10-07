@@ -70,3 +70,15 @@ sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/
 ## 6. Đọc tiếp
 
 `docs/01-quy-tac-code.md` (bắt buộc) → `02-cau-truc-du-an.md` → `03-rbac-dynamic.md`.
+
+## Gửi email (xác minh tài khoản)
+
+BE gửi mail qua SMTP bằng `nodemailer` (`core/be/src/common/mail/mailer.js`), cấu hình hoàn toàn bằng biến `MAIL_*` và `APP_BASE_URL` trong `core/be/.env` (xem `.env.example`).
+
+| Tình huống | Cấu hình |
+| --- | --- |
+| Chạy local, chưa cần mail thật | Để trống `MAIL_HOST`: BE không gửi, chỉ in nội dung mail (có link xác minh) ra log |
+| Dev/test nhóm | Mailtrap Sandbox: `MAIL_HOST=sandbox.smtp.mailtrap.io`, `MAIL_PORT=2525`, user/pass lấy ở Mailtrap |
+| Demo với giảng viên | Brevo (`smtp-relay.brevo.com:587`, miễn phí 300 mail/ngày) hoặc Gmail (`smtp.gmail.com:587` + App Password) |
+
+Hạn link và thời gian chờ giữa hai lần gửi nằm ở System Settings (nhóm "Tài khoản"). Không commit mật khẩu SMTP.

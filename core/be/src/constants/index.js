@@ -21,6 +21,12 @@ export const AUTH = Object.freeze({
   SCHEME: 'Bearer',
 });
 
+export const EMAIL_VERIFICATION = Object.freeze({
+  /** 32 byte ngau nhien => token hex 64 ky tu */
+  TOKEN_BYTES: 32,
+  VERIFY_PATH: '/verify-email',
+});
+
 export const VALIDATION = Object.freeze({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 72,

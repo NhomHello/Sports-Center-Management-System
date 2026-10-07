@@ -6,7 +6,13 @@ import { validate } from '../../common/middlewares/validate.middleware.js';
 import { env } from '../../config/env.js';
 import { TIME } from '../../constants/index.js';
 import * as controller from './auth.controller.js';
-import { loginSchema, registerSchema, changePasswordSchema } from './auth.validation.js';
+import {
+  loginSchema,
+  registerSchema,
+  changePasswordSchema,
+  requestEmailVerificationSchema,
+  confirmEmailVerificationSchema,
+} from './auth.validation.js';
 
 const router = Router();
 
@@ -32,6 +38,19 @@ router.post(
   authLimiter,
   validate(changePasswordSchema),
   controller.changePassword,
+);
+
+router.post(
+  '/email-verifications',
+  authLimiter,
+  validate(requestEmailVerificationSchema),
+  controller.requestEmailVerification,
+);
+router.post(
+  '/email-verifications/confirm',
+  authLimiter,
+  validate(confirmEmailVerificationSchema),
+  controller.confirmEmailVerification,
 );
 
 export default router;

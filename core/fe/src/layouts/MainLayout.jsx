@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import { Suspense, useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
+import { EmailVerificationBanner } from '@/components/common/EmailVerificationBanner';
 import { MainHeader, MainSidebar } from '@/components/common/MainHeader';
 import { PageLoading } from '@/components/common/PageLoading';
 import { useAuth } from '@/hooks/useAuth';
@@ -40,6 +41,7 @@ export function MainLayout() {
         />
         <Layout.Content className="scms-app-content">
           <main className="scms-app-content__inner">
+            <EmailVerificationBanner user={user} />
             <Suspense fallback={<PageLoading />}>
               <Outlet />
             </Suspense>
