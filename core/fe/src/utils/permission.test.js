@@ -7,6 +7,8 @@ describe('hasAnyPermission', () => {
   it('true khi khong yeu cau quyen', () => {
     expect(hasAnyPermission(granted, undefined)).toBe(true);
     expect(hasAnyPermission(granted, [])).toBe(true);
+    expect(hasAnyPermission(granted, [undefined])).toBe(true);
+    expect(hasAnyPermission([], [undefined])).toBe(true);
   });
 
   it('true khi co it nhat mot quyen', () => {
@@ -20,6 +22,11 @@ describe('hasAnyPermission', () => {
 
   it('nhan Set lam granted', () => {
     expect(hasAnyPermission(new Set(granted), 'role.read')).toBe(true);
+  });
+
+  it('vẫn chặn permission thực khi rest args có giá trị trống', () => {
+    expect(hasAnyPermission([], [undefined, 'setting.read'])).toBe(false);
+    expect(hasAnyPermission(granted, [undefined, 'role.read'])).toBe(true);
   });
 });
 

@@ -16,11 +16,14 @@ Windows: nên bật WSL2 backend cho Docker; chạy lệnh trong PowerShell ho�
 ```bash
 git clone https://github.com/NhomHello/Sports-Center-Management-System.git
 cd Sports-Center-Management-System
-npm run setup      # ~2-3 phút lần đầu
 npm run dev
 ```
 
-`npm run dev` làm gì: tạo `.env` từ `.env.example` (nếu thiếu) → `docker compose up mysql` → chờ healthy → `prisma generate` → apply migration → seed (permission, role, admin, settings, user mẫu) → chạy BE (`node --watch`) và FE (`vite`) trong 1 terminal, Ctrl+C tắt cả hai.
+`npm run dev` dùng chung trên Windows, macOS và Linux: tự cài dependency khi thiếu → tạo
+`.env` từ `.env.example` (nếu thiếu) → `docker compose up mysql` → chờ healthy →
+`prisma generate` → apply migration → seed (permission, role, admin, settings, user mẫu) →
+in bộ tài khoản demo → chạy BE (`node --watch`) và FE (`vite`) trong một terminal.
+Nhấn Ctrl+C để tắt cả hai server; dữ liệu MySQL vẫn được giữ trong Docker volume.
 
 | Địa chỉ                                   | Là gì                    |
 | ----------------------------------------- | ------------------------ |
@@ -28,7 +31,8 @@ npm run dev
 | http://localhost:3000/api/v1/health       | Backend health           |
 | `npm run db:studio` → http://localhost:5555 | Prisma Studio (xem DB) |
 
-Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạy MySQL riêng, sửa `DATABASE_URL`), `--no-seed`.
+Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạy MySQL riêng,
+sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/seed mà không mở server.
 
 ## 3. Tài khoản mẫu (dev)
 
@@ -66,3 +70,15 @@ Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạ
 ## 6. Đọc tiếp
 
 `docs/01-quy-tac-code.md` (bắt buộc) → `02-cau-truc-du-an.md` → `03-rbac-dynamic.md`.
+
+## Gửi email (xác minh tài khoản)
+
+BE gửi mail qua SMTP bằng `nodemailer` (`core/be/src/common/mail/mailer.js`), cấu hình hoàn toàn bằng biến `MAIL_*` và `APP_BASE_URL` trong `core/be/.env` (xem `.env.example`).
+
+| Tình huống | Cấu hình |
+| --- | --- |
+| Chạy local, chưa cần mail thật | Để trống `MAIL_HOST`: BE không gửi, chỉ in nội dung mail (có link xác minh) ra log |
+| Dev/test nhóm | Mailtrap Sandbox: `MAIL_HOST=sandbox.smtp.mailtrap.io`, `MAIL_PORT=2525`, user/pass lấy ở Mailtrap |
+| Demo với giảng viên | Brevo (`smtp-relay.brevo.com:587`, miễn phí 300 mail/ngày) hoặc Gmail (`smtp.gmail.com:587` + App Password) |
+
+Hạn link và thời gian chờ giữa hai lần gửi nằm ở System Settings (nhóm "Tài khoản"). Không commit mật khẩu SMTP.

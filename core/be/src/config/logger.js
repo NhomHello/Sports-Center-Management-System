@@ -7,6 +7,14 @@ import { env, isDev, isTest } from './env.js';
 
 export const logger = pino({
   level: isTest ? 'silent' : env.LOG_LEVEL,
+  redact: [
+    'req.headers.authorization',
+    'req.body.password',
+    'req.body.currentPassword',
+    'password',
+    'currentPassword',
+    'passwordHash',
+  ],
   ...(isDev && {
     transport: {
       target: 'pino-pretty',
