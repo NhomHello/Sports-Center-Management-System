@@ -109,7 +109,7 @@ export default [
     },
   },
   {
-    files: ['**/*.test.js'],
+    files: ['**/*.test.js', 'tests/helpers/**/*.js'],
     rules: {
       'no-magic-numbers': 'off',
       'max-lines-per-function': 'off',
