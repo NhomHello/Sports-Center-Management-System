@@ -39,3 +39,18 @@ export const changePasswordSchema = {
 
 // Tương thích tên contract đã dùng trong test/handover của nhánh backend.
 export const passwordChangeSchema = changePasswordSchema;
+
+export const requestEmailVerificationSchema = {
+  body: z.object({ email }).strict(),
+};
+
+export const confirmEmailVerificationSchema = {
+  body: z
+    .object({
+      token: z
+        .string()
+        .trim()
+        .regex(/^[a-f0-9]{64}$/, 'Liên kết không hợp lệ'),
+    })
+    .strict(),
+};

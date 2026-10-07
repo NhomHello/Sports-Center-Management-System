@@ -8,6 +8,7 @@ import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import * as permissionService from '../permission/permission.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
+import { trySendVerificationEmail } from './email-verification.service.js';
 
 /**
  * Đăng nhập bằng email hoặc số điện thoại và mật khẩu.
@@ -64,6 +65,8 @@ export const register = async ({ password, ...data }) => {
     entity: ENTITIES.USER,
     entityId: user.id,
   });
+  // Không await: SMTP chậm/lỗi không được làm chậm hay hỏng đăng ký (có nút gửi lại).
+  void trySendVerificationEmail(user);
   return toPublicUser(user);
 };
 

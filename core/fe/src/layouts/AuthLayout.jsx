@@ -47,14 +47,25 @@ function AuthBrandPanel() {
   );
 }
 
+const AUTH_HEADINGS = {
+  [ROUTES.LOGIN]: {
+    title: 'Chào mừng trở lại',
+    subtitle: 'Đăng nhập để tiếp tục hành trình tập luyện của bạn.',
+  },
+  [ROUTES.REGISTER]: {
+    title: 'Tạo tài khoản mới',
+    subtitle: 'Đăng ký để bắt đầu trải nghiệm SportHub.',
+  },
+  [ROUTES.VERIFY_EMAIL]: {
+    title: 'Xác minh email',
+    subtitle: 'Hoàn tất xác minh để bảo vệ tài khoản của bạn.',
+  },
+};
+
 /** Layout xác thực hai cột theo hệ thống hình ảnh SportHub. */
 export function AuthLayout() {
   const { pathname } = useLocation();
-  const isRegister = pathname === ROUTES.REGISTER;
-  const title = isRegister ? 'Tạo tài khoản mới' : 'Chào mừng trở lại';
-  const subtitle = isRegister
-    ? 'Đăng ký để bắt đầu trải nghiệm SportHub.'
-    : 'Đăng nhập để tiếp tục hành trình tập luyện của bạn.';
+  const { title, subtitle } = AUTH_HEADINGS[pathname] ?? AUTH_HEADINGS[ROUTES.LOGIN];
 
   return (
     <div className="scms-auth-shell">

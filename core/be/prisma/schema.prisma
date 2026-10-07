@@ -71,24 +71,43 @@ enum NotificationKind {
 
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String?        @unique @db.VarChar(191)
-  phone         String?        @unique @db.VarChar(20)
-  passwordHash  String         @map("password_hash") @db.VarChar(255)
-  tokenVersion  Int            @default(0) @map("token_version")
-  fullName      String         @map("full_name") @db.VarChar(100)
-  status        UserStatus     @default(ACTIVE)
-  roleId        Int            @map("role_id")
-  role          Role           @relation(fields: [roleId], references: [id])
-  auditLogs     AuditLog[]
-  memberships   Membership[]
-  invoices      Invoice[]
-  notifications Notification[]
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
+  id                      Int                      @id @default(autoincrement())
+  email                   String?                  @unique @db.VarChar(191)
+  phone                   String?                  @unique @db.VarChar(20)
+  passwordHash            String                   @map("password_hash") @db.VarChar(255)
+  tokenVersion            Int                      @default(0) @map("token_version")
+  fullName                String                   @map("full_name") @db.VarChar(100)
+  status                  UserStatus               @default(ACTIVE)
+  /// Null = chua xac minh email (tai khoan chi co SDT khong can xac minh)
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  roleId                  Int                      @map("role_id")
+  role                    Role                     @relation(fields: [roleId], references: [id])
+  auditLogs               AuditLog[]
+  memberships             Membership[]
+  invoices                Invoice[]
+  notifications           Notification[]
+  emailVerificationTokens EmailVerificationToken[]
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
 
   @@index([roleId])
   @@map("users")
+}
+
+/// Token xac minh email: chi luu hash SHA-256, dung 1 lan, het han theo system_settings.
+model EmailVerificationToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Email tai thoi diem gui; doi email sau do thi token cu vo hieu
+  email     String    @db.VarChar(191)
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("email_verification_tokens")
 }
 
 /// Vai tro: tap hop permission. Tao/sua/xoa hoan toan qua UI (tru isSystem khong duoc xoa).

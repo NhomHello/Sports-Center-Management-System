@@ -15,6 +15,7 @@ const DEFAULT_AUTH_RATE_MAX = 20;
 const DEFAULT_PERMISSION_CACHE_TTL = 30;
 const DEFAULT_SETTING_CACHE_TTL = 60;
 const MIN_PASSWORD_LENGTH = 8;
+const DEFAULT_MAIL_PORT = 587;
 
 const csvToArray = (value) =>
   value
@@ -46,6 +47,16 @@ const schema = z.object({
 
   PERMISSION_CACHE_TTL_SECONDS: z.coerce.number().min(0).default(DEFAULT_PERMISSION_CACHE_TTL),
   SETTING_CACHE_TTL_SECONDS: z.coerce.number().min(0).default(DEFAULT_SETTING_CACHE_TTL),
+
+  // Mail SMTP (Mailtrap Sandbox khi dev, Brevo/Gmail SMTP khi demo). Bo trong MAIL_HOST => chi ghi log.
+  MAIL_HOST: z.string().optional(),
+  MAIL_PORT: z.coerce.number().int().positive().default(DEFAULT_MAIL_PORT),
+  MAIL_SECURE: z.stringbool().default(false),
+  MAIL_USER: z.string().optional(),
+  MAIL_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default('Sports Center <no-reply@scms.local>'),
+  /** URL goc cua FE de dung trong link trong email */
+  APP_BASE_URL: z.url().default('http://localhost:5173'),
 
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 

@@ -20,6 +20,7 @@ import { getSettingFormValues, getChangedSettingPayload } from '@/utils/settings
 const COL_SPAN = { xs: 24, lg: 12 };
 const GROUP_LABELS = Object.freeze({
   [SETTING_GROUPS.CENTER]: 'Thông tin trung tâm',
+  [SETTING_GROUPS.ACCOUNT]: 'Tài khoản',
   [SETTING_GROUPS.MEMBERSHIP]: 'Hội viên',
   [SETTING_GROUPS.CLASS]: 'Lớp học',
   [SETTING_GROUPS.PAYMENT]: 'Thanh toán',

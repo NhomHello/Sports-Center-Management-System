@@ -14,6 +14,7 @@ export const SETTING_TYPES = Object.freeze({
 
 export const SETTING_GROUPS = Object.freeze({
   CENTER: 'CENTER',
+  ACCOUNT: 'ACCOUNT',
   MEMBERSHIP: 'MEMBERSHIP',
   CLASS: 'CLASS',
   PAYMENT: 'PAYMENT',
@@ -65,6 +66,30 @@ export const SETTING_DEFINITIONS = [
     maxLength: 20,
     description: 'In trên hoá đơn',
     group: SETTING_GROUPS.CENTER,
+  },
+  {
+    key: 'EMAIL_VERIFICATION_TTL_MINUTES',
+    type: SETTING_TYPES.NUMBER,
+    defaultValue: '60',
+    label: 'Hạn link xác minh email (phút)',
+    integer: true,
+    description: 'Link xác minh email gửi sau khi đăng ký hết hạn sau số phút này',
+    group: SETTING_GROUPS.ACCOUNT,
+    unit: 'phút',
+    minValue: 5,
+    maxValue: 10080,
+  },
+  {
+    key: 'EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS',
+    type: SETTING_TYPES.NUMBER,
+    defaultValue: '60',
+    label: 'Giãn cách gửi lại email xác minh (giây)',
+    integer: true,
+    description: 'Khoảng chờ tối thiểu giữa hai lần gửi email xác minh cho cùng một tài khoản',
+    group: SETTING_GROUPS.ACCOUNT,
+    unit: 'giây',
+    minValue: 0,
+    maxValue: 3600,
   },
   {
     key: 'MEMBERSHIP_EXPIRY_REMINDER_DAYS',

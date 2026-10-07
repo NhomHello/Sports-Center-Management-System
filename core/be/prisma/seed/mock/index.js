@@ -19,8 +19,18 @@ export async function seedMockUsers() {
       continue;
     }
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) continue;
-    await prisma.user.create({ data: { ...data, passwordHash, roleId } });
+    if (existing) {
+      if (!existing.emailVerifiedAt) {
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: { emailVerifiedAt: new Date() },
+        });
+      }
+      continue;
+    }
+    await prisma.user.create({
+      data: { ...data, passwordHash, roleId, emailVerifiedAt: new Date() },
+    });
     created += 1;
   }
   logger.info({ created, total: SEED_MOCK_USERS.length }, 'Seed mock users xong');

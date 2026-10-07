@@ -69,6 +69,12 @@ async function seedAdminUser() {
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: SEED_ADMIN_ROLE_CODE } });
   const existing = await prisma.user.findUnique({ where: { email: env.SEED_ADMIN_EMAIL } });
   if (existing) {
+    if (!existing.emailVerifiedAt) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { emailVerifiedAt: new Date() },
+      });
+    }
     logger.info({ email: env.SEED_ADMIN_EMAIL }, 'Admin da ton tai, bo qua');
     return;
   }
@@ -77,6 +83,7 @@ async function seedAdminUser() {
       email: env.SEED_ADMIN_EMAIL,
       passwordHash: await hashPassword(env.SEED_ADMIN_PASSWORD),
       fullName: env.SEED_ADMIN_NAME,
+      emailVerifiedAt: new Date(),
       roleId: adminRole.id,
     },
   });
