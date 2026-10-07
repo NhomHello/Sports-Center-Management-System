@@ -6,6 +6,9 @@
 import { Router } from 'express';
 import { HEALTH_PATH } from './constants/index.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import classManagementRoutes from './modules/class-management/class-management.routes.js';
+import enrollmentRoutes from './modules/enrollment/enrollment.routes.js';
+import scheduleRoutes from './modules/schedule/schedule.routes.js';
 import healthRoutes from './modules/health/health.routes.js';
 import memberRoutes from './modules/member/member.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
@@ -32,5 +35,8 @@ router.use('/memberships', membershipRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
 router.use('/membership-plans', membershipPlanRoutes);
+router.use('/class-management', classManagementRoutes);
+router.use('/sessions', enrollmentRoutes);
+router.use('/schedule', scheduleRoutes);
 
 export default router;
