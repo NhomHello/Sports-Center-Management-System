@@ -47,9 +47,10 @@ export function MainLayout() {
         </Layout.Content>
         <Layout.Footer className="scms-app-footer">
           <span>
-            <strong>SportHub</strong> · © {new Date().getFullYear()} · Cùng bạn khỏe hơn mỗi ngày
+            <strong>Sports Center</strong> · © {new Date().getFullYear()} · Cùng bạn khỏe hơn mỗi
+            ngày
           </span>
-          <span className="scms-app-footer__note">Quản lý trung tâm thể thao</span>
+          <span className="scms-app-footer__note">Lớp học · Lịch tập · Kết nối</span>
         </Layout.Footer>
       </Layout>
     </Layout>

@@ -8,6 +8,7 @@ import { resolvePostLoginPath } from '@/router/resolvePostLoginPath';
 import * as authService from '@/services/auth.service';
 import { useAuthStore } from '@/stores/authStore';
 
+/** Đăng nhập và chuyển tới màn hình được phép sử dụng của tài khoản hiện tại. */
 export function LoginPage() {
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -52,21 +53,29 @@ export function LoginPage() {
         label="Email hoặc số điện thoại"
         rules={[{ required: true, message: 'Nhập email hoặc số điện thoại' }]}
       >
-        <Input prefix={<UserOutlined />} placeholder="email@example.com hoặc 0901234567" />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Email hoặc số điện thoại của bạn"
+          autoComplete="username"
+        />
       </Form.Item>
       <Form.Item
         name="password"
         label="Mật khẩu"
         rules={[{ required: true, message: 'Nhập mật khẩu' }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="••••••••" />
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="Nhập mật khẩu"
+          autoComplete="current-password"
+        />
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit" block loading={loginMutation.isPending}>
           Đăng nhập
         </Button>
       </Form.Item>
-      <Typography.Paragraph style={{ textAlign: 'center', marginBottom: 0 }}>
+      <Typography.Paragraph className="scms-login-register">
         Chưa có tài khoản? <Link to={ROUTES.REGISTER}>Đăng ký</Link>
       </Typography.Paragraph>
     </Form>
