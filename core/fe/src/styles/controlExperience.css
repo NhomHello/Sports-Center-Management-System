@@ -1,0 +1,94 @@
+/* Search của Ant Design 6 dùng Space.Compact; chỉ wrapper quyết định chiều cao. */
+.scms-search-input.ant-input-search {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  width: 360px;
+  height: var(--scms-control-height, 44px);
+  align-items: stretch;
+  border-radius: var(--scms-control-radius, 10px);
+}
+
+.scms-search-input.ant-input-search > .ant-input-affix-wrapper,
+.scms-search-input.ant-input-search > .ant-input {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  height: var(--scms-control-height, 44px);
+  min-height: var(--scms-control-height, 44px);
+  padding-block: 0;
+  padding-inline: 12px;
+  border-start-start-radius: var(--scms-control-radius, 10px) !important;
+  border-end-start-radius: var(--scms-control-radius, 10px) !important;
+  border-start-end-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+}
+
+.scms-search-input--plain.ant-input-affix-wrapper {
+  min-width: 0;
+  max-width: 100%;
+  height: var(--scms-control-height, 44px);
+  min-height: var(--scms-control-height, 44px);
+  padding-block: 0;
+  padding-inline: 12px;
+  border-radius: var(--scms-control-radius, 10px) !important;
+}
+
+.scms-search-input.ant-input-search > .ant-input-affix-wrapper > .ant-input,
+.scms-search-input--plain.ant-input-affix-wrapper > .ant-input {
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0 !important;
+  background: transparent;
+  box-shadow: none;
+}
+
+.scms-search-input.ant-input-search > .ant-btn {
+  flex: 0 0 auto;
+  min-width: var(--scms-control-height, 44px);
+  height: var(--scms-control-height, 44px);
+  min-height: var(--scms-control-height, 44px);
+  padding-inline: 12px;
+  border-start-start-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-start-end-radius: var(--scms-control-radius, 10px) !important;
+  border-end-end-radius: var(--scms-control-radius, 10px) !important;
+  box-shadow: none;
+  transform: none;
+}
+
+.scms-search-input.ant-input-search > .ant-btn-icon-only {
+  width: var(--scms-control-height, 44px);
+  padding: 0;
+}
+
+.scms-search-input.ant-input-search > .ant-btn:not(:disabled) {
+  color: var(--scms-blue, #2563eb);
+}
+
+.scms-search-input .ant-input-clear-icon {
+  display: inline-flex;
+  min-width: 24px;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.scms-search-input:focus-within {
+  outline: 2px solid var(--scms-blue, #2563eb);
+  outline-offset: 2px;
+}
+
+.scms-search-input .ant-input:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scms-search-input,
+  .scms-search-input .ant-input-affix-wrapper,
+  .scms-search-input .ant-btn {
+    transition: none;
+  }
+}

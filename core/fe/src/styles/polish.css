@@ -1,9 +1,12 @@
-/* Lớp hoàn thiện dùng chung cho các flow; màu lấy từ hệ token SportHub. */
+/* Lớp hoàn thiện dùng chung cho các flow; màu lấy từ hệ token Sports Center. */
 :root {
   --scms-canvas: #f6f8fc;
   --scms-text: #17243b;
-  --scms-muted: #65758d;
-  --scms-border: #e4eaf3;
+  --scms-muted: #52627a;
+  --scms-border: #dce3ee;
+  --scms-control-height: 44px;
+  --scms-control-radius: 10px;
+  --scms-card-radius: 16px;
   --scms-soft-blue: #eef4ff;
   --scms-surface: #fff;
   --scms-surface-soft: #fbfcff;
@@ -56,7 +59,7 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
-:where(a, button, input, textarea, [role='button']):focus-visible {
+:where(a, button, [role='button']):focus-visible {
   outline: 3px solid rgb(37 99 235 / 38%);
   outline-offset: 3px;
 }
@@ -209,12 +212,6 @@ a {
 .ant-btn-default:not(:disabled):hover {
   border-color: #91b2ef;
   background: #f7faff;
-}
-.ant-input,
-.ant-input-affix-wrapper,
-.ant-select-selector,
-.ant-picker {
-  border-radius: 12px !important;
 }
 .ant-form-item-explain-error {
   font-size: 12px;
@@ -597,10 +594,6 @@ a {
   font-weight: 800;
   letter-spacing: -0.05em;
 }
-.scms-auth-form-wrap .ant-input,
-.scms-auth-form-wrap .ant-input-affix-wrapper {
-  min-height: 50px;
-}
 .scms-auth-form-wrap .ant-btn-primary {
   min-height: 50px;
 }
@@ -732,6 +725,7 @@ a {
 }
 .scms-invoice-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
@@ -740,14 +734,24 @@ a {
 .scms-invoice-toolbar__primary,
 .scms-invoice-filters {
   display: flex;
+  flex-wrap: wrap;
   min-width: 0;
   align-items: center;
   gap: 10px;
 }
 .scms-invoice-toolbar__primary {
-  flex: 1;
+  flex: 1 1 620px;
+}
+.scms-invoice-toolbar__primary > .ant-segmented {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.scms-invoice-filters {
+  flex: 1 1 480px;
 }
 .scms-invoice-filters .ant-input-affix-wrapper {
+  flex: 1 1 260px;
+  min-width: 0;
   width: 300px;
 }
 .scms-invoice-filters .ant-input-prefix {
@@ -755,10 +759,42 @@ a {
   color: #8a99af;
 }
 .scms-invoice-filters .ant-select {
+  flex: 1 1 170px;
   width: 210px;
 }
 .scms-invoice-filters .ant-btn-text {
   color: #64748b;
+}
+@media (max-width: 600px) {
+  .scms-invoice-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .scms-invoice-toolbar__primary,
+  .scms-invoice-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    flex-basis: auto;
+    width: 100%;
+  }
+  .scms-invoice-toolbar__primary .ant-segmented-group {
+    width: 100%;
+  }
+  .scms-invoice-toolbar__primary .ant-segmented-item {
+    flex: 1;
+    min-width: 0;
+  }
+  .scms-invoice-toolbar__primary .ant-segmented-item-label {
+    padding-inline: 8px;
+    white-space: normal;
+  }
+  .scms-invoice-filters .ant-input-affix-wrapper,
+  .scms-invoice-filters .ant-select {
+    width: 100%;
+  }
+  .scms-invoice-filters .ant-btn-text {
+    justify-self: end;
+  }
 }
 .scms-list-pagination {
   display: flex;
@@ -1074,13 +1110,26 @@ a {
   background: transparent;
 }
 .scms-page-header:not(.scms-plans-heading .scms-page-header) {
-  min-height: 116px;
-  padding: 24px 28px;
-  background: #fff;
-  border-radius: 16px;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+@media (max-width: 600px) {
+  .scms-app-content {
+    padding-inline: 16px;
+  }
+  .scms-app-footer {
+    padding-inline: 16px;
+  }
 }
 .scms-page-header h2.ant-typography {
-  font-size: clamp(25px, 2.3vw, 32px);
+  margin-bottom: 6px;
+  font-size: clamp(24px, 2.3vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
 }
 .scms-app-content .ant-card {
   border-radius: 16px;

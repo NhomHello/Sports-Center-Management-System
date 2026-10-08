@@ -1,4 +1,5 @@
-import { Input, Select, Space } from 'antd';
+import { Select, Space } from 'antd';
+import { SearchInput } from '@/components/common/SearchInput';
 import { SPACING } from '@/theme/theme';
 
 const FILTER_WIDTH = 220;
@@ -10,7 +11,7 @@ const FILTER_WIDTH = 220;
 export function UserFilters({ roleOptions, onChange }) {
   return (
     <Space style={{ marginBottom: SPACING.MD }} wrap>
-      <Input.Search
+      <SearchInput
         allowClear
         placeholder="Tìm theo tên, email, SĐT"
         style={{ width: FILTER_WIDTH }}

@@ -5,7 +5,7 @@ import { SPACING } from '@/theme/theme';
  * Tieu de trang + nut hanh dong ben phai. Dung o dau MOI trang.
  * @param {{ title: string, subtitle?: string, extra?: import('react').ReactNode, eyebrow?: string }} props
  */
-export function PageHeader({ title, subtitle, extra, eyebrow = 'SPORT HUB · QUẢN LÝ TRUNG TÂM' }) {
+export function PageHeader({ title, subtitle, extra, eyebrow = 'SPORTS CENTER' }) {
   return (
     <Flex
       className="scms-page-header"
