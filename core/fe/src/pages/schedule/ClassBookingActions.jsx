@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PERMISSIONS as P } from '@scms/shared';
-import { Button, Space } from 'antd';
+import { Button } from 'antd';
 import { ENROLLMENT_STATUS } from '@/constants/schedule';
 import { usePermission } from '@/hooks/usePermission';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
@@ -18,8 +18,8 @@ export function ClassBookingActions({ item, memberId }) {
   const cancel = useScheduleMutation(() => service.cancelEnrollment(item.id, memberId));
   const booked = item.enrollment?.status === ENROLLMENT_STATUS.BOOKED;
   return (
-    <Space vertical className="scms-schedule-stack">
-      <Space wrap>
+    <div className="scms-booking-actions">
+      <div className="scms-booking-actions__buttons">
         <BookingEnrollButton
           item={item}
           memberId={memberId}
@@ -37,9 +37,9 @@ export function ClassBookingActions({ item, memberId }) {
         {can(P.CLASS_VIEW_ROSTER, P.CLASS_READ_ALL) && (
           <Button onClick={() => setRosterOpen(true)}>Danh sách học viên</Button>
         )}
-      </Space>
+      </div>
       <BookingNotice item={item} booked={booked} allowed={enrollAllowed || cancelAllowed} />
       {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
-    </Space>
+    </div>
   );
 }

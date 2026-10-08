@@ -1,0 +1,208 @@
+.scms-class-list-panel {
+  display: grid;
+  gap: 18px;
+}
+.scms-class-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.scms-class-list-toolbar .scms-search-input {
+  width: min(100%, 420px);
+}
+.scms-class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 18px;
+}
+.scms-class-grid .ant-card {
+  min-width: 0;
+}
+.scms-class-grid .ant-card-head-title {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.scms-class-card .ant-card-head {
+  padding: 18px 20px 0;
+  border-bottom: 0;
+}
+.scms-class-card .ant-card-body {
+  padding: 16px 20px 20px;
+}
+.scms-class-card__body {
+  display: grid;
+  gap: 12px;
+}
+.scms-class-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.scms-class-card__tags .ant-tag {
+  margin: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__meta,
+.scms-class-card__deadline,
+.scms-class-card__availability {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.scms-class-card__meta > .anticon,
+.scms-class-card__deadline > .anticon {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--scms-muted);
+}
+.scms-class-card__meta > span:last-child,
+.scms-class-card__deadline > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__availability {
+  align-items: center;
+  padding: 11px 12px;
+  color: var(--scms-blue);
+  background: var(--scms-soft-blue);
+  border-radius: 9px;
+}
+.scms-class-card__deadline {
+  color: var(--scms-muted);
+  font-size: 12px;
+}
+.scms-class-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scms-class-card__actions .ant-btn {
+  padding-inline: 12px;
+  font-size: 13px;
+}
+.scms-booking-actions {
+  display: grid;
+  gap: 10px;
+}
+.scms-booking-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scms-booking-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.scms-booking-note > .anticon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.scms-booking-note > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scms-class-card .scms-booking-actions {
+  padding-top: 14px;
+  border-top: 1px solid var(--scms-border);
+}
+.scms-class-pagination {
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+.scms-class-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-filter-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.scms-filter-field > span {
+  color: var(--scms-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.scms-filter-field .ant-select,
+.scms-filter-field .ant-picker {
+  width: 100%;
+  min-width: 0;
+}
+.scms-staff-booking {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 20px;
+}
+.scms-staff-member-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 12px;
+  padding: 20px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-staff-member-search h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.scms-staff-member-search p {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.scms-staff-member-search > .scms-search-input {
+  width: min(100%, 640px);
+}
+.scms-staff-booking .ant-typography {
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .scms-class-list-toolbar {
+    align-items: stretch;
+  }
+  .scms-class-list-toolbar > .ant-btn {
+    width: 100%;
+  }
+  .scms-class-list-toolbar .scms-search-input {
+    width: 100%;
+  }
+  .scms-class-card .ant-card-body {
+    padding: 16px;
+  }
+  .scms-class-card .ant-card-head {
+    padding: 16px 16px 0;
+  }
+  .scms-class-filters,
+  .scms-staff-member-search {
+    padding: 14px;
+  }
+  .scms-class-pagination {
+    justify-content: flex-start;
+  }
+  .scms-booking-actions__buttons > .ant-btn {
+    flex: 1;
+  }
+}

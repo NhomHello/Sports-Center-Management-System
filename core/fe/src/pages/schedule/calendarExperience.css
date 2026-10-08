@@ -1,0 +1,332 @@
+.scms-schedule-calendar-view {
+  container-type: inline-size;
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.scms-calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-calendar-navigation,
+.scms-calendar-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.scms-calendar-navigation .ant-picker {
+  width: 158px;
+}
+.scms-calendar-options {
+  gap: 16px;
+}
+.scms-calendar-options .ant-segmented {
+  padding: 4px;
+  background: var(--scms-canvas);
+}
+.scms-calendar-options .ant-segmented-item-label {
+  min-height: 36px;
+  line-height: 36px;
+  padding-inline: 16px;
+}
+.scms-calendar-cancelled-toggle {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 9px;
+  color: var(--scms-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.scms-calendar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.scms-calendar-heading h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 650;
+}
+.scms-calendar-heading p {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+}
+.scms-calendar-total {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  color: var(--scms-blue);
+  background: var(--scms-soft-blue);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.scms-calendar-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  overscroll-behavior-inline: contain;
+}
+.scms-calendar-scroll:focus-visible {
+  outline: 2px solid var(--scms-blue);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+.scms-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: start;
+  min-width: 1140px;
+  gap: 12px;
+}
+.scms-schedule-day {
+  min-width: 0;
+  padding: 10px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: 12px;
+}
+.scms-schedule-day--today {
+  border-color: var(--scms-calendar-today-border);
+  background: var(--scms-calendar-today);
+}
+.scms-schedule-day__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 2px 2px 12px;
+}
+.scms-schedule-day__header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.scms-schedule-day__header > div > span {
+  color: var(--scms-muted);
+  font-size: 11px;
+}
+.scms-schedule-day__header strong {
+  color: var(--scms-text);
+  font-size: 18px;
+  line-height: 1.3;
+}
+.scms-schedule-day__today {
+  color: var(--scms-blue);
+  font-size: 10px;
+  font-weight: 700;
+}
+.scms-schedule-day__count {
+  color: var(--scms-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.scms-schedule-day__empty {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 16px 2px 10px;
+  color: var(--scms-muted);
+  font-size: 11px;
+}
+.scms-calendar-events {
+  display: grid;
+  gap: 12px;
+}
+.scms-app-content .scms-calendar-event.ant-card {
+  min-width: 0;
+  border-radius: 10px;
+  border-inline-start: 3px solid var(--scms-blue);
+  box-shadow: none;
+}
+.scms-calendar-event.ant-card > .ant-card-body {
+  padding: 12px 10px;
+}
+.scms-app-content .scms-calendar-event--past.ant-card {
+  border-inline-start-color: #94a3b8;
+}
+.scms-calendar-event__time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--scms-blue);
+  font-size: 12px;
+  font-weight: 650;
+}
+.scms-calendar-event__time > span {
+  white-space: nowrap;
+}
+.scms-calendar-event__title {
+  display: block;
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.scms-calendar-event__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.scms-calendar-event__tags .ant-tag {
+  margin: 0;
+  padding-inline: 5px;
+  font-size: 10px;
+}
+.scms-calendar-event__meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--scms-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.scms-calendar-event__meta > .anticon {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.scms-calendar-event__meta > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@container (max-width: 1180px) {
+  .scms-week-grid {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-week-grid .scms-schedule-day {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+  }
+  .scms-week-grid .scms-schedule-day__header {
+    padding: 0;
+  }
+  .scms-week-grid .scms-calendar-events {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  }
+  .scms-week-grid .scms-schedule-day__empty {
+    padding: 8px 0;
+  }
+}
+@container (max-width: 600px) {
+  .scms-week-grid .scms-schedule-day {
+    display: block;
+  }
+  .scms-week-grid .scms-schedule-day__header {
+    padding-bottom: 10px;
+  }
+  .scms-week-grid .scms-schedule-day__header > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+  }
+}
+.scms-calendar-event__actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.scms-calendar-event__actions > .ant-btn {
+  width: 100%;
+  font-size: 12px;
+}
+.scms-calendar-event .scms-booking-actions__buttons {
+  flex-direction: column;
+}
+.scms-calendar-event .scms-booking-actions__buttons > .ant-btn {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: var(--scms-control-height, 44px);
+  padding-inline: 6px;
+  font-size: 12px;
+}
+.scms-day-grid .scms-schedule-day {
+  padding: 18px;
+}
+.scms-day-grid .scms-calendar-events {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+@media (max-width: 768px) {
+  .scms-week-grid {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-calendar-scroll {
+    padding: 0;
+  }
+  .scms-schedule-day {
+    padding: 14px;
+  }
+  .scms-schedule-day__header {
+    padding-bottom: 10px;
+  }
+  .scms-schedule-day__header > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+  }
+  .scms-schedule-day__empty {
+    padding: 8px 2px 3px;
+  }
+  .scms-calendar-event.ant-card > .ant-card-body {
+    padding: 16px;
+  }
+  .scms-calendar-event__title {
+    font-size: 14px;
+  }
+  .scms-calendar-event__tags .ant-tag {
+    font-size: 11px;
+  }
+  .scms-calendar-event__actions > .ant-btn,
+  .scms-calendar-event .scms-booking-actions__buttons > .ant-btn {
+    font-size: 13px;
+  }
+}
+@media (max-width: 480px) {
+  .scms-calendar-toolbar {
+    padding: 12px;
+  }
+  .scms-calendar-navigation {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .scms-calendar-navigation .ant-picker {
+    width: 100%;
+    grid-column: span 2;
+    grid-row: 1;
+  }
+  .scms-calendar-navigation .scms-calendar-today {
+    grid-column: span 2;
+  }
+  .scms-calendar-options {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .scms-calendar-heading {
+    flex-wrap: wrap;
+  }
+  .scms-calendar-heading h3 {
+    font-size: 17px;
+  }
+}

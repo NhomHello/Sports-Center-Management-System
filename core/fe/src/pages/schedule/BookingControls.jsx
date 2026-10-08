@@ -1,4 +1,5 @@
-import { Alert, Button, Popconfirm, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Alert, Button, Popconfirm } from 'antd';
 import { formatDateTime } from '@/utils/format';
 const deadline = (item) => formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline);
 
@@ -27,7 +28,7 @@ export function BookingCancelButton({ item, memberId, allowed, booked, mutation 
   return (
     <Popconfirm
       title="Huỷ đăng ký toàn lớp?"
-      description={`Hạn huỷ: ${deadline(item)}`}
+      description={`Huỷ đăng ký cho các buổi còn lại của lớp. Hạn huỷ: ${deadline(item)}`}
       onConfirm={() => mutation.mutate()}
       disabled={!item.canCancel}
       okText="Huỷ đăng ký"
@@ -43,12 +44,19 @@ export function BookingCancelButton({ item, memberId, allowed, booked, mutation 
 /** Giải thích nút bị chặn hoặc ngoại lệ do đổi lịch. */
 export function BookingNotice({ item, booked, allowed }) {
   if (!allowed) return null;
-  if (!booked) return <Typography.Text type="secondary">{item.enrollReason}</Typography.Text>;
+  if (!booked)
+    return item.enrollReason ? (
+      <p className="scms-booking-note">
+        <InfoCircleOutlined />
+        <span>{item.enrollReason}</span>
+      </p>
+    ) : null;
   return (
     <>
-      <Typography.Text type="secondary">
-        {item.canCancel ? `Có thể huỷ trước ${deadline(item)}` : item.cancelReason}
-      </Typography.Text>
+      <p className="scms-booking-note">
+        <InfoCircleOutlined />
+        <span>{item.canCancel ? `Hạn huỷ lớp: ${deadline(item)}` : item.cancelReason}</span>
+      </p>
       {item.cancellationExceptionUntil && (
         <Alert
           type="warning"

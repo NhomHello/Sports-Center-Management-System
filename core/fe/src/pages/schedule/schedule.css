@@ -1,60 +1,74 @@
-.scms-schedule {
+@import './calendarExperience.css';
+@import './classExperience.css';
+
+.scms-schedule,
+.scms-schedule-stack,
+.scms-schedule .ant-tabs-content-holder {
   min-width: 0;
+}
+.scms-schedule-stack {
+  width: 100%;
+}
+.scms-schedule .ant-space,
+.scms-schedule .ant-space-item {
+  max-width: 100%;
 }
 .scms-schedule-mobile-nav {
   display: none;
 }
-.scms-schedule-stack {
-  width: 100%;
-  min-width: 0;
+.scms-schedule > .ant-tabs > .ant-tabs-nav {
+  margin-bottom: 22px;
 }
-.scms-class-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
-  gap: 16px;
+.scms-schedule > .ant-tabs > .ant-tabs-nav::before {
+  display: none;
 }
-.scms-class-grid .ant-card-head-title {
-  white-space: normal;
-  overflow-wrap: anywhere;
+.scms-schedule > .ant-tabs > .ant-tabs-nav .ant-tabs-nav-list {
+  gap: 4px;
+  padding: 4px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-control-radius);
 }
-.scms-class-grid .ant-card {
-  min-width: 0;
+.scms-schedule > .ant-tabs > .ant-tabs-nav .ant-tabs-tab {
+  margin: 0;
+  padding: 9px 14px;
+  border-radius: 7px;
 }
-.scms-schedule .ant-input-search {
-  max-width: 100%;
+.scms-schedule > .ant-tabs > .ant-tabs-nav .ant-tabs-tab-active {
+  background: var(--scms-soft-blue);
+}
+.scms-schedule > .ant-tabs > .ant-tabs-nav .ant-tabs-ink-bar {
+  display: none;
 }
 .scms-schedule .ant-pagination {
   flex-wrap: wrap;
-}
-.scms-schedule .ant-tabs-content-holder {
-  min-width: 0;
 }
 .scms-schedule-stack .ant-space-item {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.scms-week-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 12px;
-}
-.scms-schedule-day {
-  min-width: 0;
-  padding: 8px;
-  background: var(--scms-surface, #fff);
-  border-radius: 12px;
-}
-.scms-class-filters .ant-select {
-  min-width: 150px;
-}
 .scms-member-select {
   width: 100%;
-  max-width: 560px;
+  min-width: 0;
+  max-width: 640px;
 }
-@media (max-width: 1000px) {
-  .scms-week-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.scms-query-state {
+  display: flex;
+  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  color: var(--scms-muted);
+  text-align: center;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-query-state p {
+  margin: 0;
+  font-size: 13px;
 }
 @media (max-width: 600px) {
   .scms-schedule-mobile-nav {
@@ -64,16 +78,5 @@
   }
   .scms-schedule > .ant-tabs > .ant-tabs-nav {
     display: none;
-  }
-  .scms-week-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .scms-schedule .ant-space {
-    max-width: 100%;
-  }
-  .scms-class-grid .ant-card-body {
-    padding: 16px;
   }
 }

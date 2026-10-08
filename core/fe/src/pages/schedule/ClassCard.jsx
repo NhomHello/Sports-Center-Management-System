@@ -1,23 +1,43 @@
 import { PERMISSIONS as P } from '@scms/shared';
-import { Button, Card, Popconfirm, Space, Tag } from 'antd';
-import { CLASS_STATUS, SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
+import {
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Button, Card, Popconfirm, Tag } from 'antd';
+import { CLASS_STATUS } from '@/constants/schedule';
 import { formatDateTime } from '@/utils/format';
+import { ScheduleStatusTag } from './ScheduleStatusTag';
 
 /** Card dùng chung cho danh sách lớp mở và phạm vi quản lý. */
 export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, children }) {
   return (
-    <Card title={item.name}>
-      <Space vertical className="scms-schedule-stack">
-        <Tag>{SCHEDULE_STATUS_LABELS[item.status]}</Tag>
-        <span>
-          {item.subject.name} · {item.room.name}
-        </span>
-        <span>HLV: {item.coach.fullName}</span>
-        <span>
-          Còn {item.seatsRemaining}/{item.capacity} chỗ
-        </span>
-        <span>Mở đăng ký đến {formatDateTime(item.registrationEndAt)}</span>
-        <Space wrap>
+    <Card title={item.name} className="scms-class-card">
+      <div className="scms-class-card__body">
+        <div className="scms-class-card__tags">
+          <ScheduleStatusTag status={item.status} />
+          <Tag>{item.subject.name}</Tag>
+        </div>
+        <div className="scms-class-card__meta">
+          <EnvironmentOutlined />
+          <span>{item.room.name}</span>
+        </div>
+        <div className="scms-class-card__meta">
+          <UserOutlined />
+          <span>HLV: {item.coach.fullName}</span>
+        </div>
+        <div className="scms-class-card__availability">
+          <TeamOutlined />
+          <strong>
+            Còn {item.seatsRemaining}/{item.capacity} chỗ
+          </strong>
+        </div>
+        <div className="scms-class-card__deadline">
+          <ClockCircleOutlined />
+          <span>Mở đăng ký đến {formatDateTime(item.registrationEndAt)}</span>
+        </div>
+        <div className="scms-class-card__actions">
           <Button onClick={onDetail}>Chi tiết</Button>
           {can(P.CLASS_UPDATE) && item.status !== CLASS_STATUS.CANCELLED && (
             <Button onClick={onEdit}>Sửa lớp</Button>
@@ -34,9 +54,9 @@ export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, chil
               </Button>
             </Popconfirm>
           )}
-        </Space>
+        </div>
         {children}
-      </Space>
+      </div>
     </Card>
   );
 }
