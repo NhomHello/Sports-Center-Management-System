@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Card, Input, Pagination, Popconfirm, Space, Tag } from 'antd';
+import { Button, Card, Pagination, Popconfirm, Space, Tag } from 'antd';
+import { SearchInput } from '@/components/common/SearchInput';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { useTableQuery } from '@/hooks/useTableQuery';
@@ -28,7 +29,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
   return (
     <Space vertical className="scms-schedule-stack">
       <Space wrap>
-        <Input.Search
+        <SearchInput
           placeholder="Tìm tên danh mục"
           allowClear
           onSearch={(search) => table.setFilters({ search })}
