@@ -1,6 +1,8 @@
 # TC-F2 · Lớp học, đăng ký toàn lớp và lịch
 
-Bản tích hợp: `sprint-2/integration`. Dữ liệu test có prefix `TEST_`, tạo role riêng và tự dọn. Test hồi quy và migration chạy trên database tạm; UI dùng server riêng ở 3100/5180 và fixture trong DB local. Không dùng dữ liệu hội viên thật để tranh chỗ hoặc đổi quyền.
+Bản kiểm tra hiện tại: `sprint-2/fe-khoi`, giữ code đã tích hợp từ `sprint-2/integration`.
+Dữ liệu test có prefix `TEST_`, tạo role riêng và tự dọn. Test hồi quy và migration chạy trên database tạm;
+UI dùng server riêng ở 3100/5180 và fixture trong DB local. Không dùng dữ liệu hội viên thật để tranh chỗ hoặc đổi quyền.
 
 ## Ca tự động
 
@@ -39,10 +41,23 @@ Bản tích hợp: `sprint-2/integration`. Dữ liệu test có prefix `TEST_`, 
 | TC-F2-V01 | Form tạo/huỷ lớp, sửa/ngừng phòng; DB/API phản ánh thao tác UI | `tests/e2e/sprint2-management.spec.mjs` |
 | TC-F2-V02 | Lịch rỗng, loading, lỗi 503, bấm thử lại phục hồi | Cùng suite |
 | TC-F2-V03 | Membership hết hạn hiển thị lý do và disable đăng ký | Cùng suite |
+| TC-F2-X01 | Người khác giữ chỗ cuối; POST từ UI nhận 422 rồi tải lại 0/1 chỗ, disable đăng ký; DB đúng một booking | `tests/e2e/sprint2-khoi-excel.spec.mjs` |
+| TC-F2-X02 | DatePicker ở Auckland vẫn truy vấn đúng tuần VN; chuyển ngày, huỷ và hiện lịch đã huỷ; gói hết hạn vẫn giữ booking cũ | Cùng suite |
+| TC-F2-X03 | Manager huỷ lớp: lịch dạy tự tải lại, mở lịch đã huỷ vẫn có roster; hội viên mở chuông thấy thông báo, không tràn ngang | Cùng suite |
 | TC-UI-S1-01 | Hồi quy tìm/sửa hội viên và tạo gói sau khi tách component Sprint 1 | `tests/e2e/sprint1-regression.spec.mjs` |
 | TC-LOCAL-AUTH | Lễ tân, hai HLV và hội viên đăng nhập từ localhost/127.0.0.1 trên desktop/mobile; login và tải quyền thành công | `tests/e2e/local-login.spec.mjs` |
 
-Đường dẫn BE trong bảng tính từ `core/be`; đường dẫn E2E tính từ repo. U/V và hồi quy Sprint 1 chạy cả desktop 1366×900 và mobile 320×780. Mỗi ca kiểm tra không có lỗi JavaScript runtime và không tràn chiều ngang trang. FE có thêm 3 test thuần cho wall time, biên tuần Việt Nam và offset form trong `core/fe/src/utils/schedule.test.js`.
+Đường dẫn BE trong bảng tính từ `core/be`; đường dẫn E2E tính từ repo. U/V/X và hồi quy Sprint 1 chạy
+cả desktop 1366×900 và mobile 320×780. Mỗi ca kiểm tra không có lỗi JavaScript runtime và không tràn
+chiều ngang trang. Bộ X chạy với timezone trình duyệt `Pacific/Auckland` và API/DB thật.
+
+FE có **6 test thuần** trong `core/fe/src/utils/schedule.test.js`: wall time, biên tuần Việt Nam,
+offset form, ngày DatePicker ở `Asia/Tokyo`/`Pacific/Auckland` vẫn là đúng thứ Hai Việt Nam,
+và chuyển ngày/tuần qua biên tuần. Test mô phỏng ngày lựa chọn ở hai timezone bằng `dayjs.tz`;
+E2E X02 kiểm tra DatePicker thật trong trình duyệt Auckland.
+
+Phạm vi Excel và liên hệ X01–X03 với 9 task Khôi: [handover Excel](../handover/sprint-2-fe-khoi-excel.md).
+Workbook chỉ được đọc; X-05 xác minh email nằm ở sheet Ngoài kế hoạch, không thuộc tổng 9 task.
 
 ## Migration và hồi quy
 
@@ -63,10 +78,26 @@ git diff --check
 MySQL phải chạy và tài khoản DATABASE_URL có quyền CREATE/DROP DATABASE cho lệnh verify. Nếu chỉ có quyền trong DB ứng dụng, chạy `npm test` và `npm run test:e2e`; phần migration dùng một DB kiểm thử riêng có quyền phù hợp. Playwright tự bật/tắt server riêng, không dùng cổng 3000/5173. Có thể đổi `E2E_API_PORT`/`E2E_FE_PORT`. Fixture UI cần registry permission/setting đã seed.
 
 Kiểm tra riêng lỗi đăng nhập local bằng `npm run test:e2e -- tests/e2e/local-login.spec.mjs`.
+Kiểm tra riêng các ca Excel bằng `npm run test:e2e -- tests/e2e/sprint2-khoi-excel.spec.mjs`.
 Server E2E lấy danh sách CORS từ cấu hình BE rồi đổi cổng local sang cổng test; không tự thay danh sách
 bằng origin của test runner. Cách này giữ khả năng phát hiện `.env` thiếu một trong hai địa chỉ demo.
 
 Server E2E dùng ngưỡng riêng cho tổng request và đăng nhập để chạy liên tục các role trên cùng IP.
 Các ngưỡng này nằm trong cấu hình Playwright, áp dụng cho server test cổng riêng.
 
-Kết quả nghiệm thu cuối được ghi tại [bảng 18 chức năng](../handover/sprint-2-coverage.md). HTML report/trace/ảnh UI được tạo trong `playwright-report/`, `test-results/`; xem bằng `npx playwright show-report`.
+## Kết quả kiểm tra ngày 08/10/2026
+
+- `npm run verify:sprint2`: **142/142 đạt** (BE 87, FE 55); deploy mới và nâng cấp giữ 24 bảng lịch sử,
+  36 FK cũ. Log: `.cache/sprint2-excel/verify.log`.
+- Lint toàn repo, format:check, build FE và Prisma validate đạt sau sửa mobile.
+- Các sửa FE được kiểm tra lại: ngày Việt Nam độc lập timezone trình duyệt; query lớp/lịch/roster/
+  thông báo poll 30 giây và refetch khi focus; mutation `onSettled` tải lại dữ liệu cả khi lỗi;
+  mở chuông refetch và popup mobile có nội dung đọc được, trong viewport, cuộn khi dài.
+- Lượt UI đầy đủ **26/26 đạt (4.4 phút)**: 13 desktop và 13 mobile 320px,
+  gồm X01–X03 đạt trên cả hai kích thước. Log: `.cache/sprint2-excel/e2e-final.log`.
+- Kết luận đối chiếu Excel: **9/9 task Khôi Done trong code**, gồm RBAC và BR tương ứng.
+  Workbook nguồn giữ nguyên trạng thái To Do; X-05 ngoài phạm vi Sprint 2 này.
+
+Kết quả bàn giao cũ ở [bảng 18 chức năng](../handover/sprint-2-coverage.md); kết quả đối chiếu Excel mới
+ở [handover Excel](../handover/sprint-2-fe-khoi-excel.md). HTML report/trace/ảnh UI được tạo trong
+`playwright-report/`, `test-results/`; xem bằng `npx playwright show-report`.
