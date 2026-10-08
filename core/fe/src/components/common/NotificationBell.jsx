@@ -1,6 +1,6 @@
 import { BellOutlined } from '@ant-design/icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { App, Badge, Button, Popover } from 'antd';
+import { App, Badge, Button, Grid, Popover } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { NotificationList } from '@/components/common/NotificationList';
@@ -15,6 +15,7 @@ const PANEL_WIDTH = 'min(360px, calc(100vw - 32px))';
 /** Chuông hiển thị và đánh dấu đã đọc thông báo của tài khoản hiện tại. */
 export function NotificationBell() {
   const { message } = App.useApp();
+  const screens = Grid.useBreakpoint();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -28,6 +29,10 @@ export function NotificationBell() {
   });
   const notifications = query.data?.data ?? [];
   const unreadCount = query.data?.meta?.unreadCount ?? 0;
+  const handleOpenChange = (nextOpen) => {
+    setOpen(nextOpen);
+    if (nextOpen) query.refetch();
+  };
 
   return (
     <Popover
@@ -48,9 +53,9 @@ export function NotificationBell() {
         </div>
       }
       trigger="click"
-      placement="bottomRight"
+      placement={screens.sm ? 'bottomRight' : 'bottom'}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
     >
       <Badge count={unreadCount} size="small" offset={[-3, 4]}>
         <Button type="text" shape="circle" icon={<BellOutlined />} aria-label="Thông báo" />

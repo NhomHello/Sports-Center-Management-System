@@ -629,6 +629,10 @@ a {
 }
 .scms-notification-panel {
   max-width: calc(100vw - 32px);
+  max-height: min(480px, calc(100dvh - 128px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 .scms-notification-panel .ant-list-item {
   align-items: flex-start;
@@ -834,6 +838,10 @@ a {
     align-items: flex-start;
     flex-direction: column;
     padding: 14px 8px;
+  }
+  .scms-notification-list .ant-list-item-meta {
+    align-self: stretch;
+    width: 100%;
   }
   .scms-notification-list .ant-list-item-action {
     align-self: flex-end;
