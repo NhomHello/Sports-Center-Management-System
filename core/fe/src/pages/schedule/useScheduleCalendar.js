@@ -27,9 +27,13 @@ export const useScheduleCalendar = (kind) => {
     mode === 'day'
       ? [date]
       : Array.from({ length: SCHEDULE_UI.DAYS_PER_WEEK }, (_, index) => week.add(index, 'day'));
+  const visibleEvents =
+    mode === 'day'
+      ? events.filter((event) => vietnamInput(event.startAt).isSame(date, 'day'))
+      : events;
   return {
     query,
-    events,
+    events: visibleEvents,
     date,
     setDate,
     mode,
