@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { card, login, chooseDate, confirmBooking, selectTab } from './helpers/ui.mjs';
+import {
+  card,
+  login,
+  chooseDate,
+  confirmBooking,
+  calendarActions,
+  closeCalendarActions,
+  selectTab,
+} from './helpers/ui.mjs';
 import { PERMISSIONS as P } from '@scms/shared';
 import { prisma } from '../../core/be/src/config/db.js';
 import { env } from '../../core/be/src/config/env.js';
@@ -93,11 +101,16 @@ test('TC-F2-U01: hội viên đăng ký, xem lịch và huỷ từ lịch cá nh
   await selectTab(page, 'Lịch tập của tôi');
   await chooseDate(page, primary.sessions[0].startAt.toISOString().slice(0, 10));
   await expect(page.getByText(primary.name, { exact: true })).toBeVisible();
-  await confirmBooking(page, page.locator('.scms-week-grid'), {
+  const session = page
+    .locator('.scms-week-grid .ant-card')
+    .filter({ has: page.getByText(primary.name, { exact: true }) });
+  const actions = await calendarActions(page, session, 'Huỷ đăng ký');
+  await confirmBooking(page, actions, {
     button: 'Huỷ đăng ký',
     confirmation: 'Huỷ đăng ký',
     method: 'DELETE',
   });
+  await closeCalendarActions(page);
   await page.getByRole('switch').click();
   await expect(page.getByText(primary.name, { exact: true })).toBeVisible();
 });
@@ -150,8 +163,12 @@ test('TC-F2-U03: HLV xem lịch dạy và roster; không xem lớp của HLV kh�
   const source = page
     .locator('.ant-card')
     .filter({ has: page.getByText(teaching.name, { exact: true }) });
-  await source.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
+  const actions = await calendarActions(page, source, 'Danh sách học viên');
+  await actions.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
   await expect(page.getByRole('dialog').getByText(f.other.fullName, { exact: true })).toBeVisible();
+  await page.locator('.ant-modal .ant-modal-close').click();
+  await expect(page.locator('.ant-modal')).toHaveCount(0);
+  await closeCalendarActions(page);
   const api = `http://localhost:${env.PORT}${env.API_PREFIX}`;
   const auth = await request.post(`${api}/auth/login`, {
     data: { email: f.coach.email, password: f.password },
@@ -172,6 +189,15 @@ test('TC-F2-U04: quản lý lọc lớp, sửa cấu hình, xem chi tiết và q
   await search.fill(primary.name);
   await search.press('Enter');
   await expect(card(page, primary.name)).toBeVisible();
+  await search.fill('UI_NO_MATCHING_CLASS');
+  await search.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Không tìm thấy lớp phù hợp' })).toBeVisible();
+  await expect(page.locator('.scms-class-pagination')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Xoá tìm kiếm và bộ lọc', exact: true }).click();
+  await expect(search).toHaveValue('');
+  await expect(card(page, primary.name)).toBeVisible();
+  await search.fill(primary.name);
+  await search.press('Enter');
   await card(page, primary.name).getByRole('button', { name: 'Sửa lớp', exact: true }).click();
   await page.getByLabel('Tên lớp', { exact: true }).fill(`${primary.name} Updated`);
   const saved = page.waitForResponse(
@@ -195,4 +221,35 @@ test('TC-F2-U04: quản lý lọc lớp, sửa cấu hình, xem chi tiết và q
   const row = await prisma.subject.findUniqueOrThrow({ where: { name } });
   f.extraSubjectIds.push(row.id);
   await expect(card(page, name)).toBeVisible();
+});
+
+test('TC-F2-U05: chưa mở đăng ký có hướng dẫn và mở lịch cá nhân; không hiện phân trang rỗng', async ({
+  page,
+}) => {
+  await page.route('**/classes?*', (route) =>
+    route.fulfill({
+      json: { success: true, data: [], meta: { page: 1, pageSize: 10, total: 0 } },
+    }),
+  );
+  await login(page, f.member, f.password);
+  await expect(page.getByRole('heading', { name: 'Hiện chưa có lớp mở đăng ký' })).toBeVisible();
+  await expect(page.locator('.scms-class-pagination')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Xem lịch tập', exact: true }).click();
+  await expect(page.locator('.scms-week-grid')).toBeVisible();
+  await expect(page.getByLabel('Ngày xem lịch', { exact: true })).toBeVisible();
+});
+
+test('TC-F2-U06: hướng dẫn danh sách rỗng không cấp lối tắt lịch cá nhân cho nhân viên thiếu quyền', async ({
+  page,
+}) => {
+  await page.route('**/classes?*', (route) =>
+    route.fulfill({
+      json: { success: true, data: [], meta: { page: 1, pageSize: 10, total: 0 } },
+    }),
+  );
+  await login(page, staff, f.password);
+  await selectTab(page, 'Lớp đang mở');
+  await expect(page.getByRole('heading', { name: 'Hiện chưa có lớp mở đăng ký' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Xem lịch tập', exact: true })).toHaveCount(0);
+  await expect(page.locator('.scms-class-pagination')).toHaveCount(0);
 });

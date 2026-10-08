@@ -43,7 +43,7 @@ function catalogTabs(can) {
     }));
 }
 
-function buildTabs(can, canAll) {
+function buildTabs(can, canAll, onViewSchedule) {
   const actions = (item) => <ClassBookingActions item={item} />;
   const management = (
     <ClassListPanel
@@ -67,7 +67,12 @@ function buildTabs(can, canAll) {
     items.push({
       key: 'open',
       label: 'Lớp đang mở',
-      children: <ClassListPanel renderActions={actions} />,
+      children: (
+        <ClassListPanel
+          renderActions={actions}
+          onViewSchedule={can(P.SCHEDULE_VIEW_OWN) ? onViewSchedule : undefined}
+        />
+      ),
     });
   if (can(P.SCHEDULE_VIEW_OWN))
     items.push({
@@ -91,7 +96,7 @@ function buildTabs(can, canAll) {
 export default function SchedulePage() {
   const { can, canAll } = usePermission();
   const [selected, setSelected] = useState(null);
-  const items = buildTabs(can, canAll);
+  const items = buildTabs(can, canAll, () => setSelected('own'));
   const activeKey = selected || items[0]?.key;
   return (
     <div className="scms-page-enter scms-schedule">

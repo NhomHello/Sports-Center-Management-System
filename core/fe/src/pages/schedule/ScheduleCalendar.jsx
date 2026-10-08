@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Grid } from 'antd';
 import { SCHEDULE_UI } from '@/constants/schedule';
 import { vietnamInput } from '@/utils/schedule';
 import { useScheduleCalendar } from './useScheduleCalendar';
@@ -11,23 +12,14 @@ import { ScheduleToolbar } from './ScheduleToolbar';
 /** Lịch ngày/tuần riêng biệt cho hội viên, HLV và quản lý. */
 export function ScheduleCalendar({ kind }) {
   const calendar = useScheduleCalendar(kind);
-  const [detailId, setDetailId] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const screens = Grid.useBreakpoint();
+  const compact = calendar.mode === 'week' && screens.lg;
   const actions = (item) => <ClassBookingActions item={item} />;
   return (
-    <div className="scms-schedule-calendar-view">
+    <div className={`scms-schedule-calendar-view ${compact ? 'scms-calendar--compact' : ''}`}>
       <ScheduleToolbar calendar={calendar} />
       <QueryState query={calendar.query}>
-        <div className="scms-calendar-heading">
-          <div>
-            <h3>
-              {calendar.mode === 'day'
-                ? `Ngày ${calendar.date.format('DD/MM/YYYY')}`
-                : `Tuần ${calendar.days[0].format('DD/MM')} – ${calendar.days.at(-1).format('DD/MM/YYYY')}`}
-            </h3>
-            <p>Giờ Việt Nam · Đăng ký và huỷ áp dụng cho toàn lớp</p>
-          </div>
-          <span className="scms-calendar-total">{calendar.events.length} buổi học</span>
-        </div>
         <div
           className="scms-calendar-scroll"
           role="region"
@@ -44,18 +36,19 @@ export function ScheduleCalendar({ kind }) {
                   events={calendar.events.filter(
                     (e) => vietnamInput(e.startAt).format(SCHEDULE_UI.DATE_PATTERN) === date,
                   )}
-                  onDetail={setDetailId}
-                  renderActions={actions}
+                  onDetail={setSelectedSession}
+                  renderActions={compact ? undefined : actions}
                 />
               );
             })}
           </div>
         </div>
       </QueryState>
-      {detailId && (
+      {selectedSession && (
         <ClassDetailDrawer
-          id={detailId}
-          onClose={() => setDetailId(null)}
+          id={selectedSession.classId}
+          selectedSession={selectedSession}
+          onClose={() => setSelectedSession(null)}
           renderActions={actions}
         />
       )}

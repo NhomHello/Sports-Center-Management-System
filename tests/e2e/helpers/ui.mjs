@@ -42,6 +42,26 @@ export async function confirmBooking(page, source, { button, confirmation, metho
   expect((await result).status()).toBe(method === 'POST' ? 201 : 200);
 }
 
+/** Mở thao tác toàn lớp trong drawer khi lịch tuần desktop chỉ hiển thị tóm tắt. */
+export async function calendarActions(page, source, actionName) {
+  await expect(source).toBeVisible();
+  if (await source.getByRole('button', { name: actionName, exact: true }).isVisible())
+    return source;
+  await source.getByRole('button', { name: 'Chi tiết lớp', exact: true }).click();
+  const drawer = page.locator('.ant-drawer');
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole('button', { name: actionName, exact: true })).toBeVisible();
+  return drawer;
+}
+
+/** Đóng chi tiết trước khi thao tác với lịch ở phía sau. */
+export async function closeCalendarActions(page) {
+  const drawer = page.locator('.ant-drawer:visible');
+  if (!(await drawer.count())) return;
+  await drawer.locator('.ant-drawer-close').click();
+  await expect(drawer).toHaveCount(0);
+}
+
 /** Chờ popup ổn định trước khi chọn đúng option theo tên đầy đủ. */
 export async function selectOption(page, label, option) {
   await expect(page.locator('.ant-select-dropdown:visible')).toHaveCount(0);
