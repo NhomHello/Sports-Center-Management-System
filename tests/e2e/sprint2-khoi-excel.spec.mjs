@@ -8,7 +8,15 @@ import {
 } from '../../core/be/tests/helpers/sprint2.js';
 import * as classService from '../../core/be/src/modules/class/class.service.js';
 import * as enrollmentService from '../../core/be/src/modules/class/class-enrollment.service.js';
-import { card, login, chooseDate, confirmBooking, selectTab } from './helpers/ui.mjs';
+import {
+  card,
+  login,
+  chooseDate,
+  confirmBooking,
+  calendarActions,
+  closeCalendarActions,
+  selectTab,
+} from './helpers/ui.mjs';
 
 test.use({ timezoneId: 'Pacific/Auckland' });
 const DAY_MS = 86400000;
@@ -118,6 +126,7 @@ test('TC-F2-X02: chọn đúng tuần Việt Nam ngoài múi giờ VN; gói hế
   await expect(page.locator('.scms-day-grid').getByText(own.name, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Sau', exact: true }).click();
   await expect(page.getByText(own.name, { exact: true })).toHaveCount(0);
+  await expect(page.locator('.scms-calendar-total')).toHaveText('0 buổi học');
   await page.getByRole('button', { name: 'Trước', exact: true }).click();
   await confirmBooking(page, calendarCard(page, own), {
     button: 'Huỷ đăng ký',
@@ -157,10 +166,14 @@ test('TC-F2-X03: lịch dạy tự cập nhật khi quản lý huỷ lớp; hộ
     await page.getByRole('switch').click();
     const source = calendarCard(page, teaching).first();
     await expect(source.getByText('Đã huỷ', { exact: true })).toBeVisible();
-    await source.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
+    const actions = await calendarActions(page, source, 'Danh sách học viên');
+    await actions.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
     await expect(
       page.getByRole('dialog').getByText(f.member.fullName, { exact: true }),
     ).toBeVisible();
+    await page.locator('.ant-modal .ant-modal-close').click();
+    await expect(page.locator('.ant-modal')).toHaveCount(0);
+    await closeCalendarActions(page);
     await memberPage.getByRole('button', { name: 'Thông báo', exact: true }).click();
     await expect(
       memberPage.getByText(`Lớp ${teaching.name} đã bị huỷ.`, { exact: true }),

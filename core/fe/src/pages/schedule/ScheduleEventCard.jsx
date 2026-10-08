@@ -33,13 +33,13 @@ export function ScheduleEventCard({ event, onDetail, renderActions }) {
         <EnvironmentOutlined />
         <span title={event.room}>{event.room}</span>
       </div>
-      <div className="scms-calendar-event__meta">
+      <div className="scms-calendar-event__meta scms-calendar-event__coach">
         <UserOutlined />
         <span title={event.coach}>{event.coach}</span>
       </div>
       <div className="scms-calendar-event__actions">
-        <Button onClick={() => onDetail(event.classId)}>Chi tiết lớp</Button>
-        {renderActions(event.gymClass)}
+        <Button onClick={() => onDetail(event)}>Chi tiết lớp</Button>
+        {renderActions?.(event.gymClass)}
       </div>
     </Card>
   );

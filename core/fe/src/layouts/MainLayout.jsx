@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { buildMenuItems } from '@/router/buildMenuItems';
 import { routeRegistry } from '@/router/routeRegistry';
+import { ROUTES } from '@/constants';
 
 /** Khung ứng dụng sau đăng nhập theo bố cục sidebar + top bar của Ant Design Pro. */
 export function MainLayout() {
@@ -39,7 +40,9 @@ export function MainLayout() {
           onToggleSidebar={() => setSidebarCollapsed((current) => !current)}
         />
         <Layout.Content className="scms-app-content">
-          <main className="scms-app-content__inner">
+          <main
+            className={`scms-app-content__inner ${location.pathname === ROUTES.SCHEDULE ? 'scms-schedule-workspace' : ''}`}
+          >
             <Suspense fallback={<PageLoading />}>
               <Outlet />
             </Suspense>
