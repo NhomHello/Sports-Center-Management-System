@@ -1,19 +1,31 @@
 import {
+  BellOutlined,
   ClockCircleOutlined,
-  CustomerServiceOutlined,
   SafetyCertificateOutlined,
   ThunderboltFilled,
 } from '@ant-design/icons';
-import { Flex, Typography } from 'antd';
+import { Typography } from 'antd';
 import { Outlet, useLocation } from 'react-router';
 import { env } from '@/config/env';
 import { ROUTES } from '@/constants';
 import '@/styles/authExperience.css';
 
 const AUTH_BENEFITS = [
-  { icon: <SafetyCertificateOutlined />, label: 'Bảo mật tài khoản' },
-  { icon: <ClockCircleOutlined />, label: 'Theo dõi lịch tập' },
-  { icon: <CustomerServiceOutlined />, label: 'Kết nối trung tâm' },
+  {
+    icon: <ClockCircleOutlined />,
+    label: 'Lịch tập trong tầm tay',
+    description: 'Xem lớp học và lịch tập của bạn theo ngày, tuần.',
+  },
+  {
+    icon: <BellOutlined />,
+    label: 'Luôn cập nhật',
+    description: 'Theo dõi thông báo và những thay đổi từ trung tâm.',
+  },
+  {
+    icon: <SafetyCertificateOutlined />,
+    label: 'Tài khoản cá nhân',
+    description: 'Quản lý hồ sơ và thông tin tài khoản tại một nơi.',
+  },
 ];
 
 function AuthBrandPanel() {
@@ -26,21 +38,31 @@ function AuthBrandPanel() {
         <span className="scms-auth-brand__name">{env.APP_NAME}</span>
         <span className="scms-auth-brand__caption">LỚP HỌC · LỊCH TẬP · KẾT NỐI</span>
       </div>
-      <div className="scms-auth-quote">
-        <span className="scms-auth-quote__eyebrow">KHỎE MẠNH HƠN MỖI NGÀY</span>
-        <Typography.Title level={2}>Một lịch tập rõ ràng. Một khởi đầu khỏe mạnh.</Typography.Title>
-        <Typography.Text>
-          Chọn lớp phù hợp, theo dõi lịch và nhận cập nhật từ trung tâm trong một nơi.
-        </Typography.Text>
+      <div className="scms-auth-brand__content">
+        <div className="scms-auth-quote">
+          <span className="scms-auth-quote__eyebrow">KHỎE MẠNH HƠN MỖI NGÀY</span>
+          <Typography.Title level={2}>
+            <span>Một lịch tập rõ ràng.</span>
+            <span>Một khởi đầu khỏe mạnh.</span>
+          </Typography.Title>
+          <Typography.Text>
+            Chọn lớp phù hợp, theo dõi lịch và nhận cập nhật từ trung tâm trong một nơi.
+          </Typography.Text>
+        </div>
+        <div className="scms-auth-benefits">
+          {AUTH_BENEFITS.map(({ icon, label, description }) => (
+            <div className="scms-auth-benefit" key={label}>
+              <span className="scms-auth-benefit__icon" aria-hidden="true">
+                {icon}
+              </span>
+              <div>
+                <strong>{label}</strong>
+                <span>{description}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <Flex className="scms-auth-benefits" wrap gap={10}>
-        {AUTH_BENEFITS.map(({ icon, label }) => (
-          <span className="scms-auth-benefit" key={label}>
-            {icon}
-            {label}
-          </span>
-        ))}
-      </Flex>
       <span className="scms-auth-brand__copyright">
         © {new Date().getFullYear()} {env.APP_NAME}. Đồng hành cùng bạn trên hành trình khỏe mạnh.
       </span>
@@ -58,7 +80,9 @@ export function AuthLayout() {
     : 'Đăng nhập để xem lớp học, lịch tập và cập nhật mới nhất.';
 
   return (
-    <div className="scms-auth-shell scms-auth-experience">
+    <div
+      className={`scms-auth-shell scms-auth-experience${isRegister ? ' scms-auth-experience--register' : ''}`}
+    >
       <AuthBrandPanel />
       <main className="scms-auth-form-panel">
         <section className="scms-auth-form-wrap">
@@ -68,7 +92,10 @@ export function AuthLayout() {
             </span>
             <Typography.Text strong>{env.APP_NAME}</Typography.Text>
           </div>
-          <Typography.Title className="scms-auth-title" level={2}>
+          <span className="scms-auth-form-eyebrow">
+            {isRegister ? 'THAM GIA SPORTS CENTER' : 'TÀI KHOẢN SPORTS CENTER'}
+          </span>
+          <Typography.Title className="scms-auth-title" level={1}>
             {title}
           </Typography.Title>
           <Typography.Paragraph className="scms-auth-subtitle">{subtitle}</Typography.Paragraph>
