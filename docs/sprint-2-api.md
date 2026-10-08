@@ -74,7 +74,7 @@ Roster trả `{ items, history }`. Mỗi học viên chỉ có ID, họ tên, em
 | --- | --- | --- |
 | `GET /schedule/me?weekStart=2026-10-05` | `schedule.view_own` | Người đăng nhập, kể cả lịch đăng ký đã huỷ |
 | `GET /schedule/teaching?weekStart=2026-10-05` | `schedule.view_teaching` | Các lớp được phân công cho người đăng nhập |
-| `GET /schedule/week?weekStart=2026-10-05` | `class.read_all` / `schedule.view_teaching` | Toàn trung tâm hoặc phạm vi phân công |
+| `GET /schedule/week?weekStart=2026-10-05` | `class.read_all` | Toàn trung tâm; HLV xem lớp được phân công qua `/schedule/teaching` |
 
 `weekStart` bắt buộc là thứ Hai theo ngày Việt Nam. Khoảng lấy dữ liệu là `[thứ Hai 00:00, thứ Hai tuần sau 00:00)` theo UTC+7. Query truyền thêm userId/memberId bị từ chối 400. Mỗi event chứa snapshot phòng/HLV của buổi, DTO lớp và trạng thái đăng ký. FE chọn ngày/tuần và bật hiển thị lịch đã huỷ từ dữ liệu đã được BE lọc quyền.
 
