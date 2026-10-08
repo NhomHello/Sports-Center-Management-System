@@ -19,6 +19,7 @@ export const SCHEDULE_STATUS_LABELS = Object.freeze({
 });
 export const SCHEDULE_UI = Object.freeze({
   OPTION_PAGE_SIZE: 100,
+  REFRESH_INTERVAL_MS: 30 * 1000,
   DAYS_PER_WEEK: 7,
   LAST_WEEKDAY: 6,
   MONDAY: 1,

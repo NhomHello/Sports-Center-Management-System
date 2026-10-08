@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Alert, DatePicker, Select, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { CLASS_STATUS, SCHEDULE_STATUS_LABELS, SCHEDULE_UI } from '@/constants/schedule';
@@ -7,7 +7,7 @@ const options = (items) =>
   items.map((item) => ({ value: item.id, label: item.name || item.fullName }));
 /** Bộ lọc lấy đúng bộ môn/HLV trong phạm vi quyền, không lấy danh mục quản trị. */
 export function ClassFilters({ table }) {
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'filters'],
     queryFn: service.getClassFilters,
   });

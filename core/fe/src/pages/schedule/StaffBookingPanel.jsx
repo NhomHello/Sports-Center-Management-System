@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Card, Input, Select, Space, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import * as memberService from '@/services/member.service';
@@ -9,7 +10,7 @@ import { ClassBookingActions } from './ClassBookingActions';
 import { QueryState } from './QueryState';
 
 function MemberEnrollmentList({ memberId }) {
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'member', memberId],
     queryFn: () => scheduleService.getMemberEnrollments(memberId),
   });
