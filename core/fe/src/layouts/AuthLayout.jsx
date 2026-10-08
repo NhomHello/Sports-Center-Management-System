@@ -8,11 +8,12 @@ import { Flex, Typography } from 'antd';
 import { Outlet, useLocation } from 'react-router';
 import { env } from '@/config/env';
 import { ROUTES } from '@/constants';
+import '@/styles/authExperience.css';
 
 const AUTH_BENEFITS = [
   { icon: <SafetyCertificateOutlined />, label: 'Bảo mật tài khoản' },
-  { icon: <ClockCircleOutlined />, label: 'Theo dõi tập luyện' },
-  { icon: <CustomerServiceOutlined />, label: 'Hỗ trợ tận tâm' },
+  { icon: <ClockCircleOutlined />, label: 'Theo dõi lịch tập' },
+  { icon: <CustomerServiceOutlined />, label: 'Kết nối trung tâm' },
 ];
 
 function AuthBrandPanel() {
@@ -23,14 +24,14 @@ function AuthBrandPanel() {
           <ThunderboltFilled />
         </span>
         <span className="scms-auth-brand__name">{env.APP_NAME}</span>
-        <span className="scms-auth-brand__caption">GYM & FITNESS MANAGEMENT</span>
+        <span className="scms-auth-brand__caption">LỚP HỌC · LỊCH TẬP · KẾT NỐI</span>
       </div>
       <div className="scms-auth-quote">
         <span className="scms-auth-quote__eyebrow">KHỎE MẠNH HƠN MỖI NGÀY</span>
-        <Typography.Title level={2}>
-          “Vượt qua giới hạn của hôm qua. Bắt đầu hành trình của bạn hôm nay.”
-        </Typography.Title>
-        <Typography.Text>Không gian tập luyện và quản lý sức khỏe, trong tầm tay.</Typography.Text>
+        <Typography.Title level={2}>Một lịch tập rõ ràng. Một khởi đầu khỏe mạnh.</Typography.Title>
+        <Typography.Text>
+          Chọn lớp phù hợp, theo dõi lịch và nhận cập nhật từ trung tâm trong một nơi.
+        </Typography.Text>
       </div>
       <Flex className="scms-auth-benefits" wrap gap={10}>
         {AUTH_BENEFITS.map(({ icon, label }) => (
@@ -47,17 +48,17 @@ function AuthBrandPanel() {
   );
 }
 
-/** Layout xác thực hai cột theo hệ thống hình ảnh SportHub. */
+/** Layout xác thực hai cột dùng chung nhận diện Sports Center. */
 export function AuthLayout() {
   const { pathname } = useLocation();
   const isRegister = pathname === ROUTES.REGISTER;
   const title = isRegister ? 'Tạo tài khoản mới' : 'Chào mừng trở lại';
   const subtitle = isRegister
-    ? 'Đăng ký để bắt đầu trải nghiệm SportHub.'
-    : 'Đăng nhập để tiếp tục hành trình tập luyện của bạn.';
+    ? 'Tạo tài khoản để khám phá lớp học và theo dõi lịch tập tại Sports Center.'
+    : 'Đăng nhập để xem lớp học, lịch tập và cập nhật mới nhất.';
 
   return (
-    <div className="scms-auth-shell">
+    <div className="scms-auth-shell scms-auth-experience">
       <AuthBrandPanel />
       <main className="scms-auth-form-panel">
         <section className="scms-auth-form-wrap">

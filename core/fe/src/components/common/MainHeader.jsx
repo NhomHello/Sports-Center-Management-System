@@ -26,6 +26,10 @@ const getInitials = (name) =>
     .join('')
     .toUpperCase() || 'SH';
 
+const getCurrentArea = (items, selectedKey) =>
+  items.flatMap((item) => item.children || [item]).find((item) => item.key === selectedKey)
+    ?.label || env.APP_NAME;
+
 function Brand() {
   return (
     <Link className="scms-brand" to={ROUTES.DASHBOARD} aria-label={`${env.APP_NAME} - trang chủ`}>
@@ -34,7 +38,7 @@ function Brand() {
       </span>
       <span>
         <Typography.Text className="scms-brand__name">{env.APP_NAME}</Typography.Text>
-        <Typography.Text className="scms-brand__caption">SPORT CENTER</Typography.Text>
+        <Typography.Text className="scms-brand__caption">SPORTS CENTER</Typography.Text>
       </span>
     </Link>
   );
@@ -81,8 +85,8 @@ export function MainSidebar({ groupedNavItems, selectedKey, user, onNavigate, co
       <div className="scms-sidebar__status">
         <span className="scms-sidebar__status-dot" />
         <span>
-          <strong>Hệ thống sẵn sàng</strong>
-          <small>{user?.role?.name || 'Tài khoản SportHub'}</small>
+          <strong>Tài khoản đang sử dụng</strong>
+          <small>{user?.role?.name || 'Tài khoản Sports Center'}</small>
         </span>
       </div>
     </Layout.Sider>
@@ -128,8 +132,8 @@ export function MainHeader({
             onClick={() => setIsNavigationOpen(true)}
           />
           <div className="scms-header-context">
-            <Typography.Text strong>Không gian quản trị</Typography.Text>
-            <Typography.Text type="secondary">Theo dõi và vận hành trung tâm</Typography.Text>
+            <Typography.Text strong>{getCurrentArea(groupedNavItems, selectedKey)}</Typography.Text>
+            <Typography.Text type="secondary">Lịch tập và hoạt động của bạn</Typography.Text>
           </div>
         </Flex>
         <Flex className="scms-header-actions" align="center" gap={8}>

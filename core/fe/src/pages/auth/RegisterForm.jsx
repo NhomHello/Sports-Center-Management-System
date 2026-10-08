@@ -19,7 +19,7 @@ export function RegisterForm({ form, mutation }) {
           },
         ]}
       >
-        <Input autoComplete="name" />
+        <Input autoComplete="name" placeholder="Họ và tên của bạn" />
       </Form.Item>
       <Form.Item
         name="email"
@@ -29,7 +29,7 @@ export function RegisterForm({ form, mutation }) {
           { type: 'email', message: 'Email không hợp lệ' },
         ]}
       >
-        <Input autoComplete="email" />
+        <Input autoComplete="email" placeholder="email@example.com" />
       </Form.Item>
       <Form.Item
         name="phone"
@@ -43,7 +43,7 @@ export function RegisterForm({ form, mutation }) {
           },
         ]}
       >
-        <Input autoComplete="tel" />
+        <Input autoComplete="tel" placeholder="Số điện thoại (không bắt buộc)" />
       </Form.Item>
       <Form.Item
         name="password"
@@ -57,7 +57,10 @@ export function RegisterForm({ form, mutation }) {
           { max: VALIDATION.PASSWORD_MAX_LENGTH, message: 'Mật khẩu vượt quá độ dài cho phép' },
         ]}
       >
-        <Input.Password autoComplete="new-password" />
+        <Input.Password
+          autoComplete="new-password"
+          placeholder={`Tối thiểu ${VALIDATION.PASSWORD_MIN_LENGTH} ký tự`}
+        />
       </Form.Item>
       <Form.Item
         name="confirmPassword"
@@ -73,7 +76,7 @@ export function RegisterForm({ form, mutation }) {
           }),
         ]}
       >
-        <Input.Password autoComplete="new-password" />
+        <Input.Password autoComplete="new-password" placeholder="Nhập lại mật khẩu đã chọn" />
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit" block loading={mutation.isPending}>
