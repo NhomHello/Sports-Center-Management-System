@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { PERMISSIONS as P } from '@scms/shared';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
-import { Button, Input, Pagination, Space } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Pagination } from 'antd';
+import { SearchInput } from '@/components/common/SearchInput';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { useTableQuery } from '@/hooks/useTableQuery';
@@ -26,19 +28,24 @@ export function ClassListPanel({ scope = 'open', memberId, renderActions, render
   const cancel = useScheduleMutation(service.cancelClass);
   const items = query.data?.data || [];
   return (
-    <Space vertical className="scms-schedule-stack">
-      <Space wrap>
-        <Input.Search
+    <div className="scms-schedule-stack scms-class-list-panel">
+      <div className="scms-class-list-toolbar">
+        <SearchInput
           allowClear
           placeholder="Tìm tên lớp"
           onSearch={(search) => table.setFilters({ search })}
         />
         {can(P.CLASS_CREATE) && (
-          <Button type="primary" onClick={() => setEditing({})}>
+          <Button
+            aria-label="Tạo lớp"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setEditing({})}
+          >
             Tạo lớp
           </Button>
         )}
-      </Space>
+      </div>
       {renderFilters?.(table)}
       <QueryState query={query} isEmpty={!items.length}>
         <div className="scms-class-grid">
@@ -58,6 +65,7 @@ export function ClassListPanel({ scope = 'open', memberId, renderActions, render
         </div>
       </QueryState>
       <Pagination
+        className="scms-class-pagination"
         {...table.paginationProps(query.data?.meta)}
         onChange={(current, pageSize) => table.onTableChange({ current, pageSize })}
       />
@@ -72,6 +80,6 @@ export function ClassListPanel({ scope = 'open', memberId, renderActions, render
       {editing && (
         <ClassFormModal item={editing.id ? editing : null} onClose={() => setEditing(null)} />
       )}
-    </Space>
+    </div>
   );
 }
