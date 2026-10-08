@@ -7,6 +7,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 /** DatePicker giữ wall time Việt Nam, không lấy offset của máy người dùng. */
 export const vietnamInput = (value) => dayjs(value).tz(VIETNAM_TIME_ZONE);
+/** Ngày chọn trên DatePicker là ngày Việt Nam, không phải midnight theo múi giờ trình duyệt. */
+export const vietnamCalendarDate = (value) =>
+  dayjs.tz(value.format(SCHEDULE_UI.DATE_PATTERN), VIETNAM_TIME_ZONE);
 /** Biến ngày được chọn trong form thành timestamp có offset Việt Nam. */
 export const vietnamTimestamp = (value) => `${value.format(SCHEDULE_UI.DATETIME_PATTERN)}+07:00`;
 /** Ngày thứ Hai đầu tuần Việt Nam, kể cả Chủ nhật hoặc thời điểm sát UTC midnight. */

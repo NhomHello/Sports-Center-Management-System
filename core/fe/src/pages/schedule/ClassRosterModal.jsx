@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Modal, Table, Tag, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
@@ -18,7 +18,7 @@ const columns = [
 ];
 /** Roster và audit booking lấy từ endpoint có kiểm tra phạm vi tại server. */
 export function ClassRosterModal({ item, onClose }) {
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'roster', item.id],
     queryFn: () => service.getRoster(item.id),
   });

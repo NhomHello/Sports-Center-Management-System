@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PERMISSIONS as P } from '@scms/shared';
-import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Button, Input, Pagination, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
@@ -19,7 +19,7 @@ export function ClassListPanel({ scope = 'open', memberId, renderActions, render
   const params = { ...table.params, memberId };
   const [detailId, setDetailId] = useState(null);
   const [editing, setEditing] = useState(null);
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'classes', params],
     queryFn: () => service.listClasses(params),
   });

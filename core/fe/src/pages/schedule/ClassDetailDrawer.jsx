@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Descriptions, Drawer, Space, Tag, Timeline, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
@@ -9,7 +9,7 @@ import { ClassSessionsTable } from './ClassSessionsTable';
 
 /** Container chi tiết lớp, extension dùng chung cho booking/roster ở FE Khôi. */
 export function ClassDetailDrawer({ id, memberId, onClose, renderActions }) {
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'detail', id, memberId],
     queryFn: () => service.getClass(id, { memberId }),
   });

@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_UI, SESSION_STATUS, ENROLLMENT_STATUS } from '@/constants/schedule';
 import * as service from '@/services/schedule.service';
-import { vietnamInput, vietnamWeekStart } from '@/utils/schedule';
+import { vietnamInput, vietnamWeekStart, vietnamCalendarDate } from '@/utils/schedule';
 
 /** Lịch tuần từ server; lọc ngày và lịch huỷ ở client sau khi đã áp dụng RBAC. */
 export const useScheduleCalendar = (kind) => {
-  const [date, setDate] = useState(() => vietnamInput(new Date()));
+  const [date, updateDate] = useState(() => vietnamCalendarDate(vietnamInput(new Date())));
+  const setDate = (value) => updateDate(vietnamCalendarDate(value));
   const [mode, setMode] = useState('week');
   const [showCancelled, setShowCancelled] = useState(false);
   const week = vietnamWeekStart(date);
   const weekStart = week.format(SCHEDULE_UI.DATE_PATTERN);
-  const query = useQuery({
+  const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'week', kind, weekStart],
     queryFn: () => service.getSchedule(kind, { weekStart }),
   });
@@ -37,6 +38,10 @@ export const useScheduleCalendar = (kind) => {
     setShowCancelled,
     days,
     move: (direction) =>
-      setDate(date.add(direction * (mode === 'day' ? 1 : SCHEDULE_UI.DAYS_PER_WEEK), 'day')),
+      updateDate((current) =>
+        vietnamCalendarDate(
+          current.add(direction * (mode === 'day' ? 1 : SCHEDULE_UI.DAYS_PER_WEEK), 'day'),
+        ),
+      ),
   };
 };
