@@ -30,8 +30,10 @@ export const routeRegistry = [
     permission: [
       PERMISSIONS.SUBJECT_READ,
       PERMISSIONS.ROOM_READ,
+      PERMISSIONS.CLASS_READ,
       PERMISSIONS.CLASS_CREATE,
       PERMISSIONS.CLASS_UPDATE,
+      PERMISSIONS.CLASS_DELETE,
     ],
     menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: 'Lịch tập' },
   },

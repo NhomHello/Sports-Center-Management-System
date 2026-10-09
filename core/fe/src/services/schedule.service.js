@@ -12,6 +12,9 @@ export const createClass = (values) => http.post('/classes', values);
 /** Cập nhật thông tin lớp và các buổi chưa diễn ra. */
 export const updateClass = (id, values) => http.put(`/classes/${id}`, values);
 
+/** Huỷ lớp nhưng vẫn giữ dữ liệu lịch sử. */
+export const cancelClass = (id) => http.delete(`/classes/${id}`);
+
 /** Lấy danh sách bộ môn hoặc phòng tập có tìm kiếm và phân trang. */
 export const listResources = (resource, params) => http.get(`/${resource}`, { params });
 

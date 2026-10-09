@@ -3,6 +3,7 @@ import { Tabs } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { usePermission } from '@/hooks/usePermission';
 import { ClassManagementPanel } from './ClassManagementPanel';
+import { OpenClassListPanel } from './OpenClassListPanel';
 import { ResourceCatalogPanel } from './ResourceCatalogPanel';
 import './schedule.css';
 
@@ -11,7 +12,10 @@ export default function SchedulePage() {
   const { can } = usePermission();
   const items = [];
 
-  if (can(PERMISSIONS.CLASS_CREATE, PERMISSIONS.CLASS_UPDATE)) {
+  if (can(PERMISSIONS.CLASS_READ)) {
+    items.push({ key: 'open', label: 'Lớp đang mở', children: <OpenClassListPanel /> });
+  }
+  if (can(PERMISSIONS.CLASS_CREATE, PERMISSIONS.CLASS_UPDATE, PERMISSIONS.CLASS_DELETE)) {
     items.push({ key: 'classes', label: 'Quản lý lớp', children: <ClassManagementPanel /> });
   }
   if (can(PERMISSIONS.SUBJECT_READ)) {

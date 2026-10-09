@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Card, Input, Pagination, Space, Tag } from 'antd';
+import { Button, Input, Pagination, Popconfirm, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
-import { CLASS_STATUS, CLASS_STATUS_LABELS } from '@/constants/schedule';
+import { CLASS_STATUS } from '@/constants/schedule';
 import { usePermission } from '@/hooks/usePermission';
+import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import * as scheduleService from '@/services/schedule.service';
+import { ClassCard } from './ClassCard';
 import { ClassFormModal } from './ClassFormModal';
 import { QueryState } from './QueryState';
 
@@ -19,6 +21,7 @@ export function ClassManagementPanel() {
     queryKey: [...QUERY_KEYS.SCHEDULE, 'classes', table.params],
     queryFn: () => scheduleService.listClasses(table.params),
   });
+  const cancelMutation = useScheduleMutation(scheduleService.cancelClass);
   const items = listQuery.data?.data || [];
 
   return (
@@ -38,19 +41,25 @@ export function ClassManagementPanel() {
       <QueryState query={listQuery} isEmpty={!items.length}>
         <div className="scms-class-grid">
           {items.map((item) => (
-            <Card key={item.id} title={item.name}>
-              <Space vertical className="scms-schedule-stack">
-                <Tag>{CLASS_STATUS_LABELS[item.status]}</Tag>
-                <span>
-                  {item.subject.name} · {item.room.name}
-                </span>
-                <span>Huấn luyện viên: {item.coach.fullName}</span>
-                <span>Sức chứa: {item.capacity}</span>
+            <ClassCard key={item.id} item={item}>
+              <Space wrap>
                 {can(PERMISSIONS.CLASS_UPDATE) && item.status !== CLASS_STATUS.CANCELLED && (
                   <Button onClick={() => setEditingItem(item)}>Sửa lớp / đổi lịch</Button>
                 )}
+                {can(PERMISSIONS.CLASS_DELETE) && item.status !== CLASS_STATUS.CANCELLED && (
+                  <Popconfirm
+                    title="Huỷ toàn bộ lớp và thông báo hội viên?"
+                    okText="Huỷ lớp"
+                    cancelText="Giữ lớp"
+                    onConfirm={() => cancelMutation.mutate(item.id)}
+                  >
+                    <Button danger loading={cancelMutation.isPending}>
+                      Huỷ lớp
+                    </Button>
+                  </Popconfirm>
+                )}
               </Space>
-            </Card>
+            </ClassCard>
           ))}
         </div>
       </QueryState>
