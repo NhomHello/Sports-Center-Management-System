@@ -10,6 +10,23 @@ export const CLASS_STATUS_LABELS = Object.freeze({
   CANCELLED: 'Đã huỷ',
 });
 
+export const ENROLLMENT_STATUS_LABELS = Object.freeze({
+  BOOKED: 'Đã đăng ký',
+  CANCELLED: 'Đã huỷ đăng ký',
+});
+
+export const SESSION_STATUS = Object.freeze({
+  SCHEDULED: 'SCHEDULED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED',
+});
+
+export const SESSION_STATUS_LABELS = Object.freeze({
+  SCHEDULED: 'Theo lịch',
+  CANCELLED: 'Đã huỷ',
+  COMPLETED: 'Đã hoàn thành',
+});
+
 export const SCHEDULE_UI = Object.freeze({
   OPTION_PAGE_SIZE: 100,
   LAST_WEEKDAY: 6,

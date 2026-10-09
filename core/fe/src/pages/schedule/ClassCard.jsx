@@ -1,9 +1,9 @@
-import { Card, Space, Tag } from 'antd';
+import { Button, Card, Space, Tag } from 'antd';
 import { CLASS_STATUS_LABELS } from '@/constants/schedule';
 import { formatDateTime } from '@/utils/format';
 
 /** Card thông tin lớp dùng chung cho danh sách mở và danh sách quản lý. */
-export function ClassCard({ item, children }) {
+export function ClassCard({ item, onDetail, children }) {
   return (
     <Card title={item.name}>
       <Space vertical className="scms-schedule-stack">
@@ -16,7 +16,10 @@ export function ClassCard({ item, children }) {
           Còn {item.seatsRemaining}/{item.capacity} chỗ
         </span>
         <span>Mở đăng ký đến {formatDateTime(item.registrationEndAt)}</span>
-        {children}
+        <Space wrap>
+          <Button onClick={onDetail}>Chi tiết</Button>
+          {children}
+        </Space>
       </Space>
     </Card>
   );

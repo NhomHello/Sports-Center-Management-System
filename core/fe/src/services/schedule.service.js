@@ -3,6 +3,9 @@ import { http } from './http';
 /** Lấy danh sách lớp theo phạm vi và bộ lọc phía server. */
 export const listClasses = (params) => http.get('/classes', { params });
 
+/** Lấy chi tiết lớp, các buổi học và lịch sử thay đổi. */
+export const getClass = (id) => http.get(`/classes/${id}`);
+
 /** Lấy các huấn luyện viên đang hoạt động để cấu hình lớp. */
 export const listCoaches = () => http.get('/classes/coaches');
 

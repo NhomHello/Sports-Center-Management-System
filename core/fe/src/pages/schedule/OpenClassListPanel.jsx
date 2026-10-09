@@ -1,14 +1,17 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Input, Pagination, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import * as scheduleService from '@/services/schedule.service';
 import { ClassCard } from './ClassCard';
+import { ClassDetailDrawer } from './ClassDetailDrawer';
 import { QueryState } from './QueryState';
 
 /** Danh sách lớp đang nhận đăng ký trong thời gian hiện tại. */
 export function OpenClassListPanel() {
   const table = useTableQuery({ scope: 'open' });
+  const [detailId, setDetailId] = useState(null);
   const listQuery = useQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'open-classes', table.params],
     queryFn: () => scheduleService.listClasses(table.params),
@@ -25,7 +28,7 @@ export function OpenClassListPanel() {
       <QueryState query={listQuery} isEmpty={!items.length}>
         <div className="scms-class-grid">
           {items.map((item) => (
-            <ClassCard key={item.id} item={item} />
+            <ClassCard key={item.id} item={item} onDetail={() => setDetailId(item.id)} />
           ))}
         </div>
       </QueryState>
@@ -33,6 +36,7 @@ export function OpenClassListPanel() {
         {...table.paginationProps(listQuery.data?.meta)}
         onChange={(current, pageSize) => table.onTableChange({ current, pageSize })}
       />
+      {detailId && <ClassDetailDrawer id={detailId} onClose={() => setDetailId(null)} />}
     </Space>
   );
 }
