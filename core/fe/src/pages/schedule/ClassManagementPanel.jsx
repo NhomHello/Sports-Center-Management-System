@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Input, Pagination, Popconfirm, Space } from 'antd';
@@ -35,7 +36,7 @@ export function ClassManagementPanel() {
           onSearch={(search) => table.setFilters({ search })}
         />
         {can(PERMISSIONS.CLASS_CREATE) && (
-          <Button type="primary" onClick={() => setEditingItem({})}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditingItem({})}>
             Tạo lớp
           </Button>
         )}

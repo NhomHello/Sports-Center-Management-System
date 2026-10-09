@@ -16,6 +16,10 @@ export const ROUTES = Object.freeze({
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
   SCHEDULE: '/schedule',
+  SCHEDULE_OPEN: '/schedule/open',
+  SCHEDULE_MANAGEMENT: '/schedule/classes',
+  SCHEDULE_SUBJECTS: '/schedule/subjects',
+  SCHEDULE_ROOMS: '/schedule/rooms',
 });
 
 /** Key cho React Query - moi entity mot key goc de invalidate dong bo */

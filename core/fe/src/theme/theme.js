@@ -4,19 +4,26 @@
  */
 export const theme = {
   token: {
-    colorPrimary: '#1677ff',
+    colorPrimary: '#3155ee',
     colorSuccess: '#52c41a',
     colorWarning: '#faad14',
     colorError: '#ff4d4f',
-    borderRadius: 6,
+    colorBgLayout: '#f4f7fb',
+    colorText: '#101a30',
+    colorTextSecondary: '#718096',
+    borderRadius: 10,
     fontFamily: "Inter, 'Segoe UI', Roboto, system-ui, sans-serif",
     fontSize: 14,
   },
   components: {
     Layout: {
-      siderBg: '#001529',
+      siderBg: '#ffffff',
       headerBg: '#ffffff',
     },
+    Button: { controlHeight: 42, borderRadius: 10 },
+    Input: { controlHeight: 42 },
+    Select: { controlHeight: 42 },
+    Tabs: { itemSelectedColor: '#3155ee', inkBarColor: '#3155ee' },
   },
 };
 

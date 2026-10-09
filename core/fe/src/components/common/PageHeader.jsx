@@ -3,19 +3,14 @@ import { SPACING } from '@/theme/theme';
 
 /**
  * Tieu de trang + nut hanh dong ben phai. Dung o dau MOI trang.
- * @param {{ title: string, subtitle?: string, extra?: import('react').ReactNode }} props
+ * @param {{ title: string, subtitle?: string, extra?: import('react').ReactNode, eyebrow?: string }} props
  */
-export function PageHeader({ title, subtitle, extra }) {
+export function PageHeader({ title, subtitle, extra, eyebrow = 'SPORT HUB · QUẢN LÝ TRUNG TÂM' }) {
   return (
-    <Flex
-      justify="space-between"
-      align="center"
-      wrap
-      gap={SPACING.SM}
-      style={{ marginBottom: SPACING.MD }}
-    >
-      <div>
-        <Typography.Title level={3} style={{ margin: 0 }}>
+    <Flex className="scms-page-header" justify="space-between" align="center" wrap gap={SPACING.SM}>
+      <div className="scms-page-header__copy">
+        <Typography.Text className="scms-page-header__eyebrow">{eyebrow}</Typography.Text>
+        <Typography.Title level={2} style={{ margin: 0 }}>
           {title}
         </Typography.Title>
         {subtitle && <Typography.Text type="secondary">{subtitle}</Typography.Text>}

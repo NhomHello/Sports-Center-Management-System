@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Input, Pagination, Popconfirm, Space, Tag } from 'antd';
 import { QUERY_KEYS } from '@/constants';
@@ -38,7 +39,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
           onSearch={(search) => table.setFilters({ search })}
         />
         {can(permissions.create) && (
-          <Button type="primary" onClick={() => setEditingItem({})}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditingItem({})}>
             Thêm mới
           </Button>
         )}
@@ -46,7 +47,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
       <QueryState query={listQuery} isEmpty={!items.length}>
         <div className="scms-class-grid">
           {items.map((item) => (
-            <Card key={item.id} title={item.name}>
+            <Card key={item.id} title={item.name} className="scms-resource-card">
               <p>{item.description || 'Chưa có mô tả'}</p>
               {item.capacity && <p>Sức chứa: {item.capacity}</p>}
               <Tag color={item.isActive ? 'green' : 'default'}>

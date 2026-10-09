@@ -56,7 +56,13 @@ export function ClassDetailDrawer({ id, onClose }) {
   const item = query.data?.data;
 
   return (
-    <Drawer open title={item?.name || 'Chi tiết lớp'} onClose={onClose} size="large">
+    <Drawer
+      className="scms-class-detail"
+      open
+      title={item?.name || 'Chi tiết lớp'}
+      onClose={onClose}
+      size="large"
+    >
       <QueryState query={query}>
         {item && (
           <Space vertical className="scms-schedule-stack">
