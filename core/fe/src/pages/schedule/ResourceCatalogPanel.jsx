@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Card, Input, Pagination, Popconfirm, Space, Tag } from 'antd';
+import { Button, Card, Input, Pagination, Popconfirm, Space, Tag, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
@@ -9,6 +9,27 @@ import { useTableQuery } from '@/hooks/useTableQuery';
 import * as scheduleService from '@/services/schedule.service';
 import { QueryState } from './QueryState';
 import { ResourceFormModal } from './ResourceFormModal';
+
+function RoomAssignments({ item }) {
+  const assignedClasses = item.assignedClasses || item.classes || [];
+
+  return (
+    <div className="scms-room-assignments">
+      <Typography.Text strong>Lớp đang được gán</Typography.Text>
+      {assignedClasses.length ? (
+        <Space wrap size={[6, 6]}>
+          {assignedClasses.map((classItem) => (
+            <Tag key={classItem.id} color="blue">
+              {classItem.name}
+            </Tag>
+          ))}
+        </Space>
+      ) : (
+        <Typography.Text type="secondary">Chưa có lớp nào</Typography.Text>
+      )}
+    </div>
+  );
+}
 
 /** Danh sách bộ môn/phòng tập có tìm kiếm, phân trang và thao tác theo quyền. */
 export function ResourceCatalogPanel({ resource, permissions }) {
@@ -53,6 +74,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
               <Tag color={item.isActive ? 'green' : 'default'}>
                 {item.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
               </Tag>
+              {resource === 'rooms' && <RoomAssignments item={item} />}
               <Space wrap>
                 {can(permissions.update) && (
                   <Button onClick={() => setEditingItem(item)}>Sửa</Button>

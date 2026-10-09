@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { VIETNAM_TIME_ZONE } from '@/constants';
-import { CLASS_STATUS, SCHEDULE_UI } from '@/constants/schedule';
+import { CLASS_STATUS, SCHEDULE_UI, SESSION_STATUS } from '@/constants/schedule';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -12,6 +12,10 @@ export const vietnamInput = (value) => dayjs(value).tz(VIETNAM_TIME_ZONE);
 
 /** Đổi thời điểm trong form thành ISO 8601 có múi giờ Việt Nam. */
 export const vietnamTimestamp = (value) => `${value.format(SCHEDULE_UI.DATETIME_PATTERN)}+07:00`;
+
+/** Chỉ cho phép huỷ buổi đang theo lịch và chưa bắt đầu. */
+export const canCancelSession = (session, now = dayjs()) =>
+  session.status === SESSION_STATUS.SCHEDULED && dayjs(session.startAt).isAfter(now);
 
 /** Chuẩn bị dữ liệu ban đầu cho form tạo hoặc sửa lớp. */
 export const classFormValues = (item) =>

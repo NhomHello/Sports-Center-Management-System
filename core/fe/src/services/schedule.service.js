@@ -18,6 +18,9 @@ export const updateClass = (id, values) => http.put(`/classes/${id}`, values);
 /** Huỷ lớp nhưng vẫn giữ dữ liệu lịch sử. */
 export const cancelClass = (id) => http.delete(`/classes/${id}`);
 
+/** Huỷ một buổi chưa diễn ra nhưng vẫn giữ buổi trong lịch sử lớp. */
+export const cancelSession = (id) => http.delete(`/classes/sessions/${id}`);
+
 /** Lấy danh sách bộ môn hoặc phòng tập có tìm kiếm và phân trang. */
 export const listResources = (resource, params) => http.get(`/${resource}`, { params });
 

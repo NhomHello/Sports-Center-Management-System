@@ -1,7 +1,10 @@
+import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Descriptions, Drawer, List, Space, Tag, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { CLASS_STATUS_LABELS, ENROLLMENT_STATUS_LABELS } from '@/constants/schedule';
+import { usePermission } from '@/hooks/usePermission';
+import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as scheduleService from '@/services/schedule.service';
 import { formatDateTime } from '@/utils/format';
 import { ClassSessionsTable } from './ClassSessionsTable';
@@ -49,11 +52,14 @@ function detailItems(item) {
 
 /** Hiển thị đầy đủ thông tin lớp, lịch từng buổi và lịch sử thay đổi. */
 export function ClassDetailDrawer({ id, onClose }) {
+  const { can } = usePermission();
   const query = useQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'detail', id],
     queryFn: () => scheduleService.getClass(id),
   });
+  const cancelMutation = useScheduleMutation(scheduleService.cancelSession);
   const item = query.data?.data;
+  const cancelSession = can(PERMISSIONS.CLASS_DELETE) ? cancelMutation.mutate : undefined;
 
   return (
     <Drawer
@@ -69,7 +75,11 @@ export function ClassDetailDrawer({ id, onClose }) {
             <Descriptions column={1} items={detailItems(item)} />
             {item.description && <Typography.Paragraph>{item.description}</Typography.Paragraph>}
             <Typography.Title level={5}>Các buổi học</Typography.Title>
-            <ClassSessionsTable sessions={item.sessions} />
+            <ClassSessionsTable
+              sessions={item.sessions}
+              onCancel={cancelSession}
+              cancellingId={cancelMutation.variables}
+            />
             <Typography.Title level={5}>Thay đổi lịch</Typography.Title>
             <List
               dataSource={item.events || []}
