@@ -5,6 +5,7 @@
  *  - menu: bo qua neu trang khong hien tren sidebar (vd: trang chi tiet /classes/:id).
  */
 import {
+  CalendarOutlined,
   DashboardOutlined,
   SafetyOutlined,
   SettingOutlined,
@@ -18,10 +19,17 @@ const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage'));
 const RolesPage = lazy(() => import('@/pages/system/roles/RolesPage'));
 const UsersPage = lazy(() => import('@/pages/system/users/UsersPage'));
 const SettingsPage = lazy(() => import('@/pages/system/settings/SettingsPage'));
+const SchedulePage = lazy(() => import('@/pages/schedule/SchedulePage'));
 
 const GROUP_SYSTEM = 'Hệ thống';
 
 export const routeRegistry = [
+  {
+    path: ROUTES.SCHEDULE,
+    element: <SchedulePage />,
+    permission: [PERMISSIONS.SUBJECT_READ, PERMISSIONS.ROOM_READ],
+    menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: 'Lịch tập' },
+  },
   {
     path: ROUTES.DASHBOARD,
     element: <DashboardPage />,

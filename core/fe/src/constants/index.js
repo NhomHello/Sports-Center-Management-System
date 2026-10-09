@@ -15,6 +15,7 @@ export const ROUTES = Object.freeze({
   SYSTEM_ROLES: '/system/roles',
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
+  SCHEDULE: '/schedule',
 });
 
 /** Key cho React Query - moi entity mot key goc de invalidate dong bo */
@@ -24,6 +25,7 @@ export const QUERY_KEYS = Object.freeze({
   PERMISSIONS: ['permissions'],
   USERS: ['users'],
   SETTINGS: ['settings'],
+  SCHEDULE: ['schedule'],
 });
 
 export const HTTP_STATUS = Object.freeze({
