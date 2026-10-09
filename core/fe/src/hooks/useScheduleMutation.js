@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { App } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 
-/** Chạy thao tác ghi và tải lại danh sách bộ môn/phòng tập sau khi thành công. */
-export const useScheduleMutation = (mutationFn, onSuccess) => {
+/** Chạy thao tác ghi và tải lại dữ liệu lịch/lớp sau khi thành công. */
+export const useScheduleMutation = (mutationFn, onSuccess, onError) => {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
 
@@ -14,6 +14,9 @@ export const useScheduleMutation = (mutationFn, onSuccess) => {
       message.success(result.message || 'Thao tác thành công');
       onSuccess?.(result);
     },
-    onError: (error) => message.error(error.message),
+    onError: (error) => {
+      onError?.(error);
+      message.error(error.message);
+    },
   });
 };

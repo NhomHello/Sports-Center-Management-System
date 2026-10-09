@@ -27,7 +27,12 @@ export const routeRegistry = [
   {
     path: ROUTES.SCHEDULE,
     element: <SchedulePage />,
-    permission: [PERMISSIONS.SUBJECT_READ, PERMISSIONS.ROOM_READ],
+    permission: [
+      PERMISSIONS.SUBJECT_READ,
+      PERMISSIONS.ROOM_READ,
+      PERMISSIONS.CLASS_CREATE,
+      PERMISSIONS.CLASS_UPDATE,
+    ],
     menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: 'Lịch tập' },
   },
   {

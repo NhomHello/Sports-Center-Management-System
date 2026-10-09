@@ -46,6 +46,7 @@ export const DATE_FORMATS = Object.freeze({
 });
 
 export const DEFAULT_CURRENCY = 'VND';
+export const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
 
 /** Enum trang thai tai khoan - khop voi enum UserStatus trong schema.prisma */
 export const USER_STATUS = Object.freeze({
