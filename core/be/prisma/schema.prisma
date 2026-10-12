@@ -313,13 +313,13 @@ model Notification {
 
 /// Danh muc bo mon. Khong hard-delete; ngung su dung bang isActive = false.
 model Subject {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(100)
-  description String?  @db.VarChar(500)
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  description String?    @db.VarChar(500)
   isActive    Boolean    @default(true) @map("is_active")
   classes     GymClass[]
   createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
   @@map("subjects")
 }
@@ -327,17 +327,18 @@ model Subject {
 /// Danh muc phong tap.
 /// Khong hard-delete; ngung su dung bang isActive = false.
 model Room {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(100)
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
   capacity    Int
-  description String?  @db.VarChar(500)
+  description String?    @db.VarChar(500)
   isActive    Boolean    @default(true) @map("is_active")
   classes     GymClass[]
   createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
   @@map("rooms")
 }
+
 /// Lop hoc cua trung tam.
 model GymClass {
   id                  Int         @id @default(autoincrement())
@@ -358,6 +359,7 @@ model GymClass {
   room     Room           @relation(fields: [roomId], references: [id], onDelete: Restrict)
   coach    User           @relation(fields: [coachId], references: [id], onDelete: Restrict)
   sessions ClassSession[]
+  events   ClassEvent[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -383,4 +385,23 @@ model ClassSession {
   @@index([startAt, endAt, status])
   @@index([classId, startAt])
   @@map("class_sessions")
+}
+
+model ClassEvent {
+  id           Int              @id @default(autoincrement())
+  classId      Int              @map("class_id")
+  kind         NotificationKind
+  recipientIds Json             @map("recipient_ids")
+  changes      Json?
+  title        String           @db.VarChar(150)
+  message      String           @db.VarChar(500)
+  attempts     Int              @default(0)
+  sentAt       DateTime?        @map("sent_at")
+  lastError    String?          @map("last_error") @db.VarChar(500)
+  gymClass     GymClass         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@index([sentAt, id])
+  @@index([classId])
+  @@map("class_events")
 }

@@ -5,17 +5,25 @@ import { app } from './app.js';
 import { prisma } from './config/db.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
+import { startClassEventWorker } from './modules/class/class-event.service.js';
+
+const stopClassEventWorker = startClassEventWorker();
 
 const server = app.listen(env.PORT, () => {
   logger.info(`API san sang tai http://localhost:${env.PORT}${env.API_PREFIX} (${env.NODE_ENV})`);
 });
 
 /**
- * Tat server nhe nhang: ngung nhan request moi, dong ket noi DB.
+ * Tat server nhe nhang:
+ * dung worker, ngung nhan request moi, dong ket noi DB.
+ *
  * @param {string} signal
  */
 const shutdown = async (signal) => {
   logger.info({ signal }, 'Dang tat server...');
+
+  stopClassEventWorker();
+
   server.close(async () => {
     await prisma.$disconnect();
     process.exit(0);
@@ -24,6 +32,7 @@ const shutdown = async (signal) => {
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
+
 process.on('unhandledRejection', (reason) => {
   logger.fatal({ reason }, 'Unhandled promise rejection');
   process.exit(1);

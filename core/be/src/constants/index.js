@@ -25,6 +25,9 @@ export const CLASS_LIMITS = Object.freeze({
   NAME_LENGTH: 120,
   DESCRIPTION_LENGTH: 1000,
   MAX_PAGE_SIZE: 100,
+  OUTBOX_BATCH_SIZE: 50,
+  OUTBOX_INTERVAL_MS: 5000,
+  ERROR_LENGTH: 500,
 });
 
 export const AUTH = Object.freeze({

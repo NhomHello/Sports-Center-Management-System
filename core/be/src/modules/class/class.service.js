@@ -5,6 +5,7 @@ import {
 } from '../../common/utils/schedule-transaction.js';
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS } from '../../constants/index.js';
+import { queueClassEvent } from './class-event.service.js';
 import { buildSessions, validateResources } from './class-schedule.service.js';
 
 const CLASS_INCLUDE = Object.freeze({
@@ -124,7 +125,9 @@ export const update = (id, data, actor) =>
 
     await validateResources(db, data, sessions, id);
 
-    if (hasScheduleChanged(old, data)) {
+    const scheduleChanged = hasScheduleChanged(old, data);
+
+    if (scheduleChanged) {
       await replaceFutureSessions(db, id, sessions);
     }
 
@@ -133,6 +136,16 @@ export const update = (id, data, actor) =>
       data: toData(data),
       include: CLASS_INCLUDE,
     });
+
+    if (scheduleChanged) {
+      await queueClassEvent(db, item, Enums.NotificationKind.CLASS_CHANGED, {
+        roomId: data.roomId,
+        coachId: data.coachId,
+        startsOn: data.startsOn,
+        endsOn: data.endsOn,
+        weeklySchedule: data.weeklySchedule,
+      });
+    }
 
     await writeScheduleAudit(db, actor, {
       action: AUDIT_ACTIONS.UPDATE,
@@ -143,6 +156,7 @@ export const update = (id, data, actor) =>
 
     return item;
   });
+
 /**
  * Huy lop va cac buoi hoc tuong lai.
  *
@@ -183,6 +197,8 @@ export const cancel = (id, actor) =>
       },
       include: CLASS_INCLUDE,
     });
+
+    await queueClassEvent(db, updated, Enums.NotificationKind.CLASS_CANCELLED);
 
     await writeScheduleAudit(db, actor, {
       action: AUDIT_ACTIONS.DELETE,
