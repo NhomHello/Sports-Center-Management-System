@@ -1,20 +1,93 @@
-import { Card, Flex, Typography } from 'antd';
-import { Outlet } from 'react-router';
+import {
+  ClockCircleOutlined,
+  CustomerServiceOutlined,
+  SafetyCertificateOutlined,
+  ThunderboltFilled,
+} from '@ant-design/icons';
+import { Flex, Typography } from 'antd';
+import { Outlet, useLocation } from 'react-router';
 import { env } from '@/config/env';
-import { SPACING } from '@/theme/theme';
+import { ROUTES } from '@/constants';
 
-const CARD_WIDTH = 400;
+const AUTH_BENEFITS = [
+  { icon: <SafetyCertificateOutlined />, label: 'Bảo mật tài khoản' },
+  { icon: <ClockCircleOutlined />, label: 'Theo dõi tập luyện' },
+  { icon: <CustomerServiceOutlined />, label: 'Hỗ trợ tận tâm' },
+];
 
-/** Layout cho trang login/register: card can giua man hinh. */
-export function AuthLayout() {
+function AuthBrandPanel() {
   return (
-    <Flex align="center" justify="center" style={{ minHeight: '100vh', padding: SPACING.MD }}>
-      <Card style={{ width: '100%', maxWidth: CARD_WIDTH }}>
-        <Typography.Title level={3} style={{ textAlign: 'center', marginTop: 0 }}>
-          {env.APP_NAME}
+    <aside className="scms-auth-brand">
+      <div className="scms-auth-brand__top">
+        <span className="scms-brand__mark">
+          <ThunderboltFilled />
+        </span>
+        <span className="scms-auth-brand__name">{env.APP_NAME}</span>
+        <span className="scms-auth-brand__caption">GYM & FITNESS MANAGEMENT</span>
+      </div>
+      <div className="scms-auth-quote">
+        <span className="scms-auth-quote__eyebrow">KHỎE MẠNH HƠN MỖI NGÀY</span>
+        <Typography.Title level={2}>
+          “Vượt qua giới hạn của hôm qua. Bắt đầu hành trình của bạn hôm nay.”
         </Typography.Title>
-        <Outlet />
-      </Card>
-    </Flex>
+        <Typography.Text>Không gian tập luyện và quản lý sức khỏe, trong tầm tay.</Typography.Text>
+      </div>
+      <Flex className="scms-auth-benefits" wrap gap={10}>
+        {AUTH_BENEFITS.map(({ icon, label }) => (
+          <span className="scms-auth-benefit" key={label}>
+            {icon}
+            {label}
+          </span>
+        ))}
+      </Flex>
+      <span className="scms-auth-brand__copyright">
+        © {new Date().getFullYear()} {env.APP_NAME}. Đồng hành cùng bạn trên hành trình khỏe mạnh.
+      </span>
+    </aside>
+  );
+}
+
+const AUTH_HEADINGS = {
+  [ROUTES.LOGIN]: {
+    title: 'Chào mừng trở lại',
+    subtitle: 'Đăng nhập để tiếp tục hành trình tập luyện của bạn.',
+  },
+  [ROUTES.REGISTER]: {
+    title: 'Tạo tài khoản mới',
+    subtitle: 'Đăng ký để bắt đầu trải nghiệm SportHub.',
+  },
+  [ROUTES.VERIFY_EMAIL]: {
+    title: 'Xác minh email',
+    subtitle: 'Hoàn tất xác minh để bảo vệ tài khoản của bạn.',
+  },
+};
+
+/** Layout xác thực hai cột theo hệ thống hình ảnh SportHub. */
+export function AuthLayout() {
+  const { pathname } = useLocation();
+  const { title, subtitle } = AUTH_HEADINGS[pathname] ?? AUTH_HEADINGS[ROUTES.LOGIN];
+
+  return (
+    <div className="scms-auth-shell">
+      <AuthBrandPanel />
+      <main className="scms-auth-form-panel">
+        <section className="scms-auth-form-wrap">
+          <div className="scms-auth-mobile-brand">
+            <span className="scms-brand__mark">
+              <ThunderboltFilled />
+            </span>
+            <Typography.Text strong>{env.APP_NAME}</Typography.Text>
+          </div>
+          <Typography.Title className="scms-auth-title" level={2}>
+            {title}
+          </Typography.Title>
+          <Typography.Paragraph className="scms-auth-subtitle">{subtitle}</Typography.Paragraph>
+          <Outlet />
+          <Typography.Text className="scms-auth-trust">
+            <SafetyCertificateOutlined /> Thông tin của bạn được bảo vệ an toàn.
+          </Typography.Text>
+        </section>
+      </main>
+    </div>
   );
 }

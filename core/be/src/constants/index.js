@@ -12,6 +12,8 @@ export const PAGINATION = Object.freeze({
 export const TIME = Object.freeze({
   MS_PER_SECOND: 1000,
   MS_PER_MINUTE: 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
+  VIETNAM_ZONE: 'Asia/Ho_Chi_Minh',
 });
 
 export const AUTH = Object.freeze({
@@ -19,16 +21,26 @@ export const AUTH = Object.freeze({
   SCHEME: 'Bearer',
 });
 
+export const EMAIL_VERIFICATION = Object.freeze({
+  /** 32 byte ngau nhien => token hex 64 ky tu */
+  TOKEN_BYTES: 32,
+  VERIFY_PATH: '/verify-email',
+});
+
 export const VALIDATION = Object.freeze({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 72,
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
+  DESCRIPTION_MAX_LENGTH: 500,
   SEARCH_MAX_LENGTH: 100,
+  INVOICE_SEQUENCE_WIDTH: 6,
   /** So dien thoai VN: 0xxxxxxxxx hoac +84xxxxxxxxx */
   PHONE_REGEX: /^(0|\+84)\d{9}$/,
   /** Ma role: IN_HOA_SNAKE, 3-50 ky tu */
   ROLE_CODE_REGEX: /^[A-Z][A-Z0-9_]{2,49}$/,
+  NOTIFICATION_IDS_MAX: 100,
+  PAYMENT_REFERENCE_MAX_LENGTH: 100,
 });
 
 export const AUDIT_ACTIONS = Object.freeze({
@@ -39,12 +51,18 @@ export const AUDIT_ACTIONS = Object.freeze({
   DELETE: 'DELETE',
   ASSIGN_ROLE: 'ASSIGN_ROLE',
   CHANGE_STATUS: 'CHANGE_STATUS',
+  PAYMENT: 'PAYMENT',
 });
 
 export const ENTITIES = Object.freeze({
   USER: 'User',
   ROLE: 'Role',
   SETTING: 'SystemSetting',
+  INVOICE: 'Invoice',
+  NOTIFICATION: 'Notification',
+  MEMBERSHIP: 'Membership',
+  PAYMENT: 'Payment',
+  MEMBERSHIP_PLAN: 'MembershipPlan',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */

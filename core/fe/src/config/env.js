@@ -16,7 +16,7 @@ const required = (key) => {
 
 export const env = Object.freeze({
   API_URL: required('VITE_API_URL'),
-  APP_NAME: import.meta.env.VITE_APP_NAME || 'Sports Center',
+  APP_NAME: import.meta.env.VITE_APP_NAME || 'SportHub',
   REQUEST_TIMEOUT_MS: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || DEFAULT_REQUEST_TIMEOUT_MS,
   IS_DEV: import.meta.env.DEV,
 });
