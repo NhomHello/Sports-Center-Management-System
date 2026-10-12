@@ -34,3 +34,11 @@ export const update = async (req, res) => {
 
   sendSuccess(res, { data: item });
 };
+/**
+ * Huy lop hoc.
+ */
+export const cancel = async (req, res) => {
+  const item = await classService.cancel(req.validated.params.id, req.user);
+
+  sendSuccess(res, { data: item });
+};

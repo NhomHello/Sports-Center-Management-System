@@ -23,4 +23,5 @@ router.post('/', authorize(P.CLASS_CREATE), validate(createClassSchema), control
 
 router.put('/:id', authorize(P.CLASS_UPDATE), validate(updateClassSchema), controller.update);
 
+router.delete('/:id', authorize(P.CLASS_DELETE), validate(classIdSchema), controller.cancel);
 export default router;
