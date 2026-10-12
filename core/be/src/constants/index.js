@@ -24,6 +24,7 @@ export const CLASS_LIMITS = Object.freeze({
   TX_MAX_WAIT_MS: 30000,
   NAME_LENGTH: 120,
   DESCRIPTION_LENGTH: 1000,
+  MAX_PAGE_SIZE: 100,
 });
 
 export const AUTH = Object.freeze({
