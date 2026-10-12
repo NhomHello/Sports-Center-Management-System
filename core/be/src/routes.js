@@ -21,12 +21,13 @@ import roomRoutes from './modules/room/room.routes.js';
 import settingRoutes from './modules/setting/setting.routes.js';
 import subjectRoutes from './modules/subject/subject.routes.js';
 import userRoutes from './modules/user/user.routes.js';
+import classRoutes from './modules/class/class.routes.js';
 
 const router = Router();
 
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
-
+router.use('/classes', classRoutes);
 router.use('/members', memberRoutes);
 router.use('/memberships', membershipRoutes);
 router.use('/membership-plans', membershipPlanRoutes);
