@@ -60,9 +60,17 @@ export const classBody = z
 export const createClassSchema = {
   body: classBody,
 };
+
 export const listClassSchema = {
   query: z.object({
     page: z.coerce.number().int().positive().optional(),
     pageSize: z.coerce.number().int().positive().max(CLASS_LIMITS.MAX_PAGE_SIZE).optional(),
   }),
+};
+
+export const updateClassSchema = {
+  params: z.object({
+    id,
+  }),
+  body: classBody,
 };

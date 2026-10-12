@@ -11,7 +11,7 @@ export const create = async (req, res) => {
 };
 
 /**
- * Lay danh sach lop dang mo.
+ * Danh sach lop dang mo.
  */
 export const list = async (req, res) => {
   const result = await readService.listOpenClasses(req.validated.query);
@@ -19,9 +19,18 @@ export const list = async (req, res) => {
 };
 
 /**
- * Lay chi tiet lop hoc.
+ * Chi tiet lop hoc.
  */
 export const getById = async (req, res) => {
   const item = await readService.getById(req.validated.params.id);
+  sendSuccess(res, { data: item });
+};
+
+/**
+ * Cap nhat lop hoc.
+ */
+export const update = async (req, res) => {
+  const item = await classService.update(req.validated.params.id, req.validated.body, req.user);
+
   sendSuccess(res, { data: item });
 };
