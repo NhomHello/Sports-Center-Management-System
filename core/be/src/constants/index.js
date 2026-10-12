@@ -16,6 +16,16 @@ export const TIME = Object.freeze({
   VIETNAM_ZONE: 'Asia/Ho_Chi_Minh',
 });
 
+export const CLASS_LIMITS = Object.freeze({
+  MAX_SCHEDULE_DAYS: 366,
+  DAYS_PER_WEEK: 7,
+  LAST_WEEKDAY: 6,
+  TX_TIMEOUT_MS: 30000,
+  TX_MAX_WAIT_MS: 30000,
+  NAME_LENGTH: 120,
+  DESCRIPTION_LENGTH: 1000,
+});
+
 export const AUTH = Object.freeze({
   HEADER: 'authorization',
   SCHEME: 'Bearer',

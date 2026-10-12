@@ -17,6 +17,8 @@ const {
   InvoiceChannel,
   PaymentProvider,
   NotificationKind,
+  ClassStatus,
+  SessionStatus,
   Prisma,
 } = prismaPkg;
 
@@ -29,6 +31,7 @@ const CONNECTION_LIMIT = 10;
  */
 const parseDatabaseUrl = (databaseUrl) => {
   const url = new URL(databaseUrl);
+
   return {
     host: url.hostname,
     port: Number(url.port) || DEFAULT_MYSQL_PORT,
@@ -59,5 +62,7 @@ export const Enums = Object.freeze({
   InvoiceChannel,
   PaymentProvider,
   NotificationKind,
+  ClassStatus,
+  SessionStatus,
   TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
 });
