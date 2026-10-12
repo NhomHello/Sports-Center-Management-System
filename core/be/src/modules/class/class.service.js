@@ -143,3 +143,52 @@ export const update = (id, data, actor) =>
 
     return item;
   });
+/**
+ * Huy lop va cac buoi hoc tuong lai.
+ *
+ * @param {number} id
+ * @param {{ id?: number }} actor
+ * @returns {Promise<object>}
+ */
+export const cancel = (id, actor) =>
+  withScheduleTransaction(async (db) => {
+    const item = await db.gymClass.findUnique({
+      where: { id },
+      include: CLASS_INCLUDE,
+    });
+
+    if (!item) {
+      throw ApiError.notFound('Không tìm thấy lớp');
+    }
+
+    if (item.status === Enums.ClassStatus.CANCELLED) {
+      return item;
+    }
+
+    await db.classSession.updateMany({
+      where: {
+        classId: id,
+        startAt: { gt: new Date() },
+        status: Enums.SessionStatus.SCHEDULED,
+      },
+      data: {
+        status: Enums.SessionStatus.CANCELLED,
+      },
+    });
+
+    const updated = await db.gymClass.update({
+      where: { id },
+      data: {
+        status: Enums.ClassStatus.CANCELLED,
+      },
+      include: CLASS_INCLUDE,
+    });
+
+    await writeScheduleAudit(db, actor, {
+      action: AUDIT_ACTIONS.DELETE,
+      entity: 'GymClass',
+      entityId: id,
+    });
+
+    return updated;
+  });
