@@ -41,7 +41,7 @@ export const run = (cmd, args, { cwd = ROOT, shell = IS_WINDOWS } = {}) => {
 };
 
 /** Goi npm truc tiep de tranh shell quoting khac nhau giua cac he dieu hanh. */
-export const npm = (args, cwd = ROOT) => run(resolveCommand('npm'), args, { cwd, shell: false });
+export const npm = (args, cwd = ROOT) => run(resolveCommand('npm'), args, { cwd, shell: IS_WINDOWS });
 
 export const checkNodeVersion = () => {
   const major = Number(process.versions.node.split('.')[0]);
@@ -108,7 +108,7 @@ export const prepareDatabase = ({ seed = true } = {}) => {
 export const spawnPrefixed = (name, color, cmd, args, cwd) => {
   const child = spawn(resolveCommand(cmd), args, {
     cwd,
-    shell: false,
+    shell: IS_WINDOWS,
     stdio: ['inherit', 'pipe', 'pipe'],
   });
   const prefix = `${color}[${name}]${COLORS.reset} `;
