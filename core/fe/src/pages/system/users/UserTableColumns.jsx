@@ -1,4 +1,5 @@
 import { PERMISSIONS } from '@scms/shared';
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Select, Space } from 'antd';
 import { StatusTag } from '@/components/common/StatusTag';
 import { USER_STATUS, USER_STATUS_META } from '@/constants';
@@ -53,12 +54,22 @@ export const getUserColumns = ({
           {can(PERMISSIONS.USER_UPDATE, PERMISSIONS.USER_DELETE) && user.id !== currentUserId && (
             <Popconfirm
               title={isActive ? 'Khoá tài khoản này?' : 'Mở khoá tài khoản này?'}
-              okText="Đồng ý"
+              description={
+                isActive
+                  ? 'Tài khoản sẽ không thể đăng nhập cho tới khi được mở khóa.'
+                  : 'Tài khoản sẽ được phép đăng nhập trở lại ngay lập tức.'
+              }
+              okText={isActive ? 'Khóa tài khoản' : 'Mở khóa'}
               cancelText="Huỷ"
               onConfirm={() => onToggleStatus(user)}
             >
-              <Button size="small" danger={isActive}>
-                {isActive ? 'Khoá' : 'Mở khoá'}
+              <Button
+                size="small"
+                danger={isActive}
+                type={isActive ? 'default' : 'primary'}
+                icon={isActive ? <LockOutlined /> : <UnlockOutlined />}
+              >
+                {isActive ? 'Khóa' : 'Mở khóa'}
               </Button>
             </Popconfirm>
           )}
