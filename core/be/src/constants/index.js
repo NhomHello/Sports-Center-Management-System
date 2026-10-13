@@ -28,6 +28,10 @@ export const EMAIL_VERIFICATION = Object.freeze({
   VERIFY_PATH: '/verify-email',
 });
 
+export const PASSWORD_RESET = Object.freeze({
+  RESET_PATH: '/reset-password',
+});
+
 export const VALIDATION = Object.freeze({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 72,

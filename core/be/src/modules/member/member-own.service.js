@@ -3,7 +3,8 @@ import { ensureUniqueContacts } from '../../common/utils/account-contacts.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import * as permissionService from '../permission/permission.service.js';
-import { trySendVerificationEmail } from '../auth/email-verification.service.js';
+import { logger } from '../../config/logger.js';
+import { getPendingEmail, requestEmailChange } from '../auth/email-verification.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 
 /** Hồ sơ luôn lấy id từ token; membership chỉ hiện khi có quyền đọc tương ứng. */
@@ -27,6 +28,7 @@ export const getOwn = async (actor) => {
   }));
   return {
     ...toPublicUser(profile),
+    pendingEmail: await getPendingEmail(actor.id),
     membershipAccess,
     memberships,
     currentMembership:
@@ -36,23 +38,31 @@ export const getOwn = async (actor) => {
   };
 };
 
-/** Chỉ sửa hồ sơ chính chủ và audit giá trị cũ/mới trong cùng transaction. */
-export const updateOwn = async (actor, fields) => {
-  let emailChangedUser = null;
+/**
+ * Chỉ sửa hồ sơ chính chủ và audit giá trị cũ/mới trong cùng transaction.
+ * Email mới không được áp dụng ngay: phải bấm link gửi tới địa chỉ mới (tránh gõ sai làm mất
+ * quyền đăng nhập). Điền lại email hiện tại sẽ huỷ yêu cầu đổi đang chờ.
+ */
+export const updateOwn = async (actor, { email, ...fields }) => {
+  let emailChangeTo = null;
   await prisma.$transaction(async (tx) => {
-    await ensureUniqueContacts(fields, actor.id, tx);
+    await ensureUniqueContacts({ ...fields, ...(email !== undefined && { email }) }, actor.id, tx);
     const before = await tx.user.findUniqueOrThrow({
       where: { id: actor.id },
       select: { fullName: true, email: true, phone: true },
     });
-    const emailChanged = fields.email !== undefined && fields.email !== before.email;
+    const emailChanged = email !== undefined && email !== before.email;
+    if (emailChanged) emailChangeTo = email;
+    if (email !== undefined && !emailChanged) {
+      await tx.emailVerificationToken.deleteMany({
+        where: { userId: actor.id, purpose: Enums.EmailTokenPurpose.CHANGE_EMAIL, usedAt: null },
+      });
+    }
     const after = await tx.user.update({
       where: { id: actor.id },
-      // Đổi email => phải xác minh lại địa chỉ mới.
-      data: { ...fields, ...(emailChanged && { emailVerifiedAt: null }) },
+      data: fields,
       select: { id: true, fullName: true, email: true, phone: true, status: true },
     });
-    if (emailChanged) emailChangedUser = { ...after, emailVerifiedAt: null };
     await tx.auditLog.create({
       data: {
         userId: actor.id,
@@ -62,10 +72,17 @@ export const updateOwn = async (actor, fields) => {
         meta: {
           before,
           after: { fullName: after.fullName, email: after.email, phone: after.phone },
+          ...(emailChanged && { emailChangeRequested: email }),
         },
       },
     });
   });
-  if (emailChangedUser) void trySendVerificationEmail(emailChangedUser);
+  if (emailChangeTo) {
+    try {
+      await requestEmailChange({ id: actor.id, fullName: actor.fullName }, emailChangeTo);
+    } catch (err) {
+      logger.error({ err, userId: actor.id }, 'Gửi email xác nhận đổi email thất bại');
+    }
+  }
   return getOwn(actor);
 };

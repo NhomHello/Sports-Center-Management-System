@@ -5,21 +5,10 @@
  * không đọc trực tiếp từ file này.
  */
 
-export const SETTING_TYPES = Object.freeze({
-  STRING: 'STRING',
-  NUMBER: 'NUMBER',
-  BOOLEAN: 'BOOLEAN',
-  JSON: 'JSON',
-});
+import { PAYMENT_SETTINGS } from './settings-payment.js';
+import { SETTING_GROUPS, SETTING_TYPES } from './setting-constants.js';
 
-export const SETTING_GROUPS = Object.freeze({
-  CENTER: 'CENTER',
-  ACCOUNT: 'ACCOUNT',
-  MEMBERSHIP: 'MEMBERSHIP',
-  CLASS: 'CLASS',
-  PAYMENT: 'PAYMENT',
-  AI: 'AI',
-});
+export { SETTING_GROUPS, SETTING_TYPES };
 
 /**
  * @typedef {Object} SettingDefinition
@@ -36,6 +25,7 @@ export const SETTING_GROUPS = Object.freeze({
 
 /** @type {SettingDefinition[]} */
 export const SETTING_DEFINITIONS = [
+  ...PAYMENT_SETTINGS,
   {
     key: 'CENTER_NAME',
     type: SETTING_TYPES.STRING,
@@ -83,13 +73,48 @@ export const SETTING_DEFINITIONS = [
     key: 'EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS',
     type: SETTING_TYPES.NUMBER,
     defaultValue: '60',
-    label: 'Giãn cách gửi lại email xác minh (giây)',
+    label: 'Giãn cách gửi lại email xác minh / đặt lại mật khẩu (giây)',
     integer: true,
-    description: 'Khoảng chờ tối thiểu giữa hai lần gửi email xác minh cho cùng một tài khoản',
+    description:
+      'Khoảng chờ tối thiểu giữa hai lần gửi email xác minh hoặc đặt lại mật khẩu cho cùng một tài khoản',
     group: SETTING_GROUPS.ACCOUNT,
     unit: 'giây',
     minValue: 0,
     maxValue: 3600,
+  },
+  {
+    key: 'PASSWORD_RESET_TTL_MINUTES',
+    type: SETTING_TYPES.NUMBER,
+    defaultValue: '30',
+    label: 'Hạn link đặt lại mật khẩu (phút)',
+    integer: true,
+    description: 'Link quên mật khẩu hết hạn sau số phút này và chỉ dùng được một lần',
+    group: SETTING_GROUPS.ACCOUNT,
+    unit: 'phút',
+    minValue: 5,
+    maxValue: 1440,
+  },
+  {
+    key: 'CENTER_SUPPORT_ZALO_URL',
+    type: SETTING_TYPES.STRING,
+    defaultValue: '',
+    label: 'Liên kết Zalo hỗ trợ',
+    format: 'optionalUrl',
+    maxLength: 200,
+    description:
+      'Hiện ở màn xác minh email để hội viên nhờ lễ tân xác minh thủ công. Để trống = ẩn',
+    group: SETTING_GROUPS.CENTER,
+  },
+  {
+    key: 'CENTER_SUPPORT_FACEBOOK_URL',
+    type: SETTING_TYPES.STRING,
+    defaultValue: '',
+    label: 'Liên kết Facebook hỗ trợ',
+    format: 'optionalUrl',
+    maxLength: 200,
+    description:
+      'Hiện ở màn xác minh email để hội viên nhờ lễ tân xác minh thủ công. Để trống = ẩn',
+    group: SETTING_GROUPS.CENTER,
   },
   {
     key: 'MEMBERSHIP_EXPIRY_REMINDER_DAYS',
@@ -113,67 +138,6 @@ export const SETTING_DEFINITIONS = [
     unit: 'giờ',
     minValue: 0,
     maxValue: 168,
-  },
-  {
-    key: 'PAYMENT_ONLINE_TIMEOUT_MINUTES',
-    type: SETTING_TYPES.NUMBER,
-    defaultValue: '15',
-    label: 'Thời gian chờ thanh toán online (phút)',
-    description: 'Quá thời gian này chưa nhận webhook thì giao dịch chuyển Failed',
-    group: SETTING_GROUPS.PAYMENT,
-    unit: 'phút',
-    minValue: 1,
-    maxValue: 1440,
-  },
-  {
-    key: 'INVOICE_CODE_PREFIX',
-    type: SETTING_TYPES.STRING,
-    defaultValue: 'INV',
-    label: 'Tiền tố mã hoá đơn',
-    required: true,
-    format: 'invoicePrefix',
-    maxLength: 30,
-    description: 'Mã hoá đơn = tiền tố + số tăng dần, dùng làm nội dung chuyển khoản',
-    group: SETTING_GROUPS.PAYMENT,
-  },
-  {
-    key: 'PAYMENT_BANK_CODE',
-    type: SETTING_TYPES.STRING,
-    defaultValue: '',
-    label: 'Ngân hàng nhận tiền (online)',
-    description: 'Mã/tên ngân hàng dùng tạo QR, ví dụ ACB. Để trống = chưa mở thanh toán online',
-    format: 'bankCode',
-    maxLength: 20,
-    group: SETTING_GROUPS.PAYMENT,
-  },
-  {
-    key: 'PAYMENT_ACCOUNT_NUMBER',
-    type: SETTING_TYPES.STRING,
-    defaultValue: '',
-    label: 'Số tài khoản nhận tiền (online)',
-    description: 'Phải trùng tài khoản đã liên kết trong SePay (Test mode hoặc Live)',
-    format: 'bankAccountNumber',
-    maxLength: 20,
-    group: SETTING_GROUPS.PAYMENT,
-  },
-  {
-    key: 'PAYMENT_ACCOUNT_NAME',
-    type: SETTING_TYPES.STRING,
-    defaultValue: '',
-    label: 'Tên chủ tài khoản nhận tiền',
-    description: 'Hiển thị cho hội viên khi chuyển khoản',
-    maxLength: 100,
-    group: SETTING_GROUPS.PAYMENT,
-  },
-  {
-    key: 'CURRENCY',
-    type: SETTING_TYPES.STRING,
-    defaultValue: 'VND',
-    label: 'Đơn vị tiền tệ',
-    required: true,
-    format: 'currency',
-    description: 'Mã tiền tệ hiển thị',
-    group: SETTING_GROUPS.PAYMENT,
   },
   {
     key: 'AI_DAILY_REQUEST_LIMIT',

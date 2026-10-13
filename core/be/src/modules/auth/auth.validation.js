@@ -54,3 +54,19 @@ export const confirmEmailVerificationSchema = {
     })
     .strict(),
 };
+
+export const requestPasswordResetSchema = {
+  body: z.object({ email }).strict(),
+};
+
+export const confirmPasswordResetSchema = {
+  body: z
+    .object({
+      token: z
+        .string()
+        .trim()
+        .regex(/^[a-f0-9]{64}$/, 'Liên kết không hợp lệ'),
+      password: passwordField,
+    })
+    .strict(),
+};

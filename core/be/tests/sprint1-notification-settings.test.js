@@ -169,6 +169,7 @@ describe('Sprint 1: metadata, validation và quyền cấu hình', () => {
     fixture.roleIds.push(role.id);
     const user = await prisma.user.create({
       data: {
+        emailVerifiedAt: new Date(),
         email: `${fixture.prefix}_view@scms.test`,
         fullName: 'Người chỉ xem cấu hình',
         roleId: role.id,

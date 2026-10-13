@@ -67,6 +67,13 @@ enum WebhookLogStatus {
   RESOLVED
 }
 
+/// Mục đích của token gửi qua email; mỗi mục đích có vòng đời và hệ quả riêng.
+enum EmailTokenPurpose {
+  VERIFY_EMAIL
+  CHANGE_EMAIL
+  RESET_PASSWORD
+}
+
 enum NotificationKind {
   MEMBERSHIP_EXPIRY_REMINDER
   CLASS_CHANGED
@@ -106,19 +113,21 @@ model User {
   @@map("users")
 }
 
-/// Token xac minh email: chi luu hash SHA-256, dung 1 lan, het han theo system_settings.
+/// Token gui qua email (xac minh, doi email, dat lai mat khau): chi luu hash SHA-256, dung 1 lan,
+/// het han theo system_settings. `email` la dia chi tai thoi diem gui (CHANGE_EMAIL: dia chi moi).
 model EmailVerificationToken {
-  id        Int       @id @default(autoincrement())
-  userId    Int       @map("user_id")
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int               @id @default(autoincrement())
+  userId    Int               @map("user_id")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// Email tai thoi diem gui; doi email sau do thi token cu vo hieu
-  email     String    @db.VarChar(191)
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
-  expiresAt DateTime  @map("expires_at")
-  usedAt    DateTime? @map("used_at")
-  createdAt DateTime  @default(now()) @map("created_at")
+  email     String            @db.VarChar(191)
+  purpose   EmailTokenPurpose @default(VERIFY_EMAIL)
+  tokenHash String            @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime          @map("expires_at")
+  usedAt    DateTime?         @map("used_at")
+  createdAt DateTime          @default(now()) @map("created_at")
 
-  @@index([userId])
+  @@index([userId, purpose])
   @@map("email_verification_tokens")
 }
 

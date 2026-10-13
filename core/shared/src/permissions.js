@@ -22,6 +22,7 @@ export const PERMISSION_MODULES = [
       update: 'Cập nhật tài khoản',
       delete: 'Xoá / khoá tài khoản',
       assign_role: 'Gán vai trò cho tài khoản',
+      verify_email: 'Xác minh email thủ công cho tài khoản',
     },
   },
   {

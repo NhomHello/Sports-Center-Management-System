@@ -1,4 +1,5 @@
 import { ERROR_CODES } from '@scms/shared';
+import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
 import { ensureUniqueContacts } from '../../common/utils/account-contacts.js';
@@ -30,6 +31,16 @@ export const login = async ({ email, password }, { ip } = {}) => {
   }
   if (user.status !== Enums.UserStatus.ACTIVE) {
     throw ApiError.forbidden('Tài khoản đã bị khoá', ERROR_CODES.ACCOUNT_INACTIVE);
+  }
+
+  // Tài khoản có email phải xác minh mới vào được hệ thống (tài khoản chỉ có SĐT không có email).
+  if (user.email && !user.emailVerifiedAt) {
+    throw new ApiError(
+      StatusCodes.FORBIDDEN,
+      ERROR_CODES.EMAIL_NOT_VERIFIED,
+      'Email chưa được xác minh. Vui lòng mở liên kết trong email hoặc liên hệ trung tâm để được hỗ trợ.',
+      { email: user.email },
+    );
   }
 
   const accessToken = signAccessToken({ sub: user.id, version: user.tokenVersion });

@@ -32,4 +32,11 @@ router.patch(
   controller.updateStatus,
 );
 
+router.post(
+  '/:id/email-verification',
+  authorize(PERMISSIONS.USER_VERIFY_EMAIL),
+  validate(userIdSchema),
+  controller.verifyEmail,
+);
+
 export default router;

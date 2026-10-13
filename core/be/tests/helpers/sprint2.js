@@ -36,6 +36,7 @@ export const createClassFixture = async ({ withApi = true } = {}) => {
   const passwordHash = await hashPassword(f.password);
   f.coach = await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: `${f.prefix}_t@scms.test`,
       fullName: `${f.prefix} Teacher`,
       roleId: role.id,
@@ -44,6 +45,7 @@ export const createClassFixture = async ({ withApi = true } = {}) => {
   });
   f.coachOther = await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: `${f.prefix}_u@scms.test`,
       fullName: `${f.prefix} Teacher Other`,
       roleId: role.id,

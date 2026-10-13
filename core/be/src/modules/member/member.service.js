@@ -3,7 +3,6 @@ import { recordAudit } from '../../common/utils/audit.js';
 import { prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
-import { trySendVerificationEmail } from '../auth/email-verification.service.js';
 import * as userService from '../user/user.service.js';
 
 const MEMBERSHIP_STATUS = Object.freeze({
@@ -195,11 +194,10 @@ export const update = async (id, data, actor) => {
   const emailChanged = data.email !== undefined && data.email !== oldMember.email;
   const member = await prisma.user.update({
     where: { id },
-    // Đổi email => phải xác minh lại địa chỉ mới.
-    data: { ...data, ...(emailChanged && { emailVerifiedAt: null }) },
+    // Lễ tân sửa hộ tại quầy và chịu trách nhiệm về email nên không khoá hội viên chờ xác minh.
+    data: { ...data, ...(emailChanged && { emailVerifiedAt: data.email ? new Date() : null }) },
     include: USER_WITH_ROLE,
   });
-  if (emailChanged) void trySendVerificationEmail(member);
 
   const publicMember = toPublicUser(member);
 
