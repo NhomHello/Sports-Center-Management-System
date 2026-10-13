@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@/constants';
-import { SCHEDULE_UI } from '@/constants/schedule';
+import { SCHEDULE_UI, WEEKDAYS } from '@/constants/schedule';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 /** DatePicker giữ wall time Việt Nam, không lấy offset của máy người dùng. */
@@ -37,3 +37,25 @@ export const classFormPayload = (values) => ({
   registrationStartAt: vietnamTimestamp(values.registrationStartAt),
   registrationEndAt: vietnamTimestamp(values.registrationEndAt),
 });
+
+const weekdayLabel = (value) => WEEKDAYS.find((weekday) => weekday.value === value)?.label ?? '';
+
+/**
+ * "Thứ Hai, Thứ Tư · 18:00–19:00" từ weeklySchedule; các thứ cùng khung giờ được gộp.
+ * @param {{ dayOfWeek: number, startTime: string, endTime: string }[]} slots
+ * @returns {string[]} mỗi phần tử là một khung giờ
+ */
+export const describeWeeklySchedule = (slots = []) => {
+  const monday = SCHEDULE_UI.MONDAY;
+  const order = (day) => (day - monday + SCHEDULE_UI.DAYS_PER_WEEK) % SCHEDULE_UI.DAYS_PER_WEEK;
+  const groups = new Map();
+  [...slots]
+    .sort(
+      (a, b) => order(a.dayOfWeek) - order(b.dayOfWeek) || a.startTime.localeCompare(b.startTime),
+    )
+    .forEach(({ dayOfWeek, startTime, endTime }) => {
+      const range = `${startTime}–${endTime}`;
+      groups.set(range, [...(groups.get(range) ?? []), weekdayLabel(dayOfWeek)]);
+    });
+  return [...groups].map(([range, days]) => `${days.join(', ')} · ${range}`);
+};

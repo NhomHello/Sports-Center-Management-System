@@ -206,3 +206,18 @@
     flex: 1;
   }
 }
+
+.scms-class-card__schedule > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scms-class-card__slot {
+  font-weight: 600;
+}
+
+.scms-class-card__range {
+  color: var(--ant-color-text-tertiary);
+  font-size: 13px;
+}

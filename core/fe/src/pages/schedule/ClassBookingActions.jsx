@@ -9,7 +9,7 @@ import { BookingEnrollButton, BookingCancelButton, BookingNotice } from './Booki
 import { ClassRosterModal } from './ClassRosterModal';
 
 /** Chỉ dùng điều kiện server trả, không tính hạn huỷ ở FE. */
-export function ClassBookingActions({ item, memberId }) {
+export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
   const { can } = usePermission();
   const [rosterOpen, setRosterOpen] = useState(false);
   const enrollAllowed = can(memberId ? P.CLASS_ENROLL_FOR_MEMBER : P.CLASS_ENROLL_SELF);
@@ -17,6 +17,18 @@ export function ClassBookingActions({ item, memberId }) {
   const enroll = useScheduleMutation(() => service.enrollClass(item.id, memberId));
   const cancel = useScheduleMutation(() => service.cancelEnrollment(item.id, memberId));
   const booked = item.enrollment?.status === ENROLLMENT_STATUS.BOOKED;
+  const rosterButton = can(P.CLASS_VIEW_ROSTER, P.CLASS_READ_ALL) && (
+    <Button onClick={() => setRosterOpen(true)}>Danh sách học viên</Button>
+  );
+  // Tab quản lý lớp dành cho vận hành: đăng ký của chính mình nằm ở tab "Lớp đang mở".
+  if (rosterOnly) {
+    return (
+      <div className="scms-booking-actions">
+        <div className="scms-booking-actions__buttons">{rosterButton}</div>
+        {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
+      </div>
+    );
+  }
   return (
     <div className="scms-booking-actions">
       <div className="scms-booking-actions__buttons">
@@ -34,9 +46,7 @@ export function ClassBookingActions({ item, memberId }) {
           booked={booked}
           mutation={cancel}
         />
-        {can(P.CLASS_VIEW_ROSTER, P.CLASS_READ_ALL) && (
-          <Button onClick={() => setRosterOpen(true)}>Danh sách học viên</Button>
-        )}
+        {rosterButton}
       </div>
       <BookingNotice item={item} booked={booked} allowed={enrollAllowed || cancelAllowed} />
       {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
