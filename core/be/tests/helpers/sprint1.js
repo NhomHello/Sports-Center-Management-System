@@ -1,10 +1,19 @@
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../../src/config/db.js';
 import { hashPassword } from '../../src/common/utils/password.js';
-import { loginAs, loginAsAdmin } from './api.js';
+
+async function attachApiTokens(fixture) {
+  const { loginAs, loginAsAdmin } = await import('./api.js');
+  return {
+    ...fixture,
+    memberToken: await loginAs(fixture.member.email, fixture.password),
+    otherToken: await loginAs(fixture.other.email, fixture.password),
+    adminToken: await loginAsAdmin(),
+  };
+}
 
 /** Fixture riêng từng suite; không thay đổi tài khoản hoặc quyền đã seed. */
-export const createSprintFixture = async () => {
+export const createSprintFixture = async ({ withApi = true } = {}) => {
   const prefix = `TEST_S1_${randomUUID().replaceAll('-', '')}`;
   const password = 'Sprint1@Test123';
   const role = await prisma.role.findFirstOrThrow({ where: { isDefault: true } });
@@ -25,7 +34,7 @@ export const createSprintFixture = async () => {
       passwordHash,
     },
   });
-  return {
+  const fixture = {
     prefix,
     password,
     member,
@@ -33,10 +42,8 @@ export const createSprintFixture = async () => {
     userIds: [member.id, other.id],
     roleIds: [],
     auditIds: [],
-    memberToken: await loginAs(member.email, password),
-    otherToken: await loginAs(other.email, password),
-    adminToken: await loginAsAdmin(),
   };
+  return withApi ? attachApiTokens(fixture) : fixture;
 };
 
 /** Chỉ dọn bản ghi của fixture; dữ liệu nghiệp vụ và lịch sử đang có được giữ. */

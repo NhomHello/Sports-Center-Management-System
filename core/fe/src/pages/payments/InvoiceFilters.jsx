@@ -1,6 +1,7 @@
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Select } from 'antd';
+import { Button, Select } from 'antd';
 import { useState } from 'react';
+import { SearchInput } from '@/components/common/SearchInput';
 import { INVOICE_STATUS_META } from '@/constants';
 
 const STATUS_OPTIONS = Object.entries(INVOICE_STATUS_META).map(([value, meta]) => ({
@@ -16,7 +17,8 @@ export function InvoiceFilters({ filters, onChange, loading }) {
 
   return (
     <div className="scms-invoice-filters">
-      <Input
+      <SearchInput
+        showButton={false}
         aria-label="Tìm hóa đơn"
         placeholder="Mã hóa đơn hoặc tên hội viên"
         prefix={<SearchOutlined />}

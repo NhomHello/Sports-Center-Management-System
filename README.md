@@ -32,6 +32,11 @@ Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop/Engine có Compose v2, Git.
 **Tài khoản mẫu** (mật khẩu trong `core/be/.env`): `admin@scms.local` (Center Manager), `letan@scms.local`,
 `coach.yoga@scms.local`, `member1@scms.local`… xem `core/be/prisma/seed/mock/users.mock.js`.
 
+Frontend local hỗ trợ `localhost:5173` và `127.0.0.1:5173`. Nếu đăng nhập báo "Không thể kết nối máy chủ"
+trong khi health vẫn trả `database: up`, kiểm tra `CORS_ORIGINS` trong `core/be/.env`: phải có origin
+đúng với địa chỉ đang mở. Mẫu `.env.example` khai báo cả hai địa chỉ; với `.env` cũ, bổ sung địa chỉ
+còn thiếu rồi khởi động lại backend. Health kiểm tra API/DB; đăng nhập qua trình duyệt còn cần CORS hợp lệ.
+
 ## Cấu trúc
 
 ```
@@ -62,3 +67,15 @@ scripts       npm run dev / setup
 | `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
 | `npm run lint`          | Lint toàn bộ (tự chạy khi commit)                        |
 | `npm test`              | Test BE (cần MySQL đang chạy) + FE                       |
+| `npm run verify:sprint2` | Test toàn bộ và migration mới/nâng cấp trên DB tạm; cần quyền CREATE/DROP DATABASE |
+| `npm run test:e2e`       | Playwright: bốn vai trò desktop và mobile 320px; server riêng 3100/5180 |
+
+## Sprint 2
+
+Bản tích hợp local ở `sprint-2/integration`, nền Sprint 1 từ `origin/main`. Các nhánh thành viên là `sprint-2/be-bao`, `sprint-2/be-nhanh`, `sprint-2/fe-khai`, `sprint-2/fe-khoi`.
+
+Trang **`/schedule`** gồm danh mục, quản lý lớp, đăng ký/huỷ toàn lớp, xử lý hộ, lịch cá nhân/lịch dạy và roster theo permission. Mobile dùng danh sách chọn màn hình để truy cập đủ các chức năng. Huỷ dùng hạn do backend trả về; đổi lịch giữ buổi cũ và gửi thông báo qua outbox.
+
+Khi `SEED_MOCK_DATA=true`, seed thêm hai lớp `DEMO · …` cho ngày kế tiếp và gói tập mẫu cho member1/member2 **chỉ khi chưa có lịch sử membership**. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
+
+Chi tiết: [18 chức năng và bằng chứng](docs/handover/sprint-2-coverage.md), [API](docs/sprint-2-api.md), [test cases](docs/test-cases/TC-F2-class-booking.md). Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.

@@ -11,13 +11,25 @@ import { formatDate } from '@/utils/format';
 
 const MemberInfoForm = ({ form, onSubmit }) => (
   <Form form={form} layout="vertical" onFinish={onSubmit}>
-    <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}>
+    <Form.Item
+      name="fullName"
+      label="Họ và tên"
+      rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+    >
       <Input placeholder="Nhập họ tên" />
     </Form.Item>
-    <Form.Item name="email" label="Email" rules={[{ type: 'email', message: 'Email không hợp lệ' }]}>
+    <Form.Item
+      name="email"
+      label="Email"
+      rules={[{ type: 'email', message: 'Email không hợp lệ' }]}
+    >
       <Input placeholder="Nhập email" />
     </Form.Item>
-    <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}>
+    <Form.Item
+      name="phone"
+      label="Số điện thoại"
+      rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+    >
       <Input placeholder="Nhập số điện thoại" />
     </Form.Item>
   </Form>
@@ -41,16 +53,15 @@ const MemberMembershipView = ({ member }) => {
   }
   const { currentMembership } = member;
   const statusColor = currentMembership.status === 'ACTIVE' ? 'green' : 'orange';
-  const statusText = currentMembership.status === 'ACTIVE' ? 'Đang hoạt động' : currentMembership.status;
+  const statusText =
+    currentMembership.status === 'ACTIVE' ? 'Đang hoạt động' : currentMembership.status;
 
   return (
     <Descriptions column={1} bordered>
       <Descriptions.Item label="Gói hiện tại">
         <Typography.Text strong>{currentMembership.plan?.name}</Typography.Text>
       </Descriptions.Item>
-      <Descriptions.Item label="Mã gói">
-        {currentMembership.plan?.code}
-      </Descriptions.Item>
+      <Descriptions.Item label="Mã gói">{currentMembership.plan?.code}</Descriptions.Item>
       <Descriptions.Item label="Trạng thái">
         <Tag color={statusColor}>{statusText}</Tag>
       </Descriptions.Item>
@@ -61,6 +72,29 @@ const MemberMembershipView = ({ member }) => {
   );
 };
 
+const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) => (
+  <Space>
+    {isEditing ? (
+      <>
+        <Button onClick={() => setIsEditing(false)}>Huỷ</Button>
+        <Button
+          type="primary"
+          icon={<SaveOutlined />}
+          onClick={() => form.submit()}
+          loading={updateMutation.isPending}
+        >
+          Lưu
+        </Button>
+      </>
+    ) : (
+      <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+        Sửa hồ sơ
+      </Button>
+    )}
+  </Space>
+);
+
+/** Chi tiết và cập nhật hồ sơ hội viên theo permission. */
 export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
   const { can } = usePermission();
   const [form] = Form.useForm();
@@ -97,20 +131,12 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
   };
 
   const extraButtons = canUpdate && (
-    <Space>
-      {isEditing ? (
-        <>
-          <Button onClick={() => setIsEditing(false)}>Huỷ</Button>
-          <Button type="primary" icon={<SaveOutlined />} onClick={() => form.submit()} loading={updateMutation.isPending}>
-            Lưu
-          </Button>
-        </>
-      ) : (
-        <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
-          Sửa hồ sơ
-        </Button>
-      )}
-    </Space>
+    <MemberEditActions
+      isEditing={isEditing}
+      setIsEditing={setIsEditing}
+      form={form}
+      updateMutation={updateMutation}
+    />
   );
 
   if (!member) return null;

@@ -22,6 +22,7 @@ export const ROUTES = Object.freeze({
   PAYMENTS: '/payments',
   MEMBERSHIP_PLANS: '/membership-plans',
   MEMBERS: '/members',
+  SCHEDULE: '/schedule',
 });
 
 /** Key cho React Query - moi entity mot key goc de invalidate dong bo */
@@ -35,6 +36,7 @@ export const QUERY_KEYS = Object.freeze({
   NOTIFICATIONS: ['notifications'],
   INVOICES: ['invoices'],
   MEMBERSHIP_PLANS: ['membership-plans'],
+  SCHEDULE: ['schedule'],
 });
 
 export const HTTP_STATUS = Object.freeze({

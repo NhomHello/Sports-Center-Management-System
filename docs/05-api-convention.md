@@ -85,3 +85,5 @@ curl http://localhost:3000/api/v1/health
 | notification | `GET /notifications`, `PATCH /notifications/read`, `PATCH /notifications/:id/read` | đăng nhập              |
 | payment    | `POST /payments/invoices/:invoiceId/cash`                                  | payment.record_cash            |
 | invoice    | `GET /invoices/:id`, `GET /invoices/:id/receipt`                           | invoice.read_own/read_all hoặc invoice.export |
+
+Các endpoint Flow 2 đã triển khai, DTO, phạm vi lớp/roster và mã lỗi được mô tả đầy đủ trong [Sprint 2 API](sprint-2-api.md). DELETE lớp/danh mục/đăng ký trả **200 kèm trạng thái sau thao tác**, vì đây là huỷ/ngừng hoạt động có giữ lịch sử.

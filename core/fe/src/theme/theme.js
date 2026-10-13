@@ -1,30 +1,33 @@
-/** Màu dùng chung theo bộ nhận diện SportHub. */
+/** Màu dùng chung theo bộ nhận diện Sports Center. */
 export const COLORS = Object.freeze({
   NAVY: '#0f172a',
   BLUE: '#2563eb',
   CANVAS: '#f6f8fc',
   SURFACE: '#ffffff',
-  BORDER: '#e4eaf3',
+  BORDER: '#dce3ee',
   TEXT: '#17243b',
-  MUTED: '#65758d',
+  MUTED: '#52627a',
   AMBER: '#d97706',
 });
 
-export const RADIUS = Object.freeze({ CARD: 24, CONTROL: 14 });
+export const RADIUS = Object.freeze({ CARD: 16, CONTROL: 10 });
 
 /** Design token antd v6; token giao dien duoc dieu chinh tai day. */
 export const theme = {
   token: {
     colorPrimary: COLORS.BLUE,
     colorInfo: COLORS.BLUE,
-    colorSuccess: '#52c41a',
-    colorWarning: '#faad14',
-    colorError: '#ff4d4f',
-    borderRadius: 16,
+    colorSuccess: '#15803d',
+    colorWarning: '#b45309',
+    colorError: '#dc2626',
+    borderRadius: RADIUS.CONTROL,
+    borderRadiusLG: RADIUS.CARD,
+    colorBorder: COLORS.BORDER,
     colorBgLayout: COLORS.CANVAS,
     colorBgContainer: COLORS.SURFACE,
     colorText: COLORS.TEXT,
     colorTextSecondary: COLORS.MUTED,
+    colorTextPlaceholder: '#6b778c',
     fontFamily: "Inter, 'Segoe UI', Roboto, system-ui, sans-serif",
     fontSize: 14,
     lineHeight: 1.55,
@@ -36,15 +39,16 @@ export const theme = {
       headerBg: COLORS.SURFACE,
     },
     Card: { borderRadiusLG: RADIUS.CARD, headerFontSize: 16 },
-    Button: { borderRadius: 999, fontWeight: 600 },
-    Input: { borderRadius: RADIUS.CONTROL },
+    Button: { borderRadius: RADIUS.CONTROL, fontWeight: 600 },
+    Input: { borderRadius: RADIUS.CONTROL, activeShadow: '0 0 0 3px rgb(37 99 235 / 12%)' },
     Select: { borderRadius: RADIUS.CONTROL },
+    DatePicker: { borderRadius: RADIUS.CONTROL },
     Table: { headerBg: '#f8fafc', headerColor: '#526078', rowHoverBg: '#f5f8ff' },
   },
 };
 
 /**
- * Design token antd v6. 
+ * Design token antd v6.
  * Đã được tinh chỉnh sang phong cách siêu hiện đại (Modern SaaS / iOS style).
  */
 export const alternateTheme = {
@@ -55,19 +59,19 @@ export const alternateTheme = {
     colorWarning: '#f59e0b',
     colorError: '#ef4444',
     colorInfo: '#3b82f6',
-    
+
     // Bo góc lớn mềm mại chuẩn xu hướng
     borderRadius: 12,
     borderRadiusLG: 16,
     borderRadiusSM: 8,
-    
+
     // Font chữ
     fontFamily: "'Plus Jakarta Sans', Inter, 'Segoe UI', system-ui, sans-serif",
     fontSize: 14,
-    
+
     // Màu nền tổng thể
     colorBgLayout: '#f8fafc', // Xám nhạt siêu sang
-    
+
     // Đổ bóng (Shadows) mượt mà hơn
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
     boxShadowSecondary: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
@@ -118,7 +122,7 @@ export const alternateTheme = {
       headerColor: '#64748b',
       borderRadiusLG: 16,
       borderColor: '#e2e8f0',
-    }
+    },
   },
 };
 

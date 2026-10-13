@@ -17,6 +17,9 @@ const {
   InvoiceChannel,
   PaymentProvider,
   NotificationKind,
+  ClassStatus,
+  SessionStatus,
+  EnrollmentStatus,
   Prisma,
 } = prismaPkg;
 
@@ -59,5 +62,8 @@ export const Enums = Object.freeze({
   InvoiceChannel,
   PaymentProvider,
   NotificationKind,
+  ClassStatus,
+  SessionStatus,
+  EnrollmentStatus,
   TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
 });

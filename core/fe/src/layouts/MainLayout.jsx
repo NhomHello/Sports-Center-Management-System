@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { buildMenuItems } from '@/router/buildMenuItems';
 import { routeRegistry } from '@/router/routeRegistry';
+import { ROUTES } from '@/constants';
 
 /** Khung ứng dụng sau đăng nhập theo bố cục sidebar + top bar của Ant Design Pro. */
 export function MainLayout() {
@@ -40,7 +41,9 @@ export function MainLayout() {
           onToggleSidebar={() => setSidebarCollapsed((current) => !current)}
         />
         <Layout.Content className="scms-app-content">
-          <main className="scms-app-content__inner">
+          <main
+            className={`scms-app-content__inner ${location.pathname === ROUTES.SCHEDULE ? 'scms-schedule-workspace' : ''}`}
+          >
             <EmailVerificationBanner user={user} />
             <Suspense fallback={<PageLoading />}>
               <Outlet />
@@ -49,9 +52,10 @@ export function MainLayout() {
         </Layout.Content>
         <Layout.Footer className="scms-app-footer">
           <span>
-            <strong>SportHub</strong> · © {new Date().getFullYear()} · Cùng bạn khỏe hơn mỗi ngày
+            <strong>Sports Center</strong> · © {new Date().getFullYear()} · Cùng bạn khỏe hơn mỗi
+            ngày
           </span>
-          <span className="scms-app-footer__note">Quản lý trung tâm thể thao</span>
+          <span className="scms-app-footer__note">Lớp học · Lịch tập · Kết nối</span>
         </Layout.Footer>
       </Layout>
     </Layout>

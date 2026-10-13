@@ -1,5 +1,6 @@
 import { IdcardOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons';
-import { Card, Col, Input, Row, Table, Typography } from 'antd';
+import { Card, Col, Row, Table, Typography } from 'antd';
+import { SearchInput } from '@/components/common/SearchInput';
 
 export function MembersListPanel({ membersQuery, table, columns }) {
   const total = membersQuery.data?.meta?.total ?? 0;
@@ -38,9 +39,11 @@ export function MembersListPanel({ membersQuery, table, columns }) {
             <Typography.Title level={4}>
               <IdcardOutlined /> Danh sách hồ sơ
             </Typography.Title>
-            <Typography.Text type="secondary">Quản lý thông tin và gói tập của hội viên</Typography.Text>
+            <Typography.Text type="secondary">
+              Quản lý thông tin và gói tập của hội viên
+            </Typography.Text>
           </span>
-          <Input.Search
+          <SearchInput
             allowClear
             placeholder="Tên, số điện thoại hoặc email"
             onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
