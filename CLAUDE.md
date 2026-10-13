@@ -12,5 +12,6 @@ và `docs/02-cau-truc-du-an.md`. Tóm tắt các ràng buộc KHÔNG được vi
 - **Đặt tên**: BE file `kebab-case` + hậu tố lớp; FE component `PascalCase.jsx`, hook `useXxx.js`, còn lại `camelCase.js`; DB `snake_case`; hằng `UPPER_SNAKE`.
 - **Comment**: JSDoc cho hàm export; comment giải thích "tại sao", không lặp lại code.
 - **Tái sử dụng**: kiểm tra `core/be/src/common`, `core/fe/src/{components/common,hooks,utils}` trước khi viết mới; copy lần 2 = phải tách chung.
+- **Commit**: message viết 100% tiếng Anh theo Conventional Commits (`docs/04-git-workflow.md`); KHÔNG thêm `Co-Authored-By: Claude` hay dòng "Generated with ..." (giảng viên không cho phép, commitlint sẽ chặn).
 
 Lệnh: `npm run dev` (Docker + BE + FE), `npm run lint`, `npm test`, `npm run db:migrate`, `npm run db:seed`.

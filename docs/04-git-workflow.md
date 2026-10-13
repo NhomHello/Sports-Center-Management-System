@@ -27,59 +27,63 @@ git push -u origin feature/f1-membership-plan-crud
 - Review trong 24h. Người review kiểm tra theo checklist trong PR template + `docs/01-quy-tac-code.md` mục 7.
 - Xoá nhánh sau khi merge.
 
-## Commit message (Conventional Commits – commitlint chặn sai định dạng)
+## Commit message (Conventional Commits – commitlint blocks bad format)
+
+**Language rule: commit messages are written in English only** (subject, body and footer). Do not mix Vietnamese and English.
+Do not add AI tools as authors: no `Co-Authored-By: Claude ...` trailer and no "Generated with ..." lines. Commits belong to the team members who wrote and reviewed them.
 
 ```
-<type>(<scope>): <mô tả ngắn, ≤ 100 ký tự, viết ở thì hiện tại, không chấm cuối>
+<type>(<scope>): <short English description, <= 100 chars, imperative mood, no trailing period>
 
-[phần thân – tuỳ chọn: giải thích TẠI SAO, ảnh hưởng gì]
-[footer – tuỳ chọn: Closes #12, BREAKING CHANGE: …]
+[body - optional: explain WHY and the impact, in English]
+[footer - optional: Closes #12, BREAKING CHANGE: ...]
 ```
 
-### Ý nghĩa từng `type` – chọn theo câu hỏi "commit này làm gì cho sản phẩm?"
+### Meaning of each `type` – pick by asking "what does this commit do for the product?"
 
-| type       | Dùng khi                                                                                   | Ví dụ                                                            | Không dùng khi                                    |
-| ---------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------- |
-| `feat`     | Thêm **tính năng mới** người dùng thấy được: API mới, màn hình mới, nút mới, business rule mới | `feat(class): thêm API đăng ký lớp và kiểm tra trùng giờ`      | Sửa lỗi của tính năng cũ (→ `fix`)               |
-| `fix`      | **Sửa lỗi** – trước đó hành vi sai, giờ đúng                                                | `fix(auth): token hết hạn không tự đăng xuất`                    | Thay đổi hành vi theo ý muốn mới (→ `feat`)      |
-| `refactor` | **Sửa cấu trúc code, không đổi hành vi**: tách file > 200 dòng, đổi tên, gom hàm dùng chung  | `refactor(user): tách cột bảng ra UserTableColumns`              | Có kèm sửa bug hay thêm tính năng (tách commit)  |
-| `perf`     | Cải thiện **hiệu năng**, hành vi không đổi                                                  | `perf(report): thêm index cho invoices.created_at`               |                                                   |
-| `style`    | Chỉ **định dạng**: khoảng trắng, dấu chấm phẩy, Prettier, thứ tự import. Không đổi logic     | `style(fe): chạy prettier toàn bộ pages`                         | Sửa CSS/giao diện (đó là `feat` hoặc `fix`)      |
-| `test`     | Thêm/sửa **test** hoặc test case, không đụng code sản phẩm                                  | `test(rbac): thêm case thu hồi quyền`                            |                                                   |
-| `docs`     | Chỉ **tài liệu**: README, docs/, JSDoc, comment                                             | `docs(rbac): bổ sung permission attendance`                      |                                                   |
-| `chore`    | **Việc vặt** không ảnh hưởng code sản phẩm: nâng thư viện, cấu hình ESLint/CI/husky, script, .gitignore | `chore(fe): nâng antd lên 6.6.3` · `chore(ci): thêm bước build` |                                        |
-| `revert`   | **Hoàn tác** một commit trước                                                               | `revert: feat(class): thêm API đăng ký lớp` + footer `Reverts abc123` |                                             |
+| type       | Use when                                                                              | Example                                                   | Do not use when                          |
+| ---------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------- |
+| `feat`     | Add a **new feature** users can see: new API, screen, button, business rule          | `feat(class): add class enrollment with time-clash check` | Fixing an old feature (use `fix`)        |
+| `fix`      | **Fix a bug**: behavior was wrong, now correct                                        | `fix(auth): log out automatically when token expires`     | Changing behavior on purpose (`feat`)    |
+| `refactor` | **Restructure code, same behavior**: split files > 200 lines, rename, extract helpers | `refactor(user): extract table columns to UserTableColumns` | Mixed with a bug fix or feature          |
+| `perf`     | Improve **performance**, same behavior                                                | `perf(report): add index on invoices.created_at`          |                                          |
+| `style`    | **Formatting only**: whitespace, semicolons, Prettier, import order                   | `style(fe): run prettier on all pages`                    | CSS/UI changes (those are feat or fix)   |
+| `test`     | Add/change **tests** or test cases only                                               | `test(rbac): add permission revoke case`                  |                                          |
+| `docs`     | **Documentation only**: README, docs/, JSDoc, comments                                | `docs(rbac): document attendance permission`              |                                          |
+| `chore`    | **Maintenance** with no product code impact: deps, ESLint/CI/husky config, scripts    | `chore(deps): bump antd to 6.6.3`                         |                                          |
+| `revert`   | **Undo** a previous commit                                                            | `revert: feat(class): add class enrollment API` + footer `Reverts abc123` |                          |
 
-Mẹo nhớ: người dùng thấy khác → `feat`/`fix`; chỉ dev thấy khác → `refactor`/`style`/`test`/`docs`/`chore`.
+Rule of thumb: users see a difference -> `feat`/`fix`; only developers see it -> `refactor`/`style`/`test`/`docs`/`chore`.
 
-### `scope` – phạm vi thay đổi (chữ thường, ngắn)
+### `scope` – area of change (lowercase, short)
 
-| Nhóm       | scope gợi ý                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------------------- |
-| Module BE  | `auth`, `user`, `role`, `setting`, `member`, `membership`, `plan`, `subject`, `room`, `class`, `schedule`, `payment`, `invoice`, `report`, `sepay`, `db` (schema/migration/seed) |
-| FE         | `fe` (chung), hoặc tên trang: `login`, `dashboard`, `roles`, `users`, `classes`…                |
-| Khác       | `shared`, `docs`, `ci`, `deps`, `scripts`, `test`                                               |
+| Group      | Suggested scopes                                                                                                                                                  |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BE modules | `auth`, `user`, `role`, `setting`, `member`, `membership`, `plan`, `subject`, `room`, `class`, `schedule`, `payment`, `invoice`, `report`, `sepay`, `db` (schema/migration/seed) |
+| FE         | `fe` (general), or a page name: `login`, `dashboard`, `roles`, `users`, `classes`                                                                                 |
+| Other      | `shared`, `docs`, `ci`, `deps`, `scripts`, `test`                                                                                                                 |
 
-Bỏ scope được nếu thay đổi quá rộng: `chore: cấu hình lại eslint cho cả 3 workspace`.
+Scope may be omitted when the change is very broad: `chore: reconfigure eslint for all 3 workspaces`.
 
-### Ví dụ đúng / sai
+### Good / bad examples
 
 ```
-✅ feat(payment): sinh QR SePay kèm mã hoá đơn trong nội dung chuyển khoản
-✅ fix(class): không cho đăng ký khi lớp đã đủ chỗ (BR-2.2)
-✅ refactor(role): tách resolvePermissionIds ra khỏi create/update
-✅ chore(deps): nâng prisma lên 7.10
-✅ test(auth): thêm TC-AUTH-09 role mặc định khi đăng ký
-✅ docs: thêm bảng ý nghĩa commit type
+OK  feat(payment): generate SePay QR with invoice code in transfer content
+OK  fix(class): block enrollment when the class is full (BR-2.2)
+OK  refactor(role): extract resolvePermissionIds from create/update
+OK  chore(deps): bump prisma to 7.10
+OK  test(auth): add TC-AUTH-09 default role on register
+OK  docs: add commit type table
 
-❌ update code            (không type, không nói gì)
-❌ feat: fix bug login     (feat nhưng nội dung là fix)
-❌ fix(class): sửa lỗi     (sửa lỗi gì?)
-❌ feat(class): thêm API đăng ký lớp, sửa lỗi login, format code   (3 việc → 3 commit)
-❌ Feat(Class): Thêm API   (type/scope phải chữ thường)
+BAD update code                       (no type, says nothing)
+BAD feat: fix login bug               (feat but the content is a fix)
+BAD fix(class): fix error             (which error?)
+BAD feat(class): add enroll API, fix login, format code   (3 changes -> 3 commits)
+BAD Feat(Class): Add API              (type/scope must be lowercase)
+BAD feat(class): them API dang ky lop (Vietnamese / mixed language)
 ```
 
-Mỗi commit là **một** thay đổi có nghĩa và chạy được. Không commit "wip", "fix bug", "update". Commit nhỏ, thường xuyên; PR sẽ squash lại thành 1 commit trên dev nên lịch sử vẫn gọn.
+Each commit is **one** meaningful, working change. No "wip", "fix bug", "update". Commit small and often; the PR is squashed into one commit on dev, so history stays clean.
 
 ## Hook tự động (husky)
 
