@@ -1,0 +1,101 @@
+erDiagram
+  ROLE ||--o{ USER : "gán vai trò"
+  ROLE }o--o{ PERMISSION : "role_permissions"
+  USER ||--o{ EMAIL_TOKEN : "nhận link qua email"
+  USER |o--o{ AUDIT_LOG : "thực hiện"
+  USER ||--o{ NOTIFICATION : "nhận"
+  USER ||--o{ MEMBERSHIP : "sở hữu theo thời gian"
+  USER ||--o{ INVOICE : "mua"
+  MEMBERSHIP_PLAN ||--o{ MEMBERSHIP : "quy định"
+  MEMBERSHIP_PLAN ||--o{ INVOICE : "bán theo"
+  MEMBERSHIP |o--o{ INVOICE : "kích hoạt hoặc gia hạn"
+  MEMBERSHIP |o--o{ NOTIFICATION : "nhắc hết hạn"
+  INVOICE ||--o{ PAYMENT : "thu tiền"
+  INVOICE |o--o{ PAYMENT_WEBHOOK_LOG : "webhook SePay"
+
+  USER {
+    int id PK
+    string email UK "NULL nếu chỉ có SĐT"
+    string phone UK
+    string full_name
+    enum status "ACTIVE hoặc INACTIVE"
+    datetime email_verified_at "NULL = chưa xác minh"
+    int role_id FK
+  }
+  ROLE {
+    int id PK
+    string code UK
+    bool is_default "vai trò tự đăng ký"
+    bool is_system
+  }
+  PERMISSION {
+    int id PK
+    string code UK "module.action"
+  }
+  EMAIL_TOKEN {
+    int id PK
+    int user_id FK
+    string email "đổi email: địa chỉ mới"
+    enum purpose "VERIFY_EMAIL, CHANGE_EMAIL, RESET_PASSWORD"
+    string token_hash UK
+    datetime expires_at
+    datetime used_at
+  }
+  AUDIT_LOG {
+    int id PK
+    int user_id FK
+    string action
+    string entity
+    json meta
+  }
+  NOTIFICATION {
+    int id PK
+    int user_id FK
+    int membership_id FK
+    enum kind
+    datetime read_at
+    string dedupe_key UK
+  }
+  MEMBERSHIP_PLAN {
+    int id PK
+    string code UK
+    string name UK
+    int duration_days
+    int price
+    enum status "SELLING hoặc STOPPED"
+  }
+  MEMBERSHIP {
+    int id PK
+    int user_id FK
+    int active_user_id UK "chỉ khác NULL khi ACTIVE nên tối đa 1 gói ACTIVE"
+    int plan_id FK
+    datetime start_date
+    datetime end_date
+    enum status "ACTIVE hoặc EXPIRED"
+  }
+  INVOICE {
+    int id PK
+    string code UK "nội dung chuyển khoản"
+    int user_id FK
+    int plan_id FK
+    int membership_id FK "NULL tới khi PAID"
+    int amount "chụp giá lúc tạo"
+    enum channel "ONLINE hoặc COUNTER"
+    enum status "PENDING, PAID, FAILED, REFUNDED"
+    datetime expires_at
+  }
+  PAYMENT {
+    int id PK
+    int invoice_id FK
+    enum provider "COUNTER hoặc SEPAY"
+    int requested_amount
+    int received_amount
+    int actor_id "người thu; NULL nếu webhook"
+  }
+  PAYMENT_WEBHOOK_LOG {
+    int id PK
+    string provider_transaction_id UK "chống xử lý lặp"
+    int invoice_id FK
+    enum status "PROCESSED, NEEDS_REVIEW, IGNORED, DUPLICATE"
+    json payload
+  }
