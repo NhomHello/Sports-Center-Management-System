@@ -1,21 +1,35 @@
 /* eslint-disable max-lines -- Bỏ giới hạn dòng theo yêu cầu Sprint 1. */
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Alert, Button, Descriptions, Empty, Modal, Space, Table, Typography, Tooltip } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
 import { PageLoading } from '@/components/common/PageLoading';
 import { StatusTag } from '@/components/common/StatusTag';
-import { INVOICE_STATUS, INVOICE_STATUS_META, QUERY_KEYS } from '@/constants';
+import {
+  INVOICE_CHANNEL,
+  INVOICE_STATUS,
+  INVOICE_STATUS_META,
+  PAYMENT_PROVIDER_LABELS,
+  QUERY_KEYS,
+} from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import * as paymentService from '@/services/payment.service';
 import { getApiAvailabilityNotice, shouldRetryApiQuery } from '@/utils/apiAvailability';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 import { canCollectCash, canPrintInvoice } from '@/utils/invoice';
+import { OnlinePaymentPanel } from './OnlinePaymentPanel';
 
 const MODAL_WIDTH = 760;
+const PAYMENT_POLL_MS = 3000;
 
 const PAYMENT_COLUMNS = [
-  { title: 'Kênh thanh toán', dataIndex: 'provider', key: 'provider' },
+  {
+    title: 'Kênh thanh toán',
+    dataIndex: 'provider',
+    key: 'provider',
+    render: (provider) => PAYMENT_PROVIDER_LABELS[provider] ?? provider,
+  },
   {
     title: 'Số tiền yêu cầu',
     dataIndex: 'requestedAmount',
@@ -222,6 +236,7 @@ function ReceiptContent({
   if (!invoice) return <Empty description="Không tìm thấy hóa đơn" />;
   return (
     <>
+      <OnlinePaymentPanel invoice={invoice} />
       <CashAction invoice={invoice} onCash={onCash} canRecordCash={canRecordCash} />
       <InvoiceDetails
         invoice={invoice}
@@ -251,12 +266,26 @@ export function InvoiceReceiptModal({
 }) {
   const { user } = useAuth();
   const { can } = usePermission();
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: [...QUERY_KEYS.INVOICES, 'detail', user?.id, invoiceId],
     queryFn: () => paymentService.getInvoice(invoiceId),
     enabled: open && Boolean(invoiceId),
     retry: shouldRetryApiQuery,
+    // Hoá đơn online chờ tiền: hỏi lại định kỳ để tự chuyển PAID khi webhook SePay đã xác nhận.
+    refetchInterval: (q) =>
+      q.state.data?.data?.channel === INVOICE_CHANNEL.ONLINE &&
+      q.state.data?.data?.status === INVOICE_STATUS.PENDING
+        ? PAYMENT_POLL_MS
+        : false,
   });
+  const status = query.data?.data?.status;
+  // Webhook xác nhận tiền khi modal đang mở: làm mới danh sách hoá đơn và gói tập phía sau.
+  useEffect(() => {
+    if (status !== INVOICE_STATUS.PAID) return;
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES });
+    queryClient.invalidateQueries({ queryKey: ['ownMembership'] });
+  }, [status, queryClient]);
   return (
     <Modal
       open={open}

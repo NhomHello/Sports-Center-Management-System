@@ -78,6 +78,14 @@ export const INVOICE_STATUS = Object.freeze({
 
 export const INVOICE_CHANNEL = Object.freeze({ ONLINE: 'ONLINE', COUNTER: 'COUNTER' });
 
+/** Nhãn hiển thị cho PaymentProvider (khop enum trong schema.prisma). */
+export const PAYMENT_PROVIDER_LABELS = Object.freeze({
+  COUNTER: 'Tiền mặt tại quầy',
+  SEPAY: 'Chuyển khoản (SePay)',
+  MANUAL: 'Ghi nhận thủ công',
+  SIMULATOR: 'Giả lập',
+});
+
 export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'UNREAD' });
 
 export const NOTIFICATION_KIND_LABELS = Object.freeze({
