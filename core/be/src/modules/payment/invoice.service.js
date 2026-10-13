@@ -31,6 +31,7 @@ export const listInvoices = async (query, actor, canReadAll) => {
   const where = {
     ...(userId && { userId }),
     ...(query.status && { status: query.status }),
+    ...(query.channel && { channel: query.channel }),
     ...(query.search && {
       OR: [
         { code: { contains: query.search } },
