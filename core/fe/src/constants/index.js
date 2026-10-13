@@ -78,12 +78,20 @@ export const INVOICE_STATUS = Object.freeze({
 
 export const INVOICE_CHANNEL = Object.freeze({ ONLINE: 'ONLINE', COUNTER: 'COUNTER' });
 
+/** So ms trong mot ngay, dung tinh han goi (khop TIME.MS_PER_DAY o BE). */
+export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
 /** Nhãn hiển thị cho PaymentProvider (khop enum trong schema.prisma). */
 export const PAYMENT_PROVIDER_LABELS = Object.freeze({
   COUNTER: 'Tiền mặt tại quầy',
   SEPAY: 'Chuyển khoản (SePay)',
   MANUAL: 'Ghi nhận thủ công',
   SIMULATOR: 'Giả lập',
+});
+
+export const INVOICE_CHANNEL_LABELS = Object.freeze({
+  COUNTER: 'Tại quầy',
+  ONLINE: 'Online',
 });
 
 export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'UNREAD' });

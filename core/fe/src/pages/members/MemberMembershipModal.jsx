@@ -5,44 +5,56 @@ import { QUERY_KEYS } from '@/constants';
 import * as membershipPlanService from '@/services/membershipPlan.service';
 import * as membershipService from '@/services/membership.service';
 import * as paymentService from '@/services/payment.service';
+import { MembershipEffectPreview } from '../payments/MembershipEffectPreview';
 
 const PLAN_PAGE_SIZE = 50;
 
 const InvoiceAlert = ({ invoice }) => (
-  <Alert
-    type="info"
-    showIcon
-    message={
-      <Space orientation="vertical">
-        <Typography.Text strong>
-          Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ
-        </Typography.Text>
-        <Typography.Text>
-          Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.
-        </Typography.Text>
-      </Space>
-    }
-  />
+  <>
+    <Alert
+      type="info"
+      showIcon
+      message={
+        <Space orientation="vertical">
+          <Typography.Text strong>
+            Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ
+          </Typography.Text>
+          <Typography.Text>
+            Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.
+          </Typography.Text>
+        </Space>
+      }
+    />
+    <MembershipEffectPreview
+      memberId={invoice.userId}
+      durationDays={invoice.durationDays ?? invoice.plan?.durationDays}
+    />
+  </>
 );
 
-const PlanSelectForm = ({ form, plansQuery, onSubmit }) => (
-  <Form form={form} layout="vertical" onFinish={onSubmit}>
-    <Form.Item
-      name="planId"
-      label="Gói tập"
-      rules={[{ required: true, message: 'Vui lòng chọn gói tập' }]}
-    >
-      <Select
-        loading={plansQuery.isPending}
-        options={(plansQuery.data?.data ?? []).map((plan) => ({
-          value: plan.id,
-          label: `${plan.name} - ${plan.price?.toLocaleString('vi-VN')} đ`,
-        }))}
-        placeholder="Chọn gói đang mở bán"
-      />
-    </Form.Item>
-  </Form>
-);
+const PlanSelectForm = ({ form, plansQuery, memberId, onSubmit }) => {
+  const planId = Form.useWatch('planId', form);
+  const plan = (plansQuery.data?.data ?? []).find((item) => item.id === planId);
+  return (
+    <Form form={form} layout="vertical" onFinish={onSubmit}>
+      <Form.Item
+        name="planId"
+        label="Gói tập"
+        rules={[{ required: true, message: 'Vui lòng chọn gói tập' }]}
+      >
+        <Select
+          loading={plansQuery.isPending}
+          options={(plansQuery.data?.data ?? []).map((plan) => ({
+            value: plan.id,
+            label: `${plan.name} - ${plan.price?.toLocaleString('vi-VN')} đ`,
+          }))}
+          placeholder="Chọn gói đang mở bán"
+        />
+      </Form.Item>
+      <MembershipEffectPreview memberId={memberId} durationDays={plan?.durationDays} />
+    </Form>
+  );
+};
 
 /** Modal để lễ tân tạo hoá đơn mua/gia hạn cho hội viên tại quầy. */
 export function MemberMembershipModal({ member, open, onClose }) {
@@ -108,7 +120,12 @@ export function MemberMembershipModal({ member, open, onClose }) {
       {invoice ? (
         <InvoiceAlert invoice={invoice} />
       ) : (
-        <PlanSelectForm form={form} plansQuery={plansQuery} onSubmit={orderMutation.mutate} />
+        <PlanSelectForm
+          form={form}
+          plansQuery={plansQuery}
+          memberId={member?.id}
+          onSubmit={orderMutation.mutate}
+        />
       )}
     </Modal>
   );

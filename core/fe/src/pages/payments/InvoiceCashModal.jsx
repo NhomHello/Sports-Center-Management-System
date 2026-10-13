@@ -8,11 +8,35 @@ import { usePermission } from '@/hooks/usePermission';
 import * as paymentService from '@/services/payment.service';
 import { canCollectCash } from '@/utils/invoice';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { MembershipEffectPreview } from './MembershipEffectPreview';
 import {
   getApiAvailabilityNotice,
   getApiOperationErrorMessage,
   shouldRetryApiQuery,
 } from '@/utils/apiAvailability';
+
+function CashInvoiceSummary({ invoice }) {
+  return (
+    <>
+      <Descriptions column={1} bordered>
+        <Descriptions.Item label="Mã hóa đơn">{invoice.code}</Descriptions.Item>
+        <Descriptions.Item label="Hội viên">{invoice.user?.fullName}</Descriptions.Item>
+        <Descriptions.Item label="Gói tập">
+          {invoice.planName ?? invoice.plan?.name}
+        </Descriptions.Item>
+        <Descriptions.Item label="Số tiền phải thu">
+          <Typography.Text strong>
+            {formatCurrency(invoice.amount, invoice.currency)}
+          </Typography.Text>
+        </Descriptions.Item>
+      </Descriptions>
+      <MembershipEffectPreview
+        memberId={invoice.userId}
+        durationDays={invoice.durationDays ?? invoice.plan?.durationDays}
+      />
+    </>
+  );
+}
 
 function CashPaymentContent({ query, mutation, canCollect }) {
   if (query.isPending) return <PageLoading />;
@@ -38,18 +62,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
           message={getApiOperationErrorMessage(mutation.error, 'ghi nhận thu tiền')}
         />
       )}
-      <Descriptions column={1} bordered>
-        <Descriptions.Item label="Mã hóa đơn">{invoice.code}</Descriptions.Item>
-        <Descriptions.Item label="Hội viên">{invoice.user?.fullName}</Descriptions.Item>
-        <Descriptions.Item label="Gói tập">
-          {invoice.planName ?? invoice.plan?.name}
-        </Descriptions.Item>
-        <Descriptions.Item label="Số tiền phải thu">
-          <Typography.Text strong>
-            {formatCurrency(invoice.amount, invoice.currency)}
-          </Typography.Text>
-        </Descriptions.Item>
-      </Descriptions>
+      <CashInvoiceSummary invoice={invoice} />
       <Typography.Paragraph type="secondary">
         Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Membership chỉ được cập nhật sau khi hệ thống
         ghi nhận thanh toán thành công.
@@ -81,15 +94,15 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
   const invoice = query.data?.data;
   const mutation = useMutation({
     mutationFn: paymentService.collectCash,
-    onSuccess: async ({ data }) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES }),
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MEMBERS }),
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS }),
-      ]);
+    onSuccess: ({ data }) => {
+      // Đóng modal trước rồi mới làm mới dữ liệu: nếu làm mới trước, hoá đơn PAID khiến modal
+      // đang đóng chớp lên cảnh báo "không cho phép thu tiền".
       message.success(`Đã thu tiền. Gói tập hiệu lực đến ${formatDate(data.membership?.endDate)}.`);
       onPaid(data.id);
       mutation.reset();
+      [QUERY_KEYS.INVOICES, QUERY_KEYS.MEMBERS, QUERY_KEYS.NOTIFICATIONS].forEach((queryKey) =>
+        queryClient.invalidateQueries({ queryKey }),
+      );
     },
   });
   const canCollect =
