@@ -58,6 +58,19 @@ function ProfileSummary({ profile }) {
   );
 }
 
+function PendingEmailAlert({ email }) {
+  if (!email) return null;
+  return (
+    <Alert
+      showIcon
+      type="info"
+      style={{ marginBottom: 16 }}
+      message={`Đang chờ xác nhận email mới: ${email}`}
+      description="Mở liên kết trong email gửi tới địa chỉ mới để hoàn tất. Trong lúc chờ, bạn vẫn đăng nhập bằng email hiện tại."
+    />
+  );
+}
+
 function ProfileForm({ form, profile, mutation }) {
   return (
     <Card title="Thông tin cá nhân" className="scms-profile-form">
@@ -68,6 +81,7 @@ function ProfileForm({ form, profile, mutation }) {
           message={getApiOperationErrorMessage(mutation.error, 'cập nhật hồ sơ')}
         />
       )}
+      <PendingEmailAlert email={profile.pendingEmail} />
       <Form
         form={form}
         layout="vertical"
@@ -112,6 +126,7 @@ function ProfileForm({ form, profile, mutation }) {
         <Form.Item
           name="email"
           label="Email"
+          extra="Email mới chỉ có hiệu lực sau khi bạn bấm liên kết xác nhận gửi tới địa chỉ mới."
           rules={[
             { required: true, message: 'Nhập email' },
             { type: 'email', message: 'Email không hợp lệ' },
@@ -192,7 +207,11 @@ export default function ProfilePage() {
             },
           },
       );
-      message.success(resultMessage || 'Cập nhật hồ sơ thành công');
+      message.success(
+        data.pendingEmail
+          ? `Đã gửi liên kết xác nhận tới ${data.pendingEmail}`
+          : resultMessage || 'Cập nhật hồ sơ thành công',
+      );
     },
     onError: (error) => {
       form.setFields(error.toFormFields());

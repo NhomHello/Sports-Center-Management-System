@@ -1,12 +1,26 @@
 import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
-import { App, Button, Descriptions, Drawer, Form, Input, Space, Tabs, Tag, Typography } from 'antd';
+import {
+  App,
+  Button,
+  Descriptions,
+  Drawer,
+  Form,
+  Input,
+  Popconfirm,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
+import { MemberInfoView } from './MemberInfoView';
+import { useVerifyMemberEmail } from './useVerifyMemberEmail';
 import { formatDate } from '@/utils/format';
 
 const MemberInfoForm = ({ form, onSubmit }) => (
@@ -33,18 +47,6 @@ const MemberInfoForm = ({ form, onSubmit }) => (
       <Input placeholder="Nhập số điện thoại" />
     </Form.Item>
   </Form>
-);
-
-const MemberInfoView = ({ member }) => (
-  <Descriptions column={1} bordered>
-    <Descriptions.Item label="Mã hội viên">{member.id}</Descriptions.Item>
-    <Descriptions.Item label="Họ và tên">{member.fullName}</Descriptions.Item>
-    <Descriptions.Item label="Email">{member.email || '--'}</Descriptions.Item>
-    <Descriptions.Item label="Số điện thoại">{member.phone}</Descriptions.Item>
-    <Descriptions.Item label="Trạng thái tài khoản">
-      <StatusTag value={member.status || 'ACTIVE'} meta={USER_STATUS_META} />
-    </Descriptions.Item>
-  </Descriptions>
 );
 
 const MemberMembershipView = ({ member }) => {
@@ -125,6 +127,8 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
     onError: (error) => message.error(error.message || 'Có lỗi xảy ra'),
   });
 
+  const verifyMutation = useVerifyMemberEmail({ member, onUpdated });
+
   const handleClose = () => {
     setIsEditing(false);
     onClose();
@@ -159,7 +163,12 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
             children: isEditing ? (
               <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
             ) : (
-              <MemberInfoView member={member} />
+              <MemberInfoView
+                member={member}
+                canVerify={can(PERMISSIONS.USER_VERIFY_EMAIL)}
+                onVerify={verifyMutation.mutate}
+                verifying={verifyMutation.isPending}
+              />
             ),
           },
           {

@@ -21,3 +21,13 @@ export const requestEmailVerification = (payload) =>
 /** @param {{ token: string }} payload token lấy từ link trong email */
 export const confirmEmailVerification = (payload) =>
   http.post(`${BASE}/email-verifications/confirm`, payload);
+
+/** Quên mật khẩu; API luôn trả thành công để không lộ email nào đã đăng ký. */
+export const requestPasswordReset = (payload) => http.post(`${BASE}/password-resets`, payload);
+
+/** @param {{ token: string, password: string }} payload */
+export const confirmPasswordReset = (payload) =>
+  http.post(`${BASE}/password-resets/confirm`, payload);
+
+/** Kênh liên hệ công khai (Zalo/Facebook/điện thoại) để nhờ nhân viên hỗ trợ xác minh thủ công. */
+export const getSupportContacts = () => http.get(`${BASE}/support-contacts`);

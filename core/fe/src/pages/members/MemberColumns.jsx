@@ -25,6 +25,11 @@ const MEMBER_COLUMNS = [
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>
             {member.email || 'Chưa cập nhật email'}
           </Typography.Text>
+          {member.email && !member.emailVerifiedAt && (
+            <Tag color="orange" style={{ width: 'fit-content', marginInlineEnd: 0 }}>
+              Chưa xác minh email
+            </Tag>
+          )}
         </div>
       </Space>
     ),

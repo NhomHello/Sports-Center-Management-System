@@ -36,6 +36,8 @@ export default defineConfig({
       env: {
         NODE_ENV: 'test',
         PORT: apiPort,
+        // E2E không gửi email thật: mail chỉ được ghi log, token được test tự đặt vào DB.
+        MAIL_HOST: '',
         CORS_ORIGINS: corsOrigins,
         // Bộ E2E đăng nhập nhiều role liên tục từ cùng một IP.
         RATE_LIMIT_MAX: '5000',

@@ -79,6 +79,14 @@ const AUTH_HEADINGS = {
     title: 'Tạo tài khoản mới',
     subtitle: 'Đăng ký để bắt đầu trải nghiệm SportHub.',
   },
+  [ROUTES.FORGOT_PASSWORD]: {
+    title: 'Quên mật khẩu',
+    subtitle: 'Nhập email để nhận liên kết đặt lại mật khẩu.',
+  },
+  [ROUTES.RESET_PASSWORD]: {
+    title: 'Đặt mật khẩu mới',
+    subtitle: 'Chọn mật khẩu mới cho tài khoản của bạn.',
+  },
   [ROUTES.VERIFY_EMAIL]: {
     title: 'Xác minh email',
     subtitle: 'Hoàn tất xác minh để bảo vệ tài khoản của bạn.',
