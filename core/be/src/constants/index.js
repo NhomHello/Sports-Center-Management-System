@@ -73,6 +73,12 @@ export const PRISMA_ERROR = Object.freeze({
   FOREIGN_KEY_VIOLATION: 'P2003',
 });
 
+/** Gia tri co dinh cua giao thuc webhook SePay (khong phai so nghiep vu). */
+export const SEPAY = Object.freeze({
+  AUTH_SCHEME: 'Apikey',
+  TRANSFER_IN: 'in',
+});
+
 export const HEALTH_PATH = '/health';
 
 export const CLASS_LIMITS = Object.freeze({

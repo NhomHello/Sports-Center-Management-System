@@ -59,6 +59,14 @@ enum PaymentProvider {
   SIMULATOR
 }
 
+enum WebhookLogStatus {
+  PROCESSED
+  NEEDS_REVIEW
+  IGNORED
+  DUPLICATE
+  RESOLVED
+}
+
 enum NotificationKind {
   MEMBERSHIP_EXPIRY_REMINDER
   CLASS_CHANGED
@@ -243,24 +251,25 @@ model Membership {
 
 /// Giá và thời hạn được chụp lúc tạo; thay đổi danh mục không sửa giao dịch cũ.
 model Invoice {
-  id           Int            @id @default(autoincrement())
-  code         String         @unique @db.VarChar(50)
-  userId       Int            @map("user_id")
-  planId       Int            @map("plan_id")
-  planName     String?        @map("plan_name") @db.VarChar(100)
-  durationDays Int?           @map("duration_days")
-  membershipId Int?           @map("membership_id")
+  id           Int                 @id @default(autoincrement())
+  code         String              @unique @db.VarChar(50)
+  userId       Int                 @map("user_id")
+  planId       Int                 @map("plan_id")
+  planName     String?             @map("plan_name") @db.VarChar(100)
+  durationDays Int?                @map("duration_days")
+  membershipId Int?                @map("membership_id")
   amount       Int
-  status       InvoiceStatus  @default(PENDING)
-  channel      InvoiceChannel @default(COUNTER)
-  expiresAt    DateTime       @map("expires_at")
-  paidAt       DateTime?      @map("paid_at")
-  user         User           @relation(fields: [userId], references: [id])
-  plan         MembershipPlan @relation(fields: [planId], references: [id])
-  membership   Membership?    @relation(fields: [membershipId], references: [id])
+  status       InvoiceStatus       @default(PENDING)
+  channel      InvoiceChannel      @default(COUNTER)
+  expiresAt    DateTime            @map("expires_at")
+  paidAt       DateTime?           @map("paid_at")
+  user         User                @relation(fields: [userId], references: [id])
+  plan         MembershipPlan      @relation(fields: [planId], references: [id])
+  membership   Membership?         @relation(fields: [membershipId], references: [id])
   payments     Payment[]
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
+  webhookLogs  PaymentWebhookLog[]
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
 
   @@index([userId, planId, status])
   @@index([status, expiresAt])
@@ -282,6 +291,27 @@ model Payment {
 
   @@index([invoiceId, paidAt])
   @@map("payments")
+}
+
+/// Nhật ký webhook SePay; providerTransactionId duy nhất để chống xử lý lặp khi SePay gửi lại.
+/// NEEDS_REVIEW = tiền đã về nhưng không tự khớp được (sai số tiền, hoá đơn hết hạn...) -> lễ tân/quản lý xử lý.
+model PaymentWebhookLog {
+  id                    Int              @id @default(autoincrement())
+  providerTransactionId String?          @unique @map("provider_transaction_id") @db.VarChar(100)
+  invoiceCode           String?          @map("invoice_code") @db.VarChar(50)
+  transferType          String?          @map("transfer_type") @db.VarChar(20)
+  transferAmount        Int?             @map("transfer_amount")
+  status                WebhookLogStatus
+  reason                String?          @db.VarChar(255)
+  payload               Json
+  invoiceId             Int?             @map("invoice_id")
+  invoice               Invoice?         @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  reviewedById          Int?             @map("reviewed_by_id")
+  reviewedAt            DateTime?        @map("reviewed_at")
+  createdAt             DateTime         @default(now()) @map("created_at")
+
+  @@index([status, createdAt])
+  @@map("payment_webhook_logs")
 }
 
 /// Lịch sử thông báo; dedupeKey chống gửi lặp và readAt được giữ khi đọc lại.

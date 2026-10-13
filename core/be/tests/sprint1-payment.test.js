@@ -46,6 +46,12 @@ describe('Sprint 1: hóa đơn và thanh toán tại quầy', () => {
     expect(own.status).toBe(201);
     expect(own.body.data.userId).toBe(fixture.other.id);
     expect(own.body.data.status).toBe(Enums.InvoiceStatus.PENDING);
+    expect(own.body.data.channel).toBe(Enums.InvoiceChannel.ONLINE);
+    expect(own.body.data.paymentInstruction).toBeDefined();
+    await prisma.invoice.update({
+      where: { id: own.body.data.id },
+      data: { status: Enums.InvoiceStatus.FAILED },
+    });
     const tampered = await api
       .post(apiPath('/memberships/me/orders'))
       .set(bearer(fixture.otherToken))

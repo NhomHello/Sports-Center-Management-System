@@ -3,6 +3,7 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import * as settingService from '../setting/setting.service.js';
+import { buildPaymentInstruction } from './sepay-qr.service.js';
 
 /** Quan hệ được phép xem; thông tin người thu không bao gồm credential. */
 export const INVOICE_INCLUDE = {
@@ -76,5 +77,11 @@ export const getInvoice = async (id, actor, canReadAll) => {
     ...payment,
     actor: collectors.find((collector) => collector.id === payment.actorId) ?? null,
   }));
-  return { ...invoice, payments, centerInfo: { name, address, phone }, currency };
+  return {
+    ...invoice,
+    payments,
+    centerInfo: { name, address, phone },
+    currency,
+    paymentInstruction: await buildPaymentInstruction(invoice),
+  };
 };

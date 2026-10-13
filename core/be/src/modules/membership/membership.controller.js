@@ -20,7 +20,7 @@ export const getCurrentByMemberId = async (req, res) => {
 export const createOwnOrder = async (req, res) =>
   sendCreated(
     res,
-    await membershipInvoiceService.createCounterOrder(
+    await membershipInvoiceService.createOnlineOrder(
       { memberId: req.user.id, planId: req.validated.body.planId },
       req.user,
     ),

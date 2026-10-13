@@ -7,7 +7,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('../../config/db.js', () => ({
-  Enums: { InvoiceStatus: { PAID: 'PAID' } },
+  Enums: {
+    InvoiceStatus: { PAID: 'PAID', PENDING: 'PENDING' },
+    InvoiceChannel: { ONLINE: 'ONLINE' },
+  },
   prisma: {
     invoice: { findFirst: mocks.findFirst },
     user: { findMany: mocks.findCollectors },
