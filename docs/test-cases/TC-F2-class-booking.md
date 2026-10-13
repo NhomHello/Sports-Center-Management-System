@@ -28,6 +28,16 @@ UI dùng server riêng ở 3100/5180 và fixture trong DB local. Không dùng d�
 | TC-F2-R03 | Lỗi audit khi đăng ký/huỷ rollback booking; retry thành công | Cùng suite |
 | TC-F2-R04 | Gửi lỗi giữ outbox; thử lại hoàn tất đúng một notification | Cùng suite |
 | TC-F2-R05 | Nhân viên đọc lớp đóng của hội viên; giả memberId/HLV ngoài phân công 403 | Cùng suite |
+| TC-F2-K01 | Sửa sức chứa nhỏ hơn số đã đăng ký 422; bằng số đã đăng ký 200 (BR-2.9) | `tests/sprint2-class-rules.test.js` |
+| TC-F2-K02 | Sức chứa lớp vượt sức chứa phòng bị chặn khi tạo và khi sửa (BR-2.10) | Cùng suite |
+| TC-F2-K03 | Lịch sai (ngày, giờ, không có buổi, đóng đăng ký không sau lúc mở) 400; đóng sau buổi cuối 422 (BR-2.11) | Cùng suite |
+| TC-F2-K04 | Không phân công HLV bị khoá hoặc người không có quyền dạy (BR-2.13) | Cùng suite |
+| TC-F2-K05 | Hai buổi liền nhau đăng ký được; chồng 1 phút bị chặn (BR-2.3, 2.8) | Cùng suite |
+| TC-F2-K06 | Huỷ đăng ký trả chỗ; đăng ký lại dùng lại bản ghi cũ | Cùng suite |
+| TC-F2-K07 | Lớp CLOSED hoặc đã huỷ không nhận đăng ký (BR-2.6) | Cùng suite |
+| TC-F2-K08 | Huỷ cả lớp giải phóng lịch hội viên cho lớp trùng giờ | Cùng suite |
+| TC-F2-K09 | Membership chưa tới ngày bắt đầu / tài khoản khoá bị chặn, đúng lý do (BR-2.1) | Cùng suite |
+| XEPLOP-UI-01 | Quản lý xem thẻ lớp có lịch; hội viên đăng ký, bị chặn trùng giờ; lễ tân đăng ký hộ (desktop) | `tests/e2e/class-booking-flow.spec.mjs` |
 | TC-F2-R06 | Filters/page không vượt phạm vi HLV; sửa sức chứa phòng sai bị chặn | Cùng suite |
 | TC-F2-P01 | Đúng N giờ được huỷ; thiếu 1ms bị chặn | `src/modules/class/class-booking-policy.service.test.js` |
 | TC-F2-P02 | Ngoại lệ hết hiệu lực tại/sau buổi xung đột | Cùng suite |

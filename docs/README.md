@@ -9,6 +9,7 @@
 | 4   | [04-git-workflow.md](04-git-workflow.md)               | Nhánh, commit message, PR, review, hook tự động                           | Tất cả              |
 | 5   | [05-api-convention.md](05-api-convention.md)           | Chuẩn URL, response, lỗi, phân trang                                      | BE + FE             |
 | 6   | [test-cases/README.md](test-cases/README.md)           | Cách viết test case & test tự động                                        | Tất cả              |
+| 7   | [08-xep-lop-hoc.md](08-xep-lop-hoc.md)                 | Xếp lớp / đăng ký lớp: điều kiện, ma trận BR → code → test, kịch bản demo | BE + FE + demo      |
 | -   | [plan/](plan/)                                         | Kế hoạch tuần, biên bản họp (nhóm tự bổ sung)                             | Leader              |
 
 Quy ước đặt tên tài liệu nộp GV: `SWP391_<Loại>_<Phiên bản>` (theo kế hoạch tuần 1).
