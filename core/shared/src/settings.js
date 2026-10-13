@@ -85,7 +85,7 @@ export const SETTING_DEFINITIONS = [
   {
     key: 'PASSWORD_RESET_TTL_MINUTES',
     type: SETTING_TYPES.NUMBER,
-    defaultValue: '30',
+    defaultValue: '15',
     label: 'Hạn link đặt lại mật khẩu (phút)',
     integer: true,
     description: 'Link quên mật khẩu hết hạn sau số phút này và chỉ dùng được một lần',
