@@ -73,7 +73,7 @@ test('QUAY-UI-01: lễ tân tạo hóa đơn quầy, thấy tác động gia h�
   await page
     .locator('.ant-select-item-option')
     .filter({ hasText: plan.name })
-    .click({ force: true });
+    .dispatchEvent('click');
   await dialog.locator('.ant-modal-title').click();
   await expect(dialog.getByText('Thu tiền sẽ gia hạn cộng dồn')).toBeVisible();
   await settle(page);
