@@ -12,6 +12,7 @@ import * as memberService from '@/services/member.service';
 import { MemberFormModal } from './MemberFormModal';
 import { MemberMembershipModal } from './MemberMembershipModal';
 import { MemberDetailDrawer } from './MemberDetailDrawer';
+import { CheckInPanel } from './CheckInPanel';
 import { MembersListPanel } from './MembersListPanel';
 import { getMemberColumns } from './MemberColumns';
 import './members.css';
@@ -66,6 +67,7 @@ export default function MembersPage() {
         }
       />
 
+      <CheckInPanel />
       <div style={{ marginTop: 24 }}>
         <MembersListPanel membersQuery={membersQuery} table={table} columns={columns} />
       </div>
