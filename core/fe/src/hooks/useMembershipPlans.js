@@ -106,7 +106,7 @@ export function useMembershipPlans() {
   const [editingPlan, setEditingPlan] = useState(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const canManage = can(PERMISSIONS.MEMBERSHIP_PLAN_CREATE, PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
-  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE) && user?.role?.isDefault === true;
+  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE);
   const canUpdate = can(PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
   const canDelete = can(PERMISSIONS.MEMBERSHIP_PLAN_DELETE);
   const plansQuery = useQuery({

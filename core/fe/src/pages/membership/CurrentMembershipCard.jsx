@@ -34,7 +34,7 @@ export function CurrentMembershipCard({ membership, canPurchase }) {
           </span>
         </Space>
         <Tag color={isActive ? 'success' : 'error'}>
-          {isActive ? 'ĐANG HOẠT ĐỘNG' : 'ĐÃ HẾT HẠN'}
+          {isActive ? 'Đang hoạt động' : 'Đã hết hạn'}
         </Tag>
       </Flex>
     </Card>

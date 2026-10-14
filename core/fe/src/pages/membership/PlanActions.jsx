@@ -6,7 +6,14 @@ import {
 } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 
-const PurchaseAction = ({ plan, featured, pendingInvoice, onPurchase, onContinuePayment }) => {
+const PurchaseAction = ({
+  plan,
+  featured,
+  pendingInvoice,
+  onPurchase,
+  onContinuePayment,
+  isRenewal,
+}) => {
   if (!onPurchase || !plan.isActive) return null;
   return (
     <>
@@ -20,7 +27,7 @@ const PurchaseAction = ({ plan, featured, pendingInvoice, onPurchase, onContinue
         icon={pendingInvoice ? <ClockCircleOutlined /> : <ShoppingCartOutlined />}
         onClick={() => (pendingInvoice ? onContinuePayment(pendingInvoice) : onPurchase(plan))}
       >
-        {pendingInvoice ? 'Tiếp tục thanh toán' : 'Chọn gói này'}
+        {pendingInvoice ? 'Tiếp tục thanh toán' : isRenewal ? 'Gia hạn' : 'Chọn gói này'}
       </Button>
     </>
   );
@@ -61,6 +68,7 @@ export const PlanActions = ({
   plan,
   featured,
   canPurchase,
+  isRenewal,
   pendingInvoice,
   onPurchase,
   onContinuePayment,
@@ -69,6 +77,7 @@ export const PlanActions = ({
 }) => (
   <div className="scms-plan-card__actions">
     <PurchaseAction
+      isRenewal={isRenewal}
       plan={plan}
       featured={featured}
       pendingInvoice={pendingInvoice}
