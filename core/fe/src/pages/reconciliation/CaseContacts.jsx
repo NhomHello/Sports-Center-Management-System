@@ -37,8 +37,9 @@ export function CaseContacts({ item, active, pending, onAction }) {
           layout="vertical"
           disabled={pending}
           onFinish={async (data) => {
-            await onAction({ action: 'contacts', data });
-            form.resetFields();
+            // onError ở container đã báo lỗi; giữ nội dung nếu server từ chối.
+            const result = await onAction({ action: 'contacts', data }).catch(() => null);
+            if (result) form.resetFields();
           }}
         >
           <Form.Item
