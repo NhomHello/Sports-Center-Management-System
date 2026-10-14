@@ -9,7 +9,7 @@ export function CaseActions({ item, active, mutation }) {
   return (
     <>
       {active && [CASE_REASON.NO_MATCH, CASE_REASON.LATE].includes(item.reason) && (
-        <CaseMapForm pending={mutation.isPending} onAction={mutation.mutateAsync} />
+        <CaseMapForm pending={mutation.isPending} onAction={mutation.mutate} />
       )}
       <CaseContacts
         item={item}
@@ -25,7 +25,7 @@ export function CaseActions({ item, active, mutation }) {
         />
       )}
       {active && [CASE_REASON.OVERPAID, CASE_REASON.DUPLICATE_TRANSFER].includes(item.reason) && (
-        <CaseExcessForm item={item} pending={mutation.isPending} onAction={mutation.mutateAsync} />
+        <CaseExcessForm item={item} pending={mutation.isPending} onAction={mutation.mutate} />
       )}
     </>
   );
