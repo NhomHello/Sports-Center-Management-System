@@ -69,7 +69,12 @@ export default function MembersPage() {
 
       <CheckInPanel />
       <div style={{ marginTop: 24 }}>
-        <MembersListPanel membersQuery={membersQuery} table={table} columns={columns} />
+        <MembersListPanel
+          membersQuery={membersQuery}
+          table={table}
+          columns={columns}
+          onView={setSelectedDetailMember}
+        />
       </div>
 
       <MemberFormModal
