@@ -52,7 +52,7 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
   );
   const [enrollment, member, membership, others] = await Promise.all([
     db.classEnrollment.findUnique({ where: { classId_memberId: { classId: item.id, memberId } } }),
-    db.user.findUnique({ where: { id: memberId }, select: { status: true } }),
+    db.user.findUnique({ where: { id: memberId } }),
     db.membership.findFirst({
       where: {
         userId: memberId,
@@ -96,6 +96,7 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
       now,
     );
   return {
+    bookingBlockedUntil: member?.bookingBlockedUntil ?? null,
     ...membershipWarning(membership, sessions),
     enrollment,
     canEnroll: !enrollReason,

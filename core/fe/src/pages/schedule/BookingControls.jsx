@@ -52,7 +52,11 @@ export function BookingNotice({ item, booked, allowed }) {
     return item.enrollReason ? (
       <p className="scms-booking-note">
         <InfoCircleOutlined />
-        <span>{item.enrollReason}</span>
+        <span>
+          {item.bookingBlockedUntil
+            ? `Tạm chặn do vắng nhiều buổi. Được đăng ký lại từ ${formatDateTime(item.bookingBlockedUntil)}`
+            : item.enrollReason}
+        </span>
       </p>
     ) : null;
   return (

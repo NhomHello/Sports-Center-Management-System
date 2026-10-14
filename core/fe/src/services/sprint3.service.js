@@ -54,3 +54,7 @@ export const resumeMembership = (id) => http.post(`/memberships/${id}/freezes/re
 export const joinWaitlist = (id) => http.post(`/classes/${id}/waitlist/me`);
 /** Rời danh sách chờ và giải phóng chỗ giữ. */
 export const leaveWaitlist = (id) => http.delete(`/classes/${id}/waitlist/me`);
+
+/** Gỡ chặn vắng mặt theo quyền, có lý do audit. */
+export const unblockMember = (id, reason) =>
+  http.post(`/members/${id}/booking-unblock`, { reason });
