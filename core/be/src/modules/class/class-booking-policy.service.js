@@ -3,6 +3,7 @@ import { Enums, prisma } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 import { extraEnrollmentReason, heldSeats } from './class-member-eligibility.service.js';
+import { membershipWarning } from './membership-warning.js';
 import { overlaps } from './class-schedule.service.js';
 
 /** BR-2.5: mốc >= N giờ được phép; ngoại lệ phải trước buổi xung đột. */
@@ -95,6 +96,7 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
       now,
     );
   return {
+    ...membershipWarning(membership, sessions),
     enrollment,
     canEnroll: !enrollReason,
     enrollReason,
