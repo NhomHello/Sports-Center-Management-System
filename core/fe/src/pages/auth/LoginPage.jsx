@@ -1,56 +1,55 @@
-import { LockOutlined, MailOutlined } from '@ant-design/icons';
-import { useMutation } from '@tanstack/react-query';
-import { App, Button, Form, Input, Typography } from 'antd';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Typography } from 'antd';
+import { Link } from 'react-router';
+import { EmailNotVerifiedNotice } from '@/components/auth/EmailNotVerifiedNotice';
 import { ROUTES } from '@/constants';
-import * as authService from '@/services/auth.service';
-import { useAuthStore } from '@/stores/authStore';
+import { useLogin } from '@/hooks/useLogin';
 
+/** Đăng nhập và chuyển tới màn hình được phép sử dụng của tài khoản hiện tại. */
 export function LoginPage() {
-  const { message } = App.useApp();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const setSession = useAuthStore((state) => state.setSession);
   const [form] = Form.useForm();
-
-  const loginMutation = useMutation({
-    mutationFn: authService.login,
-    onSuccess: ({ data, message: msg }) => {
-      setSession(data);
-      message.success(msg);
-      navigate(location.state?.from?.pathname ?? ROUTES.DASHBOARD, { replace: true });
-    },
-    onError: (error) => {
-      form.setFields(error.toFormFields());
-      message.error(error.message);
-    },
-  });
+  const { loginMutation, unverifiedEmail } = useLogin(form);
 
   return (
     <Form form={form} layout="vertical" onFinish={loginMutation.mutate} autoComplete="on">
+      {unverifiedEmail && (
+        <EmailNotVerifiedNotice
+          email={unverifiedEmail}
+          title="Email chưa được xác minh"
+          description={`Mở liên kết trong email chúng tôi đã gửi tới ${unverifiedEmail} để xác minh trước khi đăng nhập.`}
+        />
+      )}
       <Form.Item
         name="email"
-        label="Email"
-        rules={[
-          { required: true, message: 'Nhập email' },
-          { type: 'email', message: 'Email không hợp lệ' },
-        ]}
+        label="Email hoặc số điện thoại"
+        rules={[{ required: true, message: 'Nhập email hoặc số điện thoại' }]}
       >
-        <Input prefix={<MailOutlined />} placeholder="email@example.com" />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Email hoặc số điện thoại của bạn"
+          autoComplete="username"
+        />
       </Form.Item>
       <Form.Item
         name="password"
         label="Mật khẩu"
         rules={[{ required: true, message: 'Nhập mật khẩu' }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="••••••••" />
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="Nhập mật khẩu"
+          autoComplete="current-password"
+        />
       </Form.Item>
+      <Typography.Paragraph className="scms-login-forgot">
+        <Link to={ROUTES.FORGOT_PASSWORD}>Quên mật khẩu?</Link>
+      </Typography.Paragraph>
       <Form.Item>
         <Button type="primary" htmlType="submit" block loading={loginMutation.isPending}>
           Đăng nhập
         </Button>
       </Form.Item>
-      <Typography.Paragraph style={{ textAlign: 'center', marginBottom: 0 }}>
+      <Typography.Paragraph className="scms-login-register">
         Chưa có tài khoản? <Link to={ROUTES.REGISTER}>Đăng ký</Link>
       </Typography.Paragraph>
     </Form>

@@ -21,6 +21,7 @@ beforeAll(async () => {
   role = await prisma.role.create({ data: { code: ROLE_CODE, name: 'Role test RBAC' } });
   await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: USER_EMAIL,
       fullName: 'User test RBAC',
       passwordHash: await hashPassword(USER_PASSWORD),

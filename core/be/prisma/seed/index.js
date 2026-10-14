@@ -2,12 +2,12 @@
  * Seed idempotent: chay bao nhieu lan cung an toan (upsert), khong xoa du lieu.
  * Chay: npm run db:seed   (tu dong chay trong `npm run dev` o thu muc goc)
  */
-import { listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
+import { getSettingValidationError, listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
 import { hashPassword } from '../../src/common/utils/password.js';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
 import { logger } from '../../src/config/logger.js';
-import { seedMockUsers } from './mock/index.js';
+import { seedMockData } from './mock/index.js';
 import { SEED_ADMIN_ROLE_CODE, SEED_ROLES } from './roles.seed.js';
 
 /** Dong bo registry permission vao DB (them moi + cap nhat label). */
@@ -69,6 +69,12 @@ async function seedAdminUser() {
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: SEED_ADMIN_ROLE_CODE } });
   const existing = await prisma.user.findUnique({ where: { email: env.SEED_ADMIN_EMAIL } });
   if (existing) {
+    if (!existing.emailVerifiedAt) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { emailVerifiedAt: new Date() },
+      });
+    }
     logger.info({ email: env.SEED_ADMIN_EMAIL }, 'Admin da ton tai, bo qua');
     return;
   }
@@ -77,6 +83,7 @@ async function seedAdminUser() {
       email: env.SEED_ADMIN_EMAIL,
       passwordHash: await hashPassword(env.SEED_ADMIN_PASSWORD),
       fullName: env.SEED_ADMIN_NAME,
+      emailVerifiedAt: new Date(),
       roleId: adminRole.id,
     },
   });
@@ -86,10 +93,30 @@ async function seedAdminUser() {
 /** Tao setting con thieu voi gia tri mac dinh (khong ghi de gia tri manager da sua). */
 async function seedSettings() {
   for (const def of SETTING_DEFINITIONS) {
+    const {
+      defaultValue,
+      unit: _unit,
+      minValue: _min,
+      maxValue: _max,
+      integer: _integer,
+      required: _required,
+      format: _format,
+      minLength: _minLength,
+      maxLength: _maxLength,
+      ...record
+    } = def;
+    const existing = await prisma.systemSetting.findUnique({ where: { key: def.key } });
+    const repairValue = existing && getSettingValidationError(def, existing.value);
     await prisma.systemSetting.upsert({
       where: { key: def.key },
-      create: { ...def, value: def.defaultValue, defaultValue: undefined },
-      update: { label: def.label, description: def.description, group: def.group, type: def.type },
+      create: { ...record, value: defaultValue },
+      update: {
+        label: def.label,
+        description: def.description,
+        group: def.group,
+        type: def.type,
+        ...(repairValue && { value: defaultValue }),
+      },
     });
   }
   logger.info({ count: SETTING_DEFINITIONS.length }, 'Seed settings xong');
@@ -100,7 +127,7 @@ async function main() {
   await seedRoles(permissions);
   await seedAdminUser();
   await seedSettings();
-  if (env.SEED_MOCK_DATA) await seedMockUsers();
+  if (env.SEED_MOCK_DATA) await seedMockData();
 }
 
 main()

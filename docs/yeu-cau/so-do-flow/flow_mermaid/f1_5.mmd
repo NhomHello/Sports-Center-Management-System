@@ -1,0 +1,27 @@
+flowchart TB
+  subgraph REQ["MEMBER / RECEPTIONIST"]
+    S0(( )) --> U1["Choose 'Freeze plan':<br/>from date A to date B, reason"]
+    U2["Cancel the listed bookings<br/>or pick other dates"]
+    U3["Sees new expiry date and<br/>'frozen until B' banner"]
+    U4["End freeze early (optional)"]
+  end
+  subgraph SYS["SYSTEM"]
+    D1{"Plan ACTIVE,<br/>> 7 days left?"}
+    D2{"Days and times<br/>within limits?"}
+    D3{"Any booking between A and B?"}
+    A1["Save freeze, write audit log<br/>(BR-1.16)"]
+    A2["During freeze: block new class<br/>bookings and check-in warns"]
+    A3["On end date (or early end):<br/>expiry += real frozen days"]
+    X1["Reject with the exact reason"]
+  end
+  U1 --> D1
+  D1 -- "No" --> X1
+  D1 -- "Yes" --> D2
+  D2 -- "No: 7 ≤ days ≤ FREEZE_MAX_DAYS,<br/>times < FREEZE_MAX_TIMES" --> X1
+  D2 -- "Yes" --> D3
+  D3 -- "Yes" --> U2 --> D3
+  D3 -- "No" --> A1 --> U3 --> A2
+  A2 --> U4 --> A3
+  A2 -- "Reaches date B" --> A3
+  A3 --> E0(((" ")))
+  X1 --> E1(((" ")))
