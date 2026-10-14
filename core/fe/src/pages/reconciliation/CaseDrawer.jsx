@@ -3,10 +3,8 @@ import { Alert, App, Drawer, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { ACTIVE_CASE_STATUSES, CASE_REASON } from '@/constants/reconciliation';
 import * as service from '@/services/reconciliation.service';
+import { CaseActions } from './CaseActions';
 import { CaseSummary } from './CaseSummary';
-import { CaseMapForm } from './CaseMapForm';
-import { CaseContacts } from './CaseContacts';
-import { CaseConfirmForm } from './CaseConfirmForm';
 
 /** Phiếu đối soát giữ nguyên lịch sử; lỗi xung đột làm mới trạng thái trước khi thử lại. */
 export function CaseDrawer({ id, onClose }) {
@@ -48,22 +46,7 @@ export function CaseDrawer({ id, onClose }) {
       {item && (
         <Space orientation="vertical" className="scms-full-width" size="middle">
           <CaseSummary item={item} />
-          {active && [CASE_REASON.NO_MATCH, CASE_REASON.LATE].includes(item.reason) && (
-            <CaseMapForm pending={mutation.isPending} onAction={mutation.mutateAsync} />
-          )}
-          <CaseContacts
-            item={item}
-            active={active}
-            pending={mutation.isPending}
-            onAction={mutation.mutateAsync}
-          />
-          {active && [CASE_REASON.MEMBER_CLAIM, CASE_REASON.UNDERPAID].includes(item.reason) && (
-            <CaseConfirmForm
-              key={id}
-              pending={mutation.isPending}
-              onSubmit={(data) => mutation.mutate({ action: 'confirm', data })}
-            />
-          )}
+          <CaseActions item={item} active={active} mutation={mutation} />
         </Space>
       )}
     </Drawer>
