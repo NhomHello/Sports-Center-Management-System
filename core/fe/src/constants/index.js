@@ -22,6 +22,7 @@ export const ROUTES = Object.freeze({
   SYSTEM_ROLES: '/system/roles',
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
+  RECONCILIATION: '/reconciliation',
   PAYMENTS: '/payments',
   MEMBERSHIP_PLANS: '/membership-plans',
   MEMBERS: '/members',
