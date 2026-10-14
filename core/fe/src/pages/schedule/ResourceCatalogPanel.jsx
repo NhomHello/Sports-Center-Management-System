@@ -8,6 +8,7 @@ import { useTableQuery } from '@/hooks/useTableQuery';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/schedule.service';
 import { QueryState } from './QueryState';
+import { RoomMaintenanceModal } from './RoomMaintenanceModal';
 import { ResourceFormModal } from './ResourceFormModal';
 
 /** Container danh mục với tìm kiếm/phân trang, giữ dữ liệu ngừng hoạt động. */
@@ -15,6 +16,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
   const { can } = usePermission();
   const table = useTableQuery();
   const [editing, setEditing] = useState(null);
+  const [maintenance, setMaintenance] = useState(null);
   const query = useQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, resource, table.params],
     queryFn: () => service.listResources(resource, table.params),
@@ -50,6 +52,9 @@ export function ResourceCatalogPanel({ resource, permissions }) {
                 {item.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
               </Tag>
               <Space wrap>
+                {resource === 'rooms' && can(permissions.update) && (
+                  <Button onClick={() => setMaintenance(item)}>Bảo trì</Button>
+                )}
                 {can(permissions.update) && <Button onClick={() => setEditing(item)}>Sửa</Button>}
                 {item.isActive && can(permissions.delete) && (
                   <Popconfirm
@@ -72,6 +77,9 @@ export function ResourceCatalogPanel({ resource, permissions }) {
         {...table.paginationProps(query.data?.meta)}
         onChange={(current, pageSize) => table.onTableChange({ current, pageSize })}
       />
+      {maintenance && (
+        <RoomMaintenanceModal room={maintenance} onClose={() => setMaintenance(null)} />
+      )}
       {editing && (
         <ResourceFormModal
           item={editing.id ? editing : null}

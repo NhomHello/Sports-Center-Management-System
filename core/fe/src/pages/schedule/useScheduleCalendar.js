@@ -9,13 +9,14 @@ import { vietnamInput, vietnamWeekStart, vietnamCalendarDate } from '@/utils/sch
 export const useScheduleCalendar = (kind) => {
   const [date, updateDate] = useState(() => vietnamCalendarDate(vietnamInput(new Date())));
   const setDate = (value) => updateDate(vietnamCalendarDate(value));
+  const [filters, setFilters] = useState({});
   const [mode, setMode] = useState('week');
   const [showCancelled, setShowCancelled] = useState(false);
   const week = vietnamWeekStart(date);
   const weekStart = week.format(SCHEDULE_UI.DATE_PATTERN);
   const query = useLiveScheduleQuery({
-    queryKey: [...QUERY_KEYS.SCHEDULE, 'week', kind, weekStart],
-    queryFn: () => service.getSchedule(kind, { weekStart }),
+    queryKey: [...QUERY_KEYS.SCHEDULE, 'week', kind, weekStart, filters],
+    queryFn: () => service.getSchedule(kind, { weekStart, ...filters }),
   });
   const events = (query.data?.data || []).filter(
     (event) =>
@@ -33,6 +34,8 @@ export const useScheduleCalendar = (kind) => {
       : events;
   return {
     query,
+    filters,
+    setFilters,
     events: visibleEvents,
     date,
     setDate,

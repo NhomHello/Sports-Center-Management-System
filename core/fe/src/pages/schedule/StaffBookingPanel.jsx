@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
-import { Select, Typography } from 'antd';
-import { SearchInput } from '@/components/common/SearchInput';
+import { Select, Typography, Tabs, Input, Alert, Space } from 'antd';
+
 import { QUERY_KEYS } from '@/constants';
 import * as memberService from '@/services/member.service';
 import * as scheduleService from '@/services/schedule.service';
@@ -13,14 +13,22 @@ import { ClassDetailDrawer } from './ClassDetailDrawer';
 import { QueryState } from './QueryState';
 
 function MemberEnrollmentList({ memberId }) {
+  const [filter, setFilter] = useState('');
   const [detailId, setDetailId] = useState(null);
   const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'member', memberId],
     queryFn: () => scheduleService.getMemberEnrollments(memberId),
   });
-  const items = query.data?.data || [];
+  const items = (query.data?.data || []).filter((i) =>
+    i.name.toLowerCase().includes(filter.toLowerCase()),
+  );
   return (
     <>
+      <Input.Search
+        allowClear
+        placeholder="Lọc lớp đã đăng ký"
+        onChange={(e) => setFilter(e.target.value)}
+      />
       <QueryState query={query} isEmpty={!items.length}>
         <div className="scms-class-grid">
           {items.map((item) => (
@@ -49,8 +57,13 @@ function MemberEnrollmentList({ memberId }) {
 
 /** UC-CB-08 tái sử dụng tìm kiếm Sprint 1 trước thao tác đăng ký/huỷ hộ. */
 export function StaffBookingPanel() {
+  const [input, setInput] = useState('');
   const [search, setSearch] = useState('');
   const [memberId, setMemberId] = useState(null);
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(input.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [input]);
   const query = useQuery({
     queryKey: [...QUERY_KEYS.MEMBERS, 'booking-search', search],
     queryFn: () => memberService.listMembers({ search }),
@@ -62,38 +75,47 @@ export function StaffBookingPanel() {
     <div className="scms-staff-booking">
       <section className="scms-staff-member-search">
         <h3>Chọn hội viên để hỗ trợ</h3>
-        <p>Tìm bằng email hoặc số điện thoại, chọn hội viên rồi đăng ký hoặc huỷ lớp.</p>
-        <SearchInput
-          placeholder="Email hoặc số điện thoại hội viên"
+        <p>Gõ tên, email hoặc số điện thoại để chọn hội viên và hỗ trợ đăng ký lớp.</p>
+        <Select
+          showSearch={{ filterOption: false, onSearch: setInput }}
           allowClear
-          onSearch={(value) => {
-            setSearch(value.trim());
-            setMemberId(null);
-          }}
+          className="scms-full-width"
+          aria-label="Chọn hội viên"
+          placeholder="Gõ tên, email hoặc số điện thoại"
+          loading={query.isFetching}
+          value={memberId}
+          onChange={setMemberId}
+          options={members.map((member) => ({
+            value: member.id,
+            label: `${member.fullName} · ${member.phone || member.email} · ${member.membership?.status || 'Chưa có gói'}`,
+          }))}
         />
-        {search && (
-          <QueryState query={query} isEmpty={!members.length}>
-            <Select
-              className="scms-member-select"
-              aria-label="Chọn hội viên"
-              value={memberId}
-              placeholder="Chọn hội viên"
-              onChange={setMemberId}
-              options={members.map((member) => ({
-                value: member.id,
-                label: `${member.fullName} · ${member.email || member.phone}`,
-              }))}
-            />
-          </QueryState>
+        {query.isError && <Alert type="error" title={query.error.message} />}
+        {members.find((m) => m.id === memberId) && (
+          <Space>
+            <Typography.Text strong>
+              {members.find((m) => m.id === memberId).fullName}
+            </Typography.Text>
+          </Space>
         )}
       </section>
       {memberId && (
-        <>
-          <Typography.Title level={5}>Các lớp đã đăng ký</Typography.Title>
-          <MemberEnrollmentList memberId={memberId} />
-          <Typography.Title level={5}>Đăng ký lớp mới</Typography.Title>
-          <ClassListPanel key={memberId} memberId={memberId} renderActions={actions} />
-        </>
+        <Tabs
+          items={[
+            {
+              key: 'enrolled',
+              label: 'Đã đăng ký',
+              children: <MemberEnrollmentList memberId={memberId} />,
+            },
+            {
+              key: 'new',
+              label: 'Đăng ký lớp mới',
+              children: (
+                <ClassListPanel key={memberId} memberId={memberId} renderActions={actions} />
+              ),
+            },
+          ]}
+        />
       )}
     </div>
   );

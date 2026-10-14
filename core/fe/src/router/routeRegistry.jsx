@@ -37,7 +37,21 @@ const SchedulePage = lazy(() => import('@/pages/schedule/SchedulePage'));
 
 const GROUP_MEMBER = 'Hội viên';
 
+const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
+const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
 export const routeRegistry = [
+  {
+    path: ROUTES.REPORTS,
+    element: <ReportsPage />,
+    permission: PERMISSIONS.REPORT_VIEW,
+    menu: { label: 'Báo cáo', icon: <DashboardOutlined />, group: 'Tài chính' },
+  },
+  {
+    path: ROUTES.ATTENDANCE,
+    element: <AttendanceHistoryPage />,
+    permission: PERMISSIONS.SCHEDULE_VIEW_OWN,
+    menu: { label: 'Lịch sử điểm danh', icon: <CalendarOutlined />, group: 'Lịch tập' },
+  },
   {
     path: ROUTES.SCHEDULE,
     element: <SchedulePage />,

@@ -88,7 +88,7 @@
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: start;
-  min-width: 1140px;
+  min-width: 0;
   gap: 12px;
 }
 .scms-schedule-day {
@@ -205,7 +205,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-@container (max-width: 1180px) {
+@container (max-width: 899px) {
   .scms-week-grid {
     min-width: 0;
     grid-template-columns: minmax(0, 1fr);

@@ -25,5 +25,12 @@ export const getRoster = async (classId, { user, permissions }) => {
     select: { id: true, action: true, userId: true, entityId: true, meta: true, createdAt: true },
     orderBy: { id: 'desc' },
   });
-  return { items, history };
+  const actors = await prisma.user.findMany({
+    where: { id: { in: [...new Set(history.map((h) => h.userId).filter(Boolean))] } },
+    select: { id: true, fullName: true, role: { select: { name: true } } },
+  });
+  return {
+    items,
+    history: history.map((h) => ({ ...h, actor: actors.find((a) => a.id === h.userId) ?? null })),
+  };
 };

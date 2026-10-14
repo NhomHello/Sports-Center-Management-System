@@ -34,9 +34,16 @@ http.interceptors.request.use((config) => {
 
 http.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
     const status = error.response?.status;
-    const body = error.response?.data;
+    let body = error.response?.data;
+    if (body instanceof Blob && body.type.includes('json')) {
+      try {
+        body = JSON.parse(await body.text());
+      } catch {
+        body = undefined;
+      }
+    }
 
     // Token het han / khong hop le => dang xuat, router se dua ve trang login
     if (status === HTTP_STATUS.UNAUTHORIZED) useAuthStore.getState().logout();
