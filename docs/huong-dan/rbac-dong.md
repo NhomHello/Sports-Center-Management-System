@@ -121,3 +121,5 @@ thêm quyền qua màn phân quyền theo nhu cầu. `attendance.record` chỉ c
 `attendance.manage` cho mọi buổi và mở lại hạn sửa. `membership.freeze_self` chỉ cho gói của mình;
 `membership.freeze_all` cho nhân viên xử lý hộ. Các số ngày/giờ và policy check-in lấy từ
 system settings, chi tiết ở `docs/handover/sprint-3-be-bao.md`.
+
+Sprint 3 Khải: `invoice.export_own` cho phép tải PDF A5 của hóa đơn PAID chính chủ. `invoice.export` cho phạm vi toàn bộ. Quyền `invoice.read_own` tiếp tục hỗ trợ xuất chính chủ theo API biên lai hiện có. Seed cấp quyền mới cho role hội viên khi tạo mới, role đang có giữ cấu hình quản lý.

@@ -133,6 +133,7 @@ export const PERMISSION_MODULES = [
       read_own: 'Xem hoá đơn của mình',
       read_all: 'Xem mọi hoá đơn',
       export: 'In / xuất PDF',
+      export_own: 'In / xuất PDF hóa đơn của mình',
     },
   },
   { module: 'report', label: 'Báo cáo', actions: { view: 'Xem báo cáo doanh thu & thống kê' } },

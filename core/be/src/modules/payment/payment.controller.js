@@ -1,3 +1,4 @@
+import { createReceiptPdf } from './invoice-pdf.service.js';
 import * as history from './payment-history.service.js';
 import { PERMISSIONS } from '@scms/shared';
 import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
@@ -63,4 +64,14 @@ export const listPayments = async (req, res) => {
     req.path !== '/me' && req.permissions.has(PERMISSIONS.PAYMENT_READ_ALL),
   );
   sendSuccess(res, { data: items, meta });
+};
+
+/** GET /invoices/:id/receipt.pdf: chỉ người có export toàn bộ mới vượt phạm vi chính chủ. */
+export const downloadReceipt = async (req, res) => {
+  const buffer = await createReceiptPdf(
+    req.validated.params.id,
+    req.user,
+    req.permissions.has(PERMISSIONS.INVOICE_EXPORT),
+  );
+  res.type('application/pdf').attachment(`invoice-${req.validated.params.id}.pdf`).send(buffer);
 };

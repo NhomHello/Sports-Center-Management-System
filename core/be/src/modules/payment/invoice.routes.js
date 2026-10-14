@@ -23,8 +23,22 @@ router.get(
   controller.listInvoices,
 );
 router.get(
+  '/:id/receipt.pdf',
+  authorize(
+    PERMISSIONS.INVOICE_EXPORT,
+    PERMISSIONS.INVOICE_EXPORT_OWN,
+    PERMISSIONS.INVOICE_READ_OWN,
+  ),
+  validate(invoiceParamsSchema),
+  controller.downloadReceipt,
+);
+router.get(
   '/:id/receipt',
-  authorize(PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_EXPORT),
+  authorize(
+    PERMISSIONS.INVOICE_READ_OWN,
+    PERMISSIONS.INVOICE_EXPORT_OWN,
+    PERMISSIONS.INVOICE_EXPORT,
+  ),
   validate(invoiceParamsSchema),
   controller.getReceipt,
 );
