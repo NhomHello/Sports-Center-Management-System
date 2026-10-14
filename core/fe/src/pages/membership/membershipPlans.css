@@ -134,9 +134,19 @@
   font-weight: 600;
 }
 .scms-plan-card__note {
-  margin-top: 4px;
-  color: #8493a8;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 52px;
+  margin-top: 6px;
+  align-content: flex-start;
+  color: #64748b;
   font-size: 13px;
+}
+.scms-plan-card__saving.ant-tag {
+  margin: 0;
+  font-weight: 700;
 }
 .scms-plan-card__rule {
   height: 1px;

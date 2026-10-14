@@ -197,7 +197,29 @@ erDiagram
 
 Bản đầy đủ một ảnh: `assets/erd-v2.png` (nguồn `assets/erd-v2.mmd`).
 
-## 4. "Một user có nhiều membership?" – mô phỏng bằng dữ liệu thật
+## 4. Gói tập là gì, và "một user có nhiều membership?"
+
+### 4.1 Gói tập chỉ quy định thời hạn
+
+Gói tập (`membership_plans`) **không** quy định quyền hạn khác nhau. Gói chỉ là một mốc thời hạn kèm đơn giá:
+mọi hội viên có membership còn hiệu lực đều dùng dịch vụ và đăng ký lớp như nhau (khớp BR "chỉ hội viên có gói đang hiệu lực mới đăng ký được lớp").
+Gói dài hơn thì **đơn giá mỗi ngày rẻ hơn**, giao diện hiển thị đơn giá/ngày và % tiết kiệm so với gói ngắn nhất đang bán:
+
+| Gói | Giá | Đơn giá mỗi ngày | Tiết kiệm so với gói 30 ngày |
+| --- | --- | --- | --- |
+| Khởi động 30 ngày | 360.000 ₫ | 12.000 ₫ | – |
+| Năng động 90 ngày | 900.000 ₫ | 10.000 ₫ | 17% |
+| Bứt phá 365 ngày | 2.880.000 ₫ | khoảng 7.890 ₫ | 34% |
+
+Cột `benefits` của gói chỉ là mô tả hiển thị, hệ thống không dùng nó để cho phép hay chặn tính năng. Phần trăm tiết kiệm được tính từ giá thật
+trong DB (hàm `computeSavings`, `core/fe/src/utils/planPricing.js`), không ghi cứng.
+
+Vì gói chỉ là thời hạn, mua thêm khi còn hạn thì **cộng dồn ngày** vào cùng một membership. Trường `plan_id` của membership ghi gói
+mua gần nhất (chỉ để tham chiếu), nên banner "Membership của bạn" không nêu tên gói mà hiển thị **hạn dùng**, số ngày còn lại và số lần thanh toán
+đã cộng dồn (`paidInvoiceCount` do `GET /memberships/me` trả về).
+
+### 4.2 Một user có nhiều membership?
+
 
 Trả lời ngắn: **có nhiều dòng theo thời gian, nhưng tại một thời điểm chỉ có tối đa một dòng `ACTIVE`.**
 Dữ liệu dưới đây chụp từ hệ thống thật (gói "Khởi động 30 ngày", 360.000 ₫, 30 ngày; mua online qua webhook SePay).
@@ -268,7 +290,7 @@ tài khoản nhận tiền; trong Cài đặt → Trung tâm nhập link Zalo/Fa
 | 5 | Thanh toán online | Hội viên chọn gói | Hoá đơn **ONLINE** có mã QR, đúng số tiền | `outputs/sepay-nghiem-thu/2` |
 | 6 | Thanh toán online | Bắn webhook (SePay "Mô phỏng giao dịch" hoặc curl) | Trang tự chuyển "Đã thanh toán"; gói kích hoạt | `outputs/sepay-nghiem-thu/3` đến `5` |
 | 7 | Thanh toán online | Bắn webhook sai số tiền | `NEEDS_REVIEW`, hoá đơn vẫn chờ | báo cáo SePay |
-| 8 | ERD | Mua thêm gói khi còn hạn, rồi chạy SQL mục 4 | Hạn cộng dồn, cùng một membership, hai hoá đơn | mục 4 |
+| 8 | ERD | Mua thêm gói khi còn hạn, rồi chạy SQL mục 4.2 | Hạn cộng dồn, cùng một membership, hai hoá đơn; banner ghi "đã cộng dồn N lần thanh toán" | mục 4 |
 | 9 | Tại quầy | Lễ tân tạo hoá đơn quầy, thu tiền mặt | Thấy "Tác động lên gói tập"; biên lai kênh "Tiền mặt tại quầy" | `outputs/quay-nghiem-thu/` |
 | 10 | Xếp lớp | Quản lý tạo lớp; hội viên đăng ký | Thẻ lớp có lịch học; chỗ giảm | `outputs/xep-lop-nghiem-thu/1` đến `3` |
 | 11 | Xếp lớp | Đăng ký lớp chồng giờ | Nút khoá, lý do rõ | `outputs/xep-lop-nghiem-thu/4` |

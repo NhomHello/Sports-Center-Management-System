@@ -129,4 +129,24 @@ describe('SePay webhook', () => {
     const after = await prisma.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
     expect(after.status).toBe(Enums.InvoiceStatus.PENDING);
   });
+  it('mua tiếp khi còn hạn thì cộng dồn vào cùng membership và API trả số lần thanh toán', async () => {
+    const first = await buy();
+    await send(transfer(first));
+    const before = (
+      await api.get(apiPath('/memberships/me/current')).set(bearer(fixture.memberToken))
+    ).body.data;
+    const invoice = await buy();
+    expect((await send(transfer(invoice))).body.data.status).toBe(Enums.WebhookLogStatus.PROCESSED);
+    const after = (
+      await api.get(apiPath('/memberships/me/current')).set(bearer(fixture.memberToken))
+    ).body.data;
+    expect(after.id).toBe(before.id);
+    expect(new Date(after.endDate) - new Date(before.endDate)).toBe(plan.durationDays * 86400000);
+    expect(after.paidInvoiceCount).toBe(
+      await prisma.invoice.count({
+        where: { membershipId: after.id, status: Enums.InvoiceStatus.PAID },
+      }),
+    );
+    expect(after.paidInvoiceCount).toBeGreaterThan(before.paidInvoiceCount);
+  });
 });

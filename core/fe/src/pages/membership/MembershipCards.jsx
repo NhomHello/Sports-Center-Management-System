@@ -1,6 +1,7 @@
 import { CheckOutlined, SafetyCertificateOutlined, StarFilled } from '@ant-design/icons';
 import { Card, Col, Row, Tag, Typography } from 'antd';
 import { formatCurrency } from '@/utils/format';
+import { computeSavings, pricePerDay } from '@/utils/planPricing';
 import { PlanActions } from './PlanActions';
 import './membershipPlans.css';
 
@@ -25,7 +26,7 @@ export const PlanBenefits = ({ benefits, description }) => {
   );
 };
 
-export const PlanCard = ({ plan, featured, ...actions }) => (
+export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
   <Card
     variant="borderless"
     className={`scms-plan-card${featured ? ' scms-plan-card--featured' : ''}`}
@@ -49,9 +50,16 @@ export const PlanCard = ({ plan, featured, ...actions }) => (
       <span className="scms-plan-card__price">{formatCurrency(plan.price)}</span>
       <span className="scms-plan-card__billing">/ {plan.durationDays} ngày</span>
     </div>
-    <span className="scms-plan-card__note">Thanh toán một lần</span>
+    <div className="scms-plan-card__note">
+      <span>{formatCurrency(pricePerDay(plan))} / ngày · thanh toán một lần</span>
+      {savingsPercent > 0 && (
+        <Tag color="green" className="scms-plan-card__saving">
+          Tiết kiệm {savingsPercent}%
+        </Tag>
+      )}
+    </div>
     <div className="scms-plan-card__rule" />
-    <Typography.Text className="scms-plan-card__benefits-title">Quyền lợi bao gồm</Typography.Text>
+    <Typography.Text className="scms-plan-card__benefits-title">Bao gồm</Typography.Text>
     <PlanBenefits benefits={plan.benefits} description={plan.description} />
     <PlanActions plan={plan} featured={featured} {...actions} />
   </Card>
@@ -59,6 +67,7 @@ export const PlanCard = ({ plan, featured, ...actions }) => (
 
 export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
   const sortedPlans = [...plans].sort((left, right) => left.price - right.price);
+  const savings = computeSavings(sortedPlans);
   const featuredIndex = sortedPlans.length > 1 ? Math.floor(sortedPlans.length / 2) : -1;
   return (
     <section className="scms-pricing-surface" aria-label="Bảng giá gói tập">
@@ -68,6 +77,7 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
             <PlanCard
               plan={plan}
               featured={index === featuredIndex}
+              savingsPercent={savings.get(plan.id)}
               pendingInvoice={pendingInvoiceByPlanId?.get(plan.id)}
               {...actions}
             />
