@@ -1,21 +1,23 @@
 import { useMutation } from '@tanstack/react-query';
-import { App, Button, Form, Input, Typography } from 'antd';
-import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
+import { App, Button, Form, Result } from 'antd';
+import { Link } from 'react-router';
 import { ROUTES } from '@/constants';
 import * as authService from '@/services/auth.service';
+import { normalizeRegistrationPayload } from '@/utils/account';
+import { EmailNotVerifiedNotice } from '@/components/auth/EmailNotVerifiedNotice';
+import { RegisterForm } from './RegisterForm';
 
-const PASSWORD_MIN = 8;
-
+/** Tạo tài khoản hội viên; role mặc định do API gán. */
 export function RegisterPage() {
   const { message } = App.useApp();
-  const navigate = useNavigate();
   const [form] = Form.useForm();
-
-  const registerMutation = useMutation({
-    mutationFn: ({ confirmPassword: _confirm, ...payload }) => authService.register(payload),
-    onSuccess: ({ message: msg }) => {
-      message.success(msg);
-      navigate(ROUTES.LOGIN, { replace: true });
+  const [registeredEmail, setRegisteredEmail] = useState(null);
+  const mutation = useMutation({
+    mutationFn: (values) => authService.register(normalizeRegistrationPayload(values)),
+    onSuccess: ({ data }) => {
+      // Phải xác minh email mới đăng nhập được nên giữ người dùng ở màn hướng dẫn, không đẩy về login.
+      setRegisteredEmail(data.email);
     },
     onError: (error) => {
       form.setFields(error.toFormFields());
@@ -23,59 +25,25 @@ export function RegisterPage() {
     },
   });
 
-  return (
-    <Form form={form} layout="vertical" onFinish={registerMutation.mutate}>
-      <Form.Item
-        name="fullName"
-        label="Họ tên"
-        rules={[{ required: true, message: 'Nhập họ tên' }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="email"
-        label="Email"
-        rules={[
-          { required: true, message: 'Nhập email' },
-          { type: 'email', message: 'Email không hợp lệ' },
+  if (registeredEmail) {
+    return (
+      <Result
+        status="success"
+        title="Đăng ký thành công. Hãy kiểm tra email"
+        subTitle={`Chúng tôi đã gửi liên kết xác minh tới ${registeredEmail}. Bạn cần xác minh email trước khi đăng nhập.`}
+        extra={[
+          <Link key="login" to={ROUTES.LOGIN}>
+            <Button type="primary">Đến trang đăng nhập</Button>
+          </Link>,
         ]}
       >
-        <Input />
-      </Form.Item>
-      <Form.Item name="phone" label="Số điện thoại">
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        label="Mật khẩu"
-        rules={[{ required: true, min: PASSWORD_MIN, message: `Tối thiểu ${PASSWORD_MIN} ký tự` }]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item
-        name="confirmPassword"
-        label="Nhập lại mật khẩu"
-        dependencies={['password']}
-        rules={[
-          { required: true, message: 'Nhập lại mật khẩu' },
-          ({ getFieldValue }) => ({
-            validator: (_rule, value) =>
-              !value || getFieldValue('password') === value
-                ? Promise.resolve()
-                : Promise.reject(new Error('Mật khẩu không khớp')),
-          }),
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" block loading={registerMutation.isPending}>
-          Đăng ký
-        </Button>
-      </Form.Item>
-      <Typography.Paragraph style={{ textAlign: 'center', marginBottom: 0 }}>
-        Đã có tài khoản? <Link to={ROUTES.LOGIN}>Đăng nhập</Link>
-      </Typography.Paragraph>
-    </Form>
-  );
+        <EmailNotVerifiedNotice
+          email={registeredEmail}
+          title="Chưa nhận được email?"
+          description="Kiểm tra thư rác hoặc gửi lại liên kết bên dưới."
+        />
+      </Result>
+    );
+  }
+  return <RegisterForm form={form} mutation={mutation} />;
 }

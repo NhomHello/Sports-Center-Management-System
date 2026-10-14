@@ -1,0 +1,26 @@
+flowchart TB
+  subgraph MEM["MEMBER"]
+    S0(( )) --> U1["Transfers money with the QR,<br/>but the invoice is still waiting<br/>or already expired"]
+    U1 --> D1{"Status<br/>updated?"}
+    U2["Clicks 'I have transferred':<br/>time, amount, bank, transaction id"]
+    U3["Sees result: paid,<br/>or reason the claim was rejected"]
+  end
+  subgraph SYS["SYSTEM"]
+    A0["Polling shows 'reconnecting'<br/>while the network is down;<br/>no new invoice is created"]
+    A1["Open case MEMBER_CLAIM<br/>(one open claim per invoice)"]
+    A2["Sync from SePay: fetch incoming<br/>transactions for the time range,<br/>process missing ids like a webhook"]
+    D3{"Matching transaction<br/>found?"}
+    A3["Match by the webhook rules:<br/>PAID + activate plan, or<br/>UNDERPAID / OVERPAID case"]
+  end
+  subgraph MGR["CENTER MANAGER"]
+    M1["Open the claim, compare with<br/>bank statement / SePay history"]
+    M2["Map the transaction to the invoice"]
+    M3["Reject with reason,<br/>log contact with the member"]
+  end
+  D1 -- "Yes" --> E1(((" ")))
+  D1 -- "No (network error / slow webhook)" --> A0 --> U2 --> A1 --> M1 --> A2 --> D3
+  D3 -- "Yes, auto-processed" --> A3
+  D3 -- "Found only in bank statement" --> M2 --> A3
+  D3 -- "Not found" --> M3
+  A3 --> U3
+  M3 --> U3 --> E2(((" ")))

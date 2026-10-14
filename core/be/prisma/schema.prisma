@@ -8,6 +8,14 @@
 //    moi model mot khoi rieng + comment dau khoi.
 // ============================================================
 
+// Bộ đếm đăng nhập bền vững, không lưu email hay số điện thoại thô.
+model LoginThrottle {
+  key String @id @map("throttle_key") @db.VarChar(64)
+  attempts Int @default(0)
+  lockedUntil DateTime? @map("locked_until")
+  @@map("login_throttles")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,6 +25,11 @@ datasource db {
 }
 
 // ---------------- ENUMS ----------------
+
+enum MembershipPlanStatus {
+  SELLING
+  STOPPED
+}
 
 enum UserStatus {
   ACTIVE
@@ -30,36 +43,133 @@ enum SettingType {
   JSON
 }
 
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum InvoiceChannel {
+  ONLINE
+  COUNTER
+}
+
+enum PaymentProvider {
+  COUNTER
+  MANUAL
+  SEPAY
+  SIMULATOR
+}
+
+enum WebhookLogStatus {
+  PROCESSED
+  NEEDS_REVIEW
+  IGNORED
+  DUPLICATE
+  RESOLVED
+}
+
+/// Mục đích của token gửi qua email; mỗi mục đích có vòng đời và hệ quả riêng.
+enum EmailTokenPurpose {
+  VERIFY_EMAIL
+  CHANGE_EMAIL
+  RESET_PASSWORD
+}
+
+enum NotificationKind {
+  MEMBERSHIP_EXPIRY_REMINDER
+  MEMBERSHIP_EXPIRED
+  MEMBERSHIP_FROZEN
+  WAITLIST_OFFER
+  ACCOUNT_LOCKED
+  BOOKING_BLOCKED
+  CLASS_CHANGED
+  CLASS_CANCELLED
+  TRAINING_PLAN_PUBLISHED
+  TRAINING_RESULT_CREATED
+  PAYMENT_CONFIRMED
+  PAYMENT_TOPUP_REQUIRED
+  PAYMENT_REVIEW_ALERT
+  PAYMENT_REFUND
+  PAYMENT_CLAIM_REJECTED
+  INVOICE_EXPIRED
+}
+
 // ---------------- AUTH & RBAC (dynamic) ----------------
 
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 model User {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique @db.VarChar(191)
-  phone        String?    @unique @db.VarChar(20)
-  passwordHash String     @map("password_hash") @db.VarChar(255)
-  fullName     String     @map("full_name") @db.VarChar(100)
-  status       UserStatus @default(ACTIVE)
-  roleId       Int        @map("role_id")
-  role         Role       @relation(fields: [roleId], references: [id])
-  auditLogs    AuditLog[]
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  id                      Int                      @id @default(autoincrement())
+  email                   String?                  @unique @db.VarChar(191)
+  phone                   String?                  @unique @db.VarChar(20)
+  passwordHash            String                   @map("password_hash") @db.VarChar(255)
+  bookingBlockedUntil     DateTime?                @map("booking_blocked_until")
+  noShowWaivedAt          DateTime?                @map("no_show_waived_at")
+  checkIns                CheckIn[]                @relation("CheckInMember")
+  recordedCheckIns        CheckIn[]                @relation("CheckInActor")
+  attendance              Attendance[]
+  waitlist                ClassWaitlist[]
+  taughtSessions          ClassSession[]           @relation("SessionCoach")
+  tokenVersion            Int                      @default(0) @map("token_version")
+  fullName                String                   @map("full_name") @db.VarChar(100)
+  status                  UserStatus               @default(ACTIVE)
+  /// Null = chua xac minh email (tai khoan chi co SDT khong can xac minh)
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  roleId                  Int                      @map("role_id")
+  role                    Role                     @relation(fields: [roleId], references: [id])
+  auditLogs               AuditLog[]
+  memberships             Membership[]
+  invoices                Invoice[]
+  notifications           Notification[]
+  emailVerificationTokens EmailVerificationToken[]
+  coachedClasses          GymClass[]
+  classEnrollments        ClassEnrollment[]        @relation("ClassMember")
+  enrolledClassBookings   ClassEnrollment[]        @relation("ClassEnrolledBy")
+  cancelledClassBookings  ClassEnrollment[]        @relation("ClassCancelledBy")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
 
   @@index([roleId])
   @@map("users")
 }
 
+/// Token gui qua email (xac minh, doi email, dat lai mat khau): chi luu hash SHA-256, dung 1 lan,
+/// het han theo system_settings. `email` la dia chi tai thoi diem gui (CHANGE_EMAIL: dia chi moi).
+model EmailVerificationToken {
+  id        Int               @id @default(autoincrement())
+  userId    Int               @map("user_id")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Email tai thoi diem gui; doi email sau do thi token cu vo hieu
+  email     String            @db.VarChar(191)
+  purpose   EmailTokenPurpose @default(VERIFY_EMAIL)
+  tokenHash String            @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime          @map("expires_at")
+  usedAt    DateTime?         @map("used_at")
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@index([userId, purpose])
+  @@map("email_verification_tokens")
+}
+
 /// Vai tro: tap hop permission. Tao/sua/xoa hoan toan qua UI (tru isSystem khong duoc xoa).
 model Role {
-  id          Int              @id @default(autoincrement())
-  code        String           @unique @db.VarChar(50)
-  name        String           @db.VarChar(100)
-  description String?          @db.VarChar(255)
+  id          Int     @id @default(autoincrement())
+  code        String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
+
   /// Role seed san, khong cho xoa (van cho sua quyen)
-  isSystem    Boolean          @default(false) @map("is_system")
+  isSystem Boolean @default(false) @map("is_system")
+
   /// Role gan cho tai khoan tu dang ky. Chi mot role duoc isDefault = true
-  isDefault   Boolean          @default(false) @map("is_default")
+  isDefault Boolean @default(false) @map("is_default")
+
   permissions RolePermission[]
   users       User[]
   createdAt   DateTime         @default(now()) @map("created_at")
@@ -127,6 +237,484 @@ model AuditLog {
 }
 
 // ---------------- NGHIEP VU (team them dan theo flow) ----------------
+
 // Flow 1: MembershipPlan, Membership
 // Flow 2: Subject, Room, GymClass (tranh dat ten "Class" trung tu khoa JS), ClassSession, Enrollment
 // Flow 3: Invoice, Payment, PaymentWebhookLog
+
+/// Danh mục gói dùng bởi hóa đơn tại quầy; không xóa gói đã được tham chiếu.
+model MembershipPlan {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique @db.VarChar(50)
+  name         String               @unique @db.VarChar(100)
+  description  String?              @db.VarChar(500)
+  durationDays Int                  @map("duration_days")
+  price        Int
+  benefits     Json?
+  isActive     Boolean              @default(true) @map("is_active")
+  status       MembershipPlanStatus @default(SELLING)
+  memberships  Membership[]
+  invoices     Invoice[]
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([status])
+  @@map("membership_plans")
+}
+
+/// BR-1.2: activeUserId duy nhất bảo vệ một membership ACTIVE cho mỗi hội viên.
+model Membership {
+  id            Int                @id @default(autoincrement())
+  userId        Int                @map("user_id")
+  activeUserId  Int?               @unique @map("active_user_id")
+  planId        Int                @map("plan_id")
+  startDate     DateTime           @map("start_date")
+  endDate       DateTime           @map("end_date")
+  status        MembershipStatus   @default(ACTIVE)
+  user          User               @relation(fields: [userId], references: [id])
+  plan          MembershipPlan     @relation(fields: [planId], references: [id])
+  freezes       MembershipFreeze[]
+  invoices      Invoice[]
+  notifications Notification[]
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  @@index([userId, status, endDate])
+  @@index([planId])
+  @@map("memberships")
+}
+
+/// Giá và thời hạn được chụp lúc tạo; thay đổi danh mục không sửa giao dịch cũ.
+model Invoice {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique @db.VarChar(50)
+  userId       Int                  @map("user_id")
+  planId       Int                  @map("plan_id")
+  planName     String?              @map("plan_name") @db.VarChar(100)
+  durationDays Int?                 @map("duration_days")
+  membershipId Int?                 @map("membership_id")
+  amount       Int
+  status       InvoiceStatus        @default(PENDING)
+  channel      InvoiceChannel       @default(COUNTER)
+  expiresAt    DateTime             @map("expires_at")
+  paidAt       DateTime?            @map("paid_at")
+  user         User                 @relation(fields: [userId], references: [id])
+  plan         MembershipPlan       @relation(fields: [planId], references: [id])
+  membership   Membership?          @relation(fields: [membershipId], references: [id])
+  payments     Payment[]
+  webhookLogs  PaymentWebhookLog[]
+  cases        ReconciliationCase[]
+  refunds      Refund[]
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  @@index([userId, planId, status])
+  @@index([status, expiresAt])
+  @@map("invoices")
+}
+
+/// BR-PAY-14: khoản thực thu gắn hóa đơn và người thu, không nhận giá từ client.
+model Payment {
+  id              Int             @id @default(autoincrement())
+  invoiceId       Int             @map("invoice_id")
+  provider        PaymentProvider
+  requestedAmount Int             @map("requested_amount")
+  receivedAmount  Int             @map("received_amount")
+  reference       String?         @db.VarChar(100)
+  paidAt          DateTime        @map("paid_at")
+  actorId         Int?            @map("actor_id")
+  invoice         Invoice         @relation(fields: [invoiceId], references: [id])
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  @@index([invoiceId, paidAt])
+  @@map("payments")
+}
+
+/// Nhật ký webhook SePay; providerTransactionId duy nhất để chống xử lý lặp khi SePay gửi lại.
+/// NEEDS_REVIEW = tiền đã về nhưng không tự khớp được (sai số tiền, hoá đơn hết hạn...) -> lễ tân/quản lý xử lý.
+model PaymentWebhookLog {
+  id                    Int                 @id @default(autoincrement())
+  providerTransactionId String?             @unique @map("provider_transaction_id") @db.VarChar(100)
+  invoiceCode           String?             @map("invoice_code") @db.VarChar(50)
+  transferType          String?             @map("transfer_type") @db.VarChar(20)
+  transferAmount        Int?                @map("transfer_amount")
+  status                WebhookLogStatus
+  reason                String?             @db.VarChar(255)
+  payload               Json
+  invoiceId             Int?                @map("invoice_id")
+  invoice               Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  reviewedById          Int?                @map("reviewed_by_id")
+  reviewedAt            DateTime?           @map("reviewed_at")
+  reconciliationCase    ReconciliationCase?
+  createdAt             DateTime            @default(now()) @map("created_at")
+
+  @@index([status, createdAt])
+  @@map("payment_webhook_logs")
+}
+
+/// Lý do mở phiếu đối soát (UC-PAY-11..14).
+enum ReconciliationReason {
+  NO_MATCH
+  UNDERPAID
+  OVERPAID
+  LATE
+  DUPLICATE_TRANSFER
+  MEMBER_CLAIM
+}
+
+enum ReconciliationStatus {
+  OPEN
+  WAITING_MEMBER
+  WAITING_TOPUP
+  REFUND_PENDING
+  MATCHED
+  REFUNDED
+  REJECTED
+  IGNORED
+}
+
+enum ContactChannel {
+  PHONE
+  ZALO
+  EMAIL
+  COUNTER
+  OTHER
+}
+
+enum RefundStatus {
+  PENDING
+  DONE
+}
+
+/// Phiếu đối soát: tiền về không tự khớp, hoặc hội viên báo đã chuyển khoản. amount = số tiền của
+/// giao dịch mở phiếu (hoặc số hội viên khai); excessAmount = phần thừa cần hoàn hoặc dùng gia hạn.
+model ReconciliationCase {
+  id           Int                     @id @default(autoincrement())
+  reason       ReconciliationReason
+  status       ReconciliationStatus    @default(OPEN)
+  webhookLogId Int?                    @unique @map("webhook_log_id")
+  webhookLog   PaymentWebhookLog?      @relation(fields: [webhookLogId], references: [id], onDelete: SetNull)
+  invoiceId    Int?                    @map("invoice_id")
+  invoice      Invoice?                @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  userId       Int?                    @map("user_id")
+  amount       Int
+  excessAmount Int?                    @map("excess_amount")
+  claim        Json?
+  note         String?                 @db.VarChar(500)
+  resolvedById Int?                    @map("resolved_by_id")
+  resolvedAt   DateTime?               @map("resolved_at")
+  contacts     ReconciliationContact[]
+  refunds      Refund[]
+  createdAt    DateTime                @default(now()) @map("created_at")
+  updatedAt    DateTime                @updatedAt @map("updated_at")
+
+  @@index([status, reason])
+  @@index([invoiceId])
+  @@map("reconciliation_cases")
+}
+
+/// BR-PAY-19: nhật ký liên hệ hội viên, chỉ thêm, không sửa/xoá.
+model ReconciliationContact {
+  id        Int                @id @default(autoincrement())
+  caseId    Int                @map("case_id")
+  case      ReconciliationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  channel   ContactChannel
+  content   String             @db.VarChar(500)
+  result    String?            @db.VarChar(255)
+  actorId   Int                @map("actor_id")
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  @@index([caseId])
+  @@map("reconciliation_contacts")
+}
+
+/// Yêu cầu hoàn tiền: tiền trả thủ công ngoài hệ thống, đóng bằng mã tham chiếu ngân hàng (BR-PAY-13).
+model Refund {
+  id            Int                 @id @default(autoincrement())
+  invoiceId     Int?                @map("invoice_id")
+  invoice       Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  caseId        Int?                @map("case_id")
+  case          ReconciliationCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  amount        Int
+  reason        String              @db.VarChar(255)
+  status        RefundStatus        @default(PENDING)
+  reference     String?             @db.VarChar(100)
+  requestedById Int                 @map("requested_by_id")
+  completedById Int?                @map("completed_by_id")
+  completedAt   DateTime?           @map("completed_at")
+  createdAt     DateTime            @default(now()) @map("created_at")
+
+  @@index([status, createdAt])
+  @@map("refunds")
+}
+
+/// Lịch sử thông báo; dedupeKey chống gửi lặp và readAt được giữ khi đọc lại.
+model Notification {
+  id           Int              @id @default(autoincrement())
+  userId       Int              @map("user_id")
+  membershipId Int?             @map("membership_id")
+  kind         NotificationKind
+  title        String           @db.VarChar(150)
+  message      String           @db.VarChar(500)
+  readAt       DateTime?        @map("read_at")
+  user         User             @relation(fields: [userId], references: [id])
+  membership   Membership?      @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  dedupeKey    String?          @unique @map("dedupe_key") @db.VarChar(191)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+enum ClassStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum EnrollmentStatus {
+  BOOKED
+  CANCELLED
+}
+
+/// Danh mục đã tồn tại trong migration Flow 2; không tạo lại bảng.
+model Subject {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  description String?    @db.VarChar(500)
+  isActive    Boolean    @default(true) @map("is_active")
+  classes     GymClass[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("subjects")
+}
+
+model Room {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
+  capacity    Int
+  description String?           @db.VarChar(500)
+  isActive    Boolean           @default(true) @map("is_active")
+  sessions    ClassSession[]
+  maintenance RoomMaintenance[]
+  classes     GymClass[]
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  @@map("rooms")
+}
+
+model GymClass {
+  id                  Int               @id @default(autoincrement())
+  name                String            @db.VarChar(120)
+  description         String?           @db.VarChar(1000)
+  subjectId           Int               @map("subject_id")
+  roomId              Int               @map("room_id")
+  coachId             Int               @map("coach_id")
+  capacity            Int
+  startsOn            DateTime          @map("starts_on") @db.Date
+  endsOn              DateTime          @map("ends_on") @db.Date
+  weeklySchedule      Json              @map("weekly_schedule")
+  registrationStartAt DateTime          @map("registration_start_at")
+  registrationEndAt   DateTime          @map("registration_end_at")
+  status              ClassStatus       @default(OPEN)
+  subject             Subject           @relation(fields: [subjectId], references: [id])
+  room                Room              @relation(fields: [roomId], references: [id])
+  coach               User              @relation(fields: [coachId], references: [id])
+  sessions            ClassSession[]
+  enrollments         ClassEnrollment[]
+  waitlist            ClassWaitlist[]
+  events              ClassEvent[]
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  @@index([subjectId, status])
+  @@index([coachId, status])
+  @@map("gym_classes")
+}
+
+/// Snapshot phòng/HLV bảo toàn lịch cũ khi lớp chuyển phòng hoặc đổi người dạy.
+model ClassSession {
+  id                      Int           @id @default(autoincrement())
+  classId                 Int           @map("class_id")
+  startAt                 DateTime      @map("start_at")
+  endAt                   DateTime      @map("end_at")
+  roomId                  Int?          @map("room_id")
+  coachId                 Int?          @map("coach_id")
+  rescheduledAt           DateTime?     @map("rescheduled_at")
+  attendanceUnlockedUntil DateTime?     @map("attendance_unlocked_until")
+  room                    Room?         @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  coach                   User?         @relation("SessionCoach", fields: [coachId], references: [id], onDelete: Restrict)
+  checkIns                CheckIn[]
+  attendance              Attendance[]
+  roomName                String?       @map("room_name") @db.VarChar(100)
+  coachName               String?       @map("coach_name") @db.VarChar(100)
+  status                  SessionStatus @default(SCHEDULED)
+  gymClass                GymClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt @map("updated_at")
+
+  @@index([startAt, endAt, status])
+  @@index([classId, startAt])
+  @@map("class_sessions")
+}
+
+/// Đăng ký toàn lớp; bảng enrollments từng buổi và FK điểm danh cũ được giữ nguyên.
+model ClassEnrollment {
+  id              Int              @id @default(autoincrement())
+  classId         Int              @map("class_id")
+  memberId        Int              @map("member_id")
+  status          EnrollmentStatus @default(BOOKED)
+  enrolledBy      Int              @map("enrolled_by")
+  cancelledBy     Int?             @map("cancelled_by")
+  enrolledAt      DateTime         @default(now()) @map("enrolled_at")
+  cancelledAt     DateTime?        @map("cancelled_at")
+  exceptionUntil  DateTime?        @map("exception_until")
+  gymClass        GymClass         @relation(fields: [classId], references: [id], onUpdate: Restrict)
+  member          User             @relation("ClassMember", fields: [memberId], references: [id], onUpdate: Restrict)
+  enrolledByUser  User             @relation("ClassEnrolledBy", fields: [enrolledBy], references: [id], onUpdate: Restrict)
+  cancelledByUser User?            @relation("ClassCancelledBy", fields: [cancelledBy], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  @@unique([classId, memberId])
+  @@index([memberId, status])
+  @@map("class_enrollments")
+}
+
+/// Outbox bền vững, đồng thời là lịch sử thay đổi lớp.
+model ClassEvent {
+  id           Int              @id @default(autoincrement())
+  classId      Int              @map("class_id")
+  kind         NotificationKind
+  title        String           @db.VarChar(150)
+  message      String           @db.VarChar(500)
+  recipientIds Json             @map("recipient_ids")
+  changes      Json
+  attempts     Int              @default(0)
+  sentAt       DateTime?        @map("sent_at")
+  lastError    String?          @map("last_error") @db.VarChar(500)
+  gymClass     GymClass         @relation(fields: [classId], references: [id], onUpdate: Restrict)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@index([sentAt, id])
+  @@map("class_events")
+}
+
+/// Một khoá chung tuần tự hoá các phép ghi lịch để bảo vệ xung đột liên lớp.
+model ScheduleLock {
+  id Int @id
+
+  @@map("schedule_locks")
+}
+
+/// Bảo lưu có lịch sử riêng; endAt là biên loại trừ theo ngày Việt Nam.
+model MembershipFreeze {
+  id           Int        @id @default(autoincrement())
+  membershipId Int        @map("membership_id")
+  startAt      DateTime   @map("start_at")
+  endAt        DateTime   @map("end_at")
+  endedAt      DateTime?  @map("ended_at")
+  creditedDays Int?       @map("credited_days")
+  actorId      Int        @map("actor_id")
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@index([membershipId, endedAt])
+  @@map("membership_freezes")
+}
+
+/// Lượt đến quầy giữ nguyên cảnh báo tại thời điểm tiếp nhận.
+enum CheckInKind {
+  GENERAL
+  CLASS
+}
+
+model CheckIn {
+  id        Int           @id @default(autoincrement())
+  memberId  Int           @map("member_id")
+  actorId   Int           @map("created_by_id")
+  sessionId Int?          @map("session_id")
+  kind      CheckInKind
+  code      String        @db.VarChar(100)
+  scannedAt DateTime      @default(now()) @map("scanned_at")
+  warning   String?       @db.VarChar(500)
+  actor     User          @relation("CheckInActor", fields: [actorId], references: [id], onDelete: Restrict)
+  session   ClassSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  member    User          @relation("CheckInMember", fields: [memberId], references: [id], onDelete: Restrict)
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  @@unique([memberId, sessionId])
+  @@index([memberId, scannedAt])
+  @@map("check_ins")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+/// Một kết quả cho mỗi hội viên/buổi, sửa có audit thay vì xoá lịch sử.
+model Attendance {
+  id        Int              @id @default(autoincrement())
+  sessionId Int              @map("session_id")
+  memberId  Int              @map("member_id")
+  actorId   Int              @map("actor_id")
+  status    AttendanceStatus
+  session   ClassSession     @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  member    User             @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@unique([sessionId, memberId])
+  @@index([memberId, status])
+  @@map("attendance")
+}
+
+enum WaitlistStatus {
+  WAITING
+  OFFERED
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+/// Giữ chỗ được tính vào sức chứa; mọi chuyển trạng thái dùng schedule lock.
+model ClassWaitlist {
+  id           Int            @id @default(autoincrement())
+  classId      Int            @map("class_id")
+  memberId     Int            @map("member_id")
+  status       WaitlistStatus @default(WAITING)
+  offeredUntil DateTime?      @map("offered_until")
+  joinedAt     DateTime       @default(now()) @map("joined_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  gymClass     GymClass       @relation(fields: [classId], references: [id], onDelete: Restrict)
+  member       User           @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@unique([classId, memberId])
+  @@index([classId, status, joinedAt])
+  @@map("class_waitlist")
+}
+
+/// Khoảng bảo trì ngăn tạo/đổi lịch vào phòng trong cùng transaction.
+model RoomMaintenance {
+  id        Int      @id @default(autoincrement())
+  roomId    Int      @map("room_id")
+  startAt   DateTime @map("start_at")
+  endAt     DateTime @map("end_at")
+  reason    String   @db.VarChar(500)
+  actorId   Int      @map("actor_id")
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([roomId, startAt, endAt])
+  @@map("room_maintenance")
+}
