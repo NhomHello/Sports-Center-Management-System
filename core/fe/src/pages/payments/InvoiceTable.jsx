@@ -32,6 +32,7 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       title: 'Số tiền',
       dataIndex: 'amount',
       key: 'amount',
+      align: 'right',
       render: (amount, invoice) => formatCurrency(amount, invoice.currency),
     },
     {

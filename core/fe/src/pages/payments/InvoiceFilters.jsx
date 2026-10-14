@@ -1,8 +1,8 @@
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Select } from 'antd';
+import { Button, Select, DatePicker } from 'antd';
 import { useState } from 'react';
 import { SearchInput } from '@/components/common/SearchInput';
-import { INVOICE_CHANNEL_LABELS, INVOICE_STATUS_META } from '@/constants';
+import { DATE_FORMATS, INVOICE_CHANNEL_LABELS, INVOICE_STATUS_META } from '@/constants';
 
 const STATUS_OPTIONS = Object.entries(INVOICE_STATUS_META).map(([value, meta]) => ({
   value,
@@ -54,6 +54,18 @@ export function InvoiceFilters({ filters, onChange, loading, staff = false }) {
           options={CHANNEL_OPTIONS}
           value={filters.channel}
           onChange={(channel) => onChange({ channel })}
+        />
+      )}
+      {staff && (
+        <DatePicker.RangePicker
+          aria-label="Khoảng ngày hóa đơn"
+          format={DATE_FORMATS.DATE}
+          onChange={(dates) =>
+            onChange({
+              from: dates?.[0].startOf('day').toISOString(),
+              to: dates?.[1].endOf('day').toISOString(),
+            })
+          }
         />
       )}
       <Button

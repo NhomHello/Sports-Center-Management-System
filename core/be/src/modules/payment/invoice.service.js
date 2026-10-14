@@ -25,11 +25,17 @@ export const getReceipt = async (id, actor, canReadAll) => {
     currency: invoice.currency,
   };
 };
-/** Danh sách read_own luôn lấy userId từ token, không nhận id tùy ý từ query. */
-export const listInvoices = async (query, actor, canReadAll) => {
-  const userId = canReadAll ? query.memberId : actor.id;
-  const where = {
+async function createdInvoiceIds(userId) {
+  const rows = await prisma.auditLog.findMany({
+    where: { userId, entity: 'Invoice', action: 'CREATE' },
+    select: { entityId: true },
+  });
+  return rows.map((row) => Number(row.entityId)).filter(Number.isSafeInteger);
+}
+function invoiceWhere(query, userId, createdIds) {
+  return {
     ...(userId && { userId }),
+    ...(createdIds && { id: { in: createdIds } }),
     ...(query.status && { status: query.status }),
     ...(query.channel && { channel: query.channel }),
     ...((query.from || query.to) && {
@@ -42,6 +48,13 @@ export const listInvoices = async (query, actor, canReadAll) => {
       ],
     }),
   };
+}
+
+/** Danh sách read_own luôn lấy userId từ token, không nhận id tùy ý từ query. */
+export const listInvoices = async (query, actor, canReadAll) => {
+  const userId = canReadAll ? query.memberId : actor.id;
+  const createdIds = canReadAll && query.createdByMe ? await createdInvoiceIds(actor.id) : null;
+  const where = invoiceWhere(query, userId, createdIds);
   const [items, total] = await prisma.$transaction([
     prisma.invoice.findMany({
       where,
