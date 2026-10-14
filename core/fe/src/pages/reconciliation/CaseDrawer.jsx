@@ -4,6 +4,7 @@ import { QUERY_KEYS } from '@/constants';
 import { ACTIVE_CASE_STATUSES, CASE_REASON } from '@/constants/reconciliation';
 import * as service from '@/services/reconciliation.service';
 import { CaseSummary } from './CaseSummary';
+import { CaseContacts } from './CaseContacts';
 import { CaseConfirmForm } from './CaseConfirmForm';
 
 /** Phiếu đối soát giữ nguyên lịch sử; lỗi xung đột làm mới trạng thái trước khi thử lại. */
@@ -46,6 +47,12 @@ export function CaseDrawer({ id, onClose }) {
       {item && (
         <Space orientation="vertical" className="scms-full-width" size="middle">
           <CaseSummary item={item} />
+          <CaseContacts
+            item={item}
+            active={active}
+            pending={mutation.isPending}
+            onAction={mutation.mutateAsync}
+          />
           {active && [CASE_REASON.MEMBER_CLAIM, CASE_REASON.UNDERPAID].includes(item.reason) && (
             <CaseConfirmForm
               key={id}
