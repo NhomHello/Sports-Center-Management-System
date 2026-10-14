@@ -48,7 +48,7 @@ sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/
 ## 4. Ngày làm việc điển hình
 
 1. `git checkout dev && git pull` → `npm install` (nếu package.json đổi) → `npm run dev`.
-2. Tạo nhánh `feature/…` (xem `04-git-workflow.md`).
+2. Tạo nhánh `feature/…` (xem `huong-dan/git-workflow.md`).
 3. Mở trang tương ứng để tham khảo pattern: BE `modules/role/`, FE `pages/system/roles/`.
 4. Code → lưu là ESLint/Prettier tự sửa → commit (hook kiểm tra) → push → PR.
 
@@ -69,7 +69,7 @@ sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/
 
 ## 6. Đọc tiếp
 
-`docs/01-quy-tac-code.md` (bắt buộc) → `02-cau-truc-du-an.md` → `03-rbac-dynamic.md`.
+`docs/huong-dan/quy-tac-code.md` (bắt buộc) → `huong-dan/cau-truc-du-an.md` → `huong-dan/rbac-dong.md`.
 
 ## Gửi email (xác minh tài khoản)
 

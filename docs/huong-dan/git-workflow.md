@@ -23,8 +23,8 @@ git push -u origin feature/f1-membership-plan-crud
 # tạo PR vào dev trên GitHub, điền template, gắn reviewer
 ```
 
-- PR phải có **≥ 1 người review approve** và CI xanh mới merge. Merge bằng **Squash and merge** để lịch sử dev sạch.
-- Review trong 24h. Người review kiểm tra theo checklist trong PR template + `docs/01-quy-tac-code.md` mục 7.
+- PR phải có **≥ 1 người review approve** và tác giả đã chạy `npm run lint` + `npm test` sạch ở máy mới merge (dự án không dùng CI trên GitHub). Merge bằng **Squash and merge** để lịch sử dev sạch.
+- Review trong 24h. Người review kiểm tra theo checklist ở `docs/huong-dan/quy-tac-code.md` mục 7.
 - Xoá nhánh sau khi merge.
 
 ## Commit message (Conventional Commits – commitlint blocks bad format)
@@ -50,7 +50,7 @@ Do not add AI tools as authors: no `Co-Authored-By: Claude ...` trailer and no "
 | `style`    | **Formatting only**: whitespace, semicolons, Prettier, import order                   | `style(fe): run prettier on all pages`                    | CSS/UI changes (those are feat or fix)   |
 | `test`     | Add/change **tests** or test cases only                                               | `test(rbac): add permission revoke case`                  |                                          |
 | `docs`     | **Documentation only**: README, docs/, JSDoc, comments                                | `docs(rbac): document attendance permission`              |                                          |
-| `chore`    | **Maintenance** with no product code impact: deps, ESLint/CI/husky config, scripts    | `chore(deps): bump antd to 6.6.3`                         |                                          |
+| `chore`    | **Maintenance** with no product code impact: deps, ESLint/husky config, scripts    | `chore(deps): bump antd to 6.6.3`                         |                                          |
 | `revert`   | **Undo** a previous commit                                                            | `revert: feat(class): add class enrollment API` + footer `Reverts abc123` |                          |
 
 Rule of thumb: users see a difference -> `feat`/`fix`; only developers see it -> `refactor`/`style`/`test`/`docs`/`chore`.
@@ -91,7 +91,6 @@ Each commit is **one** meaningful, working change. No "wip", "fix bug", "update"
 | ---------- | ----------------------------------------------------------- | ------------------------------------- |
 | pre-commit | `lint-staged`: ESLint --fix + Prettier trên file đã stage   | Sửa lỗi ESLint báo (đa số tự fix), `git add` lại, commit lại |
 | commit-msg | `commitlint`                                                | Sửa message theo mẫu trên             |
-| CI (GitHub)| format:check, lint, prisma generate, build FE               | Xem tab Actions, sửa, push lại        |
 
 Không dùng `--no-verify`. Nếu thấy rule vô lý, mở issue để cả nhóm quyết.
 

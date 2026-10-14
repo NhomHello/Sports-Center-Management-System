@@ -110,4 +110,4 @@ Role seed ban đầu (`prisma/seed/roles.seed.js`): Quản lý trung tâm (ALL),
 - `class.view_roster` vẫn cần HLV phụ trách lớp; quyền này tự nó không mở roster mọi lớp. `class.enroll_for_member` cho đăng ký/huỷ hộ và đọc điều kiện booking của member được chọn, không cấp quyền roster.
 - `schedule.view_own` luôn lấy userId từ token. `schedule.view_teaching` lọc theo coachId của người đăng nhập. `class.read_all` không làm endpoint `/schedule/me` đọc lịch của người khác.
 
-Xem [hợp đồng Sprint 2](sprint-2-api.md) và [test phân quyền](test-cases/TC-F2-class-booking.md).
+Xem tài liệu `SWP391_ThietKe_API_XepLop.docx` và sheet `TC-F2` trong `SWP391_TestCase.xlsx` (thư mục `outputs/tai-lieu/`).

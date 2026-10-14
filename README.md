@@ -27,7 +27,7 @@ chờ database healthy, generate Prisma, apply migration, seed tài khoản cho 
 chạy BE (`:3000`) và FE (`:5173`). Script dùng được trên Windows, macOS và Linux.
 
 Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop/Engine có Compose v2, Git. Chi tiết:
-[docs/06-onboarding.md](docs/06-onboarding.md).
+[docs/huong-dan/onboarding.md](docs/huong-dan/onboarding.md).
 
 **Tài khoản mẫu** (mật khẩu trong `core/be/.env`): `admin@scms.local` (Center Manager), `letan@scms.local`,
 `coach.yoga@scms.local`, `member1@scms.local`… xem `core/be/prisma/seed/mock/users.mock.js`.
@@ -49,12 +49,12 @@ scripts       npm run dev / setup
 
 ## Tài liệu bắt buộc đọc
 
-1. [docs/01-quy-tac-code.md](docs/01-quy-tac-code.md) — giới hạn 200 dòng/file, đặt tên, comment, tái sử dụng, **không hardcode**
-2. [docs/02-cau-truc-du-an.md](docs/02-cau-truc-du-an.md) — MVC, thêm module/trang mới theo checklist
-3. [docs/03-rbac-dynamic.md](docs/03-rbac-dynamic.md) — phân quyền động, thêm permission
-4. [docs/04-git-workflow.md](docs/04-git-workflow.md) — nhánh, commit, PR
-5. [docs/05-api-convention.md](docs/05-api-convention.md) — chuẩn request/response
-6. [docs/test-cases/README.md](docs/test-cases/README.md) — test case & test tự động
+1. [docs/huong-dan/quy-tac-code.md](docs/huong-dan/quy-tac-code.md) — giới hạn 200 dòng/file, đặt tên, comment, tái sử dụng, **không hardcode**
+2. [docs/huong-dan/cau-truc-du-an.md](docs/huong-dan/cau-truc-du-an.md) — MVC, thêm module/trang mới theo checklist
+3. [docs/huong-dan/rbac-dong.md](docs/huong-dan/rbac-dong.md) — phân quyền động, thêm permission
+4. [docs/huong-dan/git-workflow.md](docs/huong-dan/git-workflow.md) — nhánh, commit, PR
+5. [docs/huong-dan/api-convention.md](docs/huong-dan/api-convention.md) — chuẩn request/response
+6. [docs/huong-dan/viet-test-case.md](docs/huong-dan/viet-test-case.md) — cách viết test case & test tự động
 
 ## Scripts thường dùng (chạy ở thư mục gốc)
 
@@ -78,4 +78,4 @@ Trang **`/schedule`** gồm danh mục, quản lý lớp, đăng ký/huỷ toàn
 
 Khi `SEED_MOCK_DATA=true`, seed thêm hai lớp `DEMO · …` cho ngày kế tiếp và gói tập mẫu cho member1/member2 **chỉ khi chưa có lịch sử membership**. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
 
-Chi tiết: [18 chức năng và bằng chứng](docs/handover/sprint-2-coverage.md), [API](docs/sprint-2-api.md), [test cases](docs/test-cases/TC-F2-class-booking.md). Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.
+Chi tiết (Word/Excel trong `outputs/tai-lieu/`): bàn giao Sprint 2 (18 chức năng và bằng chứng), thiết kế API xếp lớp, test case `SWP391_TestCase.xlsx`. Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.

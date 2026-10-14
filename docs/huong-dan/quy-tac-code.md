@@ -146,6 +146,6 @@ Nguyên tắc: **thứ gì có thể thay đổi mà không đổi logic thì kh
 - [ ] Không URL/secret/số nghiệp vụ/tên role trong code
 - [ ] Hàm export có JSDoc; comment "tại sao" ở chỗ khó
 - [ ] Đã tìm và dùng lại thứ có sẵn (mục 4) thay vì copy
-- [ ] Thêm permission/setting mới → đã sửa `core/shared`, chạy `npm run db:seed`, ghi vào `docs/03-rbac-dynamic.md`
+- [ ] Thêm permission/setting mới → đã sửa `core/shared`, chạy `npm run db:seed`, ghi vào `docs/huong-dan/rbac-dong.md`
 - [ ] Sửa `schema.prisma` → có migration (`npm run db:migrate`) và commit thư mục `prisma/migrations`
 - [ ] UI: chụp ảnh/GIF vào PR; đã thử với tài khoản không có quyền (phải thấy 403 / nút ẩn)

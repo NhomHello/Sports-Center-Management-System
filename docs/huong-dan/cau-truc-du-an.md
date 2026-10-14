@@ -69,7 +69,7 @@ Client → app.js (helmet, cors, json, pino-http, rate-limit)
    - `membership-plan.routes.js`: `router.use(authenticate)` + từng route `authorize(PERMISSIONS.MEMBERSHIP_PLAN_X)`
 4. Gắn vào `src/routes.js`: `router.use('/membership-plans', membershipPlanRoutes);`
 5. Số nghiệp vụ mới (nếu có) → `core/shared/src/settings.js` + seed, đọc bằng `settingService.getValue`.
-6. Test: thêm `tests/membership-plan.test.js` (copy `tests/role.test.js`), ghi test case vào `docs/test-cases/`.
+6. Test: thêm `tests/membership-plan.test.js` (copy `tests/role.test.js`), ghi test case vào file Excel `SWP391_TestCase.xlsx` (xem [viet-test-case.md](viet-test-case.md)).
 7. `npm run lint` → PR.
 
 ## 3. Frontend – React + antd
