@@ -133,14 +133,11 @@ test('EMAIL-UI-01: đăng ký → bị chặn đăng nhập → lễ tân xác m
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/7-dat-lai-mat-khau-thanh-cong.png` });
   await page.goto(`/reset-password?token=${resetToken}`);
-  await page.getByLabel('Mật khẩu mới', { exact: true }).fill(NEW_PASSWORD);
-  await page.getByLabel('Nhập lại mật khẩu mới').fill(NEW_PASSWORD);
-  await page.getByRole('button', { name: 'Đặt mật khẩu mới' }).click();
   await expect(page.getByText('Liên kết không hợp lệ hoặc đã hết hạn')).toBeVisible();
 
   // 5. Đăng nhập bằng mật khẩu mới rồi đổi email: email cũ giữ nguyên tới khi xác nhận.
   await loginUi(page, EMAIL, NEW_PASSWORD);
-  await expect(page.getByRole('heading', { name: 'Lớp học và lịch tập' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mở menu tài khoản' })).toBeVisible();
   await page.goto('/profile');
   const emailField = page.getByLabel('Email', { exact: true });
   await emailField.fill(NEW_EMAIL);

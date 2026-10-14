@@ -63,6 +63,26 @@ test('TC-S3-KPAY-02: excess refund requires contact and preserves PAID invoice',
   const kase = await openCase(page, 'OVERPAID');
   const drawer = page.locator('.ant-drawer');
   await expect(drawer.getByRole('button', { name: 'Tạo yêu cầu hoàn tiền' })).toBeDisabled();
+  await page.route('**/reconciliations/*/contacts', (route) =>
+    route.fulfill({
+      status: 409,
+      json: { success: false, code: 'CONFLICT', message: 'Phiếu vừa thay đổi, hãy kiểm tra lại' },
+    }),
+  );
+  await drawer.getByLabel('Kênh liên hệ', { exact: true }).click();
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .getByText('Điện thoại', { exact: true })
+    .click();
+  await drawer
+    .getByLabel('Nội dung và ý kiến hội viên', { exact: true })
+    .fill('Nội dung cần giữ khi lỗi');
+  await drawer.getByRole('button', { name: 'Ghi lần liên hệ' }).click();
+  await expect(page.getByText('Phiếu vừa thay đổi, hãy kiểm tra lại')).toBeVisible();
+  await expect(drawer.getByLabel('Nội dung và ý kiến hội viên', { exact: true })).toHaveValue(
+    'Nội dung cần giữ khi lỗi',
+  );
+  await page.unroute('**/reconciliations/*/contacts');
   await contact(page);
   await drawer
     .getByLabel('Lý do hoàn tiền', { exact: true })

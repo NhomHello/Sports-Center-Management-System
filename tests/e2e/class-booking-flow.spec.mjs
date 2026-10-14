@@ -102,8 +102,7 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
   await search.fill(f.other.email);
   await page
     .locator('.ant-select-dropdown:visible')
-    .getByRole('option')
-    .filter({ hasText: f.other.fullName })
+    .getByText(f.other.fullName, { exact: false })
     .click();
   await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   const forMember = card(page, classA.name).last();
