@@ -14,7 +14,7 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
       <Alert
         type="error"
         showIcon
-        message="Chưa tải được danh sách gói tập"
+        title="Chưa tải được danh sách gói tập"
         action={<Button onClick={() => plansQuery.refetch()}>Thử lại</Button>}
       />
     );
