@@ -4,11 +4,15 @@
 
 /** Prisma include dung chung khi can user kem role */
 export const USER_WITH_ROLE = {
-  role: { select: { id: true, code: true, name: true } },
+  role: { select: { id: true, code: true, name: true, isDefault: true } },
 };
 
 /**
  * @param {object} user record User (include role)
  * @returns {object} user an toan de tra ve
  */
-export const toPublicUser = ({ passwordHash: _passwordHash, ...user }) => user;
+export const toPublicUser = ({
+  passwordHash: _passwordHash,
+  tokenVersion: _tokenVersion,
+  ...user
+}) => user;

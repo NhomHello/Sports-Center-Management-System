@@ -2,7 +2,9 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { hashPassword } from '../../common/utils/password.js';
-import { prisma } from '../../config/db.js';
+import { withScheduleTransaction } from '../../common/utils/schedule-transaction.js';
+import { Enums, prisma } from '../../config/db.js';
+import { assertCoachCanBeDisabled } from '../class/coach-availability.service.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from './user.mapper.js';
 
@@ -54,7 +56,12 @@ export const getById = async (id) => {
  */
 export const create = async ({ password, ...data }, actor) => {
   const user = await prisma.user.create({
-    data: { ...data, passwordHash: await hashPassword(password) },
+    // Nhân viên tạo hộ và chịu trách nhiệm xác nhận email, nên không bắt xác minh lại.
+    data: {
+      ...data,
+      passwordHash: await hashPassword(password),
+      ...(data.email && { emailVerifiedAt: new Date() }),
+    },
     include: USER_WITH_ROLE,
   });
   recordAudit({
@@ -97,10 +104,9 @@ export const updateRole = async (id, roleId, actor) => {
  */
 export const updateStatus = async (id, status, actor) => {
   if (id === actor.id) throw ApiError.businessRule('Không thể tự khoá tài khoản của chính mình');
-  const user = await prisma.user.update({
-    where: { id },
-    data: { status },
-    include: USER_WITH_ROLE,
+  const user = await withScheduleTransaction(async (db) => {
+    if (status === Enums.UserStatus.INACTIVE) await assertCoachCanBeDisabled(db, id);
+    return db.user.update({ where: { id }, data: { status }, include: USER_WITH_ROLE });
   });
   recordAudit({
     userId: actor.id,
@@ -110,4 +116,35 @@ export const updateStatus = async (id, status, actor) => {
     meta: { status },
   });
   return toPublicUser(user);
+};
+
+/**
+ * Xác minh email thủ công khi hội viên không nhận được thư. Nhân viên chịu trách nhiệm đã đối chiếu
+ * danh tính với hội viên (trực tiếp hoặc qua kênh hỗ trợ); thao tác được ghi nhật ký.
+ * @param {number} id
+ * @param {{ id: number }} actor
+ */
+export const verifyEmailManually = async (id, actor) => {
+  const user = await prisma.user.findUnique({ where: { id }, include: USER_WITH_ROLE });
+  if (!user) throw ApiError.notFound('Không tìm thấy tài khoản');
+  if (!user.email) throw ApiError.businessRule('Tài khoản không có email để xác minh');
+  if (user.emailVerifiedAt) return toPublicUser(user);
+  const updated = await prisma.$transaction(async (tx) => {
+    await tx.emailVerificationToken.deleteMany({
+      where: { userId: id, purpose: Enums.EmailTokenPurpose.VERIFY_EMAIL, usedAt: null },
+    });
+    return tx.user.update({
+      where: { id },
+      data: { emailVerifiedAt: new Date() },
+      include: USER_WITH_ROLE,
+    });
+  });
+  recordAudit({
+    userId: actor.id,
+    action: AUDIT_ACTIONS.UPDATE,
+    entity: ENTITIES.USER,
+    entityId: id,
+    meta: { manualEmailVerification: true, email: user.email },
+  });
+  return toPublicUser(updated);
 };

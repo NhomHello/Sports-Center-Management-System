@@ -36,5 +36,14 @@ export const updateStatus = async (req, res) => {
     req.validated.body.status,
     req.user,
   );
-  sendSuccess(res, { data: user, message: 'Cập nhật trạng thái thành công' });
+  sendSuccess(res, {
+    data: user,
+    message: user.status === 'ACTIVE' ? 'Đã mở khóa tài khoản' : 'Đã khóa tài khoản',
+  });
+};
+
+/** POST /users/:id/email-verification */
+export const verifyEmail = async (req, res) => {
+  const user = await userService.verifyEmailManually(req.validated.params.id, req.user);
+  sendSuccess(res, { data: user, message: 'Đã xác minh email cho tài khoản' });
 };
