@@ -24,7 +24,7 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
         channel === INVOICE_CHANNEL.COUNTER ? (
           <Tag color="purple">Tại quầy</Tag>
         ) : (
-          <Tag color="blue">Online</Tag>
+          <Tag color="blue">Trực tuyến</Tag>
         ),
     },
     {

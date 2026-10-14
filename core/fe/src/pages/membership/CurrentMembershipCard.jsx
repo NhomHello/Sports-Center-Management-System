@@ -19,7 +19,7 @@ export function CurrentMembershipCard({ membership, canPurchase }) {
           </span>
           <span>
             <Typography.Text className="scms-current-membership__eyebrow">
-              MEMBERSHIP CỦA BẠN
+              Gói tập của bạn
             </Typography.Text>
             <Typography.Title level={3}>
               {isActive
