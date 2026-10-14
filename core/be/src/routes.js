@@ -3,6 +3,7 @@
  * Prefix chung (/api/v1) lay tu env.API_PREFIX trong app.js.
  */
 
+import auditRoutes from './modules/audit/audit.routes.js';
 import attendanceHistoryRoutes from './modules/attendance/attendance-history.routes.js';
 import sprint3Routes from './modules/sprint3/sprint3.routes.js';
 import reportRoutes from './modules/report/report.routes.js';
@@ -32,6 +33,7 @@ import {
 
 const router = Router();
 
+router.use('/audit-logs', auditRoutes);
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/reports', reportRoutes);
