@@ -20,6 +20,7 @@ import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
 import { ROUTES } from '@/constants';
 
+const AuditPage = lazy(() => import('@/pages/system/audit/AuditPage'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage'));
 const RolesPage = lazy(() => import('@/pages/system/roles/RolesPage'));
 const UsersPage = lazy(() => import('@/pages/system/users/UsersPage'));
@@ -40,6 +41,12 @@ const GROUP_MEMBER = 'Hội viên';
 const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
 const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
 export const routeRegistry = [
+  {
+    path: ROUTES.SYSTEM_AUDIT,
+    element: <AuditPage />,
+    permission: PERMISSIONS.AUDIT_READ,
+    menu: { label: 'Nhật ký thao tác', icon: <SafetyOutlined />, group: GROUP_SYSTEM },
+  },
   {
     path: ROUTES.REPORTS,
     element: <ReportsPage />,
