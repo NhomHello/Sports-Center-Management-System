@@ -1,5 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Popconfirm } from 'antd';
+import { MembershipExpiryNotice } from './MembershipExpiryNotice';
 import { formatDateTime } from '@/utils/format';
 const deadline = (item) => formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline);
 
@@ -8,17 +9,20 @@ export function BookingEnrollButton({ item, memberId, allowed, booked, mutation 
   if (!allowed || booked) return null;
   const label = memberId ? 'Đăng ký hộ' : 'Đăng ký lớp';
   return (
-    <Popconfirm
-      title={memberId ? 'Đăng ký toàn lớp cho hội viên đã chọn?' : 'Đăng ký toàn lớp?'}
-      onConfirm={() => mutation.mutate()}
-      disabled={!item.canEnroll}
-      okText="Đăng ký"
-      cancelText="Huỷ"
-    >
-      <Button type="primary" disabled={!item.canEnroll} loading={mutation.isPending}>
-        {label}
-      </Button>
-    </Popconfirm>
+    <>
+      <MembershipExpiryNotice item={item} memberId={memberId} />
+      <Popconfirm
+        title={memberId ? 'Đăng ký toàn lớp cho hội viên đã chọn?' : 'Đăng ký toàn lớp?'}
+        onConfirm={() => mutation.mutate()}
+        disabled={!item.canEnroll}
+        okText="Đăng ký"
+        cancelText="Huỷ"
+      >
+        <Button type="primary" disabled={!item.canEnroll} loading={mutation.isPending}>
+          {label}
+        </Button>
+      </Popconfirm>
+    </>
   );
 }
 
