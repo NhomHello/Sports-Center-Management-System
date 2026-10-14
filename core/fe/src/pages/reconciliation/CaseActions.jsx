@@ -3,12 +3,11 @@ import { CaseMapForm } from './CaseMapForm';
 import { CaseContacts } from './CaseContacts';
 import { CaseConfirmForm } from './CaseConfirmForm';
 import { CaseExcessForm } from './CaseExcessForm';
-/** Actions conditionnées par état du serveur. */
+/** Thao tác theo trạng thái server trả về. */
 export function CaseActions({ item, active, mutation }) {
   const id = item.id;
   return (
     <>
-      {' '}
       {active && [CASE_REASON.NO_MATCH, CASE_REASON.LATE].includes(item.reason) && (
         <CaseMapForm pending={mutation.isPending} onAction={mutation.mutateAsync} />
       )}

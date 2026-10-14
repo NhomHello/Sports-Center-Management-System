@@ -27,7 +27,12 @@ export default function ReconciliationPage() {
       dataIndex: 'status',
       render: (value) => <Tag>{CASE_STATUS_LABELS[value]}</Tag>,
     },
-    { title: 'Số tiền', dataIndex: 'amount', align: 'right', render: formatCurrency },
+    {
+      title: 'Số tiền',
+      dataIndex: 'amount',
+      align: 'right',
+      render: (value) => formatCurrency(value),
+    },
     { title: 'Ngày nhận', dataIndex: 'createdAt', render: formatDateTime },
     {
       title: 'Thao tác',

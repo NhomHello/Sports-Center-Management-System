@@ -36,7 +36,10 @@ export function MemberFormModal({ open, onClose, onOpenDuplicate }) {
       cancelText="Hủy"
       confirmLoading={createMutation.isPending}
       onOk={form.submit}
-      onCancel={onClose}
+      onCancel={() => {
+        createMutation.reset();
+        onClose();
+      }}
       destroyOnHidden
     >
       <DuplicateMembers
