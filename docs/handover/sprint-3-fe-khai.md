@@ -1,7 +1,7 @@
 # Sprint 3 – Khải
 
 - Nhánh bàn giao: `sprint-3/fe-khai`, đã tích hợp `origin/main` trước khi triển khai.
-- Tác giả các commit triển khai: `khainguyense190020 <khainguyen02112005@gmail.com>`.
+- Tác giả các commit triển khai: `khainguyense190020 <joppyminecraft2005@gmail.com>`.
 - Phạm vi lấy theo 35 dòng có người làm **Khải** trong `docs/ke-hoach/SWP391_TaskSheet_Sprint3.xlsx`, gồm cả ba task BE được phân công. S3-08 được triển khai cùng nhánh theo yêu cầu làm toàn bộ công việc của Khải.
 
 ## Chức năng
