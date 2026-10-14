@@ -27,7 +27,11 @@ export const resolveBookingMember = (query, context) => {
 /** Bộ lọc quản lý chỉ chứa tài nguyên trong phạm vi lớp được phép xem. */
 export const getFilters = async (context) => {
   const rows = await prisma.gymClass.findMany({
-    where: managementScope(context),
+    where:
+      context.permissions.has(PERMISSIONS.CLASS_READ_ALL) ||
+      context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING)
+        ? managementScope(context)
+        : { status: Enums.ClassStatus.OPEN },
     select: {
       subject: { select: { id: true, name: true } },
       coach: { select: PUBLIC_PERSON },

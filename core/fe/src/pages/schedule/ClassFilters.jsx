@@ -20,7 +20,7 @@ const selectFilters = (data) => [
   { key: 'coachId', label: 'Huấn luyện viên', options: options(data?.coaches || []) },
 ];
 /** Bộ lọc lấy đúng bộ môn/HLV trong phạm vi quyền, không lấy danh mục quản trị. */
-export function ClassFilters({ table }) {
+export function ClassFilters({ table, hideStatus = false }) {
   const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'filters'],
     queryFn: service.getClassFilters,
@@ -43,20 +43,22 @@ export function ClassFilters({ table }) {
             }
           />
         </div>
-        {selectFilters(query.data?.data).map((filter) => (
-          <div key={filter.key} className="scms-filter-field">
-            <span>{filter.label}</span>
-            <Select
-              aria-label={`Lọc theo ${filter.label.toLowerCase()}`}
-              placeholder={filter.label}
-              allowClear
-              value={table.params[filter.key]}
-              options={filter.options}
-              loading={query.isPending}
-              onChange={(value) => table.setFilters({ [filter.key]: value })}
-            />
-          </div>
-        ))}
+        {selectFilters(query.data?.data)
+          .filter((filter) => !hideStatus || filter.key !== 'status')
+          .map((filter) => (
+            <div key={filter.key} className="scms-filter-field">
+              <span>{filter.label}</span>
+              <Select
+                aria-label={`Lọc theo ${filter.label.toLowerCase()}`}
+                placeholder={filter.label}
+                allowClear
+                value={table.params[filter.key]}
+                options={filter.options}
+                loading={query.isPending}
+                onChange={(value) => table.setFilters({ [filter.key]: value })}
+              />
+            </div>
+          ))}
         {FILTER_KEYS.some((key) => table.params[key]) && (
           <Button
             type="text"
