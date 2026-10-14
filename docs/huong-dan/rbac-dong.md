@@ -111,3 +111,13 @@ Role seed ban đầu (`prisma/seed/roles.seed.js`): Quản lý trung tâm (ALL),
 - `schedule.view_own` luôn lấy userId từ token. `schedule.view_teaching` lọc theo coachId của người đăng nhập. `class.read_all` không làm endpoint `/schedule/me` đọc lịch của người khác.
 
 Xem tài liệu `SWP391_ThietKe_API_XepLop.docx` và sheet `TC-F2` trong `SWP391_TestCase.xlsx` (thư mục `outputs/tai-lieu/`).
+
+### Sprint 3 – bảo lưu và điểm danh
+
+Bổ sung các quyền `membership.freeze_self`, `membership.freeze_all`, `attendance.check_in`,
+`attendance.record`, `attendance.manage`, `class.unblock`. Chạy seed để đồng bộ registry.
+Seed giữ nguyên quyền của các role đang tồn tại (ngoại trừ role quản lý toàn quyền): quản lý cấp
+thêm quyền qua màn phân quyền theo nhu cầu. `attendance.record` chỉ cho buổi thực sự phụ trách;
+`attendance.manage` cho mọi buổi và mở lại hạn sửa. `membership.freeze_self` chỉ cho gói của mình;
+`membership.freeze_all` cho nhân viên xử lý hộ. Các số ngày/giờ và policy check-in lấy từ
+system settings, chi tiết ở `docs/handover/sprint-3-be-bao.md`.

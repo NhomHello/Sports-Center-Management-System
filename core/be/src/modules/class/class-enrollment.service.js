@@ -1,3 +1,5 @@
+import { completeDueFreezes } from '../membership/membership-freeze.service.js';
+import { promoteWaitlist } from './class-waitlist.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
   withScheduleTransaction,
@@ -17,6 +19,8 @@ async function loadClass(db, id) {
 /** BR-2.1/2.2/2.3: cùng luật cho tự đăng ký và đăng ký hộ, ghi rõ actor. */
 export const enroll = (classId, memberId, actor) =>
   withScheduleTransaction(async (db) => {
+    await completeDueFreezes(db, memberId, new Date());
+    await promoteWaitlist(db, classId);
     const item = await loadClass(db, classId);
     const state = await getClassActions(db, item, memberId);
     if (state.enrollment?.status === Enums.EnrollmentStatus.BOOKED) {
@@ -34,6 +38,15 @@ export const enroll = (classId, memberId, actor) =>
         cancelledAt: null,
         exceptionUntil: null,
       },
+    });
+    await db.classWaitlist.updateMany({
+      where: {
+        classId,
+        memberId,
+        status: Enums.WaitlistStatus.OFFERED,
+        offeredUntil: { gt: new Date() },
+      },
+      data: { status: Enums.WaitlistStatus.ACCEPTED },
     });
     await writeScheduleAudit(db, actor, {
       action: AUDIT_ACTIONS.CREATE,
@@ -67,6 +80,7 @@ export const cancel = (classId, memberId, actor) =>
       entityId: enrollment.id,
       meta: { classId, memberId },
     });
+    await promoteWaitlist(db, classId);
     return enrollment;
   });
 

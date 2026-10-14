@@ -1,3 +1,4 @@
+import { isFrozen } from './membership-freeze.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 
@@ -18,6 +19,7 @@ const findLatestByMemberId = async (memberId) =>
     },
     include: {
       plan: true,
+      freezes: true,
       _count: { select: { invoices: { where: { status: Enums.InvoiceStatus.PAID } } } },
     },
     orderBy: {
@@ -46,12 +48,16 @@ export const getCurrentByMemberId = async (memberId) => {
   }
 
   const now = new Date();
-  const status = membership.endDate > now ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED;
+  const status =
+    membership.freezes.some((f) => isFrozen(f, now)) || membership.endDate > now
+      ? MEMBERSHIP_STATUS.ACTIVE
+      : MEMBERSHIP_STATUS.EXPIRED;
 
   const { _count: counts, ...rest } = membership;
   return {
     ...rest,
     status,
+    isFrozen: membership.freezes.some((f) => isFrozen(f, now)),
     paidInvoiceCount: counts.invoices,
   };
 };

@@ -5,6 +5,7 @@
  * không đọc trực tiếp từ file này.
  */
 
+import { SPRINT3_SETTINGS } from './settings-sprint3.js';
 import { PAYMENT_SETTINGS } from './settings-payment.js';
 import { SETTING_GROUPS, SETTING_TYPES } from './setting-constants.js';
 
@@ -26,6 +27,7 @@ export { SETTING_GROUPS, SETTING_TYPES };
 /** @type {SettingDefinition[]} */
 export const SETTING_DEFINITIONS = [
   ...PAYMENT_SETTINGS,
+  ...SPRINT3_SETTINGS,
   {
     key: 'CENTER_NAME',
     type: SETTING_TYPES.STRING,

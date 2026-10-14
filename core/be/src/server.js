@@ -1,6 +1,8 @@
 /**
  * Entry point: chay `npm run dev` (node --watch) hoac `npm start`.
  */
+import { startMembershipReminderJob } from './modules/notification/notification.job.js';
+import { startWaitlistWorker } from './modules/class/class-waitlist.service.js';
 import { app } from './app.js';
 import { prisma } from './config/db.js';
 import { env } from './config/env.js';
@@ -8,6 +10,8 @@ import { logger } from './config/logger.js';
 import { startClassEventWorker } from './modules/class/class-event.service.js';
 import { startInvoiceExpiryWorker } from './modules/payment/invoice-expiry.job.js';
 
+const stopWaitlist = startWaitlistWorker();
+const stopMembershipJob = startMembershipReminderJob();
 const stopClassEventWorker = startClassEventWorker();
 const stopInvoiceExpiryWorker = startInvoiceExpiryWorker();
 
@@ -21,6 +25,8 @@ const server = app.listen(env.PORT, () => {
  */
 const shutdown = async (signal) => {
   logger.info({ signal }, 'Dang tat server...');
+  stopWaitlist();
+  stopMembershipJob();
   stopClassEventWorker();
   stopInvoiceExpiryWorker();
   server.close(async () => {

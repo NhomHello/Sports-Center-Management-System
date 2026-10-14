@@ -6,6 +6,16 @@ import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 
 const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
+const renewalKinds = new Set([
+  Enums.NotificationKind.MEMBERSHIP_EXPIRY_REMINDER,
+  Enums.NotificationKind.MEMBERSHIP_EXPIRED,
+]);
+const toNotificationView = (item) => ({
+  ...item,
+  ...(renewalKinds.has(item.kind) && {
+    action: { type: 'RENEW_MEMBERSHIP', label: 'Gia hạn gói tập', membershipId: item.membershipId },
+  }),
+});
 
 async function createExpiryReminders(userId) {
   const reminderDays = await settingService.getValue(SETTING_KEYS.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
@@ -13,6 +23,7 @@ async function createExpiryReminders(userId) {
   const memberships = await prisma.membership.findMany({
     where: {
       userId,
+      freezes: { none: { endedAt: null, startAt: { lte: now }, endAt: { gt: now } } },
       status: Enums.MembershipStatus.ACTIVE,
       endDate: { gt: now, lte: new Date(now.getTime() + reminderDays * TIME.MS_PER_DAY) },
     },
@@ -52,7 +63,10 @@ export const listForUser = async (userId, query) => {
     prisma.notification.count({ where }),
     prisma.notification.count({ where: { userId, readAt: null } }),
   ]);
-  return { items, meta: { ...buildPageMeta({ ...query, total }), unreadCount } };
+  return {
+    items: items.map(toNotificationView),
+    meta: { ...buildPageMeta({ ...query, total }), unreadCount },
+  };
 };
 
 /** Đọc lặp giữ nguyên readAt; không thể thay đổi notification của người khác. */

@@ -35,6 +35,7 @@ export const updateStatus = async (req, res) => {
     req.validated.params.id,
     req.validated.body.status,
     req.user,
+    req.validated.body.cancelFutureBookings,
   );
   sendSuccess(res, {
     data: user,

@@ -65,6 +65,8 @@ export const PERMISSION_MODULES = [
       purchase: 'Mua / gia hạn gói cho mình',
       manage: 'Đăng ký / gia hạn gói hộ hội viên',
       read_all: 'Xem gói của mọi hội viên',
+      freeze_self: 'Bảo lưu gói của mình',
+      freeze_all: 'Bảo lưu gói hộ hội viên',
     },
   },
 
@@ -92,12 +94,23 @@ export const PERMISSION_MODULES = [
       cancel_self: 'Tự huỷ đăng ký',
       enroll_for_member: 'Đăng ký / huỷ lớp hộ hội viên',
       view_roster: 'Xem danh sách học viên của lớp',
+      unblock: 'Gỡ chặn đăng ký do vắng mặt',
     },
   },
   {
     module: 'schedule',
     label: 'Lịch',
     actions: { view_own: 'Xem lịch tập cá nhân', view_teaching: 'Xem lịch dạy' },
+  },
+
+  {
+    module: 'attendance',
+    label: 'Điểm danh',
+    actions: {
+      check_in: 'Check-in tại quầy',
+      record: 'Điểm danh buổi phụ trách',
+      manage: 'Điểm danh mọi buổi / mở hạn sửa',
+    },
   },
 
   // ---------- Flow 3: Payment & Report ----------

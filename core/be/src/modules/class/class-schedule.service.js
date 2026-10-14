@@ -1,3 +1,4 @@
+import { assertSessionResources } from './session-resource.service.js';
 import { PERMISSIONS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
@@ -56,20 +57,6 @@ export const validateResources = async (db, data, sessions, excludeId) => {
     throw ApiError.businessRule('Bộ môn, phòng hoặc HLV không hoạt động');
   if (data.capacity > room.capacity)
     throw ApiError.businessRule('Sức chứa lớp vượt sức chứa phòng');
-  const existing = await db.classSession.findMany({
-    where: {
-      status: Enums.SessionStatus.SCHEDULED,
-      endAt: { gt: sessions[0].startAt },
-      startAt: { lt: sessions.at(-1).endAt },
-      gymClass: {
-        ...(excludeId && { id: { not: excludeId } }),
-        status: { not: Enums.ClassStatus.CANCELLED },
-        OR: [{ coachId: data.coachId }, { roomId: data.roomId }],
-      },
-    },
-  });
-  if (sessions.some((s) => existing.some((old) => overlaps(s, old)))) {
-    throw ApiError.conflict('Phòng hoặc HLV bị trùng lịch');
-  }
-  return { roomName: room.name, coachName: coach.fullName };
+  await assertSessionResources(db, sessions, data, { classId: excludeId });
+  return { roomId: room.id, coachId: coach.id, roomName: room.name, coachName: coach.fullName };
 };

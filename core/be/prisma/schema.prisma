@@ -76,6 +76,11 @@ enum EmailTokenPurpose {
 
 enum NotificationKind {
   MEMBERSHIP_EXPIRY_REMINDER
+  MEMBERSHIP_EXPIRED
+  MEMBERSHIP_FROZEN
+  WAITLIST_OFFER
+  ACCOUNT_LOCKED
+  BOOKING_BLOCKED
   CLASS_CHANGED
   CLASS_CANCELLED
   TRAINING_PLAN_PUBLISHED
@@ -96,6 +101,13 @@ model User {
   email                   String?                  @unique @db.VarChar(191)
   phone                   String?                  @unique @db.VarChar(20)
   passwordHash            String                   @map("password_hash") @db.VarChar(255)
+  bookingBlockedUntil     DateTime?                @map("booking_blocked_until")
+  noShowWaivedAt          DateTime?                @map("no_show_waived_at")
+  checkIns                CheckIn[]                @relation("CheckInMember")
+  recordedCheckIns        CheckIn[]                @relation("CheckInActor")
+  attendance              Attendance[]
+  waitlist                ClassWaitlist[]
+  taughtSessions          ClassSession[]           @relation("SessionCoach")
   tokenVersion            Int                      @default(0) @map("token_version")
   fullName                String                   @map("full_name") @db.VarChar(100)
   status                  UserStatus               @default(ACTIVE)
@@ -245,19 +257,20 @@ model MembershipPlan {
 
 /// BR-1.2: activeUserId duy nhất bảo vệ một membership ACTIVE cho mỗi hội viên.
 model Membership {
-  id            Int              @id @default(autoincrement())
-  userId        Int              @map("user_id")
-  activeUserId  Int?             @unique @map("active_user_id")
-  planId        Int              @map("plan_id")
-  startDate     DateTime         @map("start_date")
-  endDate       DateTime         @map("end_date")
-  status        MembershipStatus @default(ACTIVE)
-  user          User             @relation(fields: [userId], references: [id])
-  plan          MembershipPlan   @relation(fields: [planId], references: [id])
+  id            Int                @id @default(autoincrement())
+  userId        Int                @map("user_id")
+  activeUserId  Int?               @unique @map("active_user_id")
+  planId        Int                @map("plan_id")
+  startDate     DateTime           @map("start_date")
+  endDate       DateTime           @map("end_date")
+  status        MembershipStatus   @default(ACTIVE)
+  user          User               @relation(fields: [userId], references: [id])
+  plan          MembershipPlan     @relation(fields: [planId], references: [id])
+  freezes       MembershipFreeze[]
   invoices      Invoice[]
   notifications Notification[]
-  createdAt     DateTime         @default(now()) @map("created_at")
-  updatedAt     DateTime         @updatedAt @map("updated_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
 
   @@index([userId, status, endDate])
   @@index([planId])
@@ -266,27 +279,27 @@ model Membership {
 
 /// Giá và thời hạn được chụp lúc tạo; thay đổi danh mục không sửa giao dịch cũ.
 model Invoice {
-  id           Int                 @id @default(autoincrement())
-  code         String              @unique @db.VarChar(50)
-  userId       Int                 @map("user_id")
-  planId       Int                 @map("plan_id")
-  planName     String?             @map("plan_name") @db.VarChar(100)
-  durationDays Int?                @map("duration_days")
-  membershipId Int?                @map("membership_id")
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique @db.VarChar(50)
+  userId       Int                  @map("user_id")
+  planId       Int                  @map("plan_id")
+  planName     String?              @map("plan_name") @db.VarChar(100)
+  durationDays Int?                 @map("duration_days")
+  membershipId Int?                 @map("membership_id")
   amount       Int
-  status       InvoiceStatus       @default(PENDING)
-  channel      InvoiceChannel      @default(COUNTER)
-  expiresAt    DateTime            @map("expires_at")
-  paidAt       DateTime?           @map("paid_at")
-  user         User                @relation(fields: [userId], references: [id])
-  plan         MembershipPlan      @relation(fields: [planId], references: [id])
-  membership   Membership?         @relation(fields: [membershipId], references: [id])
+  status       InvoiceStatus        @default(PENDING)
+  channel      InvoiceChannel       @default(COUNTER)
+  expiresAt    DateTime             @map("expires_at")
+  paidAt       DateTime?            @map("paid_at")
+  user         User                 @relation(fields: [userId], references: [id])
+  plan         MembershipPlan       @relation(fields: [planId], references: [id])
+  membership   Membership?          @relation(fields: [membershipId], references: [id])
   payments     Payment[]
   webhookLogs  PaymentWebhookLog[]
   cases        ReconciliationCase[]
   refunds      Refund[]
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @updatedAt @map("updated_at")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
 
   @@index([userId, planId, status])
   @@index([status, expiresAt])
@@ -313,20 +326,20 @@ model Payment {
 /// Nhật ký webhook SePay; providerTransactionId duy nhất để chống xử lý lặp khi SePay gửi lại.
 /// NEEDS_REVIEW = tiền đã về nhưng không tự khớp được (sai số tiền, hoá đơn hết hạn...) -> lễ tân/quản lý xử lý.
 model PaymentWebhookLog {
-  id                    Int              @id @default(autoincrement())
-  providerTransactionId String?          @unique @map("provider_transaction_id") @db.VarChar(100)
-  invoiceCode           String?          @map("invoice_code") @db.VarChar(50)
-  transferType          String?          @map("transfer_type") @db.VarChar(20)
-  transferAmount        Int?             @map("transfer_amount")
+  id                    Int                 @id @default(autoincrement())
+  providerTransactionId String?             @unique @map("provider_transaction_id") @db.VarChar(100)
+  invoiceCode           String?             @map("invoice_code") @db.VarChar(50)
+  transferType          String?             @map("transfer_type") @db.VarChar(20)
+  transferAmount        Int?                @map("transfer_amount")
   status                WebhookLogStatus
-  reason                String?          @db.VarChar(255)
+  reason                String?             @db.VarChar(255)
   payload               Json
-  invoiceId             Int?             @map("invoice_id")
-  invoice               Invoice?         @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
-  reviewedById          Int?             @map("reviewed_by_id")
-  reviewedAt            DateTime?        @map("reviewed_at")
+  invoiceId             Int?                @map("invoice_id")
+  invoice               Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  reviewedById          Int?                @map("reviewed_by_id")
+  reviewedAt            DateTime?           @map("reviewed_at")
   reconciliationCase    ReconciliationCase?
-  createdAt             DateTime         @default(now()) @map("created_at")
+  createdAt             DateTime            @default(now()) @map("created_at")
 
   @@index([status, createdAt])
   @@map("payment_webhook_logs")
@@ -477,14 +490,16 @@ model Subject {
 }
 
 model Room {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique @db.VarChar(100)
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
   capacity    Int
-  description String?    @db.VarChar(500)
-  isActive    Boolean    @default(true) @map("is_active")
+  description String?           @db.VarChar(500)
+  isActive    Boolean           @default(true) @map("is_active")
+  sessions    ClassSession[]
+  maintenance RoomMaintenance[]
   classes     GymClass[]
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   @@map("rooms")
 }
@@ -508,6 +523,7 @@ model GymClass {
   coach               User              @relation(fields: [coachId], references: [id])
   sessions            ClassSession[]
   enrollments         ClassEnrollment[]
+  waitlist            ClassWaitlist[]
   events              ClassEvent[]
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
@@ -519,16 +535,24 @@ model GymClass {
 
 /// Snapshot phòng/HLV bảo toàn lịch cũ khi lớp chuyển phòng hoặc đổi người dạy.
 model ClassSession {
-  id        Int           @id @default(autoincrement())
-  classId   Int           @map("class_id")
-  startAt   DateTime      @map("start_at")
-  endAt     DateTime      @map("end_at")
-  roomName  String?       @map("room_name") @db.VarChar(100)
-  coachName String?       @map("coach_name") @db.VarChar(100)
-  status    SessionStatus @default(SCHEDULED)
-  gymClass  GymClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
+  id                      Int           @id @default(autoincrement())
+  classId                 Int           @map("class_id")
+  startAt                 DateTime      @map("start_at")
+  endAt                   DateTime      @map("end_at")
+  roomId                  Int?          @map("room_id")
+  coachId                 Int?          @map("coach_id")
+  rescheduledAt           DateTime?     @map("rescheduled_at")
+  attendanceUnlockedUntil DateTime?     @map("attendance_unlocked_until")
+  room                    Room?         @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  coach                   User?         @relation("SessionCoach", fields: [coachId], references: [id], onDelete: Restrict)
+  checkIns                CheckIn[]
+  attendance              Attendance[]
+  roomName                String?       @map("room_name") @db.VarChar(100)
+  coachName               String?       @map("coach_name") @db.VarChar(100)
+  status                  SessionStatus @default(SCHEDULED)
+  gymClass                GymClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt @map("updated_at")
 
   @@index([startAt, endAt, status])
   @@index([classId, startAt])
@@ -582,4 +606,107 @@ model ScheduleLock {
   id Int @id
 
   @@map("schedule_locks")
+}
+
+/// Bảo lưu có lịch sử riêng; endAt là biên loại trừ theo ngày Việt Nam.
+model MembershipFreeze {
+  id           Int        @id @default(autoincrement())
+  membershipId Int        @map("membership_id")
+  startAt      DateTime   @map("start_at")
+  endAt        DateTime   @map("end_at")
+  endedAt      DateTime?  @map("ended_at")
+  creditedDays Int?       @map("credited_days")
+  actorId      Int        @map("actor_id")
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@index([membershipId, endedAt])
+  @@map("membership_freezes")
+}
+
+/// Lượt đến quầy giữ nguyên cảnh báo tại thời điểm tiếp nhận.
+enum CheckInKind {
+  GENERAL
+  CLASS
+}
+
+model CheckIn {
+  id        Int           @id @default(autoincrement())
+  memberId  Int           @map("member_id")
+  actorId   Int           @map("created_by_id")
+  sessionId Int?          @map("session_id")
+  kind      CheckInKind
+  code      String        @db.VarChar(100)
+  scannedAt DateTime      @default(now()) @map("scanned_at")
+  warning   String?       @db.VarChar(500)
+  actor     User          @relation("CheckInActor", fields: [actorId], references: [id], onDelete: Restrict)
+  session   ClassSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  member    User          @relation("CheckInMember", fields: [memberId], references: [id], onDelete: Restrict)
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  @@unique([memberId, sessionId])
+  @@index([memberId, scannedAt])
+  @@map("check_ins")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+/// Một kết quả cho mỗi hội viên/buổi, sửa có audit thay vì xoá lịch sử.
+model Attendance {
+  id        Int              @id @default(autoincrement())
+  sessionId Int              @map("session_id")
+  memberId  Int              @map("member_id")
+  actorId   Int              @map("actor_id")
+  status    AttendanceStatus
+  session   ClassSession     @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  member    User             @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@unique([sessionId, memberId])
+  @@index([memberId, status])
+  @@map("attendance")
+}
+
+enum WaitlistStatus {
+  WAITING
+  OFFERED
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+/// Giữ chỗ được tính vào sức chứa; mọi chuyển trạng thái dùng schedule lock.
+model ClassWaitlist {
+  id           Int            @id @default(autoincrement())
+  classId      Int            @map("class_id")
+  memberId     Int            @map("member_id")
+  status       WaitlistStatus @default(WAITING)
+  offeredUntil DateTime?      @map("offered_until")
+  joinedAt     DateTime       @default(now()) @map("joined_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  gymClass     GymClass       @relation(fields: [classId], references: [id], onDelete: Restrict)
+  member       User           @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@unique([classId, memberId])
+  @@index([classId, status, joinedAt])
+  @@map("class_waitlist")
+}
+
+/// Khoảng bảo trì ngăn tạo/đổi lịch vào phòng trong cùng transaction.
+model RoomMaintenance {
+  id        Int      @id @default(autoincrement())
+  roomId    Int      @map("room_id")
+  startAt   DateTime @map("start_at")
+  endAt     DateTime @map("end_at")
+  reason    String   @db.VarChar(500)
+  actorId   Int      @map("actor_id")
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([roomId, startAt, endAt])
+  @@map("room_maintenance")
 }

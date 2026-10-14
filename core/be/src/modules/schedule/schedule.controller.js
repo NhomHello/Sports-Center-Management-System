@@ -3,7 +3,7 @@ import { getWeek } from './schedule.service.js';
 const load = async (req, res, kind) =>
   sendSuccess(res, {
     data: await getWeek({
-      weekStart: req.validated.query.weekStart,
+      ...req.validated.query,
       kind,
       context: { user: req.user, permissions: req.permissions },
     }),
