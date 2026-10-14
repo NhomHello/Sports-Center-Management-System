@@ -18,6 +18,7 @@ export const ROUTES = Object.freeze({
   CHANGE_PASSWORD: '/change-password',
   NOTIFICATIONS: '/notifications',
   FORBIDDEN: '/403',
+  SYSTEM_AUDIT: '/system/audit',
   SYSTEM_ROLES: '/system/roles',
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
