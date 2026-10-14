@@ -38,7 +38,7 @@ async function detail(page) {
   await expect(page.getByText('Các buổi học', { exact: true })).toBeVisible();
 }
 
-test('S3-11/13/83: đổi HLV, đổi giờ và huỷ một buổi, giữ lịch sử', async ({ page }, info) => {
+test('S3-11/13/83: đổi HLV, đổi giờ và hủy một buổi, giữ lịch sử', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'Thao tác bảng ở desktop');
   await admin(page);
   await detail(page);
@@ -76,11 +76,11 @@ test('S3-11/13/83: đổi HLV, đổi giờ và huỷ một buổi, giữ lịch
       await prisma.classSession.findUniqueOrThrow({ where: { id: item.sessions[0].id } })
     ).startAt.toISOString(),
   ).toBe(nextStart.toISOString());
-  await page.getByRole('button', { name: 'Huỷ buổi', exact: true }).first().click();
-  const cancel = dialog(page, 'Huỷ buổi học');
+  await page.getByRole('button', { name: 'Hủy buổi', exact: true }).first().click();
+  const cancel = dialog(page, 'Hủy buổi học');
   await expect(cancel.getByText('Sẽ thông báo 1 hội viên đang đăng ký.')).toBeVisible();
-  await cancel.getByLabel('Lý do huỷ').fill('HLV bận đột xuất');
-  await cancel.getByRole('button', { name: 'Huỷ buổi', exact: true }).click();
+  await cancel.getByLabel('Lý do hủy').fill('HLV bận đột xuất');
+  await cancel.getByRole('button', { name: 'Hủy buổi', exact: true }).click();
   await expect(cancel).not.toBeVisible();
   expect(
     (await prisma.classSession.findUniqueOrThrow({ where: { id: item.sessions[0].id } })).status,
@@ -215,7 +215,7 @@ test('UI-F2: lịch tuần 7 cột, lọc phòng và chuyển từ lịch trốn
     .click();
   expect((await request).status()).toBe(200);
   await chooseDate(page, item.sessions[0].startAt.slice(0, 10));
-  await page.getByRole('switch', { name: 'Hiện lịch đã huỷ' }).check();
+  await page.getByRole('switch', { name: 'Hiện lịch đã hủy' }).check();
   await expect(page.locator('.scms-week-grid')).toBeVisible();
   expect(
     await page

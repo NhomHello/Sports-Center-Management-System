@@ -1,6 +1,9 @@
 import { defineConfig } from '@playwright/test';
 process.loadEnvFile('core/be/.env');
 process.env.NODE_ENV = 'test';
+// Fixtures dùng supertest trong tiến trình Playwright cũng cần giới hạn kiểm thử.
+process.env.AUTH_RATE_LIMIT_MAX = '1000';
+process.env.RATE_LIMIT_MAX = '5000';
 const apiPort = process.env.E2E_API_PORT || '3100';
 const fePort = process.env.E2E_FE_PORT || '5180';
 process.env.PORT = apiPort;
