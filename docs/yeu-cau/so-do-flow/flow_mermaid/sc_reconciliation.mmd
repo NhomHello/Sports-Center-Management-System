@@ -1,0 +1,16 @@
+stateDiagram-v2
+  [*] --> OPEN: transfer not auto-matched\n(NO_MATCH, UNDERPAID, OVERPAID, LATE,\nDUPLICATE_TRANSFER, MEMBER_CLAIM)
+  OPEN --> WAITING_MEMBER: manager contacted member\n(contact logged)
+  OPEN --> MATCHED: mapped to invoice,\namount equal → invoice PAID
+  OPEN --> WAITING_TOPUP: mapped, amount less\n→ top-up QR sent
+  WAITING_TOPUP --> MATCHED: member paid the rest\nbefore deadline
+  WAITING_TOPUP --> REFUND_PENDING: deadline passed
+  WAITING_MEMBER --> REFUND_PENDING: member wants refund\n(extra / duplicate)
+  WAITING_MEMBER --> MATCHED: member keeps money\nfor a renewal invoice
+  OPEN --> REJECTED: claim rejected with reason\n(no matching transaction)
+  OPEN --> IGNORED: test / junk only,\nnote required
+  REFUND_PENDING --> REFUNDED: bank reference entered
+  MATCHED --> [*]
+  REFUNDED --> [*]
+  REJECTED --> [*]
+  IGNORED --> [*]

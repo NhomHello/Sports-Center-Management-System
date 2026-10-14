@@ -1,0 +1,183 @@
+.scms-calendar-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px 20px;
+}
+.scms-calendar-toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.scms-calendar-heading h3 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.scms-calendar-heading p {
+  font-size: 13px;
+}
+.scms-calendar-total {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+.scms-class-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px 24px;
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+  background: var(--scms-surface);
+  text-align: center;
+}
+.scms-class-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 18px;
+  color: var(--scms-blue);
+  border-radius: 16px;
+  background: var(--scms-soft-blue);
+  font-size: 26px;
+}
+.scms-class-empty h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 650;
+}
+.scms-class-empty p {
+  max-width: 490px;
+  margin: 0 0 22px;
+  color: var(--scms-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.scms-class-session-context {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--scms-soft-blue);
+  border-radius: 12px;
+}
+.scms-class-session-context > .anticon {
+  color: var(--scms-blue);
+  font-size: 20px;
+}
+.scms-class-session-context > div {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.scms-class-action-scope {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 13px;
+}
+@media (min-width: 992px) {
+  .scms-app-content__inner.scms-schedule-workspace {
+    max-width: 1600px;
+  }
+  .scms-schedule .scms-page-header {
+    margin-bottom: 22px !important;
+  }
+  .scms-schedule > .ant-tabs > .ant-tabs-nav {
+    margin-bottom: 18px;
+  }
+  .scms-calendar--compact .scms-calendar-scroll {
+    padding-bottom: 0;
+  }
+  .scms-calendar--compact .scms-schedule-day {
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .scms-calendar--compact .scms-schedule-day__header > div > span,
+  .scms-calendar--compact .scms-schedule-day__empty {
+    font-size: 12px;
+  }
+  .scms-calendar--compact .scms-schedule-day__count,
+  .scms-calendar--compact .scms-schedule-day__today {
+    font-size: 11px;
+  }
+  .scms-calendar--compact .scms-calendar-event.ant-card > .ant-card-body {
+    padding: 12px;
+  }
+  .scms-calendar--compact .scms-calendar-event__time {
+    font-size: 13px;
+  }
+  .scms-calendar--compact .scms-calendar-event__title {
+    margin-block: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .scms-calendar--compact .scms-calendar-event__tags {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .scms-calendar--compact .scms-calendar-event__tags .ant-tag {
+    font-size: 11px;
+  }
+  .scms-calendar--compact .scms-calendar-event__actions {
+    margin-top: 10px;
+  }
+  .scms-calendar--compact .scms-calendar-event__actions > .ant-btn {
+    height: 34px;
+    font-size: 12px;
+    box-shadow: none;
+  }
+  .scms-class-list-toolbar {
+    padding: 16px;
+    background: var(--scms-surface);
+    border: 1px solid var(--scms-border);
+    border-radius: var(--scms-card-radius);
+  }
+}
+@media (max-width: 600px) {
+  .scms-calendar-toolbar {
+    padding: 14px;
+  }
+  .scms-calendar-heading h3 {
+    font-size: 18px;
+  }
+  .scms-calendar-toolbar-controls {
+    gap: 16px;
+  }
+}
+@container (min-width: 1181px) {
+  .scms-calendar--compact .scms-week-grid {
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid var(--scms-border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--scms-surface);
+  }
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day {
+    min-height: 300px;
+    border: 0;
+    border-inline-end: 1px solid var(--scms-border);
+    border-radius: 0;
+    background: transparent;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day:last-child {
+    border-inline-end: 0;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day--today {
+    background: var(--scms-calendar-today);
+  }
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day__header {
+    min-height: 62px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--scms-border);
+  }
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day__empty {
+    justify-content: center;
+    padding-block: 28px;
+    font-size: 11px;
+  }
+}
