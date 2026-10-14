@@ -109,3 +109,10 @@ export const CLASS_LIMITS = Object.freeze({
   NAME_LENGTH: 120,
   DESCRIPTION_LENGTH: 1000,
 });
+
+export const SPRINT3 = Object.freeze({
+  JOB_INTERVAL_MS: 60000,
+  REPORT_MAX_DAYS: 366,
+  PDF_MARGIN: 40,
+  PDF_FONT_SIZE: 10,
+});

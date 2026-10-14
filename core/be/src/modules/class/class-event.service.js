@@ -12,14 +12,15 @@ export const queueClassEvent = async (db, item, kind, changes) => {
     select: { memberId: true },
   });
   const isCancelled = kind === Enums.NotificationKind.CLASS_CANCELLED;
+  const label = changes.sessionId ? 'Buổi học' : 'Lớp học';
   return db.classEvent.create({
     data: {
       classId: item.id,
       kind,
       recipientIds: enrollments.map((e) => e.memberId),
       changes,
-      title: isCancelled ? 'Lớp học đã bị huỷ' : 'Lịch lớp học thay đổi',
-      message: `Lớp ${item.name} ${isCancelled ? 'đã bị huỷ' : 'đã thay đổi lịch. Vui lòng xem lịch mới'}.`,
+      title: isCancelled ? `${label} đã bị huỷ` : `Lịch ${label.toLowerCase()} thay đổi`,
+      message: `${label} ${item.name} ${isCancelled ? 'đã bị huỷ' : 'đã thay đổi lịch. Vui lòng xem lịch mới'}.`,
     },
   });
 };

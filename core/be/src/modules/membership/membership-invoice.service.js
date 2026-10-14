@@ -1,3 +1,4 @@
+import { completeDueFreezes } from './membership-freeze.service.js';
 import { randomUUID } from 'node:crypto';
 import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
@@ -146,11 +147,15 @@ export const createOnlineOrder = async (input, actor) => {
 
 /** Còn hạn cộng từ cuối gói; hết hạn bắt đầu tại ngày thu tiền. */
 export const activatePaidInvoice = async (invoice, paidAt, tx) => {
+  await tx.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
+  await completeDueFreezes(tx, invoice.userId, paidAt);
+  const frozen = { endedAt: null, startAt: { lte: paidAt }, endAt: { gt: paidAt } };
   await tx.membership.updateMany({
     where: {
       userId: invoice.userId,
       status: Enums.MembershipStatus.ACTIVE,
       endDate: { lte: paidAt },
+      freezes: { none: frozen },
     },
     data: { status: Enums.MembershipStatus.EXPIRED, activeUserId: null },
   });
@@ -158,7 +163,7 @@ export const activatePaidInvoice = async (invoice, paidAt, tx) => {
     where: {
       userId: invoice.userId,
       status: Enums.MembershipStatus.ACTIVE,
-      endDate: { gt: paidAt },
+      OR: [{ endDate: { gt: paidAt } }, { freezes: { some: frozen } }],
     },
   });
   const startDate = current?.startDate ?? paidAt;

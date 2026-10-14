@@ -55,7 +55,7 @@ describe('Sprint 2: danh mục, cấu hình lớp và outbox', () => {
           .set(bearer(f.adminToken))
           .send({ status: 'INACTIVE' })
       ).status,
-    ).toBe(422);
+    ).toBe(409);
   });
   it('TC-F2-C04: đổi lịch giữ phiên bản cũ và gửi thông báo idempotent', async () => {
     await prisma.classEnrollment.create({

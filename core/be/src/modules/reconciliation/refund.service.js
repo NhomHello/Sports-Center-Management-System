@@ -102,6 +102,7 @@ export const requestCaseRefund = async (id, { amount, reason }, actor) => {
 /** Hoàn hoá đơn rút lại đúng số ngày hoá đơn đã cộng; hết ngày thì gói kết thúc (chốt nhóm 14/10). */
 const shrinkMembership = async (tx, invoice) => {
   if (!invoice.membershipId) return null;
+  await tx.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
   const membership = await tx.membership.findUnique({ where: { id: invoice.membershipId } });
   const days = invoice.durationDays ?? invoice.plan.durationDays;
   const endDate = new Date(membership.endDate.getTime() - days * TIME.MS_PER_DAY);

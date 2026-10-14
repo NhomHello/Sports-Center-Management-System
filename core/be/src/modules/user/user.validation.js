@@ -38,5 +38,10 @@ export const updateUserRoleSchema = {
 
 export const updateUserStatusSchema = {
   params: idParam,
-  body: z.object({ status: z.enum(Object.values(Enums.UserStatus)) }),
+  body: z
+    .object({
+      status: z.enum(Object.values(Enums.UserStatus)),
+      cancelFutureBookings: z.boolean().default(false),
+    })
+    .strict(),
 };

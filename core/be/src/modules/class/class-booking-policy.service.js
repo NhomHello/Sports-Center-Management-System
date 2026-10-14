@@ -2,6 +2,7 @@ import { SETTING_KEYS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
+import { extraEnrollmentReason, heldSeats } from './class-member-eligibility.service.js';
 import { overlaps } from './class-schedule.service.js';
 
 /** BR-2.5: mốc >= N giờ được phép; ngoại lệ phải trước buổi xung đột. */
@@ -78,17 +79,21 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
     enrollment?.exceptionUntil && firstConflict
       ? new Date(Math.min(enrollment.exceptionUntil.getTime(), firstConflict.startAt.getTime()))
       : null;
-  const enrollReason = enrollmentReason(
-    {
-      item,
-      enrollment,
-      member,
-      membership,
-      conflict: firstConflict,
-      sessions,
-    },
-    now,
-  );
+  const extraReason = await extraEnrollmentReason(db, memberId, sessions, now);
+  const held = await heldSeats(db, item.id, now, memberId);
+  const enrollReason =
+    extraReason ??
+    enrollmentReason(
+      {
+        item: { ...item, _count: { enrollments: item._count.enrollments + held } },
+        enrollment,
+        member,
+        membership,
+        conflict: firstConflict,
+        sessions,
+      },
+      now,
+    );
   return {
     enrollment,
     canEnroll: !enrollReason,
@@ -112,5 +117,16 @@ export const enrichClassView = async (item, memberId) => {
     })),
     _count: { enrollments: item.enrolledCount },
   };
-  return { ...item, ...(await getClassActions(prisma, data, memberId)) };
+  const now = new Date();
+  const held = await heldSeats(prisma, item.id, now);
+  const waitlist = await prisma.classWaitlist.findUnique({
+    where: { classId_memberId: { classId: item.id, memberId } },
+  });
+  return {
+    ...item,
+    heldSeats: held,
+    seatsRemaining: Math.max(0, item.seatsRemaining - held),
+    waitlist,
+    ...(await getClassActions(prisma, data, memberId, now)),
+  };
 };

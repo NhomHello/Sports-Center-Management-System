@@ -3,6 +3,8 @@
  * Prefix chung (/api/v1) lay tu env.API_PREFIX trong app.js.
  */
 
+import sprint3Routes from './modules/sprint3/sprint3.routes.js';
+import reportRoutes from './modules/report/report.routes.js';
 import { Router } from 'express';
 import { HEALTH_PATH } from './constants/index.js';
 import authRoutes from './modules/auth/auth.routes.js';
@@ -31,6 +33,8 @@ const router = Router();
 
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
+router.use('/reports', reportRoutes);
+router.use(sprint3Routes);
 router.use('/members', memberRoutes);
 router.use('/notifications', notificationRoutes);
 // Phải đứng trước /payments vì paymentRoutes bắt buộc JWT cho mọi đường dẫn con.

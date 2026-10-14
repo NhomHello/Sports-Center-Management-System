@@ -1,3 +1,4 @@
+import { heldSeats } from './class-member-eligibility.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
   withScheduleTransaction,
@@ -78,7 +79,7 @@ export const update = (id, data, actor) =>
     if (!old) throw ApiError.notFound('Không tìm thấy lớp');
     if (old.status === Enums.ClassStatus.CANCELLED)
       throw ApiError.businessRule('Lớp đã huỷ không thể sửa');
-    if (data.capacity < old._count.enrollments)
+    if (data.capacity < old._count.enrollments + (await heldSeats(db, id, new Date())))
       throw ApiError.businessRule('Sức chứa nhỏ hơn số người đã đăng ký');
     const sessions = buildSessions(data);
     const snapshots = await validateResources(db, data, sessions, id);
@@ -122,6 +123,13 @@ export const cancel = (id, actor) =>
         cancelledAt: new Date(),
         exceptionUntil: null,
       },
+    });
+    await db.classWaitlist.updateMany({
+      where: {
+        classId: id,
+        status: { in: [Enums.WaitlistStatus.WAITING, Enums.WaitlistStatus.OFFERED] },
+      },
+      data: { status: Enums.WaitlistStatus.CANCELLED },
     });
     const updated = await db.gymClass.update({
       where: { id },
