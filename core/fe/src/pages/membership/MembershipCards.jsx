@@ -86,7 +86,7 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
       </Row>
       <div className="scms-pricing-assurance">
         <SafetyCertificateOutlined />
-        Membership chỉ được kích hoạt hoặc gia hạn sau khi hóa đơn thanh toán thành công.
+        Gói tập chỉ được kích hoạt hoặc gia hạn sau khi hóa đơn thanh toán thành công.
       </div>
     </section>
   );

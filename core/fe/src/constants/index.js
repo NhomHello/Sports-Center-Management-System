@@ -97,7 +97,7 @@ export const PAYMENT_PROVIDER_LABELS = Object.freeze({
 
 export const INVOICE_CHANNEL_LABELS = Object.freeze({
   COUNTER: 'Tại quầy',
-  ONLINE: 'Online',
+  ONLINE: 'Trực tuyến',
 });
 
 export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'UNREAD' });
