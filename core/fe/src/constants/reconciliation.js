@@ -5,6 +5,8 @@ export const CASE_STATUS = Object.freeze({
   MATCHED: 'MATCHED',
   REJECTED: 'REJECTED',
   IGNORED: 'IGNORED',
+  REFUND_PENDING: 'REFUND_PENDING',
+  REFUNDED: 'REFUNDED',
 });
 export const CASE_STATUS_LABELS = Object.freeze({
   OPEN: 'Chưa xử lý',
@@ -13,6 +15,8 @@ export const CASE_STATUS_LABELS = Object.freeze({
   MATCHED: 'Đã đối soát',
   REJECTED: 'Đã từ chối',
   IGNORED: 'Đã bỏ qua',
+  REFUND_PENDING: 'Chờ hoàn tiền',
+  REFUNDED: 'Đã hoàn tiền',
 });
 export const CASE_REASON = Object.freeze({
   NO_MATCH: 'NO_MATCH',
