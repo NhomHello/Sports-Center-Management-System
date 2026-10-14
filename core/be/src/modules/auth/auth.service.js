@@ -9,6 +9,7 @@ import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import * as permissionService from '../permission/permission.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
+import { loginKey, checkLoginAttempt } from './login-lock.service.js';
 import { trySendVerificationEmail } from './email-verification.service.js';
 
 /**
@@ -23,6 +24,7 @@ export const login = async ({ email, password }, { ip } = {}) => {
     include: USER_WITH_ROLE,
   });
   const passwordOk = user && (await comparePassword(password, user.passwordHash));
+  await checkLoginAttempt(loginKey(user, email), Boolean(passwordOk));
   if (!passwordOk) {
     throw ApiError.unauthorized(
       'Email, số điện thoại hoặc mật khẩu không đúng',

@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { Button, Result, Spin } from 'antd';
-import { useEffect, useRef } from 'react';
+import { Button, Form, Input, Result, Spin } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
+import { EmailNotVerifiedNotice } from '@/components/auth/EmailNotVerifiedNotice';
 import { ROUTES } from '@/constants';
 import * as authService from '@/services/auth.service';
 
@@ -22,6 +23,7 @@ function VerifySuccess({ emailChanged }) {
 
 /** Đích của link trong email: tự xác nhận token một lần khi mở trang. */
 export function VerifyEmailPage() {
+  const [email, setEmail] = useState(null);
   const [params] = useSearchParams();
   const token = params.get('token');
   const confirm = useMutation({ mutationFn: authService.confirmEmailVerification });
@@ -42,9 +44,28 @@ export function VerifyEmailPage() {
       title="Liên kết không hợp lệ hoặc đã hết hạn"
       subTitle="Hãy yêu cầu gửi lại email xác minh ở trang đăng nhập, hoặc liên hệ trung tâm để được hỗ trợ."
       extra={
-        <Link to={ROUTES.LOGIN}>
-          <Button type="primary">Về trang đăng nhập</Button>
-        </Link>
+        <>
+          <Form onFinish={(values) => setEmail(values.email)} layout="vertical">
+            <Form.Item
+              name="email"
+              label="Email cần xác minh"
+              rules={[{ required: true, type: 'email' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Button htmlType="submit">Gửi lại liên kết</Button>
+          </Form>
+          {email && (
+            <EmailNotVerifiedNotice
+              email={email}
+              title="Gửi lại email xác minh"
+              description="Kiểm tra địa chỉ rồi bấm gửi lại."
+            />
+          )}
+          <Link to={ROUTES.LOGIN}>
+            <Button>Về trang đăng nhập</Button>
+          </Link>
+        </>
       }
     />
   );

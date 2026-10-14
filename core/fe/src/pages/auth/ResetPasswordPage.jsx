@@ -1,6 +1,6 @@
 import { LockOutlined } from '@ant-design/icons';
-import { useMutation } from '@tanstack/react-query';
-import { Alert, Button, Form, Input, Result } from 'antd';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Alert, Button, Form, Input, Result, Spin } from 'antd';
 import { Link, useSearchParams } from 'react-router';
 import { ERROR_CODES } from '@scms/shared';
 import { ROUTES, VALIDATION } from '@/constants';
@@ -23,16 +23,25 @@ const confirmRule = ({ getFieldValue }) => ({
 });
 
 /** Đích của link trong email quên mật khẩu: đặt mật khẩu mới bằng token dùng một lần. */
+const isInvalidLink = (error) =>
+  [ERROR_CODES.VALIDATION_ERROR, ERROR_CODES.VERIFICATION_TOKEN_INVALID].includes(error?.code);
+
 export function ResetPasswordPage() {
   const [params] = useSearchParams();
   const token = params.get('token');
   const [form] = Form.useForm();
+  const validation = useQuery({
+    queryKey: ['reset-link', token],
+    queryFn: () => authService.validatePasswordReset(token),
+    enabled: Boolean(token),
+    retry: false,
+  });
   const mutation = useMutation({
     mutationFn: ({ password }) => authService.confirmPasswordReset({ token, password }),
     onError: (error) => form.setFields(error.toFormFields()),
   });
 
-  if (mutation.isSuccess) {
+  if (mutation.isSuccess)
     return (
       <Result
         status="success"
@@ -45,9 +54,17 @@ export function ResetPasswordPage() {
         }
       />
     );
-  }
   const tokenRejected = mutation.error?.code === ERROR_CODES.VERIFICATION_TOKEN_INVALID;
-  if (!token || tokenRejected) {
+  if (token && validation.isPending) return <Spin />;
+  if (validation.isError && !isInvalidLink(validation.error))
+    return (
+      <Alert
+        type="error"
+        title={validation.error.message}
+        action={<Button onClick={() => validation.refetch()}>Thử lại</Button>}
+      />
+    );
+  if ([!token, tokenRejected, validation.isError].some(Boolean)) {
     return (
       <Result
         status="error"

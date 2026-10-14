@@ -8,14 +8,21 @@ import {
 
 const STATUS_COLORS = Object.freeze({
   [CLASS_STATUS.OPEN]: 'blue',
+  [SESSION_STATUS.SCHEDULED]: 'blue',
   [ENROLLMENT_STATUS.BOOKED]: 'green',
   [SESSION_STATUS.COMPLETED]: 'default',
   [CLASS_STATUS.CANCELLED]: 'red',
 });
 
 /** Màu bổ trợ nhãn chữ để trạng thái vẫn dễ phân biệt khi không nhìn màu. */
-export function ScheduleStatusTag({ status, label }) {
+export function ScheduleStatusTag({ status, label, endAt }) {
+  const effective =
+    status === SESSION_STATUS.SCHEDULED && new Date(endAt) <= new Date()
+      ? SESSION_STATUS.COMPLETED
+      : status;
   return (
-    <Tag color={STATUS_COLORS[status] || 'default'}>{label || SCHEDULE_STATUS_LABELS[status]}</Tag>
+    <Tag color={STATUS_COLORS[effective] || 'default'}>
+      {label || SCHEDULE_STATUS_LABELS[effective]}
+    </Tag>
   );
 }

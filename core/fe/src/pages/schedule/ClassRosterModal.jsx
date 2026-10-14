@@ -1,27 +1,30 @@
+import { useState } from 'react';
+import { Modal } from 'antd';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
-import { Modal, Table, Tag, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
-import { SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
+import { ENROLLMENT_STATUS } from '@/constants/schedule';
+import { usePermission } from '@/hooks/usePermission';
+import { PERMISSIONS as P } from '@scms/shared';
 import * as service from '@/services/schedule.service';
-import { formatDateTime } from '@/utils/format';
 import { QueryState } from './QueryState';
-const columns = [
-  { title: 'Hội viên', render: (_, row) => row.member.fullName },
-  { title: 'Email', render: (_, row) => row.member.email || '—' },
-  { title: 'Điện thoại', render: (_, row) => row.member.phone || '—' },
-  { title: 'Đăng ký', dataIndex: 'enrolledAt', render: formatDateTime },
-  {
-    title: 'Trạng thái',
-    dataIndex: 'status',
-    render: (v) => <Tag>{SCHEDULE_STATUS_LABELS[v]}</Tag>,
-  },
-];
-/** Roster và audit booking lấy từ endpoint có kiểm tra phạm vi tại server. */
+import { RosterContent } from './RosterContent';
+import { AttendanceModal } from './AttendanceModal';
+/** Roster in được, chọn buổi để mở điểm danh mà không hiển thị ID thô. */
 export function ClassRosterModal({ item, onClose }) {
+  const [sessionId, setSessionId] = useState(null);
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const { can } = usePermission();
   const query = useLiveScheduleQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'roster', item.id],
     queryFn: () => service.getRoster(item.id),
   });
+  const detail = useLiveScheduleQuery({
+    queryKey: [...QUERY_KEYS.SCHEDULE, 'detail', item.id],
+    queryFn: () => service.getClass(item.id),
+  });
+  const session = detail.data?.data.sessions.find((s) => s.id === sessionId);
+  const data = query.data?.data;
+  const count = (data?.items || []).filter((i) => i.status === ENROLLMENT_STATUS.BOOKED).length;
   return (
     <Modal
       open
@@ -29,33 +32,24 @@ export function ClassRosterModal({ item, onClose }) {
       title={`Học viên · ${item.name}`}
       onCancel={onClose}
       footer={null}
-      width={800}
+      width={900}
     >
       <QueryState query={query}>
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={query.data?.data.items || []}
-          scroll={{ x: 640 }}
-          pagination={{ pageSize: 10 }}
-        />
-        <Typography.Title level={5}>Lịch sử đăng ký / huỷ</Typography.Title>
-        <Table
-          rowKey="id"
-          size="small"
-          dataSource={query.data?.data.history || []}
-          columns={[
-            {
-              title: 'Thao tác',
-              dataIndex: 'action',
-              render: (v) => (v === 'CREATE' ? 'Đăng ký' : 'Huỷ'),
-            },
-            { title: 'Nhân viên / hội viên thực hiện', dataIndex: 'userId' },
-            { title: 'Thời gian', dataIndex: 'createdAt', render: formatDateTime },
-          ]}
-          pagination={{ pageSize: 10 }}
+        <RosterContent
+          item={item}
+          data={data}
+          detail={detail}
+          count={count}
+          session={session}
+          sessionId={sessionId}
+          onSessionChange={setSessionId}
+          onAttendance={() => setAttendanceOpen(true)}
+          can={can}
         />
       </QueryState>
+      {attendanceOpen && (
+        <AttendanceModal session={session} onClose={() => setAttendanceOpen(false)} />
+      )}
     </Modal>
   );
 }

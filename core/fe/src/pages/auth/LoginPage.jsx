@@ -1,6 +1,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Typography } from 'antd';
 import { Link } from 'react-router';
+import { LoginErrorNotice } from '@/components/auth/LoginErrorNotice';
 import { EmailNotVerifiedNotice } from '@/components/auth/EmailNotVerifiedNotice';
 import { ROUTES } from '@/constants';
 import { useLogin } from '@/hooks/useLogin';
@@ -12,6 +13,7 @@ export function LoginPage() {
 
   return (
     <Form form={form} layout="vertical" onFinish={loginMutation.mutate} autoComplete="on">
+      <LoginErrorNotice error={loginMutation.error} />
       {unverifiedEmail && (
         <EmailNotVerifiedNotice
           email={unverifiedEmail}

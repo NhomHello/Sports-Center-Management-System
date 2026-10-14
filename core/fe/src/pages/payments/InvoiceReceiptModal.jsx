@@ -18,6 +18,7 @@ import * as paymentService from '@/services/payment.service';
 import { getApiAvailabilityNotice, shouldRetryApiQuery } from '@/utils/apiAvailability';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 import { canCollectCash, canPrintInvoice } from '@/utils/invoice';
+import { InvoiceExceptionActions } from './InvoiceExceptionActions';
 import { OnlinePaymentPanel } from './OnlinePaymentPanel';
 
 const MODAL_WIDTH = 760;
@@ -237,6 +238,7 @@ function ReceiptContent({
   return (
     <>
       <OnlinePaymentPanel invoice={invoice} />
+      <InvoiceExceptionActions key={invoice.id} invoice={invoice} />
       <CashAction invoice={invoice} onCash={onCash} canRecordCash={canRecordCash} />
       <InvoiceDetails
         invoice={invoice}

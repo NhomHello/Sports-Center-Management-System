@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Grid } from 'antd';
+import { Button, Empty, Grid } from 'antd';
+import { Link } from 'react-router';
+import { ROUTES } from '@/constants';
+import { ManagementScheduleFilters } from './ManagementScheduleFilters';
 import { SCHEDULE_UI } from '@/constants/schedule';
 import { vietnamInput } from '@/utils/schedule';
 import { useScheduleCalendar } from './useScheduleCalendar';
@@ -19,8 +22,19 @@ export function ScheduleCalendar({ kind }) {
   return (
     <div className={`scms-schedule-calendar-view ${compact ? 'scms-calendar--compact' : ''}`}>
       <ScheduleToolbar calendar={calendar} />
+      {kind === 'management' && <ManagementScheduleFilters calendar={calendar} />}
+      {calendar.query.isSuccess && !calendar.events.length && (
+        <Empty description="Chưa có buổi học trong khoảng thời gian này">
+          {kind === 'own' && (
+            <Link to={`${ROUTES.SCHEDULE}?tab=open`}>
+              <Button type="primary">Xem lớp đang mở</Button>
+            </Link>
+          )}
+        </Empty>
+      )}
       <QueryState query={calendar.query}>
         <div
+          hidden={!calendar.events.length}
           className="scms-calendar-scroll"
           role="region"
           aria-label="Lịch các buổi học"

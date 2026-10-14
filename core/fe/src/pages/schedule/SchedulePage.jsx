@@ -1,5 +1,5 @@
 import { PERMISSIONS as P } from '@scms/shared';
-import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Select, Tabs } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { usePermission } from '@/hooks/usePermission';
@@ -44,6 +44,7 @@ function catalogTabs(can) {
 }
 
 function buildTabs(can, canAll, onViewSchedule) {
+  const canPersonal = (permission) => can(permission) && !can(P.CLASS_READ_ALL);
   const actions = (item) => <ClassBookingActions item={item} />;
   const management = (
     <ClassListPanel
@@ -57,7 +58,7 @@ function buildTabs(can, canAll, onViewSchedule) {
     items.push({ key: 'manage', label: 'Quản lý lớp', children: management });
   if (canAll(P.CLASS_ENROLL_FOR_MEMBER, P.MEMBER_READ))
     items.push({ key: 'staff', label: 'Đăng ký / huỷ hộ', children: <StaffBookingPanel /> });
-  if (can(P.SCHEDULE_VIEW_TEACHING))
+  if (canPersonal(P.SCHEDULE_VIEW_TEACHING))
     items.push({
       key: 'teaching',
       label: 'Lịch dạy',
@@ -74,7 +75,7 @@ function buildTabs(can, canAll, onViewSchedule) {
         />
       ),
     });
-  if (can(P.SCHEDULE_VIEW_OWN))
+  if (canPersonal(P.SCHEDULE_VIEW_OWN))
     items.push({
       key: 'own',
       label: 'Lịch tập của tôi',
@@ -86,7 +87,7 @@ function buildTabs(can, canAll, onViewSchedule) {
       label: 'Lịch trung tâm',
       children: <ScheduleCalendar kind="management" />,
     });
-  if (can(P.SCHEDULE_VIEW_TEACHING) && !can(P.CLASS_READ_ALL))
+  if (canPersonal(P.SCHEDULE_VIEW_TEACHING))
     items.push({ key: 'assigned', label: 'Lớp phụ trách', children: management });
   items.push(...catalogTabs(can));
   return items;
@@ -95,9 +96,16 @@ function buildTabs(can, canAll, onViewSchedule) {
 /** Trang Flow 2: tab và thao tác theo permission, không so sánh tên role. */
 export default function SchedulePage() {
   const { can, canAll } = usePermission();
-  const [selected, setSelected] = useState(null);
+  const [params, setParams] = useSearchParams();
+  const selected = params.get('tab');
+  const setSelected = (tab) =>
+    setParams((previous) => {
+      const next = new URLSearchParams(previous);
+      next.set('tab', tab);
+      return next;
+    });
   const items = buildTabs(can, canAll, () => setSelected('own'));
-  const activeKey = selected || items[0]?.key;
+  const activeKey = items.find((i) => i.key === selected)?.key || items[0]?.key;
   return (
     <div className="scms-page-enter scms-schedule">
       <PageHeader

@@ -75,7 +75,7 @@ describe('xác minh email thủ công và liên hệ hỗ trợ', () => {
     expect((await manualVerify(id, await loginAsAdmin())).status).toBe(200);
     expect((await kit.login(email)).status).toBe(200);
     const audit = await prisma.auditLog.findFirst({
-      where: { entity: 'User', entityId: String(id) },
+      where: { entity: 'User', entityId: String(id), action: 'UPDATE' },
       orderBy: { id: 'desc' },
     });
     expect(audit.meta.manualEmailVerification).toBe(true);

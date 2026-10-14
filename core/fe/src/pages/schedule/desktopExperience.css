@@ -148,7 +148,7 @@
     gap: 16px;
   }
 }
-@container (min-width: 1181px) {
+@container (min-width: 900px) {
   .scms-calendar--compact .scms-week-grid {
     align-items: stretch;
     gap: 0;

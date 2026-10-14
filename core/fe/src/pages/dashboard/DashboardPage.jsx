@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { routeRegistry } from '@/router/routeRegistry';
+import { DashboardWidgets } from './DashboardWidgets';
 import { DashboardHero } from './DashboardHero';
 import { DashboardOverview } from './DashboardOverview';
 import { buildDashboardShortcuts } from './dashboardData';
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   return (
     <div className="scms-dashboard-experience">
       <DashboardHero user={user} primary={shortcuts[0]} today={overview.today} />
+      <DashboardWidgets />
       <DashboardOverview overview={overview} />
       <div className="scms-section-heading">
         <span>

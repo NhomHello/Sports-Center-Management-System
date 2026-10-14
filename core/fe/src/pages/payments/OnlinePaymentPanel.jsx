@@ -36,6 +36,14 @@ function PendingPanel({ instruction, currency }) {
             : 'Hóa đơn đã quá hạn thanh toán. Nếu đã chuyển khoản, vui lòng liên hệ lễ tân.'
         }
       />
+      {instruction.receivedAmount > 0 && (
+        <Alert
+          showIcon
+          type="warning"
+          title="Cần chuyển bù"
+          description={`Đã nhận ${formatCurrency(instruction.receivedAmount, currency)} / còn thiếu ${formatCurrency(instruction.amount, currency)}. Chuyển bù bằng cùng mã hoá đơn trước hạn bên dưới.`}
+        />
+      )}
       <Image src={instruction.qrUrl} alt="Mã QR chuyển khoản" width={240} preview={false} />
       <Descriptions bordered size="small" column={1} className="scms-full-width">
         <Descriptions.Item label="Ngân hàng">{instruction.bankCode}</Descriptions.Item>

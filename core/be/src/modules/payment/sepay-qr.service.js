@@ -26,13 +26,16 @@ export const buildPaymentInstruction = async (invoice) => {
   const qr = new URL(env.SEPAY_QR_BASE_URL);
   qr.searchParams.set('acc', accountNumber);
   qr.searchParams.set('bank', bankCode);
-  qr.searchParams.set('amount', String(invoice.amount));
+  const receivedAmount = (invoice.payments ?? []).reduce((sum, p) => sum + p.receivedAmount, 0);
+  const amount = Math.max(0, invoice.amount - receivedAmount);
+  qr.searchParams.set('amount', String(amount));
   qr.searchParams.set('des', invoice.code);
   return {
     bankCode,
     accountNumber,
     accountName: accountName || null,
-    amount: invoice.amount,
+    amount,
+    receivedAmount,
     content: invoice.code,
     qrUrl: qr.toString(),
     expiresAt: invoice.expiresAt,

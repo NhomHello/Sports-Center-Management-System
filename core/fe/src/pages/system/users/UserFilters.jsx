@@ -1,4 +1,5 @@
 import { Select, Space } from 'antd';
+import { USER_STATUS_META } from '@/constants';
 import { SearchInput } from '@/components/common/SearchInput';
 import { SPACING } from '@/theme/theme';
 
@@ -23,6 +24,16 @@ export function UserFilters({ roleOptions, onChange }) {
         style={{ width: FILTER_WIDTH }}
         options={roleOptions}
         onChange={(roleId) => onChange({ roleId })}
+      />
+      <Select
+        allowClear
+        placeholder="Lọc trạng thái"
+        style={{ width: FILTER_WIDTH }}
+        options={Object.entries(USER_STATUS_META).map(([value, meta]) => ({
+          value,
+          label: meta.label,
+        }))}
+        onChange={(status) => onChange({ status })}
       />
     </Space>
   );

@@ -8,6 +8,14 @@
 //    moi model mot khoi rieng + comment dau khoi.
 // ============================================================
 
+// Bộ đếm đăng nhập bền vững, không lưu email hay số điện thoại thô.
+model LoginThrottle {
+  key String @id @map("throttle_key") @db.VarChar(64)
+  attempts Int @default(0)
+  lockedUntil DateTime? @map("locked_until")
+  @@map("login_throttles")
+}
+
 generator client {
   provider = "prisma-client-js"
 }

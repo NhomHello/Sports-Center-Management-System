@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Bỏ giới hạn dòng theo yêu cầu Sprint 1. */
 import { PERMISSIONS, SETTING_GROUPS } from '@scms/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, App, Button, Card, Col, Empty, Form, Row, Space, Tag } from 'antd';
+import { Alert, App, Button, Card, Col, Empty, Form, Row, Space, Tabs, Tag } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PageLoading } from '@/components/common/PageLoading';
@@ -131,17 +131,31 @@ export default function SettingsPage() {
           message={getApiOperationErrorMessage(saveMutation.error, 'lưu cấu hình')}
         />
       )}
-      <Row gutter={[SPACING.MD, SPACING.MD]}>
-        {groups.map((group) => (
-          <Col key={group.group} {...COL_SPAN}>
-            <Card title={GROUP_LABELS[group.group] ?? group.group} size="small">
+      <Tabs
+        items={groups.map((group) => ({
+          key: group.group,
+          label: GROUP_LABELS[group.group] ?? group.group,
+          forceRender: true,
+          children: (
+            <Row gutter={[SPACING.MD, SPACING.MD]}>
               {group.items.map((setting) => (
-                <SettingField key={setting.key} setting={setting} />
+                <Col key={setting.key} {...COL_SPAN}>
+                  <Card size="small">
+                    <SettingField setting={setting} />
+                  </Card>
+                </Col>
               ))}
-            </Card>
-          </Col>
-        ))}
-      </Row>
+            </Row>
+          ),
+        }))}
+      />
+      {canUpdate && hasChanges && (
+        <div className="scms-settings-save">
+          <Button type="primary" htmlType="submit" loading={saveMutation.isPending}>
+            Lưu thay đổi
+          </Button>
+        </div>
+      )}
       {groups.length === 0 && <Empty description="API chưa trả về cấu hình nào." />}
     </Form>
   );

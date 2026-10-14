@@ -17,6 +17,7 @@ import { InvoiceReceiptModal } from './InvoiceReceiptModal';
 import { InvoiceTable } from './InvoiceTable';
 import { InvoiceFilters } from './InvoiceFilters';
 import { CounterInvoiceModal } from './CounterInvoiceModal';
+import { RefundsPanel } from './RefundsPanel';
 import { InvoiceCashModal } from './InvoiceCashModal';
 
 function InvoiceListContent({ query, isOwn, table, onCash, onDetail }) {
@@ -153,6 +154,7 @@ export default function PaymentsPage() {
           )
         }
       />
+      <RefundsPanel />
       <InvoiceWorkspace
         query={query}
         canReadAll={canReadAll}

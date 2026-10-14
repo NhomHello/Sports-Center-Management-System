@@ -5,6 +5,9 @@ import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import { env } from '../../config/env.js';
 import { TIME } from '../../constants/index.js';
+import { sendSuccess } from '../../common/utils/api-response.js';
+import { findUsableToken } from './email-token.service.js';
+import { Enums } from '../../config/db.js';
 import * as controller from './auth.controller.js';
 import {
   loginSchema,
@@ -66,6 +69,15 @@ router.post(
   authLimiter,
   validate(confirmPasswordResetSchema),
   controller.confirmPasswordReset,
+);
+router.post(
+  '/password-resets/validate',
+  authLimiter,
+  validate(confirmEmailVerificationSchema),
+  async (req, res) => {
+    await findUsableToken(req.validated.body.token, [Enums.EmailTokenPurpose.RESET_PASSWORD]);
+    sendSuccess(res, { data: { valid: true } });
+  },
 );
 router.get('/support-contacts', controller.getSupportContacts);
 
