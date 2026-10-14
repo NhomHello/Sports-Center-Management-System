@@ -33,10 +33,16 @@ export function CurrentMembershipCard({ membership, canPurchase }) {
             </Typography.Text>
           </span>
         </Space>
-        <Tag color={isActive ? 'success' : 'error'}>
-          {isActive ? 'Đang hoạt động' : 'Đã hết hạn'}
-        </Tag>
+        <MembershipState membership={membership} isActive={isActive} />
       </Flex>
     </Card>
+  );
+}
+
+function MembershipState({ membership, isActive }) {
+  return (
+    <Tag color={membership.isFrozen ? 'warning' : isActive ? 'success' : 'error'}>
+      {membership.isFrozen ? 'Đang bảo lưu' : isActive ? 'Đang hoạt động' : 'Đã hết hạn'}
+    </Tag>
   );
 }
