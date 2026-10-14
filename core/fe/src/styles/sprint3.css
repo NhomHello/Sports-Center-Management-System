@@ -1,0 +1,37 @@
+.scms-settings-save {
+  position: sticky;
+  bottom: 0;
+  padding: 12px;
+  background: var(--ant-color-bg-container, white);
+  border-top: 1px solid #ddd;
+  z-index: 5;
+  text-align: right;
+}
+.scms-sidebar-nav {
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+.scms-sidebar .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+.scms-user-table td {
+  white-space: nowrap;
+}
+@media print {
+  .scms-roster-print {
+    display: block !important;
+  }
+}
+
+.scms-sidebar .ant-layout-sider-children {
+  height: 100%;
+  min-height: 0;
+}
+.scms-sidebar-nav .ant-menu-item,
+.scms-sidebar-nav .ant-menu-submenu-title {
+  height: 36px;
+  min-height: 36px;
+  line-height: 36px;
+}

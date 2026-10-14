@@ -1,0 +1,189 @@
+import { completeDueFreezes } from './membership-freeze.service.js';
+import { randomUUID } from 'node:crypto';
+import { SETTING_KEYS } from '@scms/shared';
+import { ApiError } from '../../common/errors/api-error.js';
+import { Enums, prisma } from '../../config/db.js';
+import { AUDIT_ACTIONS, ENTITIES, TIME, VALIDATION } from '../../constants/index.js';
+import { INVOICE_INCLUDE } from '../payment/invoice.service.js';
+import { buildPaymentInstruction } from '../payment/sepay-qr.service.js';
+import * as settingService from '../setting/setting.service.js';
+
+const getSellingPlan = async (tx, planId) => {
+  const plan = await tx.membershipPlan.findUnique({ where: { id: planId } });
+  if (!plan) throw ApiError.notFound('Không tìm thấy gói tập');
+  if (!plan.isActive || plan.status !== Enums.MembershipPlanStatus.SELLING) {
+    throw ApiError.businessRule('Gói tập đã ngừng bán');
+  }
+  if (plan.price <= 0 || plan.durationDays <= 0) {
+    throw ApiError.businessRule('Giá hoặc thời hạn gói chưa hợp lệ');
+  }
+  return plan;
+};
+
+const expireStalePendingInvoices = async ({ tx, memberId, planId, actorId, now }) => {
+  const stale = await tx.invoice.findMany({
+    where: {
+      userId: memberId,
+      planId,
+      status: Enums.InvoiceStatus.PENDING,
+      expiresAt: { lte: now },
+    },
+    select: { id: true },
+  });
+  if (stale.length === 0) return;
+  const ids = stale.map(({ id }) => id);
+  await tx.invoice.updateMany({
+    where: { id: { in: ids }, status: Enums.InvoiceStatus.PENDING },
+    data: { status: Enums.InvoiceStatus.FAILED },
+  });
+  await tx.auditLog.createMany({
+    data: ids.map((id) => ({
+      userId: actorId,
+      action: AUDIT_ACTIONS.UPDATE,
+      entity: ENTITIES.INVOICE,
+      entityId: String(id),
+      meta: {
+        before: { status: Enums.InvoiceStatus.PENDING },
+        after: { status: Enums.InvoiceStatus.FAILED },
+        reason: 'PAYMENT_TIMEOUT',
+      },
+    })),
+  });
+};
+
+const findReusablePending = (tx, memberId, planId, now) =>
+  tx.invoice.findFirst({
+    where: {
+      userId: memberId,
+      planId,
+      status: Enums.InvoiceStatus.PENDING,
+      expiresAt: { gt: now },
+    },
+    include: INVOICE_INCLUDE,
+  });
+
+const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now, channel }) => {
+  const created = await tx.invoice.create({
+    data: {
+      code: `PENDING-${randomUUID()}`,
+      userId: memberId,
+      planId: plan.id,
+      planName: plan.name,
+      durationDays: plan.durationDays,
+      amount: plan.price,
+      channel,
+      expiresAt: new Date(now.getTime() + timeout * TIME.MS_PER_MINUTE),
+    },
+  });
+  const invoice = await tx.invoice.update({
+    where: { id: created.id },
+    data: {
+      code: `${prefix}${String(created.id).padStart(VALIDATION.INVOICE_SEQUENCE_WIDTH, '0')}`,
+    },
+    include: INVOICE_INCLUDE,
+  });
+  await tx.auditLog.create({
+    data: {
+      userId: actorId,
+      action: AUDIT_ACTIONS.CREATE,
+      entity: ENTITIES.INVOICE,
+      entityId: String(invoice.id),
+      meta: { memberId, planId: plan.id, amount: invoice.amount, channel: invoice.channel },
+    },
+  });
+  return invoice;
+};
+
+const CHANNEL_LABEL = Object.freeze({
+  [Enums.InvoiceChannel.COUNTER]: 'tại quầy',
+  [Enums.InvoiceChannel.ONLINE]: 'online',
+});
+
+/** Khóa theo hội viên, tái sử dụng hóa đơn PENDING cùng kênh và lấy giá từ DB. */
+const createOrder = async ({ memberId, planId, channel }, actor) => {
+  const prefix = await settingService.getValue(SETTING_KEYS.INVOICE_CODE_PREFIX);
+  const timeout = await settingService.getValue(SETTING_KEYS.PAYMENT_ONLINE_TIMEOUT_MINUTES);
+  return prisma.$transaction(
+    async (tx) => {
+      await tx.$queryRaw`SELECT id FROM users WHERE id = ${memberId} FOR UPDATE`;
+      const member = await tx.user.findFirst({
+        where: { id: memberId, role: { isDefault: true }, status: Enums.UserStatus.ACTIVE },
+      });
+      if (!member) throw ApiError.notFound('Không tìm thấy hội viên đang hoạt động');
+      const plan = await getSellingPlan(tx, planId);
+      const now = new Date();
+      await expireStalePendingInvoices({ tx, memberId, planId, actorId: actor.id, now });
+      const pending = await findReusablePending(tx, memberId, planId, now);
+      if (pending?.channel === channel) return pending;
+      if (pending) {
+        throw ApiError.conflict(
+          `Gói này đang có hóa đơn ${CHANNEL_LABEL[pending.channel]} chờ thanh toán. Cần xử lý hóa đơn đó trước.`,
+        );
+      }
+      return createInvoice({
+        tx,
+        memberId,
+        plan,
+        prefix,
+        timeout,
+        actorId: actor.id,
+        now,
+        channel,
+      });
+    },
+    { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
+  );
+};
+
+/** Lễ tân tạo hóa đơn tại quầy cho hội viên. */
+export const createCounterOrder = (input, actor) =>
+  createOrder({ ...input, channel: Enums.InvoiceChannel.COUNTER }, actor);
+
+/** Hội viên tự mua trên web: hóa đơn ONLINE chờ webhook SePay xác nhận. */
+export const createOnlineOrder = async (input, actor) => {
+  const invoice = await createOrder({ ...input, channel: Enums.InvoiceChannel.ONLINE }, actor);
+  return { ...invoice, paymentInstruction: await buildPaymentInstruction(invoice) };
+};
+
+/** Còn hạn cộng từ cuối gói; hết hạn bắt đầu tại ngày thu tiền. */
+export const activatePaidInvoice = async (invoice, paidAt, tx) => {
+  await tx.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
+  await completeDueFreezes(tx, invoice.userId, paidAt);
+  const frozen = { endedAt: null, startAt: { lte: paidAt }, endAt: { gt: paidAt } };
+  await tx.membership.updateMany({
+    where: {
+      userId: invoice.userId,
+      status: Enums.MembershipStatus.ACTIVE,
+      endDate: { lte: paidAt },
+      freezes: { none: frozen },
+    },
+    data: { status: Enums.MembershipStatus.EXPIRED, activeUserId: null },
+  });
+  const current = await tx.membership.findFirst({
+    where: {
+      userId: invoice.userId,
+      status: Enums.MembershipStatus.ACTIVE,
+      OR: [{ endDate: { gt: paidAt } }, { freezes: { some: frozen } }],
+    },
+  });
+  const startDate = current?.startDate ?? paidAt;
+  const endDate = new Date(
+    (current?.endDate ?? paidAt).getTime() +
+      (invoice.durationDays ?? invoice.plan.durationDays) * TIME.MS_PER_DAY,
+  );
+  const data = {
+    planId: invoice.planId,
+    startDate,
+    endDate,
+    activeUserId: invoice.userId,
+    status: Enums.MembershipStatus.ACTIVE,
+  };
+  const membership = current
+    ? await tx.membership.update({ where: { id: current.id }, data, include: { plan: true } })
+    : await tx.membership.create({
+        data: { ...data, userId: invoice.userId },
+        include: { plan: true },
+      });
+  await tx.invoice.update({ where: { id: invoice.id }, data: { membershipId: membership.id } });
+  return membership;
+};

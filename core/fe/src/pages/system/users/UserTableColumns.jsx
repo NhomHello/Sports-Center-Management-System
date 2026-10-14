@@ -1,10 +1,11 @@
 import { PERMISSIONS } from '@scms/shared';
-import { Button, Popconfirm, Select, Space } from 'antd';
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { Button, Space } from 'antd';
 import { StatusTag } from '@/components/common/StatusTag';
 import { USER_STATUS, USER_STATUS_META } from '@/constants';
 import { formatDateTime } from '@/utils/format';
 
-const ROLE_SELECT_WIDTH = 180;
+import { RoleChangeSelect } from './RoleChangeSelect';
 
 /**
  * Cot cho bang tai khoan.
@@ -17,7 +18,7 @@ export const getUserColumns = ({
   onChangeRole,
   onToggleStatus,
 }) => [
-  { title: 'Họ tên', dataIndex: 'fullName', key: 'fullName' },
+  { title: 'Họ tên', dataIndex: 'fullName', key: 'fullName', width: 220 },
   { title: 'Email', dataIndex: 'email', key: 'email' },
   { title: 'SĐT', dataIndex: 'phone', key: 'phone' },
   {
@@ -25,13 +26,7 @@ export const getUserColumns = ({
     key: 'role',
     render: (_v, user) =>
       can(PERMISSIONS.USER_ASSIGN_ROLE) && user.id !== currentUserId ? (
-        <Select
-          size="small"
-          style={{ width: ROLE_SELECT_WIDTH }}
-          value={user.role.id}
-          options={roleOptions}
-          onChange={(roleId) => onChangeRole(user, roleId)}
-        />
+        <RoleChangeSelect user={user} options={roleOptions} onChange={onChangeRole} />
       ) : (
         user.role.name
       ),
@@ -50,17 +45,16 @@ export const getUserColumns = ({
       const isActive = user.status === USER_STATUS.ACTIVE;
       return (
         <Space>
-          {can(PERMISSIONS.USER_UPDATE, PERMISSIONS.USER_DELETE) && user.id !== currentUserId && (
-            <Popconfirm
-              title={isActive ? 'Khoá tài khoản này?' : 'Mở khoá tài khoản này?'}
-              okText="Đồng ý"
-              cancelText="Huỷ"
-              onConfirm={() => onToggleStatus(user)}
+          {can(PERMISSIONS.USER_DELETE) && user.id !== currentUserId && (
+            <Button
+              onClick={() => onToggleStatus(user)}
+              size="small"
+              danger={isActive}
+              type={isActive ? 'default' : 'primary'}
+              icon={isActive ? <LockOutlined /> : <UnlockOutlined />}
             >
-              <Button size="small" danger={isActive}>
-                {isActive ? 'Khoá' : 'Mở khoá'}
-              </Button>
-            </Popconfirm>
+              {isActive ? 'Khóa' : 'Mở khóa'}
+            </Button>
           )}
         </Space>
       );
