@@ -1189,3 +1189,12 @@ body {
     padding: 20px 18px;
   }
 }
+
+.scms-invoice-toolbar,
+.scms-invoice-toolbar__primary,
+.scms-invoice-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
