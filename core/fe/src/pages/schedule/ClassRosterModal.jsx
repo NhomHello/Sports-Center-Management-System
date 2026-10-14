@@ -23,7 +23,14 @@ export function ClassRosterModal({ item, onClose }) {
     queryFn: () => service.getRoster(item.id),
   });
   return (
-    <Modal open title={`Học viên · ${item.name}`} onCancel={onClose} footer={null} width={800}>
+    <Modal
+      open
+      centered
+      title={`Học viên · ${item.name}`}
+      onCancel={onClose}
+      footer={null}
+      width={800}
+    >
       <QueryState query={query}>
         <Table
           rowKey="id"

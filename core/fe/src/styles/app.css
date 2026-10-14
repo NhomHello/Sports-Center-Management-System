@@ -188,11 +188,11 @@ a {
 .ant-card .ant-card-head {
   border-bottom-color: #f1f5f9;
 }
-.ant-btn.ant-btn-primary {
+.ant-btn.ant-btn-primary:not(:disabled) {
   background: linear-gradient(110deg, #2563eb, #4f46e5) !important;
   box-shadow: 0 8px 18px rgb(37 99 235 / 17%);
 }
-.ant-btn.ant-btn-primary:hover {
+.ant-btn.ant-btn-primary:not(:disabled):hover {
   transform: translateY(-1px);
   background: linear-gradient(110deg, #1d4ed8, #4338ca) !important;
 }
