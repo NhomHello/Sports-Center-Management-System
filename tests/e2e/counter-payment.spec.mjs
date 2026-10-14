@@ -87,7 +87,7 @@ test('QUAY-UI-01: lễ tân tạo hóa đơn quầy, thấy tác động gia h�
   await page.screenshot({ path: `${SHOTS}/3-xac-nhan-thu-tien-mat.png` });
   await cash.getByRole('button', { name: 'Đã nhận đủ tiền' }).click();
 
-  const receipt = page.locator('.ant-modal').filter({ hasText: 'Chi tiết hoá đơn' });
+  const receipt = page.locator('.ant-modal').filter({ hasText: 'Chi tiết hóa đơn' });
   await expect(receipt.getByText('Đã thanh toán').first()).toBeVisible();
   await expect(receipt.getByText('Tiền mặt tại quầy')).toBeVisible();
   await settle(page);
@@ -99,7 +99,7 @@ test('QUAY-UI-01: lễ tân tạo hóa đơn quầy, thấy tác động gia h�
   await channel.click();
   await page.locator('.ant-select-item-option').filter({ hasText: 'Tại quầy' }).click();
   await page.getByRole('heading', { name: 'Hóa đơn', exact: true }).click();
-  await expect(page.locator('.ant-tag').filter({ hasText: 'Online' })).toHaveCount(0);
+  await expect(page.locator('.ant-tag').filter({ hasText: 'Trực tuyến' })).toHaveCount(0);
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/5-loc-theo-kenh-tai-quay.png` });
 

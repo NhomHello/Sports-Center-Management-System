@@ -58,13 +58,15 @@ describe('Sprint 2: rollback, retry và hợp đồng phạm vi dữ liệu', ()
       ['delete', '/classes/1'],
       ['get', '/classes/coaches'],
       ['get', '/classes/1/roster'],
-      ['get', '/classes/filters'],
       ['get', '/schedule/teaching'],
       ['get', '/schedule/week'],
     ];
     for (const [method, path] of routes) {
       expect((await api[method](apiPath(path)).set(bearer(f.memberToken))).status, path).toBe(403);
     }
+    const filters = await api.get(apiPath('/classes/filters')).set(bearer(f.memberToken));
+    expect(filters.status).toBe(200);
+    expect(filters.body.data.subjects.some((subject) => subject.id === f.subject.id)).toBe(false);
     expect((await api.get(apiPath('/classes'))).status).toBe(401);
     expect((await read('/classes', f.memberToken, { scope: 'management' })).status).toBe(403);
   });

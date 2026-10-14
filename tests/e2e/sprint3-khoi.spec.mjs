@@ -36,7 +36,7 @@ test.afterAll(async () => {
     );
 });
 let invoice;
-const receipt = (page) => page.getByRole('dialog').filter({ hasText: 'Chi tiết hoá đơn' });
+const receipt = (page) => page.getByRole('dialog').filter({ hasText: 'Chi tiết hóa đơn' });
 const contact = (id) =>
   asManager(f, 'post', `/reconciliations/${id}/contacts`, {
     channel: 'PHONE',
@@ -72,7 +72,7 @@ test('S3-68: thiếu tiền → QR chuyển bù → PAID → in PDF', async ({ p
   const qr = receipt(page).getByAltText('Mã QR chuyển khoản');
   await expect(qr).toBeVisible();
   expect(new URL(await qr.getAttribute('src')).searchParams.get('amount')).toBe('200000');
-  await expect(receipt(page).getByRole('button', { name: 'In / lưu PDF' })).toHaveCount(0);
+  await expect(receipt(page).getByRole('button', { name: 'In / lưu PDF' })).toBeDisabled();
   await capture(page, info, 'chuyen-bu');
   expect((await sendTransfer(f, invoice, { transferAmount: 200000 })).outcome).toBe('PAID');
   await expect(
@@ -80,14 +80,14 @@ test('S3-68: thiếu tiền → QR chuyển bù → PAID → in PDF', async ({ p
   ).toBeVisible();
   await page.evaluate(() => localStorage.clear());
   await openInvoice(page, f.admin);
-  await expect(receipt(page).getByRole('button', { name: 'In / lưu PDF' })).toBeEnabled();
+  await expect(receipt(page).getByRole('button', { name: 'In', exact: true })).toBeEnabled();
   await page.evaluate(() => {
     window.__printed = false;
     window.print = () => {
       window.__printed = true;
     };
   });
-  await receipt(page).getByRole('button', { name: 'In / lưu PDF' }).click();
+  await receipt(page).getByRole('button', { name: 'In', exact: true }).click();
   expect(await page.evaluate(() => window.__printed)).toBe(true);
   await capture(page, info, 'da-thanh-toan');
   expect(errors).toEqual([]);
@@ -177,7 +177,7 @@ test('S3-23: quản lý tạo hoàn → xác nhận chuyển trả; báo cáo t�
   await sendTransfer(f, invoice);
   await openInvoice(page, f.admin);
   await receipt(page).getByRole('button', { name: 'Hoàn tiền', exact: true }).click();
-  const refund = page.getByRole('dialog').filter({ hasText: 'Hoàn tiền hoá đơn' });
+  const refund = page.getByRole('dialog').filter({ hasText: 'Hoàn tiền hóa đơn' });
   await refund.getByLabel('Lý do hoàn').fill('Hội viên yêu cầu hoàn gói');
   await refund.getByRole('button', { name: 'Tạo yêu cầu hoàn' }).click();
   await expect(refund.getByText('Yêu cầu đã tạo, đang chờ chuyển trả')).toBeVisible();
