@@ -77,7 +77,7 @@ const AUTH_HEADINGS = {
   },
   [ROUTES.REGISTER]: {
     title: 'Tạo tài khoản mới',
-    subtitle: 'Đăng ký để bắt đầu trải nghiệm SportHub.',
+    subtitle: 'Đăng ký để bắt đầu trải nghiệm Sports Center.',
   },
   [ROUTES.FORGOT_PASSWORD]: {
     title: 'Quên mật khẩu',
@@ -93,7 +93,7 @@ const AUTH_HEADINGS = {
   },
 };
 
-/** Layout xác thực hai cột theo hệ thống hình ảnh SportHub. */
+/** Layout xác thực hai cột theo hệ thống hình ảnh Sports Center. */
 export function AuthLayout() {
   const { pathname } = useLocation();
   const { title, subtitle } = AUTH_HEADINGS[pathname] ?? AUTH_HEADINGS[ROUTES.LOGIN];

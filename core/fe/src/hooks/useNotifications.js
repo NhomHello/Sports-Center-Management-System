@@ -11,7 +11,7 @@ const DEFAULT_PARAMS = Object.freeze({
   pageSize: TABLE.DEFAULT_PAGE_SIZE,
 });
 
-/** Chuông và trang dùng chung query; tự cập nhật cả thông báo lớp đổi/huỷ từ tài khoản khác. */
+/** Chuông và trang dùng chung query; tự cập nhật cả thông báo lớp đổi/hủy từ tài khoản khác. */
 export const useNotifications = (params = DEFAULT_PARAMS) => {
   const { user } = useAuth();
   return useLiveScheduleQuery({

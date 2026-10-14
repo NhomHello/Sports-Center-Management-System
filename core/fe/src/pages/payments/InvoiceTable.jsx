@@ -1,17 +1,16 @@
+import { Link } from 'react-router';
+import { InvoiceActions } from './InvoiceActions';
 import { EyeOutlined, DollarOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
-import { Button, Space, Table, Tag, Tooltip } from 'antd';
-import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
-import { canCollectCash } from '@/utils/invoice';
-import { usePermission } from '@/hooks/usePermission';
+import { Button, Space, Table, Tag, Tooltip, Empty } from 'antd';
+import { ROUTES, INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusTag } from '@/components/common/StatusTag';
 
-/** Hoá đơn của chính hội viên hoặc các hoá đơn trong phạm vi quyền được cấp. */
+/** Hóa đơn của chính hội viên hoặc các hóa đơn trong phạm vi quyền được cấp. */
 export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, onDetail }) {
-  const { can } = usePermission();
   const columns = [
-    { title: 'Mã hoá đơn', dataIndex: 'code', key: 'code' },
+    { title: 'Mã hóa đơn', dataIndex: 'code', key: 'code' },
     { title: 'Hội viên', dataIndex: ['user', 'fullName'], key: 'member' },
     {
       title: 'Gói tập',
@@ -26,13 +25,14 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
         channel === INVOICE_CHANNEL.COUNTER ? (
           <Tag color="purple">Tại quầy</Tag>
         ) : (
-          <Tag color="blue">Online</Tag>
+          <Tag color="blue">Trực tuyến</Tag>
         ),
     },
     {
       title: 'Số tiền',
       dataIndex: 'amount',
       key: 'amount',
+      align: 'right',
       render: (amount, invoice) => formatCurrency(amount, invoice.currency),
     },
     {
@@ -51,27 +51,7 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       title: 'Thao tác',
       key: 'actions',
       render: (_, invoice) => (
-        <Space wrap>
-          {canCollectCash({ invoice, canRecordCash: can(PERMISSIONS.PAYMENT_RECORD_CASH) }) && (
-            <Button
-              size="small"
-              type="primary"
-              icon={<DollarOutlined />}
-              onClick={() => onCash(invoice.id)}
-            >
-              Thu tiền
-            </Button>
-          )}
-          {invoice.channel === INVOICE_CHANNEL.ONLINE &&
-            invoice.status === INVOICE_STATUS.PENDING && (
-              <Tooltip title="Hóa đơn online tự xác nhận khi nhận được tiền chuyển khoản, không thu tiền mặt.">
-                <Tag color="gold">Chờ chuyển khoản</Tag>
-              </Tooltip>
-            )}
-          <Button size="small" icon={<EyeOutlined />} onClick={() => onDetail(invoice.id)}>
-            Chi tiết
-          </Button>
-        </Space>
+        <InvoiceActions invoice={invoice} onCash={onCash} onDetail={onDetail} />
       ),
     },
   ];
@@ -85,7 +65,15 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       pagination={pagination}
       onChange={onChange}
       scroll={{ x: true }}
-      locale={{ emptyText: 'Chưa có hoá đơn nào.' }}
+      locale={{
+        emptyText: (
+          <Empty description="Chưa có hóa đơn nào.">
+            <Link to={ROUTES.MEMBERSHIP_PLANS}>
+              <Button>Xem gói tập</Button>
+            </Link>
+          </Empty>
+        ),
+      }}
     />
   );
 }

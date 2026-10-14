@@ -29,7 +29,7 @@ const listValidPendingInvoices = async () => {
 
 const useMemberPlanContext = (canPurchase, userId) => {
   const ownMembershipQuery = useQuery({
-    queryKey: ['ownMembership'],
+    queryKey: ['ownMembership', userId],
     queryFn: membershipService.listOwnMemberships,
     enabled: canPurchase,
   });
@@ -80,7 +80,7 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   const removeMutation = useMutation({
     mutationFn: (plan) => membershipPlanService.deleteMembershipPlan(plan.id),
     onSuccess: () => {
-      message.success('Đã xoá gói tập');
+      message.success('Đã xóa gói tập');
       refresh();
     },
     onError: (error) => message.error(error.message),
@@ -88,10 +88,10 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   const confirmDelete = (plan) =>
     Modal.confirm({
       centered: true,
-      title: `Xoá gói ${plan.name}?`,
+      title: `Xóa gói ${plan.name}?`,
       content: 'Gói đã có lịch sử sẽ được ngừng bán để giữ dữ liệu.',
-      okText: 'Xoá',
-      cancelText: 'Huỷ',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
       okButtonProps: { danger: true },
       onOk: () => removeMutation.mutateAsync(plan),
     });
@@ -106,7 +106,7 @@ export function useMembershipPlans() {
   const [editingPlan, setEditingPlan] = useState(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const canManage = can(PERMISSIONS.MEMBERSHIP_PLAN_CREATE, PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
-  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE) && user?.role?.isDefault === true;
+  const canPurchase = can(PERMISSIONS.MEMBERSHIP_PURCHASE);
   const canUpdate = can(PERMISSIONS.MEMBERSHIP_PLAN_UPDATE);
   const canDelete = can(PERMISSIONS.MEMBERSHIP_PLAN_DELETE);
   const plansQuery = useQuery({

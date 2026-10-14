@@ -126,26 +126,7 @@ export const create = async (data, actor) => {
  * @param {{ page: number, pageSize: number, search?: string }} query
  * @returns {Promise<{ items: object[], meta: object }>}
  */
-export const list = async (query) => {
-  const defaultRole = await getDefaultMemberRole();
-
-  const result = await userService.list({
-    ...query,
-    roleId: defaultRole.id,
-  });
-
-  const items = await Promise.all(
-    result.items.map(async (member) => ({
-      ...member,
-      currentMembership: await getMembershipSummary(member.id),
-    })),
-  );
-
-  return {
-    items,
-    meta: result.meta,
-  };
-};
+export { list } from './member-list.service.js';
 
 /**
  * Lấy chi tiết hội viên, membership gần nhất và lịch sử membership.

@@ -3,6 +3,7 @@ import { Enums, prisma } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 import { extraEnrollmentReason, heldSeats } from './class-member-eligibility.service.js';
+import { membershipWarning } from './membership-warning.js';
 import { overlaps } from './class-schedule.service.js';
 
 /** BR-2.5: mốc >= N giờ được phép; ngoại lệ phải trước buổi xung đột. */
@@ -51,7 +52,7 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
   );
   const [enrollment, member, membership, others] = await Promise.all([
     db.classEnrollment.findUnique({ where: { classId_memberId: { classId: item.id, memberId } } }),
-    db.user.findUnique({ where: { id: memberId }, select: { status: true } }),
+    db.user.findUnique({ where: { id: memberId } }),
     db.membership.findFirst({
       where: {
         userId: memberId,
@@ -95,6 +96,8 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
       now,
     );
   return {
+    bookingBlockedUntil: member?.bookingBlockedUntil ?? null,
+    ...membershipWarning(membership, sessions),
     enrollment,
     canEnroll: !enrollReason,
     enrollReason,

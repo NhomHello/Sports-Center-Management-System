@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { App, Form, Input, Modal } from 'antd';
-import { QUERY_KEYS } from '@/constants';
+import { DuplicateMembers } from './DuplicateMembers';
+import { QUERY_KEYS, VALIDATION } from '@/constants';
 import * as memberService from '@/services/member.service';
 
-const PASSWORD_MIN = 8;
+const PASSWORD_MIN = VALIDATION.PASSWORD_MIN_LENGTH;
 
 /** Modal đăng ký hội viên tại quầy. @param {{ open: boolean, onClose: () => void }} props */
-export function MemberFormModal({ open, onClose }) {
+export function MemberFormModal({ open, onClose, onOpenDuplicate }) {
   const [form] = Form.useForm();
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -32,12 +33,19 @@ export function MemberFormModal({ open, onClose }) {
       centered
       title="Đăng ký hội viên tại quầy"
       okText="Đăng ký"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={createMutation.isPending}
       onOk={form.submit}
-      onCancel={onClose}
+      onCancel={() => {
+        createMutation.reset();
+        onClose();
+      }}
       destroyOnHidden
     >
+      <DuplicateMembers
+        members={createMutation.error?.details?.duplicates}
+        onOpen={onOpenDuplicate}
+      />
       <Form form={form} layout="vertical" onFinish={createMutation.mutate}>
         <Form.Item
           name="fullName"
@@ -51,7 +59,7 @@ export function MemberFormModal({ open, onClose }) {
           label="Email"
           rules={[{ type: 'email', message: 'Email không hợp lệ' }]}
         >
-          <Input placeholder="Không bắt buộc nếu có số điện thoại" />
+          <Input placeholder="Email (không bắt buộc)" />
         </Form.Item>
         <Form.Item
           name="phone"
@@ -67,7 +75,7 @@ export function MemberFormModal({ open, onClose }) {
             { required: true, min: PASSWORD_MIN, message: `Tối thiểu ${PASSWORD_MIN} ký tự` },
           ]}
         >
-          <Input.Password placeholder="Nhập mật khẩu cho hội viên" />
+          <Input.Password placeholder="Tối thiểu 8 ký tự" />
         </Form.Item>
       </Form>
     </Modal>

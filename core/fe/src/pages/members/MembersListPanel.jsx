@@ -1,8 +1,8 @@
 import { IdcardOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons';
-import { Card, Col, Row, Table, Typography } from 'antd';
+import { Card, Col, Row, Table, Typography, Select, Alert } from 'antd';
 import { SearchInput } from '@/components/common/SearchInput';
 
-export function MembersListPanel({ membersQuery, table, columns }) {
+export function MembersListPanel({ membersQuery, table, columns, onView }) {
   const total = membersQuery.data?.meta?.total ?? 0;
   return (
     <>
@@ -45,12 +45,27 @@ export function MembersListPanel({ membersQuery, table, columns }) {
           </span>
           <SearchInput
             allowClear
-            placeholder="Tên, số điện thoại hoặc email"
+            placeholder="Tìm theo tên, SĐT hoặc email"
             onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
           />
         </div>
+        <Select
+          aria-label="Lọc trạng thái gói"
+          placeholder="Tất cả hội viên"
+          allowClear
+          options={[
+            { value: 'ACTIVE', label: 'Đang hoạt động' },
+            { value: 'EXPIRING', label: 'Sắp hết hạn' },
+            { value: 'NO_PLAN', label: 'Chưa có gói' },
+            { value: 'UNVERIFIED', label: 'Chưa xác minh email' },
+            { value: 'FROZEN', label: 'Đang bảo lưu' },
+          ]}
+          onChange={(membershipFilter) => table.setFilters({ membershipFilter })}
+        />
+        {membersQuery.isError && <Alert type="error" title={membersQuery.error.message} />}
         <Table
           rowKey="id"
+          onRow={(member) => ({ onClick: () => onView(member), style: { cursor: 'pointer' } })}
           columns={columns}
           dataSource={membersQuery.data?.data ?? []}
           loading={membersQuery.isPending}

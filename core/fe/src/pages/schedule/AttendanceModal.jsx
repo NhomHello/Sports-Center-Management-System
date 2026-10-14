@@ -47,7 +47,7 @@ export function AttendanceModal({ session, onClose }) {
           <Alert
             showIcon
             type="warning"
-            title="Không thể điểm danh buổi chưa bắt đầu hoặc đã huỷ."
+            title="Không thể điểm danh buổi chưa bắt đầu hoặc đã hủy."
           />
         )}
         {save.isError && <Alert showIcon type="error" title={save.error.message} />}

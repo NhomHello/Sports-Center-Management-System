@@ -129,15 +129,15 @@ test('TC-F2-X02: chọn đúng tuần Việt Nam ngoài múi giờ VN; gói hế
   await expect(page.locator('.scms-calendar-total')).toHaveText('0 buổi học');
   await page.getByRole('button', { name: 'Trước', exact: true }).click();
   await confirmBooking(page, calendarCard(page, own), {
-    button: 'Huỷ đăng ký',
-    confirmation: 'Huỷ đăng ký',
+    button: 'Hủy đăng ký',
+    confirmation: 'Hủy đăng ký',
     method: 'DELETE',
   });
   await page.getByRole('switch').click();
-  await expect(calendarCard(page, own).getByText('Đã huỷ', { exact: true })).toBeVisible();
+  await expect(calendarCard(page, own).getByText('Đã hủy', { exact: true })).toBeVisible();
 });
 
-test('TC-F2-X03: lịch dạy tự cập nhật khi quản lý huỷ lớp; hội viên nhận thông báo và giữ roster', async ({
+test('TC-F2-X03: lịch dạy tự cập nhật khi quản lý hủy lớp; hội viên nhận thông báo và giữ roster', async ({
   page,
   browser,
   request,
@@ -165,9 +165,9 @@ test('TC-F2-X03: lịch dạy tự cập nhật khi quản lý huỷ lớp; hộ
     await expect(page.getByText(teaching.name, { exact: true })).toHaveCount(0);
     await page.getByRole('switch').click();
     const source = calendarCard(page, teaching).first();
-    await expect(source.getByText('Đã huỷ', { exact: true })).toBeVisible();
-    const actions = await calendarActions(page, source, 'Danh sách học viên');
-    await actions.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
+    await expect(source.getByText('Đã hủy', { exact: true })).toBeVisible();
+    const actions = await calendarActions(page, source, 'Danh sách hội viên');
+    await actions.getByRole('button', { name: 'Danh sách hội viên', exact: true }).click();
     await expect(
       page.getByRole('dialog').getByText(f.member.fullName, { exact: true }),
     ).toBeVisible();
@@ -176,7 +176,7 @@ test('TC-F2-X03: lịch dạy tự cập nhật khi quản lý huỷ lớp; hộ
     await closeCalendarActions(page);
     await memberPage.getByRole('button', { name: 'Thông báo', exact: true }).click();
     await expect(
-      memberPage.getByText(`Lớp ${teaching.name} đã bị huỷ.`, { exact: true }),
+      memberPage.getByText(`Lớp học ${teaching.name} đã bị huỷ.`, { exact: true }),
     ).toBeVisible();
     expect(
       await memberPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth),

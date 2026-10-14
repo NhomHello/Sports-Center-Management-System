@@ -6,7 +6,7 @@ import { useTableQuery } from '@/hooks/useTableQuery';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/schedule.service';
 
-/** Giữ phạm vi API khi xoá điều kiện; từ khóa hiển thị và query được reset cùng nhau. */
+/** Giữ phạm vi API khi xóa điều kiện; từ khóa hiển thị và query được reset cùng nhau. */
 export const useClassList = ({ scope, memberId }) => {
   const { can } = usePermission();
   const table = useTableQuery({ scope });

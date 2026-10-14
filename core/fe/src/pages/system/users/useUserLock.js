@@ -7,7 +7,7 @@ import { QUERY_KEYS, ROUTES, USER_STATUS } from '@/constants';
 import { getLockPreview } from '@/services/sprint3.service';
 import { updateUserStatus } from '@/services/user.service';
 
-/** BR-1.15: xem tác động trước khi khoá; coach có lớp mở phải đổi người dạy. */
+/** BR-1.15: xem tác động trước khi khóa; coach có lớp mở phải đổi người dạy. */
 export function useUserLock() {
   const { modal, message } = App.useApp();
   const client = useQueryClient();
@@ -32,16 +32,16 @@ export function useUserLock() {
       const { data } = await getLockPreview(user.id);
       if (data.classes.length)
         return modal.info({
-          title: 'Cần đổi HLV trước khi khoá',
+          title: 'Cần đổi HLV trước khi khóa',
           content: createElement(UserLockImpact, {
             impact: data,
             onManage: () => navigate(`${ROUTES.SCHEDULE}?tab=manage`),
           }),
         });
       modal.confirm({
-        title: 'Khoá tài khoản và huỷ đăng ký tương lai?',
-        okText: 'Xác nhận khoá',
-        cancelText: 'Huỷ',
+        title: 'Khóa tài khoản và hủy đăng ký tương lai?',
+        okText: 'Xác nhận khóa',
+        cancelText: 'Hủy',
         content: createElement(UserLockImpact, { impact: data }),
         onOk: () => mutation.mutateAsync({ user, confirmed: true }),
       });

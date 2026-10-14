@@ -80,6 +80,7 @@ export const SEED_ROLES = [
       P.PAYMENT_CHECKOUT,
       P.PAYMENT_READ_OWN,
       P.INVOICE_READ_OWN,
+      P.INVOICE_EXPORT_OWN,
     ],
   },
 ];

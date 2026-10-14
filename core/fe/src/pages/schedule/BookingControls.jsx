@@ -1,5 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Popconfirm } from 'antd';
+import { MembershipExpiryNotice } from './MembershipExpiryNotice';
 import { formatDateTime } from '@/utils/format';
 const deadline = (item) => formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline);
 
@@ -8,34 +9,37 @@ export function BookingEnrollButton({ item, memberId, allowed, booked, mutation 
   if (!allowed || booked) return null;
   const label = memberId ? 'Đăng ký hộ' : 'Đăng ký lớp';
   return (
-    <Popconfirm
-      title={memberId ? 'Đăng ký toàn lớp cho hội viên đã chọn?' : 'Đăng ký toàn lớp?'}
-      onConfirm={() => mutation.mutate()}
-      disabled={!item.canEnroll}
-      okText="Đăng ký"
-      cancelText="Huỷ"
-    >
-      <Button type="primary" disabled={!item.canEnroll} loading={mutation.isPending}>
-        {label}
-      </Button>
-    </Popconfirm>
+    <>
+      <MembershipExpiryNotice item={item} memberId={memberId} />
+      <Popconfirm
+        title={memberId ? 'Đăng ký toàn lớp cho hội viên đã chọn?' : 'Đăng ký toàn lớp?'}
+        onConfirm={() => mutation.mutate()}
+        disabled={!item.canEnroll}
+        okText="Đăng ký"
+        cancelText="Hủy"
+      >
+        <Button type="primary" disabled={!item.canEnroll} loading={mutation.isPending}>
+          {label}
+        </Button>
+      </Popconfirm>
+    </>
   );
 }
 
-/** Xác nhận huỷ dùng hạn từ DTO. */
+/** Xác nhận hủy dùng hạn từ DTO. */
 export function BookingCancelButton({ item, memberId, allowed, booked, mutation }) {
   if (!allowed || !booked) return null;
   return (
     <Popconfirm
-      title="Huỷ đăng ký toàn lớp?"
-      description={`Huỷ đăng ký cho các buổi còn lại của lớp. Hạn huỷ: ${deadline(item)}`}
+      title="Hủy đăng ký toàn lớp?"
+      description={`Hủy đăng ký cho các buổi còn lại của lớp. Hạn hủy: ${deadline(item)}`}
       onConfirm={() => mutation.mutate()}
       disabled={!item.canCancel}
-      okText="Huỷ đăng ký"
+      okText="Hủy đăng ký"
       cancelText="Giữ đăng ký"
     >
       <Button danger disabled={!item.canCancel} loading={mutation.isPending}>
-        {memberId ? 'Huỷ hộ' : 'Huỷ đăng ký'}
+        {memberId ? 'Hủy hộ' : 'Hủy đăng ký'}
       </Button>
     </Popconfirm>
   );
@@ -48,20 +52,24 @@ export function BookingNotice({ item, booked, allowed }) {
     return item.enrollReason ? (
       <p className="scms-booking-note">
         <InfoCircleOutlined />
-        <span>{item.enrollReason}</span>
+        <span>
+          {item.bookingBlockedUntil
+            ? `Tạm chặn do vắng nhiều buổi. Được đăng ký lại từ ${formatDateTime(item.bookingBlockedUntil)}`
+            : item.enrollReason}
+        </span>
       </p>
     ) : null;
   return (
     <>
       <p className="scms-booking-note">
         <InfoCircleOutlined />
-        <span>{item.canCancel ? `Hạn huỷ lớp: ${deadline(item)}` : item.cancelReason}</span>
+        <span>{item.canCancel ? `Hạn hủy lớp: ${deadline(item)}` : item.cancelReason}</span>
       </p>
       {item.cancellationExceptionUntil && (
         <Alert
           type="warning"
           showIcon
-          title="Lớp đổi lịch gây trùng giờ. Bạn được huỷ trước buổi xung đột đầu tiên."
+          title="Lớp đổi lịch gây trùng giờ. Bạn được hủy trước buổi xung đột đầu tiên."
         />
       )}
     </>

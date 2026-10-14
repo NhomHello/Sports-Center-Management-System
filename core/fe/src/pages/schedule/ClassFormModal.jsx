@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Form, Modal } from 'antd';
+import { Alert, Form, Modal, Row, Col, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_UI } from '@/constants/schedule';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
@@ -43,7 +43,7 @@ export function ClassFormModal({ item, onClose }) {
       onCancel={onClose}
       onOk={form.submit}
       okText="Lưu lớp"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={save.isPending}
       okButtonProps={{ disabled: options.isPending || options.isError }}
       width={720}
@@ -56,12 +56,20 @@ export function ClassFormModal({ item, onClose }) {
         initialValues={classFormValues(item)}
         onFinish={save.mutate}
       >
-        <ClassIdentityFields
-          subjects={options.data?.subjects || []}
-          rooms={options.data?.rooms || []}
-          coaches={options.data?.coaches || []}
-        />
-        <ClassScheduleFields />
+        <Row gutter={24}>
+          <Col xs={24} md={12}>
+            <Typography.Title level={5}>Thông tin lớp</Typography.Title>
+            <ClassIdentityFields
+              subjects={options.data?.subjects || []}
+              rooms={options.data?.rooms || []}
+              coaches={options.data?.coaches || []}
+            />
+          </Col>
+          <Col xs={24} md={12}>
+            <Typography.Title level={5}>Lịch học</Typography.Title>
+            <ClassScheduleFields />
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );

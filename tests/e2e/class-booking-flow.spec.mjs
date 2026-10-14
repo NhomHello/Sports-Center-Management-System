@@ -59,13 +59,13 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
   await expect(managed).toBeVisible();
   await expect(managed.getByText(/18:00–19:00/)).toBeVisible();
   await expect(managed.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toHaveCount(0);
-  await expect(managed.getByRole('button', { name: 'Danh sách học viên' })).toBeVisible();
+  await expect(managed.getByRole('button', { name: 'Danh sách hội viên' })).toBeVisible();
   await managed.scrollIntoViewIfNeeded();
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/1-quan-ly-the-lop-co-lich-hoc.png` });
   await page.evaluate(() => localStorage.clear());
 
-  // 2-3. Hội viên: xem lịch, đăng ký toàn lớp, thấy hạn huỷ.
+  // 2-3. Hội viên: xem lịch, đăng ký toàn lớp, thấy hạn hủy.
   await login(page, f.member, f.password);
   const mine = card(page, classA.name);
   await expect(mine.getByText(/Thứ .*, Thứ .* · 18:00–19:00/)).toBeVisible();
@@ -78,13 +78,13 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
     confirmation: 'Đăng ký',
     method: 'POST',
   });
-  await expect(mine.getByRole('button', { name: 'Huỷ đăng ký', exact: true })).toBeVisible();
-  await expect(mine.getByText(/Hạn huỷ lớp:/)).toBeVisible();
+  await expect(mine.getByRole('button', { name: 'Hủy đăng ký', exact: true })).toBeVisible();
+  await expect(mine.getByText(/Hạn hủy lớp:/)).toBeVisible();
   await expect(mine.getByText('Còn 1/2 chỗ')).toBeVisible();
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/3-hoi-vien-da-dang-ky-co-han-huy.png` });
 
-  // 4. Lớp B chồng giờ: nút bị khoá kèm lý do rõ ràng từ server.
+  // 4. Lớp B chồng giờ: nút bị khóa kèm lý do rõ ràng từ server.
   const clash = card(page, classB.name);
   await expect(clash.getByText('Trùng lịch với lớp đã đăng ký')).toBeVisible();
   await expect(clash.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeDisabled();
@@ -95,17 +95,16 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
 
   // 5-6. Lễ tân đăng ký hộ cho hội viên khác; hệ thống ghi nhận người thực hiện.
   await login(page, RECEPTIONIST, env.SEED_MOCK_PASSWORD);
-  await selectTab(page, 'Đăng ký / huỷ hộ');
+  await selectTab(page, 'Đăng ký / hủy hộ');
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/5-le-tan-man-dang-ky-ho.png` });
-  const search = page.getByPlaceholder('Email hoặc số điện thoại hội viên');
+  const search = page.getByRole('combobox', { name: 'Chọn hội viên', exact: true });
   await search.fill(f.other.email);
-  await search.press('Enter');
-  await page.locator('.scms-member-select').click();
   await page
     .locator('.ant-select-dropdown:visible')
-    .getByText(`${f.other.fullName} · ${f.other.email}`, { exact: true })
+    .getByText(f.other.fullName, { exact: false })
     .click();
+  await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   const forMember = card(page, classA.name).last();
   await expect(forMember.getByRole('button', { name: 'Đăng ký hộ', exact: true })).toBeEnabled();
   await confirmBooking(page, forMember, {
@@ -113,8 +112,9 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
     confirmation: 'Đăng ký',
     method: 'POST',
   });
+  await page.getByRole('tab', { name: 'Đã đăng ký', exact: true }).click();
   await expect(
-    card(page, classA.name).first().getByRole('button', { name: 'Huỷ hộ' }),
+    card(page, classA.name).first().getByRole('button', { name: 'Hủy hộ' }),
   ).toBeVisible();
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/6-le-tan-da-dang-ky-ho.png` });

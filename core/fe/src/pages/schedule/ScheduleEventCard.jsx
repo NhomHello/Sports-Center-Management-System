@@ -3,10 +3,11 @@ import { Button, Card, Tag } from 'antd';
 import { DATE_FORMATS } from '@/constants';
 import { SESSION_STATUS } from '@/constants/schedule';
 import { vietnamInput } from '@/utils/schedule';
+import { TeachingEventActions } from './TeachingEventActions';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
 
 /** Thời gian gọn trong cột ngày; mọi thao tác đăng ký vẫn áp dụng cho toàn lớp. */
-export function ScheduleEventCard({ event, onDetail, renderActions }) {
+export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
   const hasEnded = event.status === SESSION_STATUS.SCHEDULED && new Date(event.endAt) < new Date();
   const hasChanges = event.gymClass.sessions.some(
     (session) => session.status === SESSION_STATUS.CANCELLED,
@@ -27,19 +28,29 @@ export function ScheduleEventCard({ event, onDetail, renderActions }) {
       <div className="scms-calendar-event__tags">
         <ScheduleStatusTag status={event.status} endAt={event.endAt} />
         {event.enrollmentStatus && <ScheduleStatusTag status={event.enrollmentStatus} />}
-        {hasChanges && <Tag color="orange">Lịch đã thay đổi / huỷ</Tag>}
+        {hasChanges && <Tag color="orange">Lịch đã thay đổi / hủy</Tag>}
       </div>
       <div className="scms-calendar-event__meta">
         <EnvironmentOutlined />
         <span title={event.room}>{event.room}</span>
       </div>
-      <div className="scms-calendar-event__meta scms-calendar-event__coach">
-        <UserOutlined />
-        <span title={event.coach}>{event.coach}</span>
-      </div>
+      {kind !== 'teaching' && (
+        <div className="scms-calendar-event__meta scms-calendar-event__coach">
+          <UserOutlined />
+          <span title={event.coach}>{event.coach}</span>
+        </div>
+      )}
+      {kind === 'teaching' && (
+        <>
+          <p>
+            Đã đăng ký {event.gymClass.enrolledCount}/{event.gymClass.capacity}
+          </p>
+          <TeachingEventActions event={event} />
+        </>
+      )}
       <div className="scms-calendar-event__actions">
         <Button onClick={() => onDetail(event)}>Chi tiết lớp</Button>
-        {renderActions?.(event.gymClass)}
+        {kind !== 'teaching' && renderActions?.(event.gymClass)}
       </div>
     </Card>
   );

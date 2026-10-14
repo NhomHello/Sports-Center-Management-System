@@ -221,3 +221,23 @@
   color: var(--ant-color-text-tertiary);
   font-size: 13px;
 }
+
+.scms-class-full {
+  color: var(--ant-color-error, #b42318);
+}
+
+.scms-class-search-filters {
+  padding: 16px;
+  border: 1px solid var(--ant-color-border);
+  border-radius: 8px;
+}
+
+.scms-class-card__actions {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scms-class-card__actions .scms-booking-actions {
+  margin-left: auto;
+}

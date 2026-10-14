@@ -10,7 +10,7 @@ export function ResourceFormModal({ item, resource, loading, onSubmit, onClose }
       onCancel={onClose}
       onOk={form.submit}
       okText="Lưu"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={loading}
     >
       <Form

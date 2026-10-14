@@ -201,7 +201,7 @@ a {
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.035em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .ant-table-wrapper .ant-table-thead > tr > th {
   color: #475569;
@@ -458,7 +458,7 @@ a {
 
 @media print {
   @page {
-    size: A4;
+    size: A5 portrait;
     margin: 12mm;
   }
   html,
@@ -1188,4 +1188,20 @@ body {
   .scms-profile-form .ant-card-body {
     padding: 20px 18px;
   }
+}
+
+.scms-invoice-toolbar,
+.scms-invoice-toolbar__primary,
+.scms-invoice-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.ant-form-item-label {
+  padding-bottom: 8px !important;
+}
+.ant-form-item-explain-error {
+  padding-top: 6px;
 }

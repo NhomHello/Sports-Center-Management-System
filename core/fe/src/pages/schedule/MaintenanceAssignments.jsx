@@ -27,7 +27,7 @@ export function MaintenanceAssignments({ sessions, assignments, setAssignments }
                   value: r.id,
                   label: `${r.name} · ${r.capacity} chỗ`,
                 })),
-                { value: 'cancel', label: 'Huỷ buổi (thông báo hội viên)' },
+                { value: 'cancel', label: 'Hủy buổi (thông báo hội viên)' },
               ]}
             />
           ),

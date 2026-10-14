@@ -1,7 +1,7 @@
 import { UsergroupAddOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from 'antd';
+import { App, Button } from 'antd';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
@@ -12,9 +12,23 @@ import * as memberService from '@/services/member.service';
 import { MemberFormModal } from './MemberFormModal';
 import { MemberMembershipModal } from './MemberMembershipModal';
 import { MemberDetailDrawer } from './MemberDetailDrawer';
+import { CheckInPanel } from './CheckInPanel';
 import { MembersListPanel } from './MembersListPanel';
 import { getMemberColumns } from './MemberColumns';
 import './members.css';
+
+function useOpenDuplicate({ setCreateOpen, setSelectedDetailMember }) {
+  const { message } = App.useApp();
+  return async (id) => {
+    await memberService
+      .getMember(id)
+      .then(({ data }) => {
+        setCreateOpen(false);
+        setSelectedDetailMember(data);
+      })
+      .catch((error) => message.error(error.message));
+  };
+}
 
 /** Trang CRM hội viên: Giao diện hiện đại, ấn tượng với tông màu xanh đặc trưng. */
 export default function MembersPage() {
@@ -23,6 +37,7 @@ export default function MembersPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedPurchaseMember, setSelectedPurchaseMember] = useState(undefined);
   const [selectedDetailMember, setSelectedDetailMember] = useState(undefined);
+  const openDuplicate = useOpenDuplicate({ setCreateOpen, setSelectedDetailMember });
 
   const membersQuery = useQuery({
     queryKey: [...QUERY_KEYS.MEMBERS, table.params],
@@ -45,7 +60,7 @@ export default function MembersPage() {
   return (
     <div style={{ animation: 'fadeIn 0.4s ease-out' }}>
       <PageHeader
-        title="Quản Lý Hội Viên"
+        title="Quản lý hội viên"
         subtitle="Hệ thống lưu trữ hồ sơ và quản lý trạng thái tập luyện của khách hàng."
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBER_CREATE}>
@@ -66,11 +81,21 @@ export default function MembersPage() {
         }
       />
 
+      <CheckInPanel />
       <div style={{ marginTop: 24 }}>
-        <MembersListPanel membersQuery={membersQuery} table={table} columns={columns} />
+        <MembersListPanel
+          membersQuery={membersQuery}
+          table={table}
+          columns={columns}
+          onView={setSelectedDetailMember}
+        />
       </div>
 
-      <MemberFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      <MemberFormModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onOpenDuplicate={openDuplicate}
+      />
       <MemberMembershipModal
         member={selectedPurchaseMember}
         open={Boolean(selectedPurchaseMember)}

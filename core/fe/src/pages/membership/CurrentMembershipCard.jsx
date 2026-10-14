@@ -19,7 +19,7 @@ export function CurrentMembershipCard({ membership, canPurchase }) {
           </span>
           <span>
             <Typography.Text className="scms-current-membership__eyebrow">
-              MEMBERSHIP CỦA BẠN
+              Gói tập của bạn
             </Typography.Text>
             <Typography.Title level={3}>
               {isActive
@@ -33,10 +33,16 @@ export function CurrentMembershipCard({ membership, canPurchase }) {
             </Typography.Text>
           </span>
         </Space>
-        <Tag color={isActive ? 'success' : 'error'}>
-          {isActive ? 'ĐANG HOẠT ĐỘNG' : 'ĐÃ HẾT HẠN'}
-        </Tag>
+        <MembershipState membership={membership} isActive={isActive} />
       </Flex>
     </Card>
+  );
+}
+
+function MembershipState({ membership, isActive }) {
+  return (
+    <Tag color={membership.isFrozen ? 'warning' : isActive ? 'success' : 'error'}>
+      {membership.isFrozen ? 'Đang bảo lưu' : isActive ? 'Đang hoạt động' : 'Đã hết hạn'}
+    </Tag>
   );
 }

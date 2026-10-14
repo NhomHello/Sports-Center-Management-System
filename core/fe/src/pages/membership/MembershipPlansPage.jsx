@@ -1,14 +1,17 @@
+import { useState } from 'react';
+import { PurchaseConfirmModal } from './PurchaseConfirmModal';
 import { PlusOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { Alert, Button, Card, Col, Empty, Row, Typography } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
 import { useMembershipPlans } from '@/hooks/useMembershipPlans';
+import { FreezeControls } from './FreezeControls';
 import { CurrentMembershipCard } from './CurrentMembershipCard';
 import { MembershipPlanFormModal } from './MembershipPlanFormModal';
 import { PlanGrid } from './MembershipCards';
 
-const PlansContent = ({ plansQuery, plans, mutations }) => {
+const PlansContent = ({ plansQuery, plans, mutations, onPurchase }) => {
   if (plansQuery.isError) {
     return (
       <Alert
@@ -39,7 +42,8 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
       plans={plans}
       canPurchase={mutations.canPurchase}
       pendingInvoiceByPlanId={mutations.pendingInvoiceByPlanId}
-      onPurchase={mutations.purchaseMutation.mutate}
+      onPurchase={onPurchase}
+      isRenewal={mutations.ownMembership?.status === 'ACTIVE'}
       onContinuePayment={mutations.continuePayment}
       onEdit={mutations.canUpdate ? mutations.openEdit : null}
       onDelete={mutations.canDelete ? mutations.confirmDelete : null}
@@ -50,13 +54,18 @@ const PlansContent = ({ plansQuery, plans, mutations }) => {
 /** Trang bảng giá gói tập: Tông màu chủ đạo ấn tượng, hiện đại */
 export default function MembershipPlansPage() {
   const hooks = useMembershipPlans();
+  const [purchasePlan, setPurchasePlan] = useState(null);
   const currentMembership = hooks.ownMembership;
 
   return (
     <div className="scms-page-enter">
       <PageHeader
         title="Gói tập"
-        subtitle="Chọn gói phù hợp hoặc quản lý danh mục dịch vụ đang mở bán."
+        subtitle={
+          hooks.canPurchase
+            ? 'Chọn gói phù hợp và xem ngày hiệu lực trước khi thanh toán.'
+            : 'Quản lý danh mục dịch vụ đang mở bán.'
+        }
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBERSHIP_PLAN_CREATE}>
             <Button type="primary" size="large" icon={<PlusOutlined />} onClick={hooks.openCreate}>
@@ -68,8 +77,14 @@ export default function MembershipPlansPage() {
 
       <div>
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
+        <FreezeControls membership={currentMembership} own />
 
-        <PlansContent plansQuery={hooks.plansQuery} plans={hooks.plans} mutations={hooks} />
+        <PlansContent
+          plansQuery={hooks.plansQuery}
+          plans={hooks.plans}
+          mutations={hooks}
+          onPurchase={setPurchasePlan}
+        />
 
         {hooks.plansQuery.isPending && (
           <Row gutter={[32, 32]} align="stretch" style={{ marginTop: 32 }}>
@@ -82,6 +97,13 @@ export default function MembershipPlansPage() {
         )}
       </div>
 
+      <PurchaseConfirmModal
+        plan={purchasePlan}
+        current={currentMembership}
+        query={hooks.ownMembershipQuery}
+        mutation={hooks.purchaseMutation}
+        onClose={() => setPurchasePlan(null)}
+      />
       <MembershipPlanFormModal
         open={hooks.formOpen}
         plan={hooks.editingPlan}

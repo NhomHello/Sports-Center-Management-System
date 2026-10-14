@@ -1,5 +1,6 @@
 import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
 import * as memberService from './member.service.js';
+import { checkCounterIdentity } from './member-identity.service.js';
 import * as ownService from './member-own.service.js';
 
 /** GET /members/me */
@@ -31,6 +32,7 @@ export const getById = async (req, res) => {
 
 /** POST /members */
 export const create = async (req, res) => {
+  await checkCounterIdentity(req.validated.body, req.permissions);
   const member = await memberService.create(req.validated.body, req.user);
   sendCreated(res, member, 'Đăng ký hội viên thành công');
 };

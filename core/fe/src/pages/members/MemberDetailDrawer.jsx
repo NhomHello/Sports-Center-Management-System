@@ -19,6 +19,8 @@ import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
+import { MemberFreezePanel } from './MemberFreezePanel';
+import { BookingBlockPanel } from './BookingBlockPanel';
 import { MemberInfoView } from './MemberInfoView';
 import { useVerifyMemberEmail } from './useVerifyMemberEmail';
 import { formatDate } from '@/utils/format';
@@ -78,7 +80,7 @@ const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) =>
   <Space>
     {isEditing ? (
       <>
-        <Button onClick={() => setIsEditing(false)}>Huỷ</Button>
+        <Button onClick={() => setIsEditing(false)}>Hủy</Button>
         <Button
           type="primary"
           icon={<SaveOutlined />}
@@ -95,6 +97,15 @@ const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) =>
     )}
   </Space>
 );
+
+function MembershipTab({ member, canFreeze }) {
+  return (
+    <>
+      <MemberMembershipView member={member} />
+      {canFreeze && <MemberFreezePanel memberId={member.id} />}
+    </>
+  );
+}
 
 /** Chi tiết và cập nhật hồ sơ hội viên theo permission. */
 export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
@@ -154,6 +165,7 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
       extra={extraButtons}
       destroyOnHidden
     >
+      <BookingBlockPanel member={member} onUpdated={onUpdated} />
       <Tabs
         defaultActiveKey="info"
         items={[
@@ -174,7 +186,9 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
           {
             key: 'membership',
             label: 'Gói tập',
-            children: <MemberMembershipView member={member} />,
+            children: (
+              <MembershipTab member={member} canFreeze={can(PERMISSIONS.MEMBERSHIP_FREEZE_ALL)} />
+            ),
           },
         ]}
       />

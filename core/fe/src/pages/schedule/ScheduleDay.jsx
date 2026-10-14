@@ -4,7 +4,7 @@ import { vietnamInput } from '@/utils/schedule';
 import { ScheduleList } from './ScheduleList';
 
 /** Ngày trống giữ bố cục gọn; ngày hiện tại được nhận diện theo giờ Việt Nam. */
-export function ScheduleDay({ day, events, onDetail, renderActions }) {
+export function ScheduleDay({ day, events, onDetail, renderActions, kind }) {
   const isToday = day.isSame(vietnamInput(new Date()), 'day');
   return (
     <section className={`scms-schedule-day ${isToday ? 'scms-schedule-day--today' : ''}`}>
@@ -22,7 +22,12 @@ export function ScheduleDay({ day, events, onDetail, renderActions }) {
         )}
       </header>
       {events.length ? (
-        <ScheduleList events={events} onDetail={onDetail} renderActions={renderActions} />
+        <ScheduleList
+          kind={kind}
+          events={events}
+          onDetail={onDetail}
+          renderActions={renderActions}
+        />
       ) : (
         <div className="scms-schedule-day__empty">
           <CalendarOutlined />

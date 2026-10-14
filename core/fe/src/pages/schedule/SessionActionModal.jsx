@@ -4,7 +4,7 @@ import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/sprint3.service';
 import { vietnamInput, vietnamTimestamp } from '@/utils/schedule';
 
-/** Chỉ đổi một buổi; cảnh báo và xung đột được backend trả về, không tự huỷ booking. */
+/** Chỉ đổi một buổi; cảnh báo và xung đột được backend trả về, không tự hủy booking. */
 export function SessionActionModal({ session, mode, memberCount, onClose }) {
   const [form] = Form.useForm();
   const cancel = mode === 'cancel';
@@ -24,11 +24,11 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
   return (
     <Modal
       open
-      title={cancel ? 'Huỷ buổi học' : 'Đổi giờ một buổi'}
+      title={cancel ? 'Hủy buổi học' : 'Đổi giờ một buổi'}
       onCancel={onClose}
       onOk={() => form.submit()}
       confirmLoading={mutation.isPending}
-      okText={cancel ? 'Huỷ buổi' : 'Lưu giờ mới'}
+      okText={cancel ? 'Hủy buổi' : 'Lưu giờ mới'}
       okButtonProps={{ danger: cancel }}
       cancelText="Đóng"
     >
@@ -38,8 +38,8 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
         title={`Sẽ thông báo ${memberCount} hội viên đang đăng ký.`}
         description={
           cancel
-            ? 'Buổi bị huỷ vẫn được giữ trong lịch sử và không thể điểm danh.'
-            : 'Nếu trùng lịch của hội viên, hệ thống cảnh báo và cho họ tự huỷ miễn phí.'
+            ? 'Buổi bị hủy vẫn được giữ trong lịch sử và không thể điểm danh.'
+            : 'Nếu trùng lịch của hội viên, hệ thống cảnh báo và cho họ tự hủy miễn phí.'
         }
       />
       {mutation.isError && <Alert showIcon type="error" title={mutation.error.message} />}
@@ -48,7 +48,7 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
           showIcon
           type="warning"
           title="Đã đổi giờ"
-          description={`${mutation.data.data.conflicts.length} hội viên có lịch trùng. Hệ thống giữ đăng ký và cho phép tự huỷ miễn phí.`}
+          description={`${mutation.data.data.conflicts.length} hội viên có lịch trùng. Hệ thống giữ đăng ký và cho phép tự hủy miễn phí.`}
         />
       )}
       <Form
@@ -58,7 +58,7 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
         initialValues={{ range: [vietnamInput(session.startAt), vietnamInput(session.endAt)] }}
       >
         {cancel ? (
-          <Form.Item name="reason" label="Lý do huỷ" rules={[{ required: true, whitespace: true }]}>
+          <Form.Item name="reason" label="Lý do hủy" rules={[{ required: true, whitespace: true }]}>
             <Input.TextArea maxLength={1000} />
           </Form.Item>
         ) : (

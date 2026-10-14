@@ -1,7 +1,7 @@
 import { HTTP_STATUS, INVOICE_STATUS, INVOICE_CHANNEL } from '@/constants';
 import { getApiAvailabilityNotice } from './apiAvailability';
 
-/** Chỉ cho in hoá đơn đã thanh toán khi quyền và tên trung tâm đều có sẵn. */
+/** Chỉ cho in hóa đơn đã thanh toán khi quyền và tên trung tâm đều có sẵn. */
 export const canPrintInvoice = ({ invoice, canExport, centerName }) =>
   invoice?.status === INVOICE_STATUS.PAID && canExport && Boolean(centerName?.trim());
 

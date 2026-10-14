@@ -1,7 +1,7 @@
 import { http } from './http';
 /** Thao tác từng buổi và điểm danh, quyền được kiểm tra tại API. */
 export const rescheduleSession = (id, data) => http.patch(`/classes/sessions/${id}`, data);
-/** Huỷ một buổi với lý do, giữ bản ghi lịch sử. */
+/** Hủy một buổi với lý do, giữ bản ghi lịch sử. */
 export const cancelSession = (id, data) => http.post(`/classes/sessions/${id}/cancellation`, data);
 /** Đổi HLV từ ngày chọn cho các buổi tương lai. */
 export const changeCoach = (id, data) => http.patch(`/classes/${id}/coach`, data);
@@ -18,16 +18,16 @@ export const getOwnAttendance = (params) => http.get('/attendance/me', { params 
 /** Xem buổi bị ảnh hưởng và phòng thay thế đủ điều kiện. */
 export const previewMaintenance = (id, params) =>
   http.get(`/rooms/${id}/maintenance-preview`, { params });
-/** Áp dụng toàn bộ kế hoạch chuyển phòng hoặc huỷ buổi. */
+/** Áp dụng toàn bộ kế hoạch chuyển phòng hoặc hủy buổi. */
 export const createMaintenance = (id, data) => http.post(`/rooms/${id}/maintenance`, data);
-/** Xem lớp đang dạy và đăng ký tương lai trước khi khoá. */
+/** Xem lớp đang dạy và đăng ký tương lai trước khi khóa. */
 export const getLockPreview = (id) => http.get(`/users/${id}/lock-preview`);
 /** Báo cáo cùng bộ lọc cho tất cả chỉ số. */
 export const getReport = (params) => http.get('/reports/dashboard', { params });
 /** Tải bản báo cáo do server tạo theo bộ lọc đã áp dụng. */
 export const exportReport = (params) =>
   http.get('/reports/export', { params, responseType: 'blob' });
-/** Mở phiếu báo đã chuyển tiền cho hoá đơn chính chủ. */
+/** Mở phiếu báo đã chuyển tiền cho hóa đơn chính chủ. */
 export const createClaim = (id, data) => http.post(`/invoices/${id}/claims`, data);
 /** Tạo yêu cầu hoàn, backend cập nhật invoice và ngày gói. */
 export const requestRefund = (id, data) => http.post(`/invoices/${id}/refund`, data);
@@ -41,3 +41,20 @@ export const getReconciliationSummary = () => http.get('/reconciliations/summary
 
 /** Chỉ số hội viên theo ngưỡng nhắc gia hạn ở server. */
 export const getMemberSummary = () => http.get('/members/summary');
+
+/** Ghi nhận đến trung tâm, backend áp dụng policy tài khoản và gói. */
+export const checkIn = (memberId) => http.post('/check-ins', { memberId });
+
+/** Tạo bảo lưu; mọi giới hạn kiểm tra ở server. */
+export const freezeMembership = (id, data) => http.post(`/memberships/${id}/freezes`, data);
+/** Kết thúc sớm và cộng số ngày thực dừng. */
+export const resumeMembership = (id) => http.post(`/memberships/${id}/freezes/resume`);
+
+/** Vào danh sách chờ của chính mình. */
+export const joinWaitlist = (id) => http.post(`/classes/${id}/waitlist/me`);
+/** Rời danh sách chờ và giải phóng chỗ giữ. */
+export const leaveWaitlist = (id) => http.delete(`/classes/${id}/waitlist/me`);
+
+/** Gỡ chặn vắng mặt theo quyền, có lý do audit. */
+export const unblockMember = (id, reason) =>
+  http.post(`/members/${id}/booking-unblock`, { reason });

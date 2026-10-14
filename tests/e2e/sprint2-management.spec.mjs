@@ -49,7 +49,7 @@ test.afterEach(async ({ page }, info) => {
   );
 });
 
-test('TC-F2-V01: quản lý tạo và huỷ toàn lớp từ form; sửa và ngừng phòng tập', async ({ page }) => {
+test('TC-F2-V01: quản lý tạo và hủy toàn lớp từ form; sửa và ngừng phòng tập', async ({ page }) => {
   await login(page, f.admin, env.SEED_ADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Tạo lớp', exact: true }).click();
   const data = classPayload(f, {
@@ -58,7 +58,7 @@ test('TC-F2-V01: quản lý tạo và huỷ toàn lớp từ form; sửa và ng�
   });
   await page.getByLabel('Tên lớp', { exact: true }).fill(data.name);
   await selectOption(page, 'Bộ môn', f.subject.name);
-  await selectOption(page, 'Phòng tập', f.room.name);
+  await selectOption(page, 'Phòng tập', `${f.room.name} · tối đa ${f.room.capacity} người`);
   await selectOption(page, 'Huấn luyện viên', f.coach.fullName);
   await page.getByLabel('Sức chứa', { exact: true }).fill(String(data.capacity));
   await setPicker(page, 'Ngày bắt đầu', data.startsOn);
@@ -70,8 +70,11 @@ test('TC-F2-V01: quản lý tạo và huỷ toàn lớp từ form; sửa và ng�
     'Thứ',
     WEEKDAYS.find((d) => d.value === data.weeklySchedule[0].dayOfWeek).label,
   );
-  await page.getByLabel('Giờ bắt đầu', { exact: true }).fill('21:00');
-  await page.getByLabel('Giờ kết thúc', { exact: true }).fill('22:00');
+  const times = page.getByRole('dialog').locator('.ant-picker-range input');
+  await times.nth(0).fill('21:00');
+  await times.nth(0).press('Tab');
+  await times.nth(1).fill('22:00');
+  await times.nth(1).press('Tab');
   const created = page.waitForResponse(
     (r) => /\/classes$/.test(r.url()) && r.request().method() === 'POST',
     { timeout: 15000 },
@@ -80,16 +83,14 @@ test('TC-F2-V01: quản lý tạo và huỷ toàn lớp từ form; sửa và ng�
   expect((await created).status()).toBe(201);
   const source = card(page, data.name);
   await expect(source).toBeVisible();
-  await source.getByRole('button', { name: 'Huỷ lớp', exact: true }).click();
+  await source.getByRole('button', { name: 'Thao tác quản lý lớp' }).click();
+  await page.getByRole('menuitem', { name: 'Hủy lớp', exact: true }).click();
   const cancelled = page.waitForResponse(
     (r) => /\/classes\/\d+$/.test(r.url()) && r.request().method() === 'DELETE',
   );
-  await page
-    .locator('.ant-popconfirm')
-    .getByRole('button', { name: 'Huỷ lớp', exact: true })
-    .click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Hủy lớp', exact: true }).click();
   expect((await cancelled).status()).toBe(200);
-  await expect(source.getByText('Đã huỷ', { exact: true })).toBeVisible();
+  await expect(source.getByText('Đã hủy', { exact: true })).toBeVisible();
   await selectTab(page, 'Phòng tập');
   const room = card(page, f.roomOther.name);
   await room.getByRole('button', { name: 'Sửa', exact: true }).click();
@@ -106,7 +107,9 @@ test('TC-F2-V01: quản lý tạo và huỷ toàn lớp từ form; sửa và ng�
 
 test('TC-F2-V02: lịch HLV có trạng thái rỗng, đang tải, lỗi và thử lại', async ({ page }) => {
   await login(page, f.coach, f.password);
-  await expect(page.getByText('Không có buổi học', { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText('Chưa có buổi học trong khoảng thời gian này', { exact: true }),
+  ).toBeVisible();
   let release;
   await page.route('**/schedule/teaching?*', async (route) => {
     await new Promise((resolve) => {
@@ -120,7 +123,9 @@ test('TC-F2-V02: lịch HLV có trạng thái rỗng, đang tải, lỗi và th�
   } finally {
     release?.();
   }
-  await expect(page.getByText('Không có buổi học', { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText('Chưa có buổi học trong khoảng thời gian này', { exact: true }),
+  ).toBeVisible();
   await page.unroute('**/schedule/teaching?*');
   await page.route('**/schedule/teaching?*', (route) =>
     route.fulfill({
@@ -132,7 +137,9 @@ test('TC-F2-V02: lịch HLV có trạng thái rỗng, đang tải, lỗi và th�
   await expect(page.getByText('Lịch đang bảo trì', { exact: true })).toBeVisible();
   await page.unroute('**/schedule/teaching?*');
   await page.getByRole('button', { name: 'Thử lại', exact: true }).click();
-  await expect(page.getByText('Không có buổi học', { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText('Chưa có buổi học trong khoảng thời gian này', { exact: true }),
+  ).toBeVisible();
 });
 
 test('TC-F2-V03: membership hết hạn hiển thị lý do và chặn nút đăng ký', async ({ page }) => {

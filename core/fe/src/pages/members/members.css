@@ -22,3 +22,11 @@
 .scms-member-table .ant-table-tbody > tr:hover > td {
   background: #fcfcfc;
 }
+
+.scms-member-table td {
+  white-space: nowrap;
+}
+.scms-data-card__toolbar .scms-search-input {
+  flex: 1;
+  min-width: 300px;
+}

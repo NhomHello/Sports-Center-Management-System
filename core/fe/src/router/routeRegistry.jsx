@@ -20,6 +20,8 @@ import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
 import { ROUTES } from '@/constants';
 
+const ReconciliationPage = lazy(() => import('@/pages/reconciliation/ReconciliationPage'));
+const AuditPage = lazy(() => import('@/pages/system/audit/AuditPage'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage'));
 const RolesPage = lazy(() => import('@/pages/system/roles/RolesPage'));
 const UsersPage = lazy(() => import('@/pages/system/users/UsersPage'));
@@ -40,6 +42,18 @@ const GROUP_MEMBER = 'Hội viên';
 const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
 const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
 export const routeRegistry = [
+  {
+    path: ROUTES.RECONCILIATION,
+    element: <ReconciliationPage />,
+    permission: PERMISSIONS.PAYMENT_RECONCILE,
+    menu: { label: 'Hàng chờ đối soát', icon: <CreditCardOutlined />, group: 'Tài chính' },
+  },
+  {
+    path: ROUTES.SYSTEM_AUDIT,
+    element: <AuditPage />,
+    permission: PERMISSIONS.AUDIT_READ,
+    menu: { label: 'Nhật ký thao tác', icon: <SafetyOutlined />, group: GROUP_SYSTEM },
+  },
   {
     path: ROUTES.REPORTS,
     element: <ReportsPage />,
@@ -88,7 +102,7 @@ export const routeRegistry = [
     path: ROUTES.PAYMENTS,
     element: <PaymentsPage />,
     permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
-    menu: { label: 'Hoá đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
+    menu: { label: 'Hóa đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
   },
   {
     path: ROUTES.MEMBERSHIP_PLANS,

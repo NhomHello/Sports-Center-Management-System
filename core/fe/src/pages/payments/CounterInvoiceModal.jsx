@@ -33,6 +33,12 @@ function CounterInvoiceContent({
 }) {
   return (
     <>
+      <Alert
+        type="info"
+        showIcon
+        title="Chọn hội viên và gói tập để tạo hóa đơn."
+        style={{ marginBlock: 16 }}
+      />
       <QueryError query={membersQuery} resource="Danh sách hội viên" />
       <QueryError query={plansQuery} resource="Danh mục gói đang bán" />
       {mutation.isError && (
@@ -72,14 +78,16 @@ function CounterInvoiceContent({
             placeholder="Chọn gói tập"
           />
         </Form.Item>
-        {plan && (
+        {
           <Descriptions bordered column={1}>
             <Descriptions.Item label="Giá gói (không thể sửa)">
-              {formatCurrency(plan.price)}
+              {plan ? formatCurrency(plan.price) : 'Chưa chọn gói'}
             </Descriptions.Item>
-            <Descriptions.Item label="Thời hạn">{plan.durationDays} ngày</Descriptions.Item>
+            <Descriptions.Item label="Thời hạn">
+              {plan ? `${plan.durationDays} ngày` : 'Chưa chọn gói'}
+            </Descriptions.Item>
           </Descriptions>
-        )}
+        }
         <MembershipEffectPreview memberId={memberId} durationDays={plan?.durationDays} />
         {plansQuery.isSuccess && plans.length === 0 && (
           <Empty description="Chưa có gói đang bán trong danh mục trung tâm." />
@@ -132,7 +140,7 @@ export function CounterInvoiceModal({ open, onClose, onCreated }) {
       okText="Tạo hóa đơn"
       cancelText="Hủy"
       confirmLoading={mutation.isPending}
-      okButtonProps={{ disabled: !plan || membersQuery.isError || plansQuery.isError }}
+      okButtonProps={{ disabled: !plan || !memberId || membersQuery.isError || plansQuery.isError }}
       onOk={() => form.submit()}
       onCancel={() => {
         if (!mutation.isPending) {

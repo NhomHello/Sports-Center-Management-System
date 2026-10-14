@@ -23,7 +23,8 @@ export function ClassOverview({ item, selectedSession }) {
         </div>
       )}
       <Descriptions
-        column={1}
+        bordered
+        column={2}
         items={[
           { key: 'subject', label: 'Bộ môn', children: item.subject.name },
           { key: 'room', label: 'Phòng', children: item.room.name },
@@ -47,7 +48,7 @@ export function ClassOverview({ item, selectedSession }) {
       />
       {item.description && <Typography.Paragraph>{item.description}</Typography.Paragraph>}
       <p className="scms-class-action-scope">
-        Đăng ký và huỷ áp dụng cho toàn bộ các buổi còn lại của lớp.
+        Đăng ký và hủy áp dụng cho toàn bộ các buổi còn lại của lớp.
       </p>
     </>
   );

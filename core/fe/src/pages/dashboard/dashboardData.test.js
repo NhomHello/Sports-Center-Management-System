@@ -32,7 +32,7 @@ describe('Tổng quan đúng phạm vi quyền và dữ liệu thật', () => {
       {
         path: ROUTES.PAYMENTS,
         permission: [P.INVOICE_READ_ALL, P.INVOICE_READ_OWN],
-        menu: { label: 'Hoá đơn' },
+        menu: { label: 'Hóa đơn' },
       },
       {
         path: ROUTES.SCHEDULE,
@@ -47,7 +47,7 @@ describe('Tổng quan đúng phạm vi quyền và dữ liệu thật', () => {
       ROUTES.PROFILE,
     ]);
   });
-  it('lịch cá nhân loại buổi quá khứ và đăng ký huỷ, giữ buổi đang diễn ra và không sửa dữ liệu cache', () => {
+  it('lịch cá nhân loại buổi quá khứ và đăng ký hủy, giữ buổi đang diễn ra và không sửa dữ liệu cache', () => {
     const now = new Date('2026-10-08T12:00:00Z');
     const event = (id, startAt, endAt, enrollmentStatus = 'BOOKED') => ({
       id,
@@ -68,7 +68,7 @@ describe('Tổng quan đúng phạm vi quyền và dữ liệu thật', () => {
     ]);
     expect(data.map((item) => item.id)).toEqual(['next', 'ongoing', 'past', 'cancelled']);
   });
-  it('HLV và quản lý xem buổi được phép kể cả không có đăng ký cá nhân, bỏ buổi bị huỷ', () => {
+  it('HLV và quản lý xem buổi được phép kể cả không có đăng ký cá nhân, bỏ buổi bị hủy', () => {
     const event = {
       id: 1,
       startAt: '2026-10-08T14:00:00Z',

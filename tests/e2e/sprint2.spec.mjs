@@ -89,7 +89,7 @@ test.afterEach(async ({ page }, testInfo) => {
   );
 });
 
-test('TC-F2-U01: hội viên đăng ký, xem lịch và huỷ từ lịch cá nhân', async ({ page }) => {
+test('TC-F2-U01: hội viên đăng ký, xem lịch và hủy từ lịch cá nhân', async ({ page }) => {
   await login(page, f.member, f.password);
   const source = card(page, primary.name);
   await expect(source).toBeVisible();
@@ -98,17 +98,17 @@ test('TC-F2-U01: hội viên đăng ký, xem lịch và huỷ từ lịch cá nh
     confirmation: 'Đăng ký',
     method: 'POST',
   });
-  await expect(source.getByRole('button', { name: 'Huỷ đăng ký', exact: true })).toBeVisible();
+  await expect(source.getByRole('button', { name: 'Hủy đăng ký', exact: true })).toBeVisible();
   await selectTab(page, 'Lịch tập của tôi');
   await chooseDate(page, primary.sessions[0].startAt.toISOString().slice(0, 10));
   await expect(page.getByText(primary.name, { exact: true })).toBeVisible();
   const session = page
     .locator('.scms-week-grid .ant-card')
     .filter({ has: page.getByText(primary.name, { exact: true }) });
-  const actions = await calendarActions(page, session, 'Huỷ đăng ký');
+  const actions = await calendarActions(page, session, 'Hủy đăng ký');
   await confirmBooking(page, actions, {
-    button: 'Huỷ đăng ký',
-    confirmation: 'Huỷ đăng ký',
+    button: 'Hủy đăng ký',
+    confirmation: 'Hủy đăng ký',
     method: 'DELETE',
   });
   await closeCalendarActions(page);
@@ -116,16 +116,15 @@ test('TC-F2-U01: hội viên đăng ký, xem lịch và huỷ từ lịch cá nh
   await expect(page.getByText(primary.name, { exact: true })).toBeVisible();
 });
 
-test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và huỷ hộ có audit', async ({ page }) => {
+test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và hủy hộ có audit', async ({ page }) => {
   await login(page, staff, f.password);
-  const search = page.getByPlaceholder('Email hoặc số điện thoại hội viên');
+  const search = page.getByRole('combobox', { name: 'Chọn hội viên', exact: true });
   await search.fill(f.member.email);
-  await search.press('Enter');
-  await page.locator('.scms-member-select').click();
   await page
     .locator('.ant-select-dropdown:visible')
-    .getByText(`${f.member.fullName} · ${f.member.email}`, { exact: true })
+    .getByText(f.member.fullName, { exact: false })
     .click();
+  await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   const source = card(page, primary.name).last();
   await expect(source.getByRole('button', { name: 'Đăng ký hộ', exact: true })).toBeEnabled();
   await confirmBooking(page, source, {
@@ -133,14 +132,16 @@ test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và huỷ hộ có 
     confirmation: 'Đăng ký',
     method: 'POST',
   });
+  await page.getByRole('tab', { name: 'Đã đăng ký', exact: true }).click();
   const enrolled = card(page, primary.name).first();
-  await expect(enrolled.getByRole('button', { name: 'Huỷ hộ', exact: true })).toBeVisible();
+  await expect(enrolled.getByRole('button', { name: 'Hủy hộ', exact: true })).toBeVisible();
   await confirmBooking(page, enrolled, {
-    button: 'Huỷ hộ',
-    confirmation: 'Huỷ đăng ký',
+    button: 'Hủy hộ',
+    confirmation: 'Hủy đăng ký',
     method: 'DELETE',
   });
   await expect(enrolled.getByRole('button', { name: 'Đăng ký hộ', exact: true })).toBeEnabled();
+  await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   await expect(source.getByText('Còn 2/2 chỗ', { exact: true })).toBeVisible();
   const row = await prisma.classEnrollment.findUnique({
     where: {
@@ -164,8 +165,8 @@ test('TC-F2-U03: HLV xem lịch dạy và roster; không xem lớp của HLV kh�
   const source = page
     .locator('.ant-card')
     .filter({ has: page.getByText(teaching.name, { exact: true }) });
-  const actions = await calendarActions(page, source, 'Danh sách học viên');
-  await actions.getByRole('button', { name: 'Danh sách học viên', exact: true }).click();
+  const actions = await calendarActions(page, source, 'Danh sách hội viên');
+  await actions.getByRole('button', { name: 'Danh sách hội viên', exact: true }).click();
   await expect(page.getByRole('dialog').getByText(f.other.fullName, { exact: true })).toBeVisible();
   await page.locator('.ant-modal .ant-modal-close').click();
   await expect(page.locator('.ant-modal')).toHaveCount(0);
@@ -194,12 +195,13 @@ test('TC-F2-U04: quản lý lọc lớp, sửa cấu hình, xem chi tiết và q
   await search.press('Enter');
   await expect(page.getByRole('heading', { name: 'Không tìm thấy lớp phù hợp' })).toBeVisible();
   await expect(page.locator('.scms-class-pagination')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Xoá tìm kiếm và bộ lọc', exact: true }).click();
+  await page.getByRole('button', { name: 'Xóa tìm kiếm và bộ lọc', exact: true }).click();
   await expect(search).toHaveValue('');
   await expect(card(page, primary.name)).toBeVisible();
   await search.fill(primary.name);
   await search.press('Enter');
-  await card(page, primary.name).getByRole('button', { name: 'Sửa lớp', exact: true }).click();
+  await card(page, primary.name).getByRole('button', { name: 'Thao tác quản lý lớp' }).click();
+  await page.getByRole('menuitem', { name: 'Sửa lớp', exact: true }).click();
   await page.getByLabel('Tên lớp', { exact: true }).fill(`${primary.name} Updated`);
   const saved = page.waitForResponse(
     (r) => r.url().endsWith(`/classes/${primary.id}`) && r.request().method() === 'PUT',
@@ -236,7 +238,7 @@ test('TC-F2-U05: chưa mở đăng ký có hướng dẫn và mở lịch cá nh
   await expect(page.getByRole('heading', { name: 'Hiện chưa có lớp mở đăng ký' })).toBeVisible();
   await expect(page.locator('.scms-class-pagination')).toHaveCount(0);
   await page.getByRole('button', { name: 'Xem lịch tập', exact: true }).click();
-  await expect(page.locator('.scms-week-grid')).toBeVisible();
+  await expect(page.locator('.scms-schedule-calendar-view')).toBeVisible();
   await expect(page.getByLabel('Ngày xem lịch', { exact: true })).toBeVisible();
 });
 

@@ -84,7 +84,7 @@ test('EMAIL-UI-01: đăng ký → bị chặn đăng nhập → lễ tân xác m
 
   // 2. Đăng nhập khi chưa xác minh: bị chặn kèm hướng dẫn.
   await loginUi(page, EMAIL, PASSWORD);
-  await expect(page.getByText('Email chưa được xác minh')).toBeVisible();
+  await expect(page.getByText('Email chưa được xác minh', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Gửi lại email xác minh' })).toBeVisible();
   await expect(page).toHaveURL(/\/login/);
   await settle(page);
@@ -93,9 +93,9 @@ test('EMAIL-UI-01: đăng ký → bị chặn đăng nhập → lễ tân xác m
   // 3. Lễ tân xác minh hộ khi hội viên không nhận được thư.
   await page.context().clearCookies();
   await loginUi(page, 'letan@scms.local', env.SEED_MOCK_PASSWORD);
-  await expect(page.getByRole('heading', { name: 'Lớp học và lịch tập' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mở menu tài khoản' })).toBeVisible();
   await page.goto('/members');
-  const search = page.getByPlaceholder('Tên, số điện thoại hoặc email');
+  const search = page.getByPlaceholder('Tìm theo tên, SĐT hoặc email');
   await search.fill(EMAIL);
   await search.press('Enter');
   await expect(page.getByText('Chưa xác minh email')).toBeVisible();
@@ -133,14 +133,11 @@ test('EMAIL-UI-01: đăng ký → bị chặn đăng nhập → lễ tân xác m
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/7-dat-lai-mat-khau-thanh-cong.png` });
   await page.goto(`/reset-password?token=${resetToken}`);
-  await page.getByLabel('Mật khẩu mới', { exact: true }).fill(NEW_PASSWORD);
-  await page.getByLabel('Nhập lại mật khẩu mới').fill(NEW_PASSWORD);
-  await page.getByRole('button', { name: 'Đặt mật khẩu mới' }).click();
   await expect(page.getByText('Liên kết không hợp lệ hoặc đã hết hạn')).toBeVisible();
 
   // 5. Đăng nhập bằng mật khẩu mới rồi đổi email: email cũ giữ nguyên tới khi xác nhận.
   await loginUi(page, EMAIL, NEW_PASSWORD);
-  await expect(page.getByRole('heading', { name: 'Lớp học và lịch tập' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mở menu tài khoản' })).toBeVisible();
   await page.goto('/profile');
   const emailField = page.getByLabel('Email', { exact: true });
   await emailField.fill(NEW_EMAIL);

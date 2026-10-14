@@ -10,7 +10,7 @@ export function ClassEmptyState({ scope, filtered, onReset, onViewSchedule }) {
       ? 'Hiện chưa có lớp mở đăng ký'
       : 'Chưa có lớp trong phạm vi của bạn';
   const description = filtered
-    ? 'Thử một từ khóa khác hoặc xoá điều kiện lọc để xem lại danh sách lớp.'
+    ? 'Thử một từ khóa khác hoặc xóa điều kiện lọc để xem lại danh sách lớp.'
     : isOpen
       ? 'Các lớp sẽ xuất hiện tại đây khi trung tâm mở đăng ký. Lịch của các lớp đã đăng ký vẫn được giữ lại.'
       : 'Các lớp được tạo hoặc phân công cho bạn sẽ xuất hiện tại đây.';
@@ -22,7 +22,7 @@ export function ClassEmptyState({ scope, filtered, onReset, onViewSchedule }) {
       <h3>{title}</h3>
       <p>{description}</p>
       {filtered ? (
-        <Button onClick={onReset}>Xoá tìm kiếm và bộ lọc</Button>
+        <Button onClick={onReset}>Xóa tìm kiếm và bộ lọc</Button>
       ) : (
         isOpen &&
         onViewSchedule && (

@@ -21,7 +21,9 @@ export async function login(page, user, password, entry = '/schedule') {
 
 /** Chọn ngày theo định dạng của picker hiện tại. */
 export async function chooseDate(page, iso) {
-  const input = page.locator('.ant-picker input').first();
+  const input = page.locator('.scms-calendar-toolbar .ant-picker input').first();
+  await expect(input).toBeVisible();
+  await expect(input).not.toHaveValue('');
   const sample = await input.inputValue();
   const value = /^\d{4}-/.test(sample) ? iso : iso.split('-').reverse().join('/');
   await input.fill(value);

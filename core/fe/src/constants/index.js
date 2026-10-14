@@ -18,9 +18,11 @@ export const ROUTES = Object.freeze({
   CHANGE_PASSWORD: '/change-password',
   NOTIFICATIONS: '/notifications',
   FORBIDDEN: '/403',
+  SYSTEM_AUDIT: '/system/audit',
   SYSTEM_ROLES: '/system/roles',
   SYSTEM_USERS: '/system/users',
   SYSTEM_SETTINGS: '/system/settings',
+  RECONCILIATION: '/reconciliation',
   PAYMENTS: '/payments',
   MEMBERSHIP_PLANS: '/membership-plans',
   MEMBERS: '/members',
@@ -95,7 +97,7 @@ export const PAYMENT_PROVIDER_LABELS = Object.freeze({
 
 export const INVOICE_CHANNEL_LABELS = Object.freeze({
   COUNTER: 'Tại quầy',
-  ONLINE: 'Online',
+  ONLINE: 'Trực tuyến',
 });
 
 export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'UNREAD' });
@@ -111,7 +113,7 @@ export const NOTIFICATION_KIND_LABELS = Object.freeze({
   PAYMENT_REVIEW_ALERT: 'Cảnh báo thanh toán',
   PAYMENT_REFUND: 'Hoàn tiền',
   PAYMENT_CLAIM_REJECTED: 'Chưa xác nhận chuyển khoản',
-  INVOICE_EXPIRED: 'Hoá đơn hết hạn',
+  INVOICE_EXPIRED: 'Hóa đơn hết hạn',
 });
 
 export const INVOICE_STATUS_META = Object.freeze({
@@ -130,14 +132,14 @@ export const USER_STATUS = Object.freeze({
 /** Meta hien thi cho trang thai tai khoan (mau + nhan). */
 export const USER_STATUS_META = Object.freeze({
   ACTIVE: { color: 'green', label: 'Hoạt động' },
-  INACTIVE: { color: 'red', label: 'Đã khoá' },
+  INACTIVE: { color: 'red', label: 'Đã khóa' },
 });
 
 export const MEMBERSHIP_STATUS_META = Object.freeze({
   ACTIVE: { color: 'green', label: 'Đang hoạt động' },
   PENDING: { color: 'orange', label: 'Chờ xử lý' },
   EXPIRED: { color: 'red', label: 'Hết hạn' },
-  CANCELLED: { color: 'default', label: 'Đã huỷ' },
+  CANCELLED: { color: 'default', label: 'Đã hủy' },
 });
 
 export const FORM_LAYOUT = Object.freeze({

@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 /**
  * Đăng nhập, nạp quyền rồi chuyển tới màn hình được phép. Khi email chưa xác minh trả về
- * `unverifiedEmail` để form hiện hướng dẫn thay vì chỉ một thông báo thoáng qua.
+ * `unverifiedEmail` để form hiện hướng dẫn thay vì chỉ một thông báo thóang qua.
  * @param {import('antd').FormInstance} form
  */
 export function useLogin(form) {
@@ -49,7 +49,7 @@ export function useLogin(form) {
       const unverified = error.code === ERROR_CODES.EMAIL_NOT_VERIFIED;
       setUnverifiedEmail(unverified ? error.details?.email : null);
       form.setFields(error.toFormFields());
-      // Chưa xác minh: hướng dẫn chi tiết hiển thị ngay trên form thay vì thông báo thoáng qua.
+      // Chưa xác minh: hướng dẫn chi tiết hiển thị ngay trên form thay vì thông báo thóang qua.
       if (!unverified) message.error(error.message);
     },
   });

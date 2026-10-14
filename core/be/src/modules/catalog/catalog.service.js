@@ -35,6 +35,20 @@ export const createCatalogService = (resource) => ({
       prisma[resource].findMany({ where, ...toPrismaPage(query), orderBy: { id: 'desc' } }),
       prisma[resource].count({ where }),
     ]);
+    if (resource === 'room') {
+      const now = new Date();
+      const maintenance = await prisma.roomMaintenance.findMany({
+        where: {
+          roomId: { in: data.map((item) => item.id) },
+          startAt: { lte: now },
+          endAt: { gt: now },
+        },
+        select: { roomId: true },
+      });
+      data.forEach((item) => {
+        item.isUnderMaintenance = maintenance.some((row) => row.roomId === item.id);
+      });
+    }
     return { data, meta: buildPageMeta({ ...query, total }) };
   },
   create(data, actor) {

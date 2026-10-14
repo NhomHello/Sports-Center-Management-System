@@ -17,6 +17,7 @@ import { InvoiceReceiptModal } from './InvoiceReceiptModal';
 import { InvoiceTable } from './InvoiceTable';
 import { InvoiceFilters } from './InvoiceFilters';
 import { CounterInvoiceModal } from './CounterInvoiceModal';
+import { PaymentHistoryPanel } from './PaymentHistoryPanel';
 import { RefundsPanel } from './RefundsPanel';
 import { InvoiceCashModal } from './InvoiceCashModal';
 
@@ -65,13 +66,14 @@ function InvoiceWorkspace({
               value={showOwn}
               options={[
                 { value: false, label: 'Mọi hóa đơn' },
-                { value: true, label: 'Hóa đơn của tôi' },
+                { value: true, label: 'Do tôi tạo' },
               ]}
               onChange={onScopeChange}
             />
           )}
           <InvoiceFilters
             key={`${isOwn}:${table.filters.search ?? ''}`}
+            staff={canReadAll}
             filters={table.filters}
             onChange={table.setFilters}
             loading={query.isFetching}
@@ -119,7 +121,11 @@ export default function PaymentsPage() {
   const isOwn = !canReadAll || showOwn;
   const query = useQuery({
     queryKey: [...QUERY_KEYS.INVOICES, 'list', user?.id, isOwn, table.params],
-    queryFn: () => paymentService.listInvoices(table.params, isOwn),
+    queryFn: () =>
+      paymentService.listInvoices(
+        { ...table.params, ...(canReadAll && showOwn && { createdByMe: true }) },
+        !canReadAll,
+      ),
     enabled: can(PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL),
     retry: shouldRetryApiQuery,
   });
@@ -155,6 +161,7 @@ export default function PaymentsPage() {
         }
       />
       <RefundsPanel />
+      <PaymentHistoryPanel />
       <InvoiceWorkspace
         query={query}
         canReadAll={canReadAll}

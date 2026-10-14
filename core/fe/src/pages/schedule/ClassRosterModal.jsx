@@ -29,7 +29,7 @@ export function ClassRosterModal({ item, onClose }) {
     <Modal
       open
       centered
-      title={`Học viên · ${item.name}`}
+      title={`Hội viên · ${item.name}`}
       onCancel={onClose}
       footer={null}
       width={900}

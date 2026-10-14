@@ -30,7 +30,7 @@ test('TC-UI-S1-01: hồi quy danh sách/sửa hội viên và form tạo gói', 
   page.on('pageerror', (error) => errors.push(error.message));
   await login(page, admin, env.SEED_ADMIN_PASSWORD);
   await page.goto('/members');
-  const search = page.getByPlaceholder('Tên, số điện thoại hoặc email');
+  const search = page.getByPlaceholder('Tìm theo tên, SĐT hoặc email');
   await search.fill(f.member.email);
   await search.press('Enter');
   await page

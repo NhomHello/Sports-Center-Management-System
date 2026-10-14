@@ -28,7 +28,12 @@ export function MembershipEffectPreview({ memberId, durationDays }) {
     staleTime: 0,
   });
   if (!memberId || !durationDays || !query.isSuccess) return null;
-  const effect = computeMembershipEffect(query.data.data, durationDays);
+  return <MembershipEffectSummary current={query.data.data} durationDays={durationDays} />;
+}
+
+/** Bản xem trước dùng chung cho mua online và thu tiền tại quầy. */
+export function MembershipEffectSummary({ current, durationDays }) {
+  const effect = computeMembershipEffect(current, durationDays);
   return (
     <Alert
       showIcon
