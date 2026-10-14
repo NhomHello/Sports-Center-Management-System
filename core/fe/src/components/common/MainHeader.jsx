@@ -11,6 +11,7 @@ import {
 import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { ReconciliationBadge } from './ReconciliationBadge';
 import { NotificationBell } from '@/components/common/NotificationBell';
 import { env } from '@/config/env';
 import { ROUTES } from '@/constants';
@@ -146,6 +147,7 @@ export function MainHeader({
           </div>
         </Flex>
         <Flex className="scms-header-actions" align="center" gap={8}>
+          <ReconciliationBadge />
           <NotificationBell />
           <Dropdown menu={profileMenu} trigger={['click']} placement="bottomRight">
             <button className="scms-account" type="button" aria-label="Mở menu tài khoản">
