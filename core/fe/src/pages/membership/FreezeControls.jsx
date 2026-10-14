@@ -52,6 +52,8 @@ export function FreezeControls({ membership, own = false }) {
       {current ? (
         <Popconfirm
           title="Kết thúc lịch bảo lưu và cập nhật ngày hết hạn?"
+          okText="Kết thúc bảo lưu"
+          cancelText="Giữ bảo lưu"
           onConfirm={() => mutation.mutateAsync({ resume: true })}
         >
           <Button loading={mutation.isPending}>Kết thúc bảo lưu</Button>
