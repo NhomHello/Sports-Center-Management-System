@@ -71,6 +71,7 @@ function buildTabs(can, canAll, onViewSchedule) {
       children: (
         <ClassListPanel
           renderActions={actions}
+          renderFilters={(table) => <ClassFilters table={table} hideStatus />}
           onViewSchedule={can(P.SCHEDULE_VIEW_OWN) ? onViewSchedule : undefined}
         />
       ),

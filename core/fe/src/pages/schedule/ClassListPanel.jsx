@@ -8,6 +8,20 @@ import { ClassEmptyState } from './ClassEmptyState';
 import { ClassListToolbar } from './ClassListToolbar';
 import { useClassList } from './useClassList';
 
+function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }) {
+  return (
+    <div className="scms-class-search-filters">
+      <ClassListToolbar
+        search={search}
+        onSearchChange={setSearch}
+        onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
+        onCreate={can(P.CLASS_CREATE) ? () => setEditing({}) : undefined}
+      />
+      {renderFilters?.(table)}
+    </div>
+  );
+}
+
 /** Container danh sách lớp mở; scope management và action dùng chung với FE Khôi. */
 export function ClassListPanel({
   scope = 'open',
@@ -34,13 +48,7 @@ export function ClassListPanel({
   } = useClassList({ scope, memberId });
   return (
     <div className="scms-schedule-stack scms-class-list-panel">
-      <ClassListToolbar
-        search={search}
-        onSearchChange={setSearch}
-        onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
-        onCreate={can(P.CLASS_CREATE) ? () => setEditing({}) : undefined}
-      />
-      {renderFilters?.(table)}
+      <ListHeader {...{ search, setSearch, table, can, setEditing, renderFilters }} />
       <QueryState query={query}>
         {items.length ? (
           <div className="scms-class-grid">
