@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { App, Form, Input, Modal } from 'antd';
+import { DuplicateMembers } from './DuplicateMembers';
 import { QUERY_KEYS } from '@/constants';
 import * as memberService from '@/services/member.service';
 
 const PASSWORD_MIN = 8;
 
 /** Modal đăng ký hội viên tại quầy. @param {{ open: boolean, onClose: () => void }} props */
-export function MemberFormModal({ open, onClose }) {
+export function MemberFormModal({ open, onClose, onOpenDuplicate }) {
   const [form] = Form.useForm();
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -38,6 +39,10 @@ export function MemberFormModal({ open, onClose }) {
       onCancel={onClose}
       destroyOnHidden
     >
+      <DuplicateMembers
+        members={createMutation.error?.details?.duplicates}
+        onOpen={onOpenDuplicate}
+      />
       <Form form={form} layout="vertical" onFinish={createMutation.mutate}>
         <Form.Item
           name="fullName"

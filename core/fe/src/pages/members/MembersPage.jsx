@@ -72,7 +72,15 @@ export default function MembersPage() {
         <MembersListPanel membersQuery={membersQuery} table={table} columns={columns} />
       </div>
 
-      <MemberFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      <MemberFormModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onOpenDuplicate={async (id) => {
+          const res = await memberService.getMember(id);
+          setCreateOpen(false);
+          setSelectedDetailMember(res.data);
+        }}
+      />
       <MemberMembershipModal
         member={selectedPurchaseMember}
         open={Boolean(selectedPurchaseMember)}
