@@ -55,7 +55,7 @@ export const resolveDashboardSchedule = (can) => {
   return null;
 };
 
-/** Buổi còn lại của dữ liệu tuần, gồm buổi đang diễn ra và loại đăng ký đã huỷ. */
+/** Buổi còn lại của dữ liệu tuần, gồm buổi đang diễn ra và loại đăng ký đã hủy. */
 export const getUpcomingSessions = (events = [], now, kind) =>
   events
     .filter(

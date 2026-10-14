@@ -43,7 +43,7 @@ export function ClassFormModal({ item, onClose }) {
       onCancel={onClose}
       onOk={form.submit}
       okText="Lưu lớp"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={save.isPending}
       okButtonProps={{ disabled: options.isPending || options.isError }}
       width={720}

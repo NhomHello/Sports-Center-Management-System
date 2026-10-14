@@ -58,7 +58,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
       centered
       title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
       okText="Lưu"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={loading}
       onOk={form.submit}
       onCancel={onClose}

@@ -80,7 +80,7 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   const removeMutation = useMutation({
     mutationFn: (plan) => membershipPlanService.deleteMembershipPlan(plan.id),
     onSuccess: () => {
-      message.success('Đã xoá gói tập');
+      message.success('Đã xóa gói tập');
       refresh();
     },
     onError: (error) => message.error(error.message),
@@ -88,10 +88,10 @@ const usePlanMutations = ({ setEditingPlan, setFormOpen }) => {
   const confirmDelete = (plan) =>
     Modal.confirm({
       centered: true,
-      title: `Xoá gói ${plan.name}?`,
+      title: `Xóa gói ${plan.name}?`,
       content: 'Gói đã có lịch sử sẽ được ngừng bán để giữ dữ liệu.',
-      okText: 'Xoá',
-      cancelText: 'Huỷ',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
       okButtonProps: { danger: true },
       onOk: () => removeMutation.mutateAsync(plan),
     });

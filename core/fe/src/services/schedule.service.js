@@ -11,12 +11,12 @@ export const enrollClass = (id, memberId) =>
   memberId
     ? http.post(`/classes/${id}/enrollments`, { memberId })
     : http.post(`/classes/${id}/enrollments/me`);
-/** Huỷ theo cùng luật và hạn server trả. */
+/** Hủy theo cùng luật và hạn server trả. */
 export const cancelEnrollment = (id, memberId) =>
   http.delete(`/classes/${id}/enrollments/${memberId || 'me'}`);
 /** Các đăng ký của hội viên cho nhân viên có quyền. */
 export const getMemberEnrollments = (memberId) => http.get(`/members/${memberId}/enrollments`);
-/** Danh sách học viên theo phạm vi. */
+/** Danh sách hội viên theo phạm vi. */
 export const getRoster = (id) => http.get(`/classes/${id}/roster`);
 /** Lịch riêng của hội viên, lịch dạy hoặc lịch quản lý. */
 export const getSchedule = (kind, params) => {
@@ -31,7 +31,7 @@ export const getSchedule = (kind, params) => {
 export const createClass = (values) => http.post('/classes', values);
 /** Cập nhật toàn bộ cấu hình lớp. */
 export const updateClass = (id, values) => http.put(`/classes/${id}`, values);
-/** Huỷ lớp, giữ lịch sử. */
+/** Hủy lớp, giữ lịch sử. */
 export const cancelClass = (id) => http.delete(`/classes/${id}`);
 /** HLV có quyền giảng dạy và tài khoản hoạt động. */
 export const listCoaches = () => http.get('/classes/coaches');

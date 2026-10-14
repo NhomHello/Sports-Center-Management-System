@@ -16,7 +16,7 @@ const actorName = (row) =>
 const sessionOptions = (detail) =>
   (detail.data?.data.sessions || []).map((s) => ({
     value: s.id,
-    label: `${formatDateTime(s.startAt)} · ${s.status === 'CANCELLED' ? 'Đã huỷ' : 'Buổi học'}`,
+    label: `${formatDateTime(s.startAt)} · ${s.status === 'CANCELLED' ? 'Đã hủy' : 'Buổi học'}`,
   }));
 
 export function RosterContent({
@@ -64,7 +64,7 @@ export function RosterContent({
         scroll={{ x: 640 }}
         pagination={{ hideOnSinglePage: true }}
       />
-      <Typography.Title level={5}>Lịch sử đăng ký / huỷ</Typography.Title>
+      <Typography.Title level={5}>Lịch sử đăng ký / hủy</Typography.Title>
       <Table
         rowKey="id"
         size="small"
@@ -73,7 +73,7 @@ export function RosterContent({
           {
             title: 'Thao tác',
             dataIndex: 'action',
-            render: (v) => (v === 'CREATE' ? 'Đăng ký' : 'Huỷ'),
+            render: (v) => (v === 'CREATE' ? 'Đăng ký' : 'Hủy'),
           },
           { title: 'Người thực hiện', render: (_, row) => actorName(row) },
           { title: 'Thời gian', dataIndex: 'createdAt', render: formatDateTime },

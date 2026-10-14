@@ -95,7 +95,7 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
   const mutation = useMutation({
     mutationFn: paymentService.collectCash,
     onSuccess: ({ data }) => {
-      // Đóng modal trước rồi mới làm mới dữ liệu: nếu làm mới trước, hoá đơn PAID khiến modal
+      // Đóng modal trước rồi mới làm mới dữ liệu: nếu làm mới trước, hóa đơn PAID khiến modal
       // đang đóng chớp lên cảnh báo "không cho phép thu tiền".
       message.success(`Đã thu tiền. Gói tập hiệu lực đến ${formatDate(data.membership?.endDate)}.`);
       onPaid(data.id);

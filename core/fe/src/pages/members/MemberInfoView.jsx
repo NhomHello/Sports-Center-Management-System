@@ -26,7 +26,7 @@ const EmailVerificationStatus = ({ member, canVerify, onVerify, verifying }) => 
             </div>
           }
           okText="Xác minh"
-          cancelText="Huỷ"
+          cancelText="Hủy"
           onConfirm={onVerify}
         >
           <Button size="small" type="primary" loading={verifying}>

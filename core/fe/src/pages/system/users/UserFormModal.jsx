@@ -45,7 +45,7 @@ export function UserFormModal({ open, onClose }) {
       centered
       title="Tạo tài khoản"
       okText="Tạo"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={createMutation.isPending}
       forceRender
       onOk={form.submit}

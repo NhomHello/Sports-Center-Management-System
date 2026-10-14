@@ -33,7 +33,7 @@ export function MemberFormModal({ open, onClose, onOpenDuplicate }) {
       centered
       title="Đăng ký hội viên tại quầy"
       okText="Đăng ký"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={createMutation.isPending}
       onOk={form.submit}
       onCancel={onClose}

@@ -102,7 +102,7 @@ export const routeRegistry = [
     path: ROUTES.PAYMENTS,
     element: <PaymentsPage />,
     permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
-    menu: { label: 'Hoá đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
+    menu: { label: 'Hóa đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
   },
   {
     path: ROUTES.MEMBERSHIP_PLANS,

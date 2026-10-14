@@ -59,13 +59,13 @@ export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, chil
           )}
           {can(P.CLASS_DELETE) && item.status !== CLASS_STATUS.CANCELLED && (
             <Popconfirm
-              title="Huỷ toàn bộ lớp và thông báo hội viên?"
-              okText="Huỷ lớp"
+              title="Hủy toàn bộ lớp và thông báo hội viên?"
+              okText="Hủy lớp"
               cancelText="Giữ lớp"
               onConfirm={onCancel}
             >
               <Button danger loading={loading}>
-                Huỷ lớp
+                Hủy lớp
               </Button>
             </Popconfirm>
           )}

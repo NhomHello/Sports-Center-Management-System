@@ -64,7 +64,7 @@ export function ClassFilters({ table }) {
               table.setFilters(Object.fromEntries(FILTER_KEYS.map((key) => [key, undefined])))
             }
           >
-            Xoá bộ lọc
+            Xóa bộ lọc
           </Button>
         )}
       </div>

@@ -25,7 +25,7 @@ export function ReportResults({ report, format, setFormat, download }) {
         <Statistic title="Gói hết hạn" value={report.membership.expired} />
         <Statistic title="Lớp" value={report.classes.total} />
         <Statistic title="Buổi học" value={report.classes.sessions} />
-        <Statistic title="Buổi huỷ" value={report.classes.cancelledSessions} />
+        <Statistic title="Buổi hủy" value={report.classes.cancelledSessions} />
         <Statistic title="Đăng ký" value={report.classes.enrollments} />
       </Space>
       <Space>
@@ -55,7 +55,7 @@ export function ReportResults({ report, format, setFormat, download }) {
             dataIndex,
             render: (v) => formatCurrency(v),
           })),
-          { title: 'Hoá đơn đã trả', dataIndex: 'paidCount' },
+          { title: 'Hóa đơn đã trả', dataIndex: 'paidCount' },
           { title: 'Lượt hoàn', dataIndex: 'refundCount' },
         ]}
       />

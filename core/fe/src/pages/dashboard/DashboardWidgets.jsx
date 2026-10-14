@@ -76,7 +76,7 @@ export function DashboardWidgets() {
       )}
       {can(P.INVOICE_READ_ALL) && (
         <Widget
-          title="Hoá đơn chờ thu tại quầy"
+          title="Hóa đơn chờ thu tại quầy"
           query={invoices}
           value={(r) => r?.meta.total || 0}
         />

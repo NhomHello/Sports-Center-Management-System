@@ -2,7 +2,7 @@ import { Button, DatePicker, Form, Input, Select, Space, Typography } from 'antd
 import { WEEKDAYS } from '@/constants/schedule';
 const required = [{ required: true, message: 'Vui lòng chọn thời gian' }];
 const timeRules = [{ required: true, pattern: /^([01]\d|2[0-3]):[0-5]\d$/, message: 'Nhập HH:mm' }];
-/** Lịch lặp theo giờ Việt Nam, có thể thêm/xoá thứ học. */
+/** Lịch lặp theo giờ Việt Nam, có thể thêm/xóa thứ học. */
 export function ClassScheduleFields() {
   return (
     <>

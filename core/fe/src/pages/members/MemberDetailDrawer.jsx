@@ -80,7 +80,7 @@ const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) =>
   <Space>
     {isEditing ? (
       <>
-        <Button onClick={() => setIsEditing(false)}>Huỷ</Button>
+        <Button onClick={() => setIsEditing(false)}>Hủy</Button>
         <Button
           type="primary"
           icon={<SaveOutlined />}

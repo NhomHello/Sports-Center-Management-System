@@ -41,7 +41,7 @@ function PendingPanel({ instruction, currency }) {
           showIcon
           type="warning"
           title="Cần chuyển bù"
-          description={`Đã nhận ${formatCurrency(instruction.receivedAmount, currency)} / còn thiếu ${formatCurrency(instruction.amount, currency)}. Chuyển bù bằng cùng mã hoá đơn trước hạn bên dưới.`}
+          description={`Đã nhận ${formatCurrency(instruction.receivedAmount, currency)} / còn thiếu ${formatCurrency(instruction.amount, currency)}. Chuyển bù bằng cùng mã hóa đơn trước hạn bên dưới.`}
         />
       )}
       <Image src={instruction.qrUrl} alt="Mã QR chuyển khoản" width={240} preview={false} />
@@ -72,7 +72,7 @@ function PendingPanel({ instruction, currency }) {
   );
 }
 
-/** Hoá đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
+/** Hóa đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
 export function OnlinePaymentPanel({ invoice }) {
   if (invoice.status === INVOICE_STATUS.PAID && invoice.channel === INVOICE_CHANNEL.ONLINE) {
     return (

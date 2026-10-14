@@ -19,6 +19,6 @@ export function UserLockImpact({ impact, onManage }) {
       )}
     />
   ) : (
-    'Tài khoản sẽ không thể đăng nhập cho tới khi được mở khoá.'
+    'Tài khoản sẽ không thể đăng nhập cho tới khi được mở khóa.'
   );
 }

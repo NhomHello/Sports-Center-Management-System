@@ -47,7 +47,7 @@ export function ClassOverview({ item, selectedSession }) {
       />
       {item.description && <Typography.Paragraph>{item.description}</Typography.Paragraph>}
       <p className="scms-class-action-scope">
-        Đăng ký và huỷ áp dụng cho toàn bộ các buổi còn lại của lớp.
+        Đăng ký và hủy áp dụng cho toàn bộ các buổi còn lại của lớp.
       </p>
     </>
   );

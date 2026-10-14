@@ -27,7 +27,7 @@ export function ScheduleEventCard({ event, onDetail, renderActions }) {
       <div className="scms-calendar-event__tags">
         <ScheduleStatusTag status={event.status} endAt={event.endAt} />
         {event.enrollmentStatus && <ScheduleStatusTag status={event.enrollmentStatus} />}
-        {hasChanges && <Tag color="orange">Lịch đã thay đổi / huỷ</Tag>}
+        {hasChanges && <Tag color="orange">Lịch đã thay đổi / hủy</Tag>}
       </div>
       <div className="scms-calendar-event__meta">
         <EnvironmentOutlined />

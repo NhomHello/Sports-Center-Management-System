@@ -7,7 +7,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { PaymentClaimModal } from './PaymentClaimModal';
 import { InvoiceRefundModal } from './InvoiceRefundModal';
 
-/** Chủ hoá đơn báo đã chuyển; hoàn tiền chỉ hiện với permission payment.refund. */
+/** Chủ hóa đơn báo đã chuyển; hoàn tiền chỉ hiện với permission payment.refund. */
 export function InvoiceExceptionActions({ invoice }) {
   const [action, setAction] = useState(null);
   const { user } = useAuth();

@@ -13,7 +13,7 @@ export function ScheduleToolbar({ calendar }) {
               ? `Ngày ${calendar.date.format('DD/MM/YYYY')}`
               : `Tuần ${calendar.days[0].format('DD/MM')} – ${calendar.days.at(-1).format('DD/MM/YYYY')}`}
           </h3>
-          <p>Giờ Việt Nam · Đăng ký và huỷ áp dụng cho toàn lớp</p>
+          <p>Giờ Việt Nam · Đăng ký và hủy áp dụng cho toàn lớp</p>
         </div>
         {calendar.query.isSuccess && (
           <span className="scms-calendar-total">{calendar.events.length} buổi học</span>
@@ -58,11 +58,11 @@ export function ScheduleToolbar({ calendar }) {
           />
           <label className="scms-calendar-cancelled-toggle">
             <Switch
-              aria-label="Hiện lịch đã huỷ"
+              aria-label="Hiện lịch đã hủy"
               checked={calendar.showCancelled}
               onChange={calendar.setShowCancelled}
             />
-            <span>Hiện lịch đã huỷ</span>
+            <span>Hiện lịch đã hủy</span>
           </label>
         </div>
       </div>

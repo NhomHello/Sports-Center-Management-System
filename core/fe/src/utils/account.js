@@ -1,11 +1,11 @@
-/** Chuẩn hoá các trường tài khoản theo hợp đồng API trước khi gửi. */
+/** Chuẩn hóa các trường tài khoản theo hợp đồng API trước khi gửi. */
 export const normalizeAccountFields = ({ fullName, email, phone }) => ({
   ...(fullName !== undefined ? { fullName: fullName.trim() } : {}),
   ...(email?.trim() ? { email: email.trim().toLowerCase() } : {}),
   ...(phone?.trim() ? { phone: phone.trim() } : {}),
 });
 
-/** Bỏ trường xác nhận mật khẩu và chuẩn hoá thông tin đăng ký. */
+/** Bỏ trường xác nhận mật khẩu và chuẩn hóa thông tin đăng ký. */
 export const normalizeRegistrationPayload = ({
   confirmPassword: _confirm,
   password,
