@@ -73,6 +73,7 @@ function InvoiceWorkspace({
           )}
           <InvoiceFilters
             key={`${isOwn}:${table.filters.search ?? ''}`}
+            staff={canReadAll}
             filters={table.filters}
             onChange={table.setFilters}
             loading={query.isFetching}

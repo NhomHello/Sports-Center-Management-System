@@ -1,8 +1,9 @@
+import { Link } from 'react-router';
 import { InvoiceActions } from './InvoiceActions';
 import { EyeOutlined, DollarOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
-import { Button, Space, Table, Tag, Tooltip } from 'antd';
-import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
+import { Button, Space, Table, Tag, Tooltip, Empty } from 'antd';
+import { ROUTES, INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusTag } from '@/components/common/StatusTag';
 
@@ -63,7 +64,15 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       pagination={pagination}
       onChange={onChange}
       scroll={{ x: true }}
-      locale={{ emptyText: 'Chưa có hóa đơn nào.' }}
+      locale={{
+        emptyText: (
+          <Empty description="Chưa có hóa đơn nào.">
+            <Link to={ROUTES.MEMBERSHIP_PLANS}>
+              <Button>Xem gói tập</Button>
+            </Link>
+          </Empty>
+        ),
+      }}
     />
   );
 }
