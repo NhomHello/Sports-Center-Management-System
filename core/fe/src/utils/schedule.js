@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@/constants';
-import { SCHEDULE_UI, WEEKDAYS } from '@/constants/schedule';
+import { CLASS_STATUS, SCHEDULE_UI, WEEKDAYS } from '@/constants/schedule';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 /** DatePicker giữ wall time Việt Nam, không lấy offset của máy người dùng. */
@@ -23,15 +23,28 @@ export const classFormValues = (item) =>
   item
     ? {
         ...item,
+        weeklySchedule: item.weeklySchedule.map((slot) => ({
+          ...slot,
+          timeRange: [dayjs(`2000-01-01T${slot.startTime}`), dayjs(`2000-01-01T${slot.endTime}`)],
+        })),
         startsOn: dayjs(item.startsOn),
         endsOn: dayjs(item.endsOn),
         registrationStartAt: vietnamInput(item.registrationStartAt),
         registrationEndAt: vietnamInput(item.registrationEndAt),
       }
-    : { weeklySchedule: [{}] };
+    : { status: CLASS_STATUS.OPEN, weeklySchedule: [{}] };
 /** Chỉ gửi field cấu hình lớp, không gửi các DTO/quyền từ màn hình chi tiết. */
 export const classFormPayload = (values) => ({
   ...values,
+  weeklySchedule: values.weeklySchedule.map(({ timeRange, ...slot }) =>
+    timeRange
+      ? {
+          dayOfWeek: slot.dayOfWeek,
+          startTime: timeRange[0].format('HH:mm'),
+          endTime: timeRange[1].format('HH:mm'),
+        }
+      : slot,
+  ),
   startsOn: values.startsOn.format(SCHEDULE_UI.DATE_PATTERN),
   endsOn: values.endsOn.format(SCHEDULE_UI.DATE_PATTERN),
   registrationStartAt: vietnamTimestamp(values.registrationStartAt),

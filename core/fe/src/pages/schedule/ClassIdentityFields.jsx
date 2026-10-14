@@ -14,7 +14,13 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
         <Select options={options(subjects)} virtual={false} />
       </Form.Item>
       <Form.Item name="roomId" label="Phòng tập" rules={required}>
-        <Select options={options(rooms)} virtual={false} />
+        <Select
+          options={rooms.map((room) => ({
+            value: room.id,
+            label: `${room.name} · tối đa ${room.capacity} người`,
+          }))}
+          virtual={false}
+        />
       </Form.Item>
       <Form.Item name="coachId" label="Huấn luyện viên" rules={required}>
         <Select options={options(coaches)} virtual={false} />
