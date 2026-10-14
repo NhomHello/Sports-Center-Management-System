@@ -4,6 +4,7 @@ import { Alert, Button, Card, Col, Empty, Row, Typography } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
 import { useMembershipPlans } from '@/hooks/useMembershipPlans';
+import { FreezeControls } from './FreezeControls';
 import { CurrentMembershipCard } from './CurrentMembershipCard';
 import { MembershipPlanFormModal } from './MembershipPlanFormModal';
 import { PlanGrid } from './MembershipCards';
@@ -68,6 +69,7 @@ export default function MembershipPlansPage() {
 
       <div>
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
+        <FreezeControls membership={currentMembership} own />
 
         <PlansContent plansQuery={hooks.plansQuery} plans={hooks.plans} mutations={hooks} />
 
