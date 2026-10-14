@@ -458,7 +458,7 @@ a {
 
 @media print {
   @page {
-    size: A4;
+    size: A5 portrait;
     margin: 12mm;
   }
   html,

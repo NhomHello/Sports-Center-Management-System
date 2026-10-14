@@ -28,3 +28,7 @@ export const resolveReconciliation = (id, data) =>
   http.post(`/payments/reconciliation/${id}/resolve`, data);
 export const getRevenue = (params) => http.get('/reports/revenue', { params });
 export const listAudit = (params) => http.get('/audit-logs', { params });
+
+/** Tải PDF A5 của hóa đơn đã thanh toán từ API. */
+export const downloadReceipt = (id) =>
+  http.get(`/invoices/${id}/receipt.pdf`, { responseType: 'blob' });

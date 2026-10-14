@@ -2,7 +2,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Alert, Button, Descriptions, Empty, Modal, Space, Table, Typography, Tooltip } from 'antd';
-import { PERMISSIONS } from '@scms/shared';
+import { ReceiptDownloadButton } from './ReceiptDownloadButton';
+import { PERMISSIONS, amountInWords } from '@scms/shared';
 import { PageLoading } from '@/components/common/PageLoading';
 import { StatusTag } from '@/components/common/StatusTag';
 import {
@@ -67,6 +68,7 @@ function CenterBlock({ centerInfo }) {
   if (!centerInfo?.name) return null;
   return (
     <header className="scms-receipt-center">
+      <strong aria-label="Logo trung tâm">SC</strong>
       <Typography.Title level={3}>{centerInfo.name}</Typography.Title>
       {centerInfo.address && <Typography.Paragraph>{centerInfo.address}</Typography.Paragraph>}
       {centerInfo.phone && (
@@ -75,6 +77,8 @@ function CenterBlock({ centerInfo }) {
     </header>
   );
 }
+
+const invoiceDuration = (invoice) => invoice.durationDays ?? invoice.plan?.durationDays;
 
 function InvoiceSummary({ invoice, receivedAmount }) {
   const planName = invoice.planName ?? invoice.plan?.name ?? invoice.membership?.plan?.name ?? '—';
@@ -89,6 +93,10 @@ function InvoiceSummary({ invoice, receivedAmount }) {
       <Descriptions.Item label="Số tiền yêu cầu">
         {formatCurrency(invoice.amount, invoice.currency)}
       </Descriptions.Item>
+      <Descriptions.Item label="Số tiền bằng chữ">
+        {amountInWords(invoice.amount)}
+      </Descriptions.Item>
+      <Descriptions.Item label="Thời hạn mua">{invoiceDuration(invoice)} ngày</Descriptions.Item>
       <Descriptions.Item label="Tổng thực nhận">
         {formatCurrency(receivedAmount, invoice.currency)}
       </Descriptions.Item>
@@ -158,9 +166,12 @@ function InvoicePrintAction({
     );
   }
   return (
-    <Button className="scms-no-print" type="primary" block onClick={() => window.print()}>
-      In / lưu PDF
-    </Button>
+    <Space>
+      <ReceiptDownloadButton invoice={invoice} />
+      <Button className="scms-no-print" type="primary" block onClick={() => window.print()}>
+        In
+      </Button>
+    </Space>
   );
 }
 
@@ -300,7 +311,7 @@ export function InvoiceReceiptModal({
       <ReceiptContent
         query={query}
         centerInfo={centerInfo}
-        canExport={canExport}
+        canExport={canExport || can(PERMISSIONS.INVOICE_EXPORT_OWN, PERMISSIONS.INVOICE_READ_OWN)}
         centerConfigMessage={centerConfigMessage}
         onRetryCenterSettings={onRetryCenterSettings}
         onCash={onCash}
