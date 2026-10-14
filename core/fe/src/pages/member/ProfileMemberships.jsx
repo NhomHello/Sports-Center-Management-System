@@ -1,3 +1,4 @@
+import { MembershipProgress } from './MembershipProgress';
 import { Card, Empty, Space, Table, Typography } from 'antd';
 import { StatusTag } from '@/components/common/StatusTag';
 import { MEMBERSHIP_STATUS_META } from '@/constants';
@@ -35,6 +36,7 @@ export function ProfileMemberships({ profile }) {
               {membership.plan?.name}
             </Typography.Title>
             <StatusTag value={membership.status} meta={MEMBERSHIP_STATUS_META} />
+            <MembershipProgress membership={membership} />
             <Typography.Text>Hiệu lực từ: {formatDate(membership.startDate)}</Typography.Text>
             <Typography.Text>Hết hạn: {formatDate(membership.endDate)}</Typography.Text>
             {Array.isArray(membership.plan?.benefits) &&

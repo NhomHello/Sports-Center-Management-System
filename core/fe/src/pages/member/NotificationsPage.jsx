@@ -61,7 +61,7 @@ export default function NotificationsPage() {
           isBusy={isBusy}
           failedIds={failedIds}
         />
-        {!query.isError && (
+        {!query.isError && notifications.length > 0 && (
           <Space className="scms-list-pagination">
             <Pagination
               {...table.paginationProps(query.data?.meta)}

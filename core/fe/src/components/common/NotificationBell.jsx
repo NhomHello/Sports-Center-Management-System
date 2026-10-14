@@ -58,7 +58,7 @@ export function NotificationBell() {
       onOpenChange={handleOpenChange}
     >
       <Badge count={unreadCount} size="small" offset={[-3, 4]}>
-        <Button type="text" shape="circle" icon={<BellOutlined />} aria-label="Thông báo" />
+        <Button type="default" shape="circle" icon={<BellOutlined />} aria-label="Thông báo" />
       </Badge>
     </Popover>
   );
