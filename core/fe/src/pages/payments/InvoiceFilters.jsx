@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Select, DatePicker } from 'antd';
 import { useState } from 'react';
@@ -13,6 +14,8 @@ const CHANNEL_OPTIONS = Object.entries(INVOICE_CHANNEL_LABELS).map(([value, labe
   value,
   label,
 }));
+
+const rangeValue = ({ from, to }) => from && to ? [dayjs(from), dayjs(to)] : null;
 
 /** Bộ lọc truyền thẳng đến API phân trang; không lọc riêng một trang dữ liệu. */
 export function InvoiceFilters({ filters, onChange, loading, staff = false }) {
@@ -59,6 +62,7 @@ export function InvoiceFilters({ filters, onChange, loading, staff = false }) {
       {staff && (
         <DatePicker.RangePicker
           aria-label="Khoảng ngày hóa đơn"
+          value={rangeValue(filters)}
           format={DATE_FORMATS.DATE}
           onChange={(dates) =>
             onChange({

@@ -1,7 +1,7 @@
 import { Alert, Modal } from 'antd';
 import { MembershipEffectSummary } from '@/pages/payments/MembershipEffectPreview';
 import { formatCurrency } from '@/utils/format';
-/** Confirmation avant création; les dates définitives dépendent du paiement effectif. */
+/** Xác nhận trước khi tạo hóa đơn; ngày chính thức phụ thuộc lúc thanh toán. */
 export function PurchaseConfirmModal({ plan, current, query, mutation, onClose }) {
   return (
     <Modal

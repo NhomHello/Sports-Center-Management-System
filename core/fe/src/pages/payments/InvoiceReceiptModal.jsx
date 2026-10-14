@@ -311,7 +311,11 @@ export function InvoiceReceiptModal({
       <ReceiptContent
         query={query}
         centerInfo={centerInfo}
-        canExport={canExport || can(PERMISSIONS.INVOICE_EXPORT_OWN, PERMISSIONS.INVOICE_READ_OWN)}
+        canExport={
+          canExport ||
+          (query.data?.data?.userId === user?.id &&
+            can(PERMISSIONS.INVOICE_EXPORT_OWN, PERMISSIONS.INVOICE_READ_OWN))
+        }
         centerConfigMessage={centerConfigMessage}
         onRetryCenterSettings={onRetryCenterSettings}
         onCash={onCash}
