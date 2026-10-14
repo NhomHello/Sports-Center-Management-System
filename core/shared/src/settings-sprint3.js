@@ -14,6 +14,8 @@ const number = (key, defaultValue, label, group, minValue, maxValue) => ({
 
 /** BR-1.16 / BR-2.16 / BR-2.17: cấu hình dùng chung và được seed vào DB. */
 export const SPRINT3_SETTINGS = [
+  number('LOGIN_MAX_FAILED_ATTEMPTS', 5, 'Số lần đăng nhập sai tối đa', G.ACCOUNT, 1, 100),
+  number('LOGIN_LOCK_MINUTES', 15, 'Thời gian khoá đăng nhập (phút)', G.ACCOUNT, 1, 1440),
   number('MEMBERSHIP_FREEZE_MIN_DAYS', 7, 'Bảo lưu tối thiểu (ngày)', G.MEMBERSHIP, 1, 365),
   number('MEMBERSHIP_FREEZE_MAX_DAYS', 30, 'Bảo lưu tối đa (ngày)', G.MEMBERSHIP, 7, 365),
   number('MEMBERSHIP_FREEZE_MAX_TIMES', 2, 'Số lần bảo lưu tối đa mỗi gói', G.MEMBERSHIP, 0, 20),

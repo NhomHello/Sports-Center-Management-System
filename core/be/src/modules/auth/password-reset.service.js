@@ -3,6 +3,7 @@ import { buildPasswordResetEmail } from '../../common/mail/mail-templates.js';
 import { sendMail } from '../../common/mail/mailer.js';
 import { hashPassword } from '../../common/utils/password.js';
 import { Enums, prisma } from '../../config/db.js';
+import { loginKey } from './login-lock.service.js';
 import { logger } from '../../config/logger.js';
 import { AUDIT_ACTIONS, ENTITIES, PASSWORD_RESET } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
@@ -63,6 +64,9 @@ export const confirmPasswordReset = async ({ token, password }) => {
   const usedAt = new Date();
   await prisma.$transaction(async (tx) => {
     await claimToken(tx, record, usedAt);
+    await tx.loginThrottle.updateMany({
+      where: { key: loginKey(record.user) }, data: { attempts: 0, lockedUntil: null },
+    });
     await tx.user.update({
       where: { id: record.userId },
       data: {
