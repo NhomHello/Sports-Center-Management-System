@@ -31,3 +31,7 @@ export const confirmPasswordReset = (payload) =>
 
 /** Kênh liên hệ công khai (Zalo/Facebook/điện thoại) để nhờ nhân viên hỗ trợ xác minh thủ công. */
 export const getSupportContacts = () => http.get(`${BASE}/support-contacts`);
+
+/** Kiểm tra link trước khi hiện form mật khẩu. */
+export const validatePasswordReset = (token) =>
+  http.post('/auth/password-resets/validate', { token });
