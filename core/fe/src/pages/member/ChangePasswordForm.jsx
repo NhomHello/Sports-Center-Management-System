@@ -52,6 +52,7 @@ export function ChangePasswordForm() {
         <Form.Item
           name="password"
           label="Mật khẩu mới"
+          extra={`Từ ${VALIDATION.PASSWORD_MIN_LENGTH} đến ${VALIDATION.PASSWORD_MAX_LENGTH} ký tự`}
           rules={[
             {
               required: true,

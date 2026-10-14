@@ -201,7 +201,7 @@ a {
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.035em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .ant-table-wrapper .ant-table-thead > tr > th {
   color: #475569;
@@ -1197,4 +1197,11 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+}
+
+.ant-form-item-label {
+  padding-bottom: 8px !important;
+}
+.ant-form-item-explain-error {
+  padding-top: 6px;
 }
