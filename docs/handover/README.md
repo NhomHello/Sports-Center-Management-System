@@ -26,3 +26,5 @@ Phân vai: BE = Nhanh + Bảo, FE = Khôi + Khải, mỗi sprint đủ 4 ngườ
 Thứ tự Sprint 2 đã áp dụng vào nhánh tích hợp local: BE Bảo → BE Nhanh → FE Khải → FE Khôi. Main được bảo toàn; push/PR/merge remote là bước bàn giao riêng.
 
 Commit dùng lại code của Khôi phải có dòng `Co-authored-by: kitter <longhuy0078@gmail.com>` để ghi nhận đúng người viết.
+
+Danh sách chức năng Sprint 3 đã cập nhật (gồm phần bổ sung chưa thuộc sprint nào): [sprint-3-danh-sach.md](sprint-3-danh-sach.md).
