@@ -103,4 +103,31 @@ describe('S3-69 khoá đăng nhập tạm thời', () => {
     ).toBe(200);
     expect((await login(f.member.email, f.password)).status).toBe(200);
   });
+  it('email và SĐT dùng chung khoá; định danh không tồn tại cũng có cùng phản hồi', async () => {
+    const phone = `09${String(Date.now()).slice(-8)}`;
+    await prisma.user.update({ where: { id: f.member.id }, data: { phone } });
+    const key = loginKey(f.member);
+    await prisma.loginThrottle.update({ where: { key }, data: { attempts: 0, lockedUntil: null } });
+    const limit = Number(
+      (
+        await prisma.systemSetting.findUniqueOrThrow({
+          where: { key: K.LOGIN_MAX_FAILED_ATTEMPTS },
+        })
+      ).value,
+    );
+    for (let i = 0; i < limit - 1; i += 1) await login(f.member.email, 'Wrong@123');
+    const locked = await login(phone, 'Wrong@123');
+    expect(locked.status).toBe(429);
+    expect((await login(phone, f.password)).body.code).toBe('LOGIN_TEMPORARILY_LOCKED');
+    const unknown = `${f.prefix}_missing@scms.test`;
+    try {
+      let res;
+      for (let i = 0; i < limit; i += 1) res = await login(unknown, 'Wrong@123');
+      expect(res.status).toBe(locked.status);
+      expect(res.body.message).toBe(locked.body.message);
+      expect(res.body.code).toBe(locked.body.code);
+    } finally {
+      await prisma.loginThrottle.deleteMany({ where: { key: loginKey(null, unknown) } });
+    }
+  });
 });

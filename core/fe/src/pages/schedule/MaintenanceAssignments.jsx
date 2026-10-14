@@ -18,14 +18,16 @@ export function MaintenanceAssignments({ sessions, assignments, setAssignments }
             <Select
               placeholder="Chọn cách xử lý"
               style={{ width: 200 }}
-              value={assignments[s.id]}
-              onChange={(value) => setAssignments((old) => ({ ...old, [s.id]: value }))}
+              value={assignments[s.id] === null ? 'cancel' : assignments[s.id]}
+              onChange={(value) =>
+                setAssignments((old) => ({ ...old, [s.id]: value === 'cancel' ? null : value }))
+              }
               options={[
                 ...s.suggestions.map((r) => ({
                   value: r.id,
                   label: `${r.name} · ${r.capacity} chỗ`,
                 })),
-                { value: null, label: 'Huỷ buổi (thông báo hội viên)' },
+                { value: 'cancel', label: 'Huỷ buổi (thông báo hội viên)' },
               ]}
             />
           ),

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Alert, Button, DatePicker, Form, Input, Modal, Select, Table } from 'antd';
+import { Alert, Button, DatePicker, Form, Input, Modal } from 'antd';
 import { DATE_FORMATS } from '@/constants';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import { previewMaintenance, createMaintenance } from '@/services/sprint3.service';

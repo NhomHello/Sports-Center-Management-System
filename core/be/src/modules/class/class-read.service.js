@@ -28,11 +28,20 @@ export const resolveBookingMember = (query, context) => {
 export const getFilters = async (context) => {
   const rows = await prisma.gymClass.findMany({
     where: managementScope(context),
-    select: { subject: { select: { id: true, name: true } }, coach: { select: PUBLIC_PERSON } },
+    select: {
+      subject: { select: { id: true, name: true } },
+      coach: { select: PUBLIC_PERSON },
+      room: { select: { id: true, name: true } },
+      sessions: {
+        select: { room: { select: { id: true, name: true } }, coach: { select: PUBLIC_PERSON } },
+      },
+    },
   });
+  const unique = (items) => [...new Map(items.filter(Boolean).map((i) => [i.id, i])).values()];
   return {
-    subjects: [...new Map(rows.map((r) => [r.subject.id, r.subject])).values()],
-    coaches: [...new Map(rows.map((r) => [r.coach.id, r.coach])).values()],
+    subjects: unique(rows.map((r) => r.subject)),
+    rooms: unique(rows.flatMap((r) => [r.room, ...r.sessions.map((s) => s.room)])),
+    coaches: unique(rows.flatMap((r) => [r.coach, ...r.sessions.map((s) => s.coach)])),
   };
 };
 

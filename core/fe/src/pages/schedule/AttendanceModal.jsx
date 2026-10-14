@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Button, Form, Input, Modal, Select, Space, Table } from 'antd';
+import { Alert, Button, Form, Input, Modal, Space } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';

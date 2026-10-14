@@ -1,21 +1,9 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  Alert,
-  App,
-  Button,
-  Card,
-  DatePicker,
-  Form,
-  InputNumber,
-  Select,
-  Space,
-  Statistic,
-  Table,
-} from 'antd';
+import { App } from 'antd';
 import { vietnamInput } from '@/utils/schedule';
 import { PageHeader } from '@/components/common/PageHeader';
-import { DATE_FORMATS } from '@/constants';
+import { ReportFilters } from './ReportFilters';
 import { getReport, exportReport } from '@/services/sprint3.service';
 import { ReportResults } from './ReportResults';
 import { QueryState } from '../schedule/QueryState';
@@ -49,32 +37,7 @@ export default function ReportsPage() {
         title="Báo cáo trung tâm"
         subtitle="Doanh thu theo ngày thanh toán, trừ tiền đã hoàn · Giờ Việt Nam"
       />
-      <Card>
-        <Form
-          layout="inline"
-          initialValues={{ range: [today.startOf('month'), today] }}
-          onFinish={({ range, ...values }) =>
-            setFilters({
-              ...values,
-              from: range[0].format('YYYY-MM-DD'),
-              to: range[1].format('YYYY-MM-DD'),
-            })
-          }
-        >
-          <Form.Item name="range" label="Khoảng ngày" rules={[{ required: true }]}>
-            <DatePicker.RangePicker format={DATE_FORMATS.DATE} />
-          </Form.Item>
-          <Form.Item name="planId" label="Mã gói">
-            <InputNumber min={1} precision={0} />
-          </Form.Item>
-          <Form.Item name="memberId" label="Mã hội viên">
-            <InputNumber min={1} precision={0} />
-          </Form.Item>
-          <Button htmlType="submit" type="primary">
-            Áp dụng
-          </Button>
-        </Form>
-      </Card>
+      <ReportFilters today={today} onApply={setFilters} />
       <QueryState query={query}>
         {report && (
           <ReportResults

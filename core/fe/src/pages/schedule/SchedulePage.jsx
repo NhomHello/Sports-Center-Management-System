@@ -1,5 +1,4 @@
 import { PERMISSIONS as P } from '@scms/shared';
-import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { Select, Tabs } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -97,8 +96,14 @@ function buildTabs(can, canAll, onViewSchedule) {
 /** Trang Flow 2: tab và thao tác theo permission, không so sánh tên role. */
 export default function SchedulePage() {
   const { can, canAll } = usePermission();
-  const [params] = useSearchParams();
-  const [selected, setSelected] = useState(params.get('tab'));
+  const [params, setParams] = useSearchParams();
+  const selected = params.get('tab');
+  const setSelected = (tab) =>
+    setParams((previous) => {
+      const next = new URLSearchParams(previous);
+      next.set('tab', tab);
+      return next;
+    });
   const items = buildTabs(can, canAll, () => setSelected('own'));
   const activeKey = items.find((i) => i.key === selected)?.key || items[0]?.key;
   return (

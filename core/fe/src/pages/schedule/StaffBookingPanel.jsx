@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Select, Typography, Tabs, Input, Alert, Space } from 'antd';
 
-import { QUERY_KEYS } from '@/constants';
+import { MEMBERSHIP_STATUS_META, QUERY_KEYS } from '@/constants';
 import * as memberService from '@/services/member.service';
 import * as scheduleService from '@/services/schedule.service';
 import { ClassListPanel } from './ClassListPanel';
@@ -87,7 +87,7 @@ export function StaffBookingPanel() {
           onChange={setMemberId}
           options={members.map((member) => ({
             value: member.id,
-            label: `${member.fullName} · ${member.phone || member.email} · ${member.membership?.status || 'Chưa có gói'}`,
+            label: `${member.fullName} · ${member.phone || member.email} · ${MEMBERSHIP_STATUS_META[member.currentMembership?.status]?.label || 'Chưa có gói'}`,
           }))}
         />
         {query.isError && <Alert type="error" title={query.error.message} />}
