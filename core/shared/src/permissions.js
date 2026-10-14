@@ -109,6 +109,8 @@ export const PERMISSION_MODULES = [
       record_cash: 'Ghi nhận thanh toán tại quầy',
       read_own: 'Xem giao dịch của mình',
       read_all: 'Xem mọi giao dịch',
+      reconcile: 'Đối soát giao dịch: map tiền, xử lý chuyển thiếu / thừa / lặp',
+      refund: 'Hoàn tiền và xác nhận đã chuyển trả',
     },
   },
   {

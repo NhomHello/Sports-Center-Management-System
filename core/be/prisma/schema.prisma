@@ -80,6 +80,12 @@ enum NotificationKind {
   CLASS_CANCELLED
   TRAINING_PLAN_PUBLISHED
   TRAINING_RESULT_CREATED
+  PAYMENT_CONFIRMED
+  PAYMENT_TOPUP_REQUIRED
+  PAYMENT_REVIEW_ALERT
+  PAYMENT_REFUND
+  PAYMENT_CLAIM_REJECTED
+  INVOICE_EXPIRED
 }
 
 // ---------------- AUTH & RBAC (dynamic) ----------------
@@ -277,6 +283,8 @@ model Invoice {
   membership   Membership?         @relation(fields: [membershipId], references: [id])
   payments     Payment[]
   webhookLogs  PaymentWebhookLog[]
+  cases        ReconciliationCase[]
+  refunds      Refund[]
   createdAt    DateTime            @default(now()) @map("created_at")
   updatedAt    DateTime            @updatedAt @map("updated_at")
 
@@ -317,10 +325,107 @@ model PaymentWebhookLog {
   invoice               Invoice?         @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
   reviewedById          Int?             @map("reviewed_by_id")
   reviewedAt            DateTime?        @map("reviewed_at")
+  reconciliationCase    ReconciliationCase?
   createdAt             DateTime         @default(now()) @map("created_at")
 
   @@index([status, createdAt])
   @@map("payment_webhook_logs")
+}
+
+/// Lý do mở phiếu đối soát (UC-PAY-11..14).
+enum ReconciliationReason {
+  NO_MATCH
+  UNDERPAID
+  OVERPAID
+  LATE
+  DUPLICATE_TRANSFER
+  MEMBER_CLAIM
+}
+
+enum ReconciliationStatus {
+  OPEN
+  WAITING_MEMBER
+  WAITING_TOPUP
+  REFUND_PENDING
+  MATCHED
+  REFUNDED
+  REJECTED
+  IGNORED
+}
+
+enum ContactChannel {
+  PHONE
+  ZALO
+  EMAIL
+  COUNTER
+  OTHER
+}
+
+enum RefundStatus {
+  PENDING
+  DONE
+}
+
+/// Phiếu đối soát: tiền về không tự khớp, hoặc hội viên báo đã chuyển khoản. amount = số tiền của
+/// giao dịch mở phiếu (hoặc số hội viên khai); excessAmount = phần thừa cần hoàn hoặc dùng gia hạn.
+model ReconciliationCase {
+  id           Int                     @id @default(autoincrement())
+  reason       ReconciliationReason
+  status       ReconciliationStatus    @default(OPEN)
+  webhookLogId Int?                    @unique @map("webhook_log_id")
+  webhookLog   PaymentWebhookLog?      @relation(fields: [webhookLogId], references: [id], onDelete: SetNull)
+  invoiceId    Int?                    @map("invoice_id")
+  invoice      Invoice?                @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  userId       Int?                    @map("user_id")
+  amount       Int
+  excessAmount Int?                    @map("excess_amount")
+  claim        Json?
+  note         String?                 @db.VarChar(500)
+  resolvedById Int?                    @map("resolved_by_id")
+  resolvedAt   DateTime?               @map("resolved_at")
+  contacts     ReconciliationContact[]
+  refunds      Refund[]
+  createdAt    DateTime                @default(now()) @map("created_at")
+  updatedAt    DateTime                @updatedAt @map("updated_at")
+
+  @@index([status, reason])
+  @@index([invoiceId])
+  @@map("reconciliation_cases")
+}
+
+/// BR-PAY-19: nhật ký liên hệ hội viên, chỉ thêm, không sửa/xoá.
+model ReconciliationContact {
+  id        Int                @id @default(autoincrement())
+  caseId    Int                @map("case_id")
+  case      ReconciliationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  channel   ContactChannel
+  content   String             @db.VarChar(500)
+  result    String?            @db.VarChar(255)
+  actorId   Int                @map("actor_id")
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  @@index([caseId])
+  @@map("reconciliation_contacts")
+}
+
+/// Yêu cầu hoàn tiền: tiền trả thủ công ngoài hệ thống, đóng bằng mã tham chiếu ngân hàng (BR-PAY-13).
+model Refund {
+  id            Int                 @id @default(autoincrement())
+  invoiceId     Int?                @map("invoice_id")
+  invoice       Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  caseId        Int?                @map("case_id")
+  case          ReconciliationCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  amount        Int
+  reason        String              @db.VarChar(255)
+  status        RefundStatus        @default(PENDING)
+  reference     String?             @db.VarChar(100)
+  requestedById Int                 @map("requested_by_id")
+  completedById Int?                @map("completed_by_id")
+  completedAt   DateTime?           @map("completed_at")
+  createdAt     DateTime            @default(now()) @map("created_at")
+
+  @@index([status, createdAt])
+  @@map("refunds")
 }
 
 /// Lịch sử thông báo; dedupeKey chống gửi lặp và readAt được giữ khi đọc lại.

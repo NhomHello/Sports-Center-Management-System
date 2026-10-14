@@ -68,6 +68,8 @@ export const ENTITIES = Object.freeze({
   MEMBERSHIP: 'Membership',
   PAYMENT: 'Payment',
   MEMBERSHIP_PLAN: 'MembershipPlan',
+  RECONCILIATION_CASE: 'ReconciliationCase',
+  REFUND: 'Refund',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
@@ -81,6 +83,16 @@ export const PRISMA_ERROR = Object.freeze({
 export const SEPAY = Object.freeze({
   AUTH_SCHEME: 'Apikey',
   TRANSFER_IN: 'in',
+});
+
+/** Giới hạn kỹ thuật của job/đồng bộ thanh toán (không phải số nghiệp vụ). */
+export const PAYMENT_LIMITS = Object.freeze({
+  EXPIRY_INTERVAL_MS: 60 * 1000,
+  EXPIRY_BATCH_SIZE: 100,
+  SYNC_PAGE_LIMIT: 5000,
+  SYNC_TIMEOUT_MS: 15000,
+  NOTE_MAX_LENGTH: 500,
+  REASON_MAX_LENGTH: 255,
 });
 
 export const HEALTH_PATH = '/health';

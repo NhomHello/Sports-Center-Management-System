@@ -63,6 +63,12 @@ const schema = z.object({
   // Tai khoan nhan tien KHONG nam o day: cau hinh qua UI Cai dat (system_settings PAYMENT_*).
   SEPAY_WEBHOOK_API_KEY: z.string().min(MIN_SEPAY_KEY_LENGTH).optional(),
   SEPAY_QR_BASE_URL: z.url().default('https://qr.sepay.vn/img'),
+  // Token API SePay (my.sepay.vn > Cấu hình công ty > API Access) chỉ dùng cho nút "Đồng bộ từ SePay"; bỏ trống => tắt.
+  SEPAY_API_TOKEN: z
+    .string()
+    .optional()
+    .transform((value) => value || undefined),
+  SEPAY_API_BASE_URL: z.url().default('https://my.sepay.vn/userapi'),
 
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 

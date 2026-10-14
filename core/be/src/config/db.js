@@ -22,6 +22,10 @@ const {
   ClassStatus,
   SessionStatus,
   EnrollmentStatus,
+  ReconciliationReason,
+  ReconciliationStatus,
+  ContactChannel,
+  RefundStatus,
   Prisma,
 } = prismaPkg;
 
@@ -69,5 +73,9 @@ export const Enums = Object.freeze({
   ClassStatus,
   SessionStatus,
   EnrollmentStatus,
+  ReconciliationReason,
+  ReconciliationStatus,
+  ContactChannel,
+  RefundStatus,
   TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
 });
