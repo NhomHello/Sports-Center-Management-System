@@ -22,6 +22,10 @@ import subjectRoutes from './modules/subject/subject.routes.js';
 import roomRoutes from './modules/room/room.routes.js';
 import classRoutes from './modules/class/class.routes.js';
 import scheduleRoutes from './modules/schedule/schedule.routes.js';
+import {
+  reconciliationRoutes,
+  refundRoutes,
+} from './modules/reconciliation/reconciliation.routes.js';
 
 const router = Router();
 
@@ -33,6 +37,8 @@ router.use('/notifications', notificationRoutes);
 router.use('/payments/sepay', sepayRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/invoices', invoiceRoutes);
+router.use('/reconciliations', reconciliationRoutes);
+router.use('/refunds', refundRoutes);
 router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/memberships', membershipRoutes);
