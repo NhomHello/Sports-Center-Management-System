@@ -32,6 +32,9 @@ export const listInvoices = async (query, actor, canReadAll) => {
     ...(userId && { userId }),
     ...(query.status && { status: query.status }),
     ...(query.channel && { channel: query.channel }),
+    ...((query.from || query.to) && {
+      createdAt: { ...(query.from && { gte: query.from }), ...(query.to && { lte: query.to }) },
+    }),
     ...(query.search && {
       OR: [
         { code: { contains: query.search } },
@@ -50,7 +53,12 @@ export const listInvoices = async (query, actor, canReadAll) => {
   ]);
   const currency = await settingService.getValue(SETTING_KEYS.CURRENCY);
   return {
-    items: items.map((item) => ({ ...item, currency })),
+    // UC-PAY-08: số đã nhận để hiện "đã nhận X / còn thiếu Y" với hoá đơn chuyển bù.
+    items: items.map((item) => ({
+      ...item,
+      currency,
+      receivedAmount: item.payments.reduce((sum, payment) => sum + payment.receivedAmount, 0),
+    })),
     meta: buildPageMeta({ ...query, total }),
   };
 };
