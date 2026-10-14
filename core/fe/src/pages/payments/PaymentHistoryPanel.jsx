@@ -1,14 +1,21 @@
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Card, Table } from 'antd';
+import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import { listPayments } from '@/services/payment.service';
-import { PAYMENT_PROVIDER_LABELS } from '@/constants';
+import { INVOICE_STATUS_META, PAYMENT_PROVIDER_LABELS } from '@/constants';
+import { StatusTag } from '@/components/common/StatusTag';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 
 const columns = [
   { title: 'Hóa đơn', dataIndex: ['invoice', 'code'] },
+  {
+    title: 'Trạng thái hóa đơn',
+    dataIndex: ['invoice', 'status'],
+    render: (status) => <StatusTag value={status} meta={INVOICE_STATUS_META} />,
+  },
   { title: 'Hội viên', dataIndex: ['invoice', 'user', 'fullName'] },
   {
     title: 'Kênh',
@@ -27,11 +34,13 @@ const columns = [
 /** Lịch sử từng lần chuyển, bao gồm chuyển bù và các hóa đơn đã hoàn. */
 export function PaymentHistoryPanel() {
   const { can } = usePermission();
+  const { user } = useAuth();
+  const canReadAll = can(PERMISSIONS.PAYMENT_READ_ALL);
   const table = useTableQuery();
   const enabled = can(PERMISSIONS.PAYMENT_READ_ALL, PERMISSIONS.PAYMENT_READ_OWN);
   const query = useQuery({
-    queryKey: ['payments', table.params],
-    queryFn: () => listPayments(table.params, !can(PERMISSIONS.PAYMENT_READ_ALL)),
+    queryKey: ['payments', user?.id, canReadAll, table.params],
+    queryFn: () => listPayments(table.params, !canReadAll),
     enabled,
   });
   if (!enabled) return null;

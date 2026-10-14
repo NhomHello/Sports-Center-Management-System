@@ -29,7 +29,7 @@ const listValidPendingInvoices = async () => {
 
 const useMemberPlanContext = (canPurchase, userId) => {
   const ownMembershipQuery = useQuery({
-    queryKey: ['ownMembership'],
+    queryKey: ['ownMembership', userId],
     queryFn: membershipService.listOwnMemberships,
     enabled: canPurchase,
   });
