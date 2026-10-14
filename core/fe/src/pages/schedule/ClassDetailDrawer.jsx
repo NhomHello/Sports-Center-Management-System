@@ -11,6 +11,8 @@ import { QueryState } from './QueryState';
 import { ClassSessionsTable } from './ClassSessionsTable';
 import { ClassOverview } from './ClassOverview';
 
+const renderFooter = (item, renderActions) => item ? renderActions?.(item) : null;
+
 /** Container chi tiết lớp, extension dùng chung cho booking/roster ở FE Khôi. */
 export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, renderActions }) {
   const { can } = usePermission();
@@ -21,16 +23,21 @@ export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, rend
   });
   const item = query.data?.data;
   return (
-    <Drawer open title={item?.name || 'Chi tiết lớp'} onClose={onClose} size="large">
+    <Drawer
+      open
+      title={item?.name || 'Chi tiết lớp'}
+      onClose={onClose}
+      size="large"
+      footer={renderFooter(item, renderActions)}
+      extra={
+        can(P.CLASS_UPDATE) && <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
+      }
+    >
       <QueryState query={query}>
         {item && (
           <Space vertical className="scms-schedule-stack">
             <ClassOverview item={item} selectedSession={selectedSession} />
-            {renderActions?.(item)}
             <Typography.Title level={5}>Các buổi học</Typography.Title>
-            {can(P.CLASS_UPDATE) && (
-              <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
-            )}
             <ClassSessionsTable sessions={item.sessions} memberCount={item.enrolledCount} />
             {coachOpen && <CoachChangeModal item={item} onClose={() => setCoachOpen(false)} />}
             <Typography.Title level={5}>Thay đổi lịch</Typography.Title>

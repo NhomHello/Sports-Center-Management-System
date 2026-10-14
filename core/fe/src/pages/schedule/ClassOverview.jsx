@@ -23,7 +23,8 @@ export function ClassOverview({ item, selectedSession }) {
         </div>
       )}
       <Descriptions
-        column={1}
+        bordered
+        column={2}
         items={[
           { key: 'subject', label: 'Bộ môn', children: item.subject.name },
           { key: 'room', label: 'Phòng', children: item.room.name },

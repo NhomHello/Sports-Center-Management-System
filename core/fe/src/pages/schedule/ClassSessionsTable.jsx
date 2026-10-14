@@ -3,7 +3,8 @@ import { Button, Space, Table } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { SESSION_STATUS } from '@/constants/schedule';
 import { usePermission } from '@/hooks/usePermission';
-import { formatDateTime } from '@/utils/format';
+import { DATE_FORMATS } from '@/constants';
+import { vietnamInput } from '@/utils/schedule';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
 import { SessionActionModal } from './SessionActionModal';
 import { AttendanceModal } from './AttendanceModal';
@@ -13,10 +14,16 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
   const { can } = usePermission();
   const [action, setAction] = useState(null);
   const columns = [
-    { title: 'Bắt đầu', dataIndex: 'startAt', render: formatDateTime },
-    { title: 'Kết thúc', dataIndex: 'endAt', render: formatDateTime },
-    { title: 'Phòng', dataIndex: 'roomName' },
-    { title: 'HLV', dataIndex: 'coachName' },
+    {
+      title: 'Thứ, ngày',
+      dataIndex: 'startAt',
+      render: (v) => vietnamInput(v).format('dddd, DD/MM/YYYY'),
+    },
+    {
+      title: 'Giờ',
+      render: (_, s) =>
+        `${vietnamInput(s.startAt).format(DATE_FORMATS.TIME)} – ${vietnamInput(s.endAt).format(DATE_FORMATS.TIME)}`,
+    },
     {
       title: 'Trạng thái',
       render: (_, s) => <ScheduleStatusTag status={s.status} endAt={s.endAt} />,
