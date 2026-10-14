@@ -6,6 +6,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/schedule.service';
 import { BookingEnrollButton, BookingCancelButton, BookingNotice } from './BookingControls';
+import { WaitlistControls } from './WaitlistControls';
 import { ClassRosterModal } from './ClassRosterModal';
 
 /** Chỉ dùng điều kiện server trả, không tính hạn huỷ ở FE. */
@@ -48,6 +49,7 @@ export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
         />
         {rosterButton}
       </div>
+      <WaitlistControls item={item} allowed={enrollAllowed} memberId={memberId} booked={booked} />
       <BookingNotice item={item} booked={booked} allowed={enrollAllowed || cancelAllowed} />
       {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
     </div>
