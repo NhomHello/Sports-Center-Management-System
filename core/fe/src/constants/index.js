@@ -104,6 +104,12 @@ export const NOTIFICATION_KIND_LABELS = Object.freeze({
   CLASS_CANCELLED: 'Lớp học bị hủy',
   TRAINING_PLAN_PUBLISHED: 'Giáo án mới',
   TRAINING_RESULT_CREATED: 'Kết quả tập luyện',
+  PAYMENT_CONFIRMED: 'Thanh toán thành công',
+  PAYMENT_TOPUP_REQUIRED: 'Cần chuyển bù',
+  PAYMENT_REVIEW_ALERT: 'Cảnh báo thanh toán',
+  PAYMENT_REFUND: 'Hoàn tiền',
+  PAYMENT_CLAIM_REJECTED: 'Chưa xác nhận chuyển khoản',
+  INVOICE_EXPIRED: 'Hoá đơn hết hạn',
 });
 
 export const INVOICE_STATUS_META = Object.freeze({
