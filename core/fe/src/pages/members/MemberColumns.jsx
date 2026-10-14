@@ -80,7 +80,11 @@ const MEMBER_COLUMNS = [
       const status = member.currentMembership?.status;
       return status ? (
         <Space orientation="vertical" size={2}>
-          <StatusTag value={status} meta={MEMBERSHIP_STATUS_META} />
+          {member.currentMembership.isFrozen ? (
+            <Tag color="orange">Đang bảo lưu</Tag>
+          ) : (
+            <StatusTag value={status} meta={MEMBERSHIP_STATUS_META} />
+          )}
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
             Tới: {formatDate(member.currentMembership?.endDate)}
           </Typography.Text>
