@@ -41,3 +41,6 @@ export const getReconciliationSummary = () => http.get('/reconciliations/summary
 
 /** Chỉ số hội viên theo ngưỡng nhắc gia hạn ở server. */
 export const getMemberSummary = () => http.get('/members/summary');
+
+/** Ghi nhận đến trung tâm, backend áp dụng policy tài khoản và gói. */
+export const checkIn = (memberId) => http.post('/check-ins', { memberId });
