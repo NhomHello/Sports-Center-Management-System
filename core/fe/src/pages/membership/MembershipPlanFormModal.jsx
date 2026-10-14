@@ -78,7 +78,17 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
           label="Giá tiền (VNĐ)"
           rules={[{ required: true, message: 'Vui lòng nhập giá tiền' }]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} placeholder="Ví dụ: 500000" />
+          <InputNumber
+            min={1}
+            precision={0}
+            formatter={(value) => String(value ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            parser={(value) => value?.replace(/\./g, '')}
+            style={{ width: '100%' }}
+            placeholder="Ví dụ: 500.000"
+          />
+        </Form.Item>
+        <Form.Item name="description" label="Mô tả gói">
+          <Input.TextArea placeholder="Giới thiệu nội dung và đối tượng phù hợp" />
         </Form.Item>
         <Form.Item name="benefitsText" label="Quyền lợi (mỗi dòng một quyền lợi)">
           <Input.TextArea

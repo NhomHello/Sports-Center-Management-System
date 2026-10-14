@@ -11,7 +11,7 @@ export function RegisterForm({ form, mutation }) {
         name="fullName"
         label="Họ tên"
         rules={[
-          { required: true, message: 'Nhập họ tên' },
+          { required: true, message: 'Vui lòng nhập họ và tên' },
           {
             min: VALIDATION.NAME_MIN_LENGTH,
             max: VALIDATION.NAME_MAX_LENGTH,
@@ -25,7 +25,7 @@ export function RegisterForm({ form, mutation }) {
         name="email"
         label="Email"
         rules={[
-          { required: true, message: 'Nhập email' },
+          { required: true, message: 'Vui lòng nhập địa chỉ email' },
           { type: 'email', message: 'Email không hợp lệ' },
         ]}
       >
