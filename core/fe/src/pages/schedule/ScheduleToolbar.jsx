@@ -3,7 +3,7 @@ import { Button, DatePicker, Segmented, Switch } from 'antd';
 import { DATE_FORMATS } from '@/constants';
 import { vietnamInput } from '@/utils/schedule';
 /** Điều hướng ngày/tuần không gắn cố định một tuần demo. */
-export function ScheduleToolbar({ calendar }) {
+export function ScheduleToolbar({ calendar, kind }) {
   return (
     <div className="scms-calendar-toolbar">
       <div className="scms-calendar-heading">
@@ -13,7 +13,11 @@ export function ScheduleToolbar({ calendar }) {
               ? `Ngày ${calendar.date.format('DD/MM/YYYY')}`
               : `Tuần ${calendar.days[0].format('DD/MM')} – ${calendar.days.at(-1).format('DD/MM/YYYY')}`}
           </h3>
-          <p>Giờ Việt Nam · Đăng ký và hủy áp dụng cho toàn lớp</p>
+          <p>
+            {kind === 'teaching'
+              ? 'Giờ Việt Nam · Lịch dạy và điểm danh các lớp phụ trách'
+              : 'Giờ Việt Nam · Đăng ký và hủy áp dụng cho toàn lớp'}
+          </p>
         </div>
         {calendar.query.isSuccess && (
           <span className="scms-calendar-total">{calendar.events.length} buổi học</span>

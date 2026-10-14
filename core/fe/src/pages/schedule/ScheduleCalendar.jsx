@@ -21,7 +21,7 @@ export function ScheduleCalendar({ kind }) {
   const actions = (item) => <ClassBookingActions item={item} />;
   return (
     <div className={`scms-schedule-calendar-view ${compact ? 'scms-calendar--compact' : ''}`}>
-      <ScheduleToolbar calendar={calendar} />
+      <ScheduleToolbar calendar={calendar} kind={kind} />
       {kind === 'management' && <ManagementScheduleFilters calendar={calendar} />}
       {calendar.query.isSuccess && !calendar.events.length && (
         <Empty description="Chưa có buổi học trong khoảng thời gian này">
@@ -46,6 +46,7 @@ export function ScheduleCalendar({ kind }) {
               return (
                 <ScheduleDay
                   key={date}
+                  kind={kind}
                   day={day}
                   events={calendar.events.filter(
                     (e) => vietnamInput(e.startAt).format(SCHEDULE_UI.DATE_PATTERN) === date,
