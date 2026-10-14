@@ -1,7 +1,7 @@
 import { UsergroupAddOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from 'antd';
+import { App, Button } from 'antd';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
@@ -17,6 +17,19 @@ import { MembersListPanel } from './MembersListPanel';
 import { getMemberColumns } from './MemberColumns';
 import './members.css';
 
+function useOpenDuplicate({ setCreateOpen, setSelectedDetailMember }) {
+  const { message } = App.useApp();
+  return async (id) => {
+    await memberService
+      .getMember(id)
+      .then(({ data }) => {
+        setCreateOpen(false);
+        setSelectedDetailMember(data);
+      })
+      .catch((error) => message.error(error.message));
+  };
+}
+
 /** Trang CRM hội viên: Giao diện hiện đại, ấn tượng với tông màu xanh đặc trưng. */
 export default function MembersPage() {
   const { can } = usePermission();
@@ -24,6 +37,7 @@ export default function MembersPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedPurchaseMember, setSelectedPurchaseMember] = useState(undefined);
   const [selectedDetailMember, setSelectedDetailMember] = useState(undefined);
+  const openDuplicate = useOpenDuplicate({ setCreateOpen, setSelectedDetailMember });
 
   const membersQuery = useQuery({
     queryKey: [...QUERY_KEYS.MEMBERS, table.params],
@@ -80,11 +94,7 @@ export default function MembersPage() {
       <MemberFormModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        onOpenDuplicate={async (id) => {
-          const res = await memberService.getMember(id);
-          setCreateOpen(false);
-          setSelectedDetailMember(res.data);
-        }}
+        onOpenDuplicate={openDuplicate}
       />
       <MemberMembershipModal
         member={selectedPurchaseMember}
