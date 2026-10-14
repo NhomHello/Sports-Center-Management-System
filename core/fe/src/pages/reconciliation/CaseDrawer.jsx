@@ -4,6 +4,7 @@ import { QUERY_KEYS } from '@/constants';
 import { ACTIVE_CASE_STATUSES, CASE_REASON } from '@/constants/reconciliation';
 import * as service from '@/services/reconciliation.service';
 import { CaseSummary } from './CaseSummary';
+import { CaseMapForm } from './CaseMapForm';
 import { CaseContacts } from './CaseContacts';
 import { CaseConfirmForm } from './CaseConfirmForm';
 
@@ -47,6 +48,9 @@ export function CaseDrawer({ id, onClose }) {
       {item && (
         <Space orientation="vertical" className="scms-full-width" size="middle">
           <CaseSummary item={item} />
+          {active && [CASE_REASON.NO_MATCH, CASE_REASON.LATE].includes(item.reason) && (
+            <CaseMapForm pending={mutation.isPending} onAction={mutation.mutateAsync} />
+          )}
           <CaseContacts
             item={item}
             active={active}
