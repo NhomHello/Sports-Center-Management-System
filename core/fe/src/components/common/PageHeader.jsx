@@ -5,7 +5,7 @@ import { SPACING } from '@/theme/theme';
  * Tieu de trang + nut hanh dong ben phai. Dung o dau MOI trang.
  * @param {{ title: string, subtitle?: string, extra?: import('react').ReactNode, eyebrow?: string }} props
  */
-export function PageHeader({ title, subtitle, extra, eyebrow = 'SPORTS CENTER' }) {
+export function PageHeader({ title, subtitle, extra, eyebrow }) {
   return (
     <Flex
       className="scms-page-header"
@@ -16,7 +16,9 @@ export function PageHeader({ title, subtitle, extra, eyebrow = 'SPORTS CENTER' }
       style={{ marginBottom: SPACING.LG }}
     >
       <div className="scms-page-header__copy">
-        <Typography.Text className="scms-page-header__eyebrow">{eyebrow}</Typography.Text>
+        {eyebrow && (
+          <Typography.Text className="scms-page-header__eyebrow">{eyebrow}</Typography.Text>
+        )}
         <Typography.Title level={2} style={{ margin: 0 }}>
           {title}
         </Typography.Title>

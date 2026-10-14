@@ -62,6 +62,9 @@ function SidebarToggle({ collapsed, onToggle }) {
 
 /** Thanh điều hướng dọc desktop theo cấu trúc ứng dụng Ant Design Pro. */
 export function MainSidebar({ groupedNavItems, selectedKey, user, onNavigate, collapsed }) {
+  const activeGroup = groupedNavItems.find((item) =>
+    item.children?.some((child) => child.key === selectedKey),
+  )?.key;
   return (
     <Layout.Sider
       className="scms-sidebar"
@@ -79,7 +82,8 @@ export function MainSidebar({ groupedNavItems, selectedKey, user, onNavigate, co
         mode="inline"
         items={groupedNavItems}
         selectedKeys={selectedKey ? [selectedKey] : []}
-        defaultOpenKeys={groupedNavItems.filter((item) => item.children).map((item) => item.key)}
+        key={selectedKey}
+        defaultOpenKeys={activeGroup ? [activeGroup] : []}
         onClick={({ key }) => onNavigate(key)}
       />
       <div className="scms-sidebar__status">
@@ -103,6 +107,9 @@ export function MainHeader({
   sidebarCollapsed,
   onToggleSidebar,
 }) {
+  const activeGroup = groupedNavItems.find((item) =>
+    item.children?.some((child) => child.key === selectedKey),
+  )?.key;
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const profileMenu = {
     items: [
@@ -133,7 +140,9 @@ export function MainHeader({
           />
           <div className="scms-header-context">
             <Typography.Text strong>{getCurrentArea(groupedNavItems, selectedKey)}</Typography.Text>
-            <Typography.Text type="secondary">Lịch tập và hoạt động của bạn</Typography.Text>
+            <Typography.Text type="secondary">
+              {groupedNavItems.find((i) => i.key === activeGroup)?.label}
+            </Typography.Text>
           </div>
         </Flex>
         <Flex className="scms-header-actions" align="center" gap={8}>
@@ -161,7 +170,8 @@ export function MainHeader({
           mode="inline"
           items={groupedNavItems}
           selectedKeys={selectedKey ? [selectedKey] : []}
-          defaultOpenKeys={groupedNavItems.filter((item) => item.children).map((item) => item.key)}
+          key={selectedKey}
+          defaultOpenKeys={activeGroup ? [activeGroup] : []}
           onClick={handleMobileNavigate}
         />
       </Drawer>

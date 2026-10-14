@@ -3,6 +3,8 @@ import { PERMISSIONS } from '@scms/shared';
 import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
+import { summary } from './member-summary.service.js';
+import { sendSuccess } from '../../common/utils/api-response.js';
 import * as controller from './member.controller.js';
 import { memberEnrollments } from '../class/class-enrollment.controller.js';
 import {
@@ -23,6 +25,9 @@ router.get(
   memberEnrollments,
 );
 
+router.get('/summary', authorize(PERMISSIONS.MEMBER_READ), async (_req, res) =>
+  sendSuccess(res, { data: await summary() }),
+);
 router.get('/me', controller.getOwn);
 router.patch('/me', validate(updateOwnProfileSchema), controller.updateOwn);
 router.get('/', authorize(PERMISSIONS.MEMBER_READ), validate(listMembersSchema), controller.list);

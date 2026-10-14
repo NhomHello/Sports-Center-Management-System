@@ -17,7 +17,17 @@ export function MainLayout() {
   const { user, logout } = useAuth();
   const { can } = usePermission();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const menuItems = useMemo(() => buildMenuItems(routeRegistry, can), [can]);
+  const menuItems = useMemo(
+    () =>
+      buildMenuItems(
+        routeRegistry.filter(
+          (route) =>
+            ![ROUTES.PROFILE, ROUTES.CHANGE_PASSWORD, ROUTES.NOTIFICATIONS].includes(route.path),
+        ),
+        can,
+      ),
+    [can],
+  );
   const navItems = useMemo(() => menuItems.flatMap((item) => item.children ?? [item]), [menuItems]);
   const selectedKey = navItems.find((item) => item.key === location.pathname)?.key;
 

@@ -13,6 +13,8 @@ export const resolvePostLoginPath = ({ requestedLocation, permissions, routes })
     return `${requestedPath}${requestedLocation.search ?? ''}`;
   }
 
+  const dashboard = routes.find((route) => route.path === ROUTES.DASHBOARD);
+  if (dashboard && hasAnyPermission(permissions, dashboard.permission)) return ROUTES.DASHBOARD;
   return (
     routes.find((route) => hasAnyPermission(permissions, route.permission))?.path ?? ROUTES.PROFILE
   );

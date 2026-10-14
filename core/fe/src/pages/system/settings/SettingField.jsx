@@ -1,5 +1,5 @@
 import { Form, Input, InputNumber, Switch, Select } from 'antd';
-import { getSettingValidationError, SETTING_TYPES } from '@scms/shared';
+import { getSettingValidationError, SETTING_TYPES, SETTING_KEYS } from '@scms/shared';
 
 const INPUT_BY_TYPE = {
   NUMBER: (setting) => (
@@ -7,7 +7,7 @@ const INPUT_BY_TYPE = {
       min={setting.minValue}
       max={setting.maxValue}
       precision={setting.integer ? 0 : undefined}
-      addonAfter={setting.unit}
+      suffix={setting.unit}
       style={{ width: '100%' }}
     />
   ),
@@ -60,7 +60,12 @@ export function SettingField({ setting }) {
         },
       ]}
     >
-      {setting.options ? (
+      {setting.key === SETTING_KEYS.CURRENCY ? (
+        <Select
+          showSearch
+          options={Intl.supportedValuesOf('currency').map((value) => ({ value, label: value }))}
+        />
+      ) : setting.options ? (
         <Select
           options={setting.options.map((option) =>
             typeof option === 'object' ? option : { value: option, label: option },
