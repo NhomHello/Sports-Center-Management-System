@@ -96,7 +96,7 @@ export default function SettingsPage() {
     >
       <PageHeader
         title="Cấu hình hệ thống"
-        subtitle="Số ngày nhắc gia hạn, giờ huỷ lớp, thời gian chờ thanh toán..."
+        subtitle="Số ngày nhắc gia hạn, giờ hủy lớp, thời gian chờ thanh toán..."
         extra={
           canUpdate ? (
             <Space>

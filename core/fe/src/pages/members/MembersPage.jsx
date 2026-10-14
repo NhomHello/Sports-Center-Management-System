@@ -46,7 +46,7 @@ export default function MembersPage() {
   return (
     <div style={{ animation: 'fadeIn 0.4s ease-out' }}>
       <PageHeader
-        title="Quản Lý Hội Viên"
+        title="Quản lý hội viên"
         subtitle="Hệ thống lưu trữ hồ sơ và quản lý trạng thái tập luyện của khách hàng."
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBER_CREATE}>

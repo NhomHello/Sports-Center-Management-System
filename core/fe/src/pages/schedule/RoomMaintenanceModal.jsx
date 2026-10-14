@@ -7,7 +7,7 @@ import { previewMaintenance, createMaintenance } from '@/services/sprint3.servic
 import { vietnamTimestamp } from '@/utils/schedule';
 import { MaintenanceAssignments } from './MaintenanceAssignments';
 
-/** Xem trước đủ các buổi; bắt buộc chọn chuyển phòng hoặc huỷ từng buổi rồi mới áp dụng. */
+/** Xem trước đủ các buổi; bắt buộc chọn chuyển phòng hoặc hủy từng buổi rồi mới áp dụng. */
 export function RoomMaintenanceModal({ room, onClose }) {
   const [form] = Form.useForm();
   const [range, setRange] = useState(null);
@@ -53,7 +53,7 @@ export function RoomMaintenanceModal({ room, onClose }) {
       <Alert
         showIcon
         type="warning"
-        title="Hội viên sẽ nhận thông báo đổi phòng hoặc huỷ buổi. Lịch sử được giữ lại."
+        title="Hội viên sẽ nhận thông báo đổi phòng hoặc hủy buổi. Lịch sử được giữ lại."
       />
       {(preview.isError || save.isError) && (
         <Alert type="error" title={(preview.error || save.error).message} />

@@ -27,11 +27,11 @@ export function PaymentClaimModal({ invoice, onClose }) {
           showIcon
           type="success"
           title="Đã gửi phiếu đối chiếu"
-          description="Trung tâm sẽ kiểm tra giao dịch. Hoá đơn chỉ được xác nhận khi đã đối chiếu tiền."
+          description="Trung tâm sẽ kiểm tra giao dịch. Hóa đơn chỉ được xác nhận khi đã đối chiếu tiền."
         />
       ) : (
         <>
-          <Alert showIcon type="info" title="Mỗi hoá đơn chỉ có một phiếu báo đã chuyển đang mở." />
+          <Alert showIcon type="info" title="Mỗi hóa đơn chỉ có một phiếu báo đã chuyển đang mở." />
           {save.isError && (
             <Alert
               showIcon
@@ -39,7 +39,7 @@ export function PaymentClaimModal({ invoice, onClose }) {
               title={save.error.message}
               description={
                 !save.error.status
-                  ? 'Đang kết nối lại. Giữ thông tin này và kiểm tra trước khi gửi lại; không tạo hoá đơn mới.'
+                  ? 'Đang kết nối lại. Giữ thông tin này và kiểm tra trước khi gửi lại; không tạo hóa đơn mới.'
                   : undefined
               }
             />

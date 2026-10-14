@@ -61,7 +61,7 @@ export function ResourceCatalogPanel({ resource, permissions }) {
                     title="Ngừng hoạt động tài nguyên?"
                     onConfirm={() => stop.mutate(item.id)}
                     okText="Đồng ý"
-                    cancelText="Huỷ"
+                    cancelText="Hủy"
                   >
                     <Button danger loading={stop.isPending}>
                       Ngừng hoạt động

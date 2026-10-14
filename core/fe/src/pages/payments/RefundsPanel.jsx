@@ -35,7 +35,7 @@ function RefundList() {
           onChange={table.onTableChange}
           scroll={{ x: 600 }}
           columns={[
-            { title: 'Hoá đơn', dataIndex: ['invoice', 'code'] },
+            { title: 'Hóa đơn', dataIndex: ['invoice', 'code'] },
             { title: 'Số tiền hoàn', dataIndex: 'amount', render: (v) => formatCurrency(v) },
             { title: 'Lý do', dataIndex: 'reason' },
             {

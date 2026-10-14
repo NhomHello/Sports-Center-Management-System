@@ -17,7 +17,7 @@ const InvoiceAlert = ({ invoice }) => (
       message={
         <Space orientation="vertical">
           <Typography.Text strong>
-            Hoá đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ
+            Hóa đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ
           </Typography.Text>
           <Typography.Text>
             Kiểm tra đã nhận đủ tiền mặt từ hội viên trước khi xác nhận.
@@ -56,7 +56,7 @@ const PlanSelectForm = ({ form, plansQuery, memberId, onSubmit }) => {
   );
 };
 
-/** Modal để lễ tân tạo hoá đơn mua/gia hạn cho hội viên tại quầy. */
+/** Modal để lễ tân tạo hóa đơn mua/gia hạn cho hội viên tại quầy. */
 export function MemberMembershipModal({ member, open, onClose }) {
   const [form] = Form.useForm();
   const { message } = App.useApp();
@@ -110,8 +110,8 @@ export function MemberMembershipModal({ member, open, onClose }) {
       open={open}
       centered
       title={`Mua / gia hạn gói cho ${member?.fullName ?? ''}`}
-      okText={invoice ? 'Xác nhận đã thu tiền' : 'Tạo hoá đơn'}
-      cancelText="Huỷ"
+      okText={invoice ? 'Xác nhận đã thu tiền' : 'Tạo hóa đơn'}
+      cancelText="Hủy"
       confirmLoading={orderMutation.isPending || collectMutation.isPending}
       onOk={invoice ? () => collectMutation.mutate(invoice.id) : form.submit}
       onCancel={handleClose}

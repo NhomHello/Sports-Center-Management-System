@@ -57,7 +57,7 @@ function buildTabs(can, canAll, onViewSchedule) {
   if (can(P.CLASS_READ_ALL))
     items.push({ key: 'manage', label: 'Quản lý lớp', children: management });
   if (canAll(P.CLASS_ENROLL_FOR_MEMBER, P.MEMBER_READ))
-    items.push({ key: 'staff', label: 'Đăng ký / huỷ hộ', children: <StaffBookingPanel /> });
+    items.push({ key: 'staff', label: 'Đăng ký / hủy hộ', children: <StaffBookingPanel /> });
   if (canPersonal(P.SCHEDULE_VIEW_TEACHING))
     items.push({
       key: 'teaching',

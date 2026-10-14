@@ -24,7 +24,7 @@ export function InvoiceRefundModal({ invoice, onClose }) {
   return (
     <Modal
       open
-      title="Hoàn tiền hoá đơn"
+      title="Hoàn tiền hóa đơn"
       onCancel={onClose}
       onOk={() => form.submit()}
       confirmLoading={request.isPending || complete.isPending}
@@ -39,7 +39,7 @@ export function InvoiceRefundModal({ invoice, onClose }) {
             ? 'Yêu cầu đã tạo, đang chờ chuyển trả'
             : `Tối đa ${formatCurrency(maximum, invoice.currency)}`
         }
-        description="Tiền được trả thủ công ngoài hệ thống. Hoá đơn chuyển sang Đã hoàn tiền và số ngày đã cộng vào gói sẽ bị rút lại khi tạo yêu cầu."
+        description="Tiền được trả thủ công ngoài hệ thống. Hóa đơn chuyển sang Đã hoàn tiền và số ngày đã cộng vào gói sẽ bị rút lại khi tạo yêu cầu."
       />
       {error && <Alert showIcon type="error" title={error.message} />}
       <Form

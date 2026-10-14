@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'antd';
 import { ERROR_CODES } from '@scms/shared';
 const TICK_MS = 1000;
-/** Thời gian còn lại lấy từ lockedUntil của server, không hardcode số phút khoá. */
+/** Thời gian còn lại lấy từ lockedUntil của server, không hardcode số phút khóa. */
 export function LoginErrorNotice({ error }) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {

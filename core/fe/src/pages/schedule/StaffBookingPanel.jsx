@@ -55,7 +55,7 @@ function MemberEnrollmentList({ memberId }) {
   );
 }
 
-/** UC-CB-08 tái sử dụng tìm kiếm Sprint 1 trước thao tác đăng ký/huỷ hộ. */
+/** UC-CB-08 tái sử dụng tìm kiếm Sprint 1 trước thao tác đăng ký/hủy hộ. */
 export function StaffBookingPanel() {
   const [input, setInput] = useState('');
   const [search, setSearch] = useState('');

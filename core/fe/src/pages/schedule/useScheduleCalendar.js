@@ -5,7 +5,7 @@ import { SCHEDULE_UI, SESSION_STATUS, ENROLLMENT_STATUS } from '@/constants/sche
 import * as service from '@/services/schedule.service';
 import { vietnamInput, vietnamWeekStart, vietnamCalendarDate } from '@/utils/schedule';
 
-/** Lịch tuần từ server; lọc ngày và lịch huỷ ở client sau khi đã áp dụng RBAC. */
+/** Lịch tuần từ server; lọc ngày và lịch hủy ở client sau khi đã áp dụng RBAC. */
 export const useScheduleCalendar = (kind) => {
   const [date, updateDate] = useState(() => vietnamCalendarDate(vietnamInput(new Date())));
   const setDate = (value) => updateDate(vietnamCalendarDate(value));

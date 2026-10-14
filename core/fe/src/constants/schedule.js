@@ -12,7 +12,7 @@ export const SESSION_STATUS = Object.freeze({
 export const SCHEDULE_STATUS_LABELS = Object.freeze({
   OPEN: 'Mở đăng ký',
   CLOSED: 'Đóng đăng ký',
-  CANCELLED: 'Đã huỷ',
+  CANCELLED: 'Đã hủy',
   SCHEDULED: 'Theo lịch',
   COMPLETED: 'Đã hoàn thành',
   BOOKED: 'Đã đăng ký',

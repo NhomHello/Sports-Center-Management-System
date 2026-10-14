@@ -9,7 +9,7 @@ export function RoleChangeSelect({ user, options, onChange }) {
       title="Xác nhận đổi vai trò?"
       description="Quyền truy cập của tài khoản sẽ thay đổi."
       okText="Đổi vai trò"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       onConfirm={() => {
         onChange(user, pending);
         setPending(null);

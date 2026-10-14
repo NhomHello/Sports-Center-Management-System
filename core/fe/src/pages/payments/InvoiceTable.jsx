@@ -6,10 +6,10 @@ import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constant
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusTag } from '@/components/common/StatusTag';
 
-/** Hoá đơn của chính hội viên hoặc các hoá đơn trong phạm vi quyền được cấp. */
+/** Hóa đơn của chính hội viên hoặc các hóa đơn trong phạm vi quyền được cấp. */
 export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, onDetail }) {
   const columns = [
-    { title: 'Mã hoá đơn', dataIndex: 'code', key: 'code' },
+    { title: 'Mã hóa đơn', dataIndex: 'code', key: 'code' },
     { title: 'Hội viên', dataIndex: ['user', 'fullName'], key: 'member' },
     {
       title: 'Gói tập',
@@ -63,7 +63,7 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       pagination={pagination}
       onChange={onChange}
       scroll={{ x: true }}
-      locale={{ emptyText: 'Chưa có hoá đơn nào.' }}
+      locale={{ emptyText: 'Chưa có hóa đơn nào.' }}
     />
   );
 }

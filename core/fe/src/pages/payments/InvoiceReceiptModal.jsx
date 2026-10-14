@@ -80,7 +80,7 @@ function InvoiceSummary({ invoice, receivedAmount }) {
   const planName = invoice.planName ?? invoice.plan?.name ?? invoice.membership?.plan?.name ?? '—';
   return (
     <Descriptions bordered column={1}>
-      <Descriptions.Item label="Mã hoá đơn">{invoice.code}</Descriptions.Item>
+      <Descriptions.Item label="Mã hóa đơn">{invoice.code}</Descriptions.Item>
       <Descriptions.Item label="Hội viên">{invoice.user?.fullName ?? '—'}</Descriptions.Item>
       <Descriptions.Item label="Gói tập">{planName}</Descriptions.Item>
       <Descriptions.Item label="Trạng thái">
@@ -145,7 +145,7 @@ function InvoicePrintAction({
         showIcon
         message={
           centerConfigMessage ||
-          'Thiếu thông tin trung tâm trong cấu hình API; chưa thể in hoá đơn.'
+          'Thiếu thông tin trung tâm trong cấu hình API; chưa thể in hóa đơn.'
         }
         action={
           onRetryCenterSettings && (
@@ -186,7 +186,7 @@ function InvoiceDetails({
         }
       >
         <CenterBlock centerInfo={centerInfo} />
-        <Typography.Title level={4}>Hoá đơn thanh toán</Typography.Title>
+        <Typography.Title level={4}>Hóa đơn thanh toán</Typography.Title>
         <InvoiceSummary invoice={invoice} receivedAmount={receivedAmount} />
         <Typography.Title level={5}>Lịch sử thanh toán</Typography.Title>
         <PaymentHistory payments={payments} currency={invoice.currency} />
@@ -255,7 +255,7 @@ function ReceiptContent({
   );
 }
 
-/** Xem chi tiết hoá đơn; chỉ in bản PAID khi đã có cấu hình trung tâm từ API. */
+/** Xem chi tiết hóa đơn; chỉ in bản PAID khi đã có cấu hình trung tâm từ API. */
 export function InvoiceReceiptModal({
   invoiceId,
   open,
@@ -274,7 +274,7 @@ export function InvoiceReceiptModal({
     queryFn: () => paymentService.getInvoice(invoiceId),
     enabled: open && Boolean(invoiceId),
     retry: shouldRetryApiQuery,
-    // Hoá đơn online chờ tiền: hỏi lại định kỳ để tự chuyển PAID khi webhook SePay đã xác nhận.
+    // Hóa đơn online chờ tiền: hỏi lại định kỳ để tự chuyển PAID khi webhook SePay đã xác nhận.
     refetchInterval: (q) =>
       q.state.data?.data?.channel === INVOICE_CHANNEL.ONLINE &&
       q.state.data?.data?.status === INVOICE_STATUS.PENDING
@@ -282,7 +282,7 @@ export function InvoiceReceiptModal({
         : false,
   });
   const status = query.data?.data?.status;
-  // Webhook xác nhận tiền khi modal đang mở: làm mới danh sách hoá đơn và gói tập phía sau.
+  // Webhook xác nhận tiền khi modal đang mở: làm mới danh sách hóa đơn và gói tập phía sau.
   useEffect(() => {
     if (status !== INVOICE_STATUS.PAID) return;
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES });
@@ -292,7 +292,7 @@ export function InvoiceReceiptModal({
     <Modal
       open={open}
       centered
-      title="Chi tiết hoá đơn"
+      title="Chi tiết hóa đơn"
       footer={null}
       onCancel={onClose}
       width={MODAL_WIDTH}

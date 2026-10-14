@@ -35,7 +35,7 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
             )}
             {future && can(P.CLASS_DELETE) && (
               <Button danger size="small" onClick={() => setAction({ session, mode: 'cancel' })}>
-                Huỷ buổi
+                Hủy buổi
               </Button>
             )}
             {can(P.ATTENDANCE_RECORD, P.ATTENDANCE_MANAGE) &&
