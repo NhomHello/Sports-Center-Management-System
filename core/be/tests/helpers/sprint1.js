@@ -52,6 +52,10 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
 export const cleanupSprintFixture = async (fixture) => {
   if (!fixture) return;
   const whereUser = { userId: { in: fixture.userIds } };
+  // Phiếu đối soát/hoàn tiền tham chiếu hoá đơn của fixture (webhook mở phiếu khi tiền lệch).
+  const byInvoice = { invoice: whereUser };
+  await prisma.refund.deleteMany({ where: { OR: [byInvoice, { case: whereUser }] } });
+  await prisma.reconciliationCase.deleteMany({ where: { OR: [whereUser, byInvoice] } });
   await prisma.notification.deleteMany({ where: whereUser });
   await prisma.payment.deleteMany({ where: { invoice: whereUser } });
   await prisma.invoice.deleteMany({ where: whereUser });

@@ -38,6 +38,9 @@ beforeAll(async () => {
   });
 });
 afterAll(async () => {
+  await prisma.reconciliationCase.deleteMany({
+    where: { webhookLog: { providerTransactionId: { in: sepayIds } } },
+  });
   await prisma.paymentWebhookLog.deleteMany({ where: { providerTransactionId: { in: sepayIds } } });
   await prisma.auditLog.deleteMany({
     where: {
