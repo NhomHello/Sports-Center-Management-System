@@ -1,15 +1,13 @@
+import { InvoiceActions } from './InvoiceActions';
 import { EyeOutlined, DollarOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { Button, Space, Table, Tag, Tooltip } from 'antd';
 import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
-import { canCollectCash } from '@/utils/invoice';
-import { usePermission } from '@/hooks/usePermission';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { StatusTag } from '@/components/common/StatusTag';
 
 /** Hoá đơn của chính hội viên hoặc các hoá đơn trong phạm vi quyền được cấp. */
 export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, onDetail }) {
-  const { can } = usePermission();
   const columns = [
     { title: 'Mã hoá đơn', dataIndex: 'code', key: 'code' },
     { title: 'Hội viên', dataIndex: ['user', 'fullName'], key: 'member' },
@@ -51,27 +49,7 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       title: 'Thao tác',
       key: 'actions',
       render: (_, invoice) => (
-        <Space wrap>
-          {canCollectCash({ invoice, canRecordCash: can(PERMISSIONS.PAYMENT_RECORD_CASH) }) && (
-            <Button
-              size="small"
-              type="primary"
-              icon={<DollarOutlined />}
-              onClick={() => onCash(invoice.id)}
-            >
-              Thu tiền
-            </Button>
-          )}
-          {invoice.channel === INVOICE_CHANNEL.ONLINE &&
-            invoice.status === INVOICE_STATUS.PENDING && (
-              <Tooltip title="Hóa đơn online tự xác nhận khi nhận được tiền chuyển khoản, không thu tiền mặt.">
-                <Tag color="gold">Chờ chuyển khoản</Tag>
-              </Tooltip>
-            )}
-          <Button size="small" icon={<EyeOutlined />} onClick={() => onDetail(invoice.id)}>
-            Chi tiết
-          </Button>
-        </Space>
+        <InvoiceActions invoice={invoice} onCash={onCash} onDetail={onDetail} />
       ),
     },
   ];
