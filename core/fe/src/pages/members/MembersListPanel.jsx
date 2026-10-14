@@ -2,7 +2,7 @@ import { IdcardOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons'
 import { Card, Col, Row, Table, Typography } from 'antd';
 import { SearchInput } from '@/components/common/SearchInput';
 
-export function MembersListPanel({ membersQuery, table, columns }) {
+export function MembersListPanel({ membersQuery, table, columns, onView }) {
   const total = membersQuery.data?.meta?.total ?? 0;
   return (
     <>
@@ -51,6 +51,7 @@ export function MembersListPanel({ membersQuery, table, columns }) {
         </div>
         <Table
           rowKey="id"
+          onRow={(member) => ({ onClick: () => onView(member), style: { cursor: 'pointer' } })}
           columns={columns}
           dataSource={membersQuery.data?.data ?? []}
           loading={membersQuery.isPending}

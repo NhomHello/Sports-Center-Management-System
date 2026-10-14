@@ -96,32 +96,39 @@ const MEMBER_COLUMNS = [
 export const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail) => [
   ...MEMBER_COLUMNS,
   {
-    title: '',
+    title: 'Thao tác',
     key: 'actions',
     align: 'right',
     render: (_, member) => (
       <Space size="middle">
         <Tooltip title={canUpdate ? 'Xem và sửa hồ sơ' : 'Xem hồ sơ'}>
           <Button
-            shape="circle"
             icon={canUpdate ? <EditOutlined /> : <EyeOutlined />}
             aria-label={`${canUpdate ? 'Xem và sửa' : 'Xem'} hồ sơ ${member.fullName}`}
-            onClick={() => onViewDetail(member)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onViewDetail(member);
+            }}
             style={{ color: '#595959', background: '#f5f5f5', border: 'none' }}
-          />
+          >
+            Xem
+          </Button>
         </Tooltip>
         {canManage && (
           <Button
-            type="primary"
+            type="default"
             icon={<ShoppingCartOutlined />}
-            onClick={() => onPurchase(member)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onPurchase(member);
+            }}
             style={{
               borderRadius: 6,
               fontWeight: 500,
               boxShadow: '0 2px 8px rgba(22,119,255,0.25)',
             }}
           >
-            Mua gói
+            {member.currentMembership?.status === 'ACTIVE' ? 'Gia hạn' : 'Mua gói'}
           </Button>
         )}
       </Space>
