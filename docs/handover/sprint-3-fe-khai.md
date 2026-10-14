@@ -65,5 +65,5 @@ E2E tạo fixture riêng và dọn đúng phạm vi. Bank giả chỉ dùng tron
 - Backend: 36 file, 180 test pass.
 - Frontend: 14 file, 73 test pass.
 - 10 E2E mới của Khải: pass (7 ngoại lệ + 3 đối soát/PDF).
-- Hồi quy desktop toàn bộ: đang hoàn tất chạy lại các ca cũ đã cập nhật selector theo UI.
+- Hồi quy desktop: đã xác nhận đủ 40 ca pass. Lần toàn bộ có 32 ca pass; 8 ca cũ được cập nhật selector/kỳ vọng theo UI hiện tại và đã pass khi chạy lại. Kiểm tra cuối 4/4 ca (đăng ký hộ, chuyển bù, liên hệ lỗi 409 giữ nội dung, hoàn phần thừa và tải PDF) pass.
 - 23 test case đã được ghi nhận Pass; 35 task chuyển sang Review để leader review code.

@@ -122,8 +122,7 @@ test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và hủy hộ có 
   await search.fill(f.member.email);
   await page
     .locator('.ant-select-dropdown:visible')
-    .getByRole('option')
-    .filter({ hasText: f.member.fullName })
+    .getByText(f.member.fullName, { exact: false })
     .click();
   await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   const source = card(page, primary.name).last();
@@ -142,6 +141,7 @@ test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và hủy hộ có 
     method: 'DELETE',
   });
   await expect(enrolled.getByRole('button', { name: 'Đăng ký hộ', exact: true })).toBeEnabled();
+  await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
   await expect(source.getByText('Còn 2/2 chỗ', { exact: true })).toBeVisible();
   const row = await prisma.classEnrollment.findUnique({
     where: {
