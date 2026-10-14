@@ -38,6 +38,7 @@ export function ClassFormModal({ item, onClose }) {
   return (
     <Modal
       open
+      centered
       title={item ? 'Sửa lớp / đổi lịch' : 'Tạo lớp học'}
       onCancel={onClose}
       onOk={form.submit}

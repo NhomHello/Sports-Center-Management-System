@@ -12,6 +12,8 @@ export const ROUTES = Object.freeze({
   LOGIN: '/login',
   REGISTER: '/register',
   VERIFY_EMAIL: '/verify-email',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
   PROFILE: '/profile',
   CHANGE_PASSWORD: '/change-password',
   NOTIFICATIONS: '/notifications',
@@ -78,6 +80,22 @@ export const INVOICE_STATUS = Object.freeze({
 
 export const INVOICE_CHANNEL = Object.freeze({ ONLINE: 'ONLINE', COUNTER: 'COUNTER' });
 
+/** So ms trong mot ngay, dung tinh han goi (khop TIME.MS_PER_DAY o BE). */
+export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/** Nhãn hiển thị cho PaymentProvider (khop enum trong schema.prisma). */
+export const PAYMENT_PROVIDER_LABELS = Object.freeze({
+  COUNTER: 'Tiền mặt tại quầy',
+  SEPAY: 'Chuyển khoản (SePay)',
+  MANUAL: 'Ghi nhận thủ công',
+  SIMULATOR: 'Giả lập',
+});
+
+export const INVOICE_CHANNEL_LABELS = Object.freeze({
+  COUNTER: 'Tại quầy',
+  ONLINE: 'Online',
+});
+
 export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'UNREAD' });
 
 export const NOTIFICATION_KIND_LABELS = Object.freeze({
@@ -86,6 +104,12 @@ export const NOTIFICATION_KIND_LABELS = Object.freeze({
   CLASS_CANCELLED: 'Lớp học bị hủy',
   TRAINING_PLAN_PUBLISHED: 'Giáo án mới',
   TRAINING_RESULT_CREATED: 'Kết quả tập luyện',
+  PAYMENT_CONFIRMED: 'Thanh toán thành công',
+  PAYMENT_TOPUP_REQUIRED: 'Cần chuyển bù',
+  PAYMENT_REVIEW_ALERT: 'Cảnh báo thanh toán',
+  PAYMENT_REFUND: 'Hoàn tiền',
+  PAYMENT_CLAIM_REJECTED: 'Chưa xác nhận chuyển khoản',
+  INVOICE_EXPIRED: 'Hoá đơn hết hạn',
 });
 
 export const INVOICE_STATUS_META = Object.freeze({

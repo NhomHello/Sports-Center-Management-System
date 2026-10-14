@@ -12,7 +12,8 @@ const TEST_TIMEOUT_MS = 15000;
 export default defineConfig({
   test: {
     include: ['src/**/*.test.js', 'tests/**/*.test.js'],
-    env: { NODE_ENV: 'test' },
+    // Test gọi đăng ký/đăng nhập liên tục từ một IP nên nới giới hạn chống brute-force.
+    env: { NODE_ENV: 'test', AUTH_RATE_LIMIT_MAX: '1000' },
     fileParallelism: false,
     testTimeout: TEST_TIMEOUT_MS,
   },

@@ -1,0 +1,83 @@
+import { CheckCircleFilled, ClockCircleOutlined } from '@ant-design/icons';
+import { Alert, Descriptions, Image, Space, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { INVOICE_CHANNEL, INVOICE_STATUS } from '@/constants';
+import { formatCurrency, formatDateTime } from '@/utils/format';
+
+const TICK_MS = 1000;
+const SECONDS_PER_MINUTE = 60;
+const PAD_WIDTH = 2;
+
+const useRemainingSeconds = (expiresAt) => {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), TICK_MS);
+    return () => clearInterval(timer);
+  }, []);
+  return Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / TICK_MS));
+};
+
+const formatCountdown = (seconds) =>
+  `${String(Math.floor(seconds / SECONDS_PER_MINUTE)).padStart(PAD_WIDTH, '0')}:${String(
+    seconds % SECONDS_PER_MINUTE,
+  ).padStart(PAD_WIDTH, '0')}`;
+
+function PendingPanel({ instruction, currency }) {
+  const remaining = useRemainingSeconds(instruction.expiresAt);
+  return (
+    <Space orientation="vertical" align="center" size="middle" className="scms-full-width">
+      <Alert
+        showIcon
+        icon={<ClockCircleOutlined />}
+        type={remaining > 0 ? 'info' : 'warning'}
+        message={
+          remaining > 0
+            ? `Quét mã để chuyển khoản. Hóa đơn hết hạn sau ${formatCountdown(remaining)}`
+            : 'Hóa đơn đã quá hạn thanh toán. Nếu đã chuyển khoản, vui lòng liên hệ lễ tân.'
+        }
+      />
+      <Image src={instruction.qrUrl} alt="Mã QR chuyển khoản" width={240} preview={false} />
+      <Descriptions bordered size="small" column={1} className="scms-full-width">
+        <Descriptions.Item label="Ngân hàng">{instruction.bankCode}</Descriptions.Item>
+        <Descriptions.Item label="Số tài khoản">
+          <Typography.Text copyable>{instruction.accountNumber}</Typography.Text>
+        </Descriptions.Item>
+        {instruction.accountName && (
+          <Descriptions.Item label="Chủ tài khoản">{instruction.accountName}</Descriptions.Item>
+        )}
+        <Descriptions.Item label="Số tiền">
+          <Typography.Text strong>{formatCurrency(instruction.amount, currency)}</Typography.Text>
+        </Descriptions.Item>
+        <Descriptions.Item label="Nội dung (bắt buộc đúng)">
+          <Typography.Text copyable strong>
+            {instruction.content}
+          </Typography.Text>
+        </Descriptions.Item>
+        <Descriptions.Item label="Hạn thanh toán">
+          {formatDateTime(instruction.expiresAt)}
+        </Descriptions.Item>
+      </Descriptions>
+      <Typography.Text type="secondary">
+        Trang tự cập nhật khi hệ thống nhận được tiền, không cần tải lại.
+      </Typography.Text>
+    </Space>
+  );
+}
+
+/** Hoá đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
+export function OnlinePaymentPanel({ invoice }) {
+  if (invoice.status === INVOICE_STATUS.PAID && invoice.channel === INVOICE_CHANNEL.ONLINE) {
+    return (
+      <Alert
+        showIcon
+        type="success"
+        className="scms-online-paid"
+        style={{ marginBottom: 16 }}
+        icon={<CheckCircleFilled />}
+        message="Đã nhận thanh toán. Gói tập của bạn đã được kích hoạt."
+      />
+    );
+  }
+  if (!invoice.paymentInstruction) return null;
+  return <PendingPanel instruction={invoice.paymentInstruction} currency={invoice.currency} />;
+}

@@ -4,6 +4,7 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES, TIME, VALIDATION } from '../../constants/index.js';
 import { INVOICE_INCLUDE } from '../payment/invoice.service.js';
+import { buildPaymentInstruction } from '../payment/sepay-qr.service.js';
 import * as settingService from '../setting/setting.service.js';
 
 const getSellingPlan = async (tx, planId) => {
@@ -60,7 +61,7 @@ const findReusablePending = (tx, memberId, planId, now) =>
     include: INVOICE_INCLUDE,
   });
 
-const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now }) => {
+const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now, channel }) => {
   const created = await tx.invoice.create({
     data: {
       code: `PENDING-${randomUUID()}`,
@@ -69,7 +70,7 @@ const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now
       planName: plan.name,
       durationDays: plan.durationDays,
       amount: plan.price,
-      channel: Enums.InvoiceChannel.COUNTER,
+      channel,
       expiresAt: new Date(now.getTime() + timeout * TIME.MS_PER_MINUTE),
     },
   });
@@ -92,8 +93,13 @@ const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now
   return invoice;
 };
 
-/** Khóa theo hội viên, tái sử dụng hóa đơn PENDING và lấy giá từ DB. */
-export const createCounterOrder = async ({ memberId, planId }, actor) => {
+const CHANNEL_LABEL = Object.freeze({
+  [Enums.InvoiceChannel.COUNTER]: 'tại quầy',
+  [Enums.InvoiceChannel.ONLINE]: 'online',
+});
+
+/** Khóa theo hội viên, tái sử dụng hóa đơn PENDING cùng kênh và lấy giá từ DB. */
+const createOrder = async ({ memberId, planId, channel }, actor) => {
   const prefix = await settingService.getValue(SETTING_KEYS.INVOICE_CODE_PREFIX);
   const timeout = await settingService.getValue(SETTING_KEYS.PAYMENT_ONLINE_TIMEOUT_MINUTES);
   return prisma.$transaction(
@@ -105,18 +111,12 @@ export const createCounterOrder = async ({ memberId, planId }, actor) => {
       if (!member) throw ApiError.notFound('Không tìm thấy hội viên đang hoạt động');
       const plan = await getSellingPlan(tx, planId);
       const now = new Date();
-      await expireStalePendingInvoices({
-        tx,
-        memberId,
-        planId,
-        actorId: actor.id,
-        now,
-      });
+      await expireStalePendingInvoices({ tx, memberId, planId, actorId: actor.id, now });
       const pending = await findReusablePending(tx, memberId, planId, now);
-      if (pending?.channel === Enums.InvoiceChannel.COUNTER) return pending;
+      if (pending?.channel === channel) return pending;
       if (pending) {
         throw ApiError.conflict(
-          'Gói này đang có hóa đơn online chờ thanh toán. Cần xử lý hóa đơn đó trước.',
+          `Gói này đang có hóa đơn ${CHANNEL_LABEL[pending.channel]} chờ thanh toán. Cần xử lý hóa đơn đó trước.`,
         );
       }
       return createInvoice({
@@ -127,10 +127,21 @@ export const createCounterOrder = async ({ memberId, planId }, actor) => {
         timeout,
         actorId: actor.id,
         now,
+        channel,
       });
     },
     { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
   );
+};
+
+/** Lễ tân tạo hóa đơn tại quầy cho hội viên. */
+export const createCounterOrder = (input, actor) =>
+  createOrder({ ...input, channel: Enums.InvoiceChannel.COUNTER }, actor);
+
+/** Hội viên tự mua trên web: hóa đơn ONLINE chờ webhook SePay xác nhận. */
+export const createOnlineOrder = async (input, actor) => {
+  const invoice = await createOrder({ ...input, channel: Enums.InvoiceChannel.ONLINE }, actor);
+  return { ...invoice, paymentInstruction: await buildPaymentInstruction(invoice) };
 };
 
 /** Còn hạn cộng từ cuối gói; hết hạn bắt đầu tại ngày thu tiền. */

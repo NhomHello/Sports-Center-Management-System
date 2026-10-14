@@ -42,5 +42,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.5.0",
     "prettier": "^3.9.6"
+  },
+  "overrides": {
+    "mariadb": "3.5.4",
+    "mysql2": "3.24.5",
+    "deepmerge-ts": "8.0.2"
   }
 }

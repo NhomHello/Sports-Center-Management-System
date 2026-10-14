@@ -188,11 +188,11 @@ a {
 .ant-card .ant-card-head {
   border-bottom-color: #f1f5f9;
 }
-.ant-btn.ant-btn-primary {
+.ant-btn.ant-btn-primary:not(:disabled) {
   background: linear-gradient(110deg, #2563eb, #4f46e5) !important;
   box-shadow: 0 8px 18px rgb(37 99 235 / 17%);
 }
-.ant-btn.ant-btn-primary:hover {
+.ant-btn.ant-btn-primary:not(:disabled):hover {
   transform: translateY(-1px);
   background: linear-gradient(110deg, #1d4ed8, #4338ca) !important;
 }
@@ -407,21 +407,6 @@ a {
   color: var(--scms-muted);
   font-size: 13px;
   line-height: 1.5;
-}
-.scms-plan-card--featured {
-  color: white;
-  background: var(--scms-navy);
-}
-.scms-plan-card--featured .ant-card-body,
-.scms-plan-card--featured .ant-card-actions {
-  color: white;
-  background: var(--scms-navy);
-}
-.scms-plan-card--featured .ant-card-actions {
-  border-top-color: #334155;
-}
-.scms-plan-card--featured .ant-card-actions > li {
-  color: white;
 }
 .scms-full-width {
   width: 100%;
@@ -1082,140 +1067,6 @@ body {
   font-size: 10px;
 }
 
-.scms-plan-card {
-  position: relative;
-  height: 100%;
-  border: 1px solid #e7ebf2;
-  border-radius: 26px;
-  transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease;
-}
-.scms-plan-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 26px 50px -35px rgb(22 46 94 / 38%);
-}
-.scms-plan-card::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #2563eb, #818cf8);
-  content: '';
-  opacity: 0;
-}
-.scms-plan-card .ant-card-body {
-  height: 100%;
-  padding: 27px;
-}
-.scms-plan-card > .ant-card-body > .ant-space {
-  height: 100%;
-  align-items: stretch;
-}
-.scms-plan-card__topline {
-  min-height: 38px;
-}
-.scms-plan-card__icon {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  color: #3263c5;
-  background: #edf3ff;
-  border: 1px solid #e0eaff;
-  border-radius: 13px;
-}
-.scms-plan-card__code {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-.scms-plan-card__price {
-  color: #183c82;
-  font-size: clamp(27px, 2.5vw, 34px);
-  font-weight: 760;
-  letter-spacing: -0.055em;
-}
-.scms-plan-card__price span {
-  margin-left: 6px;
-  color: #8a96a9;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0;
-}
-.scms-plan-card__duration {
-  font-size: 12px;
-}
-.scms-plan-card__rule {
-  height: 1px;
-  margin: 1px 0 3px;
-  background: #edf0f5;
-}
-.scms-plan-card__benefits {
-  min-height: 92px;
-}
-.scms-plan-card__benefits .ant-typography {
-  font-size: 13px;
-}
-.scms-plan-card__check {
-  margin-right: 7px;
-  color: #3b6ed0;
-}
-.scms-plan-card__actions {
-  margin-top: auto;
-  padding-top: 8px;
-}
-.scms-plan-card__actions > .ant-space {
-  width: 100%;
-  justify-content: center;
-}
-.scms-plan-card__actions > .ant-btn {
-  width: 100%;
-  min-height: 46px;
-}
-.scms-plan-card--featured {
-  border: 0;
-  background:
-    radial-gradient(circle at 90% 9%, rgb(96 165 250 / 26%), transparent 29%),
-    linear-gradient(145deg, #111b31, #1b3974);
-  box-shadow: 0 25px 55px -38px #173c82;
-}
-.scms-plan-card--featured::before {
-  opacity: 1;
-}
-.scms-plan-card--featured .ant-card-body {
-  background: transparent;
-}
-.scms-plan-card--featured .scms-plan-card__icon {
-  color: #dbeafe;
-  background: rgb(255 255 255 / 12%);
-  border-color: rgb(255 255 255 / 17%);
-}
-.scms-plan-card--featured .scms-plan-card__price {
-  color: #fff;
-}
-.scms-plan-card--featured .scms-plan-card__price span {
-  color: #becbe2;
-}
-.scms-plan-card--featured .scms-plan-card__rule {
-  background: rgb(255 255 255 / 15%);
-}
-.scms-plan-card--featured .scms-plan-card__check {
-  color: #93c5fd;
-}
-.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-default {
-  color: white;
-  background: rgb(255 255 255 / 9%);
-  border-color: rgb(255 255 255 / 28%);
-}
-.scms-plan-card--featured .scms-plan-card__actions > .ant-btn-primary {
-  color: #122142;
-  background: #fff !important;
-  box-shadow: none;
-}
-
 .scms-profile-card .ant-card-body {
   padding: 26px;
 }
@@ -1330,9 +1181,6 @@ body {
   }
   .scms-data-table .ant-pagination {
     padding-inline: 14px;
-  }
-  .scms-plan-card .ant-card-body {
-    padding: 23px;
   }
   .scms-profile-form .ant-card-head {
     padding-inline: 18px;

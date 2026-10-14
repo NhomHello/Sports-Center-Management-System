@@ -55,6 +55,13 @@ export const getSettingValidationError = (setting, value) => {
     return 'Mã tiền tệ không được hỗ trợ';
   if (setting.format === 'invoicePrefix' && !/^[A-Za-z0-9_-]+$/.test(value))
     return 'Tiền tố chỉ chứa chữ, số, gạch ngang hoặc gạch dưới';
+  // Cấu hình tuỳ chọn được để trống (chưa dùng); chỉ kiểm tra định dạng khi đã nhập.
+  if (setting.format === 'bankCode' && value !== '' && !/^[A-Za-z0-9]{2,20}$/.test(value))
+    return 'Mã ngân hàng chỉ gồm chữ và số';
+  if (setting.format === 'bankAccountNumber' && value !== '' && !/^\d{6,20}$/.test(value))
+    return 'Số tài khoản gồm 6-20 chữ số';
+  if (setting.format === 'optionalUrl' && value !== '' && !/^https?:\/\/[^\s]+$/i.test(value))
+    return 'Liên kết phải bắt đầu bằng http:// hoặc https://';
   if (setting.format === 'phone' && !/^[+()\d][\d\s().-]{7,19}$/.test(value))
     return 'Số điện thoại không hợp lệ';
   if (setting.options && !setting.options.some((option) => (option.value ?? option) === value))

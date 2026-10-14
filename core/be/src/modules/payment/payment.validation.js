@@ -13,7 +13,10 @@ export const invoiceListSchema = {
   query: paginationQuerySchema.extend({
     memberId: id.optional(),
     status: z.enum(Object.values(Enums.InvoiceStatus)).optional(),
+    channel: z.enum(Object.values(Enums.InvoiceChannel)).optional(),
     search: z.string().trim().max(VALIDATION.SEARCH_MAX_LENGTH).optional(),
+    from: z.coerce.date().optional(),
+    to: z.coerce.date().optional(),
   }),
 };
 export const createCounterOrderSchema = { body: z.object({ planId: id, memberId: id }).strict() };

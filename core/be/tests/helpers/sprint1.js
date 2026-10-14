@@ -20,6 +20,7 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
   const passwordHash = await hashPassword(password);
   const member = await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: `${prefix}_1@scms.test`,
       fullName: `${prefix} Member`,
       roleId: role.id,
@@ -28,6 +29,7 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
   });
   const other = await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: `${prefix}_2@scms.test`,
       fullName: `${prefix} Other`,
       roleId: role.id,
@@ -50,6 +52,10 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
 export const cleanupSprintFixture = async (fixture) => {
   if (!fixture) return;
   const whereUser = { userId: { in: fixture.userIds } };
+  // Phiếu đối soát/hoàn tiền tham chiếu hoá đơn của fixture (webhook mở phiếu khi tiền lệch).
+  const byInvoice = { invoice: whereUser };
+  await prisma.refund.deleteMany({ where: { OR: [byInvoice, { case: whereUser }] } });
+  await prisma.reconciliationCase.deleteMany({ where: { OR: [whereUser, byInvoice] } });
   await prisma.notification.deleteMany({ where: whereUser });
   await prisma.payment.deleteMany({ where: { invoice: whereUser } });
   await prisma.invoice.deleteMany({ where: whereUser });

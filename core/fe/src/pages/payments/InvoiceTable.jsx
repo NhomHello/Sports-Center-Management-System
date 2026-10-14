@@ -1,7 +1,7 @@
 import { EyeOutlined, DollarOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
-import { Button, Space, Table } from 'antd';
-import { INVOICE_CHANNEL, INVOICE_STATUS_META } from '@/constants';
+import { Button, Space, Table, Tag, Tooltip } from 'antd';
+import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
 import { canCollectCash } from '@/utils/invoice';
 import { usePermission } from '@/hooks/usePermission';
 import { formatCurrency, formatDate } from '@/utils/format';
@@ -22,7 +22,12 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
       title: 'Kênh',
       dataIndex: 'channel',
       key: 'channel',
-      render: (channel) => (channel === INVOICE_CHANNEL.COUNTER ? 'Tại quầy' : 'Online'),
+      render: (channel) =>
+        channel === INVOICE_CHANNEL.COUNTER ? (
+          <Tag color="purple">Tại quầy</Tag>
+        ) : (
+          <Tag color="blue">Online</Tag>
+        ),
     },
     {
       title: 'Số tiền',
@@ -57,6 +62,12 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
               Thu tiền
             </Button>
           )}
+          {invoice.channel === INVOICE_CHANNEL.ONLINE &&
+            invoice.status === INVOICE_STATUS.PENDING && (
+              <Tooltip title="Hóa đơn online tự xác nhận khi nhận được tiền chuyển khoản, không thu tiền mặt.">
+                <Tag color="gold">Chờ chuyển khoản</Tag>
+              </Tooltip>
+            )}
           <Button size="small" icon={<EyeOutlined />} onClick={() => onDetail(invoice.id)}>
             Chi tiết
           </Button>

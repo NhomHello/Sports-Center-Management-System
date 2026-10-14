@@ -48,7 +48,7 @@ function buildTabs(can, canAll, onViewSchedule) {
   const management = (
     <ClassListPanel
       scope="management"
-      renderActions={actions}
+      renderActions={(item) => <ClassBookingActions item={item} rosterOnly />}
       renderFilters={(table) => <ClassFilters table={table} />}
     />
   );

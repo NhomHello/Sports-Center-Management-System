@@ -28,6 +28,10 @@ export const EMAIL_VERIFICATION = Object.freeze({
   VERIFY_PATH: '/verify-email',
 });
 
+export const PASSWORD_RESET = Object.freeze({
+  RESET_PATH: '/reset-password',
+});
+
 export const VALIDATION = Object.freeze({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 72,
@@ -64,6 +68,8 @@ export const ENTITIES = Object.freeze({
   MEMBERSHIP: 'Membership',
   PAYMENT: 'Payment',
   MEMBERSHIP_PLAN: 'MembershipPlan',
+  RECONCILIATION_CASE: 'ReconciliationCase',
+  REFUND: 'Refund',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
@@ -71,6 +77,22 @@ export const PRISMA_ERROR = Object.freeze({
   UNIQUE_VIOLATION: 'P2002',
   RECORD_NOT_FOUND: 'P2025',
   FOREIGN_KEY_VIOLATION: 'P2003',
+});
+
+/** Gia tri co dinh cua giao thuc webhook SePay (khong phai so nghiep vu). */
+export const SEPAY = Object.freeze({
+  AUTH_SCHEME: 'Apikey',
+  TRANSFER_IN: 'in',
+});
+
+/** Giới hạn kỹ thuật của job/đồng bộ thanh toán (không phải số nghiệp vụ). */
+export const PAYMENT_LIMITS = Object.freeze({
+  EXPIRY_INTERVAL_MS: 60 * 1000,
+  EXPIRY_BATCH_SIZE: 100,
+  SYNC_PAGE_LIMIT: 5000,
+  SYNC_TIMEOUT_MS: 15000,
+  NOTE_MAX_LENGTH: 500,
+  REASON_MAX_LENGTH: 255,
 });
 
 export const HEALTH_PATH = '/health';

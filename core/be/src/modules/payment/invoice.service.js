@@ -3,6 +3,7 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import * as settingService from '../setting/setting.service.js';
+import { buildPaymentInstruction } from './sepay-qr.service.js';
 
 /** Quan hệ được phép xem; thông tin người thu không bao gồm credential. */
 export const INVOICE_INCLUDE = {
@@ -30,6 +31,10 @@ export const listInvoices = async (query, actor, canReadAll) => {
   const where = {
     ...(userId && { userId }),
     ...(query.status && { status: query.status }),
+    ...(query.channel && { channel: query.channel }),
+    ...((query.from || query.to) && {
+      createdAt: { ...(query.from && { gte: query.from }), ...(query.to && { lte: query.to }) },
+    }),
     ...(query.search && {
       OR: [
         { code: { contains: query.search } },
@@ -48,7 +53,12 @@ export const listInvoices = async (query, actor, canReadAll) => {
   ]);
   const currency = await settingService.getValue(SETTING_KEYS.CURRENCY);
   return {
-    items: items.map((item) => ({ ...item, currency })),
+    // UC-PAY-08: số đã nhận để hiện "đã nhận X / còn thiếu Y" với hoá đơn chuyển bù.
+    items: items.map((item) => ({
+      ...item,
+      currency,
+      receivedAmount: item.payments.reduce((sum, payment) => sum + payment.receivedAmount, 0),
+    })),
     meta: buildPageMeta({ ...query, total }),
   };
 };
@@ -76,5 +86,11 @@ export const getInvoice = async (id, actor, canReadAll) => {
     ...payment,
     actor: collectors.find((collector) => collector.id === payment.actorId) ?? null,
   }));
-  return { ...invoice, payments, centerInfo: { name, address, phone }, currency };
+  return {
+    ...invoice,
+    payments,
+    centerInfo: { name, address, phone },
+    currency,
+    paymentInstruction: await buildPaymentInstruction(invoice),
+  };
 };

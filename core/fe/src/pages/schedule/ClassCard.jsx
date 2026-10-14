@@ -1,5 +1,6 @@
 import { PERMISSIONS as P } from '@scms/shared';
 import {
+  CalendarOutlined,
   ClockCircleOutlined,
   EnvironmentOutlined,
   TeamOutlined,
@@ -7,7 +8,8 @@ import {
 } from '@ant-design/icons';
 import { Button, Card, Popconfirm, Tag } from 'antd';
 import { CLASS_STATUS } from '@/constants/schedule';
-import { formatDateTime } from '@/utils/format';
+import { formatDate, formatDateTime } from '@/utils/format';
+import { describeWeeklySchedule } from '@/utils/schedule';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
 
 /** Card dùng chung cho danh sách lớp mở và phạm vi quản lý. */
@@ -18,6 +20,19 @@ export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, chil
         <div className="scms-class-card__tags">
           <ScheduleStatusTag status={item.status} />
           <Tag>{item.subject.name}</Tag>
+        </div>
+        <div className="scms-class-card__meta scms-class-card__schedule">
+          <CalendarOutlined />
+          <span>
+            {describeWeeklySchedule(item.weeklySchedule).map((line) => (
+              <span key={line} className="scms-class-card__slot">
+                {line}
+              </span>
+            ))}
+            <span className="scms-class-card__range">
+              {formatDate(item.startsOn)} – {formatDate(item.endsOn)}
+            </span>
+          </span>
         </div>
         <div className="scms-class-card__meta">
           <EnvironmentOutlined />

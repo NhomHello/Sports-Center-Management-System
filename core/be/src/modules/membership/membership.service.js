@@ -1,5 +1,5 @@
 import { ApiError } from '../../common/errors/api-error.js';
-import { prisma } from '../../config/db.js';
+import { Enums, prisma } from '../../config/db.js';
 
 const MEMBERSHIP_STATUS = Object.freeze({
   ACTIVE: 'ACTIVE',
@@ -18,6 +18,7 @@ const findLatestByMemberId = async (memberId) =>
     },
     include: {
       plan: true,
+      _count: { select: { invoices: { where: { status: Enums.InvoiceStatus.PAID } } } },
     },
     orderBy: {
       endDate: 'desc',
@@ -47,8 +48,10 @@ export const getCurrentByMemberId = async (memberId) => {
   const now = new Date();
   const status = membership.endDate > now ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED;
 
+  const { _count: counts, ...rest } = membership;
   return {
-    ...membership,
+    ...rest,
     status,
+    paidInvoiceCount: counts.invoices,
   };
 };

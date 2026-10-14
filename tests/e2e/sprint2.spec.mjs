@@ -59,6 +59,7 @@ test.beforeAll(async () => {
   f.roleIds.push(role.id);
   staff = await prisma.user.create({
     data: {
+      emailVerifiedAt: new Date(),
       email: `${f.prefix}_staff@scms.test`,
       fullName: `${f.prefix} Staff`,
       roleId: role.id,

@@ -22,6 +22,7 @@ export const PERMISSION_MODULES = [
       update: 'Cập nhật tài khoản',
       delete: 'Xoá / khoá tài khoản',
       assign_role: 'Gán vai trò cho tài khoản',
+      verify_email: 'Xác minh email thủ công cho tài khoản',
     },
   },
   {
@@ -108,6 +109,8 @@ export const PERMISSION_MODULES = [
       record_cash: 'Ghi nhận thanh toán tại quầy',
       read_own: 'Xem giao dịch của mình',
       read_all: 'Xem mọi giao dịch',
+      reconcile: 'Đối soát giao dịch: map tiền, xử lý chuyển thiếu / thừa / lặp',
+      refund: 'Hoàn tiền và xác nhận đã chuyển trả',
     },
   },
   {

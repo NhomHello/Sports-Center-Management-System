@@ -5,6 +5,7 @@ export function ResourceFormModal({ item, resource, loading, onSubmit, onClose }
   return (
     <Modal
       open
+      centered
       title={item ? 'Sửa thông tin' : 'Thêm danh mục'}
       onCancel={onClose}
       onOk={form.submit}

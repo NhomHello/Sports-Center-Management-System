@@ -2,11 +2,16 @@ import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Select } from 'antd';
 import { useState } from 'react';
 import { SearchInput } from '@/components/common/SearchInput';
-import { INVOICE_STATUS_META } from '@/constants';
+import { INVOICE_CHANNEL_LABELS, INVOICE_STATUS_META } from '@/constants';
 
 const STATUS_OPTIONS = Object.entries(INVOICE_STATUS_META).map(([value, meta]) => ({
   value,
   label: meta.label,
+}));
+
+const CHANNEL_OPTIONS = Object.entries(INVOICE_CHANNEL_LABELS).map(([value, label]) => ({
+  value,
+  label,
 }));
 
 /** Bộ lọc truyền thẳng đến API phân trang; không lọc riêng một trang dữ liệu. */
@@ -41,13 +46,21 @@ export function InvoiceFilters({ filters, onChange, loading }) {
         value={filters.status}
         onChange={(status) => onChange({ status })}
       />
+      <Select
+        aria-label="Lọc kênh thanh toán"
+        placeholder="Tất cả kênh"
+        allowClear
+        options={CHANNEL_OPTIONS}
+        value={filters.channel}
+        onChange={(channel) => onChange({ channel })}
+      />
       <Button
         type="text"
         icon={<CloseCircleOutlined />}
-        disabled={!search && !filters.status}
+        disabled={!search && !filters.status && !filters.channel}
         onClick={() => {
           setSearch('');
-          onChange({ search: undefined, status: undefined });
+          onChange({ search: undefined, status: undefined, channel: undefined });
         }}
       >
         Xóa lọc

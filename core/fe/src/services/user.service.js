@@ -16,3 +16,6 @@ export const updateUserRole = (id, roleId) => http.patch(`${BASE}/${id}/role`, {
 
 /** @param {number} id @param {string} status */
 export const updateUserStatus = (id, status) => http.patch(`${BASE}/${id}/status`, { status });
+
+/** Xác minh email thủ công khi hội viên không nhận được thư. @param {number} id */
+export const verifyUserEmail = (id) => http.post(`${BASE}/${id}/email-verification`);

@@ -11,6 +11,7 @@ import {
   shouldRetryApiQuery,
 } from '@/utils/apiAvailability';
 import { formatCurrency } from '@/utils/format';
+import { MembershipEffectPreview } from './MembershipEffectPreview';
 
 function QueryError({ query, resource }) {
   if (!query.isError) return null;
@@ -27,6 +28,7 @@ function CounterInvoiceContent({
   plansQuery,
   plans,
   plan,
+  memberId,
   onSearch,
 }) {
   return (
@@ -78,6 +80,7 @@ function CounterInvoiceContent({
             <Descriptions.Item label="Thời hạn">{plan.durationDays} ngày</Descriptions.Item>
           </Descriptions>
         )}
+        <MembershipEffectPreview memberId={memberId} durationDays={plan?.durationDays} />
         {plansQuery.isSuccess && plans.length === 0 && (
           <Empty description="Chưa có gói đang bán trong danh mục trung tâm." />
         )}
@@ -92,6 +95,7 @@ export function CounterInvoiceModal({ open, onClose, onCreated }) {
   const [form] = Form.useForm();
   const [search, setSearch] = useState('');
   const planId = Form.useWatch('planId', form);
+  const memberId = Form.useWatch('memberId', form);
   const membersQuery = useQuery({
     queryKey: [...QUERY_KEYS.MEMBERS, 'counter-options', user?.id, search],
     queryFn: () =>
@@ -145,6 +149,7 @@ export function CounterInvoiceModal({ open, onClose, onCreated }) {
         plansQuery={plansQuery}
         plans={plans}
         plan={plan}
+        memberId={memberId}
         onSearch={setSearch}
       />
     </Modal>

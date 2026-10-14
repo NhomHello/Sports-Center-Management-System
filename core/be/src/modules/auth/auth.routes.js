@@ -12,6 +12,8 @@ import {
   changePasswordSchema,
   requestEmailVerificationSchema,
   confirmEmailVerificationSchema,
+  requestPasswordResetSchema,
+  confirmPasswordResetSchema,
 } from './auth.validation.js';
 
 const router = Router();
@@ -52,5 +54,19 @@ router.post(
   validate(confirmEmailVerificationSchema),
   controller.confirmEmailVerification,
 );
+
+router.post(
+  '/password-resets',
+  authLimiter,
+  validate(requestPasswordResetSchema),
+  controller.requestPasswordReset,
+);
+router.post(
+  '/password-resets/confirm',
+  authLimiter,
+  validate(confirmPasswordResetSchema),
+  controller.confirmPasswordReset,
+);
+router.get('/support-contacts', controller.getSupportContacts);
 
 export default router;

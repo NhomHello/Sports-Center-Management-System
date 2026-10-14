@@ -10,6 +10,7 @@ import healthRoutes from './modules/health/health.routes.js';
 import memberRoutes from './modules/member/member.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
 import invoiceRoutes from './modules/payment/invoice.routes.js';
+import sepayRoutes from './modules/payment/sepay.routes.js';
 import paymentRoutes from './modules/payment/payment.routes.js';
 import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 import membershipRoutes from './modules/membership/membership.routes.js';
@@ -21,6 +22,10 @@ import subjectRoutes from './modules/subject/subject.routes.js';
 import roomRoutes from './modules/room/room.routes.js';
 import classRoutes from './modules/class/class.routes.js';
 import scheduleRoutes from './modules/schedule/schedule.routes.js';
+import {
+  reconciliationRoutes,
+  refundRoutes,
+} from './modules/reconciliation/reconciliation.routes.js';
 
 const router = Router();
 
@@ -28,8 +33,12 @@ router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/members', memberRoutes);
 router.use('/notifications', notificationRoutes);
+// Phải đứng trước /payments vì paymentRoutes bắt buộc JWT cho mọi đường dẫn con.
+router.use('/payments/sepay', sepayRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/invoices', invoiceRoutes);
+router.use('/reconciliations', reconciliationRoutes);
+router.use('/refunds', refundRoutes);
 router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
 router.use('/memberships', membershipRoutes);
