@@ -221,3 +221,7 @@
   color: var(--ant-color-text-tertiary);
   font-size: 13px;
 }
+
+.scms-class-full {
+  color: var(--ant-color-error, #b42318);
+}
