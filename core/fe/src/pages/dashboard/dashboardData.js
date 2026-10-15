@@ -1,6 +1,13 @@
 import { PERMISSIONS } from '@scms/shared';
-import { ROUTES } from '@/constants';
+import { MS_PER_DAY, ROUTES } from '@/constants';
 import { ENROLLMENT_STATUS, SESSION_STATUS } from '@/constants/schedule';
+
+/** API gói hiện tại trả một object hoặc null; gói hết hạn có số ngày còn lại bằng 0. */
+export const getRemainingMembershipDays = (membership, now = Date.now()) => {
+  const endDate = new Date(membership?.endDate).getTime();
+  if (!Number.isFinite(endDate)) return 0;
+  return Math.max(0, Math.ceil((endDate - now) / MS_PER_DAY));
+};
 
 const SHORTCUT_ORDER = [
   ROUTES.SCHEDULE,

@@ -5,8 +5,24 @@ import { hasAnyPermission } from '@/utils/permission';
 import {
   buildDashboardShortcuts,
   getUpcomingSessions,
+  getRemainingMembershipDays,
   resolveDashboardSchedule,
 } from './dashboardData';
+
+describe('Số ngày gói hiện tại theo hợp đồng object/null của API', () => {
+  const now = Date.parse('2026-10-15T10:00:00Z');
+  it.each([
+    ['đang tải', undefined, 0],
+    ['chưa có gói', null, 0],
+    ['còn đúng hai ngày', { endDate: '2026-10-17T10:00:00Z', status: 'ACTIVE' }, 2],
+    ['còn một phần ngày', { endDate: '2026-10-15T11:00:00Z', status: 'ACTIVE' }, 1],
+    ['đúng hạn kết thúc', { endDate: '2026-10-15T10:00:00Z', status: 'EXPIRED' }, 0],
+    ['đã hết hạn', { endDate: '2026-10-14T10:00:00Z', status: 'EXPIRED' }, 0],
+    ['ngày không hợp lệ', { endDate: 'invalid-date' }, 0],
+  ])('%s', (_name, membership, expected) => {
+    expect(getRemainingMembershipDays(membership, now)).toBe(expected);
+  });
+});
 
 const canWith =
   (...granted) =>

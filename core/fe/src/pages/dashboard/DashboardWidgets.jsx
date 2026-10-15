@@ -7,7 +7,7 @@ import { listInvoices } from '@/services/payment.service';
 import { getReport, getReconciliationSummary, getMemberSummary } from '@/services/sprint3.service';
 import { vietnamInput } from '@/utils/schedule';
 import { formatCurrency } from '@/utils/format';
-import { MS_PER_DAY } from '@/constants';
+import { getRemainingMembershipDays } from './dashboardData';
 
 function Widget({ title, query, value, currency }) {
   return (
@@ -63,15 +63,7 @@ export function DashboardWidgets() {
         <Widget
           title="Số ngày gói còn lại"
           query={own}
-          value={(r) => {
-            const ends = (r?.data || [])
-              .filter((m) => m.status === 'ACTIVE')
-              .map((m) => new Date(m.endDate).getTime());
-            return Math.max(
-              0,
-              Math.ceil((Math.max(Date.now(), ...ends) - Date.now()) / MS_PER_DAY),
-            );
-          }}
+          value={(r) => getRemainingMembershipDays(r?.data)}
         />
       )}
       {can(P.INVOICE_READ_ALL) && (
