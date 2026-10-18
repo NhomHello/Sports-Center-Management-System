@@ -32,3 +32,11 @@ export const computeMembershipEffect = (current, durationDays, now = Date.now())
     nextEnd: now + durationMs,
   };
 };
+
+/**
+ * Số ngày còn hiệu lực của gói, làm tròn lên; gói đã hết hạn trả 0.
+ * @param {string} endDate
+ * @param {number} [now] ms
+ */
+export const daysLeft = (endDate, now = Date.now()) =>
+  Math.max(0, Math.ceil((new Date(endDate).getTime() - now) / MS_PER_DAY));

@@ -1,9 +1,7 @@
 import { CreditCardFilled } from '@ant-design/icons';
 import { Card, Flex, Space, Tag, Typography } from 'antd';
-import { MS_PER_DAY } from '@/constants';
 import { formatDate } from '@/utils/format';
-
-const daysLeft = (endDate) => Math.max(0, Math.ceil((new Date(endDate) - Date.now()) / MS_PER_DAY));
+import { daysLeft } from '@/utils/membershipEffect';
 
 /** Gói chỉ quy định thời hạn: banner hiển thị hạn dùng và số lần đã cộng dồn, không nêu một "gói" riêng. */
 export function CurrentMembershipCard({ membership, canPurchase }) {
