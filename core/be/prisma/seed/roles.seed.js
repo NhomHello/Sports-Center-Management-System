@@ -3,8 +3,9 @@
  * Sau khi seed, Center Manager tu tao/sua/xoa role va quyen tren UI - code khong can doi.
  *
  * - permissions: 'ALL' => luon duoc cap toan bo permission moi lan seed (role quan tri)
- * - permissions: [...]  => chi ap dung khi role duoc TAO MOI; role da co thi giu nguyen
- *                          quyen manager da chinh tren UI
+ * - permissions: [...]  => gan day du khi role duoc TAO MOI; role da co thi giu nguyen
+ *                          quyen manager da chinh tren UI, chi bo sung MOT LAN cac quyen
+ *                          moi them vao danh sach (xem backfillRolePermissions)
  */
 import { PERMISSIONS as P } from '@scms/shared';
 

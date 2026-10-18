@@ -6,6 +6,7 @@ import { getSettingValidationError, listPermissions, SETTING_DEFINITIONS } from 
 import { hashPassword } from '../../src/common/utils/password.js';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
+import { AUDIT_ACTIONS, ENTITIES } from '../../src/constants/index.js';
 import { logger } from '../../src/config/logger.js';
 import { seedMockData } from './mock/index.js';
 import { SEED_ADMIN_ROLE_CODE, SEED_ROLES } from './roles.seed.js';
@@ -43,6 +44,52 @@ async function setRolePermissions(roleId, codes) {
 }
 
 /**
+ * Quyen mac dinh duoc them vao code SAU khi role da tao (vd. attendance.record cho HLV) se khong
+ * bao gio den duoc DB cu. Bo sung moi cap (role, quyen) con thieu DUNG MOT LAN va ghi audit
+ * `meta.seedBackfill`; lan seed sau bo qua cac quyen da bo sung, nen manager go quyen tren UI
+ * thi seed khong cap lai.
+ * @param {{ id: number }} role
+ * @param {string[]} defaults
+ */
+async function backfillRolePermissions(role, defaults) {
+  const [current, logs] = await Promise.all([
+    prisma.rolePermission.findMany({
+      where: { roleId: role.id },
+      select: { permission: { select: { code: true } } },
+    }),
+    prisma.auditLog.findMany({
+      where: { entity: ENTITIES.ROLE, entityId: String(role.id), action: AUDIT_ACTIONS.UPDATE },
+      select: { meta: true },
+    }),
+  ]);
+  const done = new Set([
+    ...current.map((row) => row.permission.code),
+    ...logs.flatMap((log) => log.meta?.seedBackfill ?? []),
+  ]);
+  const missing = defaults.filter((code) => !done.has(code));
+  if (missing.length === 0) return;
+  const perms = await prisma.permission.findMany({
+    where: { code: { in: missing } },
+    select: { id: true },
+  });
+  await prisma.$transaction([
+    prisma.rolePermission.createMany({
+      data: perms.map(({ id }) => ({ roleId: role.id, permissionId: id })),
+      skipDuplicates: true,
+    }),
+    prisma.auditLog.create({
+      data: {
+        action: AUDIT_ACTIONS.UPDATE,
+        entity: ENTITIES.ROLE,
+        entityId: String(role.id),
+        meta: { seedBackfill: missing },
+      },
+    }),
+  ]);
+  logger.info({ role: role.code, added: missing }, 'Bo sung quyen mac dinh moi cho role');
+}
+
+/**
  * @param {ReturnType<typeof listPermissions>} allPermissions
  */
 async function seedRoles(allPermissions) {
@@ -55,6 +102,8 @@ async function seedRoles(allPermissions) {
     // Role quan tri luon full quyen; role khac chi gan quyen khi vua tao moi
     if (isAdminRole || !existing) {
       await setRolePermissions(role.id, isAdminRole ? allCodes : permissions);
+    } else {
+      await backfillRolePermissions(role, permissions);
     }
   }
   logger.info({ count: SEED_ROLES.length }, 'Seed roles xong');
