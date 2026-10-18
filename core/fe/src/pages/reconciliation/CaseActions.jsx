@@ -1,5 +1,5 @@
 import { PERMISSIONS as P } from '@scms/shared';
-import { Alert, Divider } from 'antd';
+import { Alert, Button, Divider, Popconfirm, Typography } from 'antd';
 import { Link } from 'react-router';
 import { ROUTES } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
@@ -29,12 +29,46 @@ function PendingRefundNotice({ refund }) {
   );
 }
 
+/** BR-PAY-06: chuyển thừa không tự hoàn thành; quản lý chấp nhận sau khi đã liên hệ hội viên. */
+function AcceptOverpaid({ item, pending, disabled, onAction }) {
+  return (
+    <>
+      <Divider titlePlacement="start">Chấp nhận hóa đơn chuyển thừa</Divider>
+      <Typography.Paragraph type="secondary">
+        Hội viên chuyển {formatCurrency(item.invoiceReceived)} cho hóa đơn{' '}
+        {formatCurrency(item.invoice?.amount)}. Chấp nhận sẽ kích hoạt gói; phần thừa{' '}
+        {formatCurrency(item.invoiceReceived - (item.invoice?.amount ?? 0))} xử lý tiếp bằng hoàn
+        tiền hoặc gia hạn. Nếu hội viên không muốn mua gói, dùng "Hoàn tiền" để hoàn toàn bộ.
+      </Typography.Paragraph>
+      <Popconfirm
+        title="Chấp nhận hóa đơn và kích hoạt gói?"
+        okText="Chấp nhận"
+        cancelText="Không"
+        disabled={disabled}
+        onConfirm={() => onAction({ action: 'accept' })}
+      >
+        <Button type="primary" disabled={disabled} loading={pending}>
+          Chấp nhận hóa đơn
+        </Button>
+      </Popconfirm>
+    </>
+  );
+}
+
 /** Gán / xác nhận / gia hạn / từ chối: các cách dùng khoản tiền của phiếu. */
 function SettleForms({ item, allowed, mutation }) {
   const pending = mutation.isPending;
   const blocked = allowed.needsContact;
   return (
     <>
+      {allowed.accept && (
+        <AcceptOverpaid
+          item={item}
+          pending={pending}
+          disabled={blocked}
+          onAction={mutation.mutate}
+        />
+      )}
       {allowed.map && (
         <>
           <Divider titlePlacement="start">Gán vào hóa đơn</Divider>

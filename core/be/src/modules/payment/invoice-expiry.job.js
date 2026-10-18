@@ -25,6 +25,8 @@ const expireOne = (id, now) =>
       const invoice = await lockInvoice(tx, { id });
       if (invoice?.status !== Enums.InvoiceStatus.PENDING || invoice.expiresAt > now) return null;
       const received = await sumReceived(tx, id);
+      // Đã nhận đủ hoặc thừa: tiền nằm ở trung tâm, chờ quản lý chấp nhận/hoàn, không tự huỷ.
+      if (received >= invoice.amount) return null;
       await tx.invoice.update({ where: { id }, data: { status: Enums.InvoiceStatus.FAILED } });
       if (received > 0) await moveTopupCasesToRefund(tx, id);
       await tx.auditLog.create({

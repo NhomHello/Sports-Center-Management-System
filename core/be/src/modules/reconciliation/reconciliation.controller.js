@@ -3,6 +3,7 @@ import { createClaim } from './payment-claim.service.js';
 import * as refundService from './refund.service.js';
 import * as resolveService from './reconciliation-resolve.service.js';
 import * as caseService from './reconciliation.service.js';
+import { acceptOverpaidCase } from './reconciliation-accept.service.js';
 import { syncFromSepay } from './sepay-sync.service.js';
 
 const caseId = (req) => req.validated.params.id;
@@ -47,6 +48,13 @@ export const renewFromCase = async (req, res) =>
   sendSuccess(res, {
     data: await resolveService.renewFromCase(caseId(req), req.validated.body, req.user),
     message: 'Đã dùng khoản tiền để gia hạn gói',
+  });
+
+/** POST /reconciliations/:id/accept: chấp nhận hoá đơn chuyển thừa, kích hoạt gói. */
+export const acceptOverpaid = async (req, res) =>
+  sendSuccess(res, {
+    data: await acceptOverpaidCase(caseId(req), req.user),
+    message: 'Đã chấp nhận hoá đơn và kích hoạt gói',
   });
 
 /** POST /reconciliations/:id/refund */

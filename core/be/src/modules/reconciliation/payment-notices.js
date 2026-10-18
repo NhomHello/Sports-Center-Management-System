@@ -27,23 +27,31 @@ export const outcomeNotices = (invoice, result, key) => {
       }),
     ];
   }
-  const paid = toMember({
-    userId,
-    kind: KIND.PAYMENT_CONFIRMED,
-    eventKey: `${key}:paid`,
-    title: `Đã thanh toán hoá đơn ${invoice.code}`,
-    message: `Gói ${invoice.planName ?? invoice.plan?.name} đã được kích hoạt. Bạn có thể tải hoá đơn PDF.`,
-  });
-  if (result.outcome !== PAYMENT_OUTCOME.OVERPAID) return [paid];
+  if (result.outcome === PAYMENT_OUTCOME.OVERPAID) {
+    return [
+      toMember({
+        userId,
+        kind: KIND.PAYMENT_REVIEW_ALERT,
+        eventKey: `${key}:overpaid`,
+        title: `Hoá đơn ${invoice.code}: trung tâm nhận ${fmtMoney(result.received)}`,
+        message:
+          `Số tiền nhiều hơn hoá đơn ${fmtMoney(invoice.amount)} (thừa ${fmtMoney(result.excess)}). ` +
+          'Hoá đơn chờ trung tâm xác nhận; trung tâm sẽ liên hệ để kích hoạt gói và hoàn hoặc dùng phần thừa.',
+      }),
+      toReconcilers({
+        eventKey: `${key}:overpaid`,
+        title: `Hoá đơn ${invoice.code} chuyển thừa ${fmtMoney(result.excess)}`,
+        message: 'Liên hệ hội viên, rồi chấp nhận hoá đơn (kích hoạt gói) hoặc hoàn toàn bộ.',
+      }),
+    ];
+  }
   return [
-    {
-      ...paid,
-      message: `${paid.message} Phần chuyển thừa ${fmtMoney(result.excess)} sẽ được trung tâm liên hệ để hoàn hoặc dùng gia hạn.`,
-    },
-    toReconcilers({
-      eventKey: `${key}:overpaid`,
-      title: `Hoá đơn ${invoice.code} chuyển thừa ${fmtMoney(result.excess)}`,
-      message: 'Liên hệ hội viên rồi hoàn phần thừa hoặc dùng cho lần gia hạn kế tiếp.',
+    toMember({
+      userId,
+      kind: KIND.PAYMENT_CONFIRMED,
+      eventKey: `${key}:paid`,
+      title: `Đã thanh toán hoá đơn ${invoice.code}`,
+      message: `Gói ${invoice.planName ?? invoice.plan?.name} đã được kích hoạt. Bạn có thể tải hoá đơn PDF.`,
     }),
   ];
 };

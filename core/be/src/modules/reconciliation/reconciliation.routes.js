@@ -18,6 +18,11 @@ reconciliationRoutes.post('/:id/map', validate(schema.mapSchema), controller.map
 reconciliationRoutes.post('/:id/confirm', validate(schema.confirmSchema), controller.confirmCase);
 reconciliationRoutes.post('/:id/renew', validate(schema.renewSchema), controller.renewFromCase);
 reconciliationRoutes.post(
+  '/:id/accept',
+  validate(schema.caseParamsSchema),
+  controller.acceptOverpaid,
+);
+reconciliationRoutes.post(
   '/:id/refund',
   validate(schema.refundRequestSchema),
   controller.requestCaseRefund,

@@ -53,9 +53,13 @@ export const invoiceStatusMeta = (invoice, now = Date.now()) => {
   if (invoice.status !== INVOICE_STATUS.PENDING)
     return INVOICE_STATUS_META[invoice.status] ?? { color: 'default', label: invoice.status };
   const online = invoice.channel === INVOICE_CHANNEL.ONLINE;
+  const received = invoiceReceived(invoice);
+  const amount = Number(invoice.amount);
+  if (received > amount) return { color: 'orange', label: 'Chuyển thừa, chờ xác nhận' };
+  // Đã nhận đủ/thừa thì không bị huỷ vì quá hạn (chờ quản lý xử lý).
   if (online && new Date(invoice.expiresAt).getTime() <= now)
     return INVOICE_STATUS_META[INVOICE_STATUS.FAILED];
-  if (invoiceReceived(invoice) > 0) return { color: 'orange', label: 'Chờ chuyển bù' };
+  if (received > 0) return { color: 'orange', label: 'Chờ chuyển bù' };
   return online
     ? { color: 'gold', label: 'Chờ chuyển khoản' }
     : { color: 'gold', label: 'Chờ thu tại quầy' };

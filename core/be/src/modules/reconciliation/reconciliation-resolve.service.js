@@ -109,6 +109,14 @@ const precheck = async (id, rule) => {
   return kase;
 };
 
+/** Phần thừa chỉ tồn tại sau khi hoá đơn gốc được chấp nhận; trước đó toàn bộ tiền còn treo. */
+const assertOverpaidAccepted = async (db, kase) => {
+  if (kase.reason !== REASON.OVERPAID) return;
+  const invoice = await db.invoice.findUnique({ where: { id: kase.invoiceId } });
+  if (invoice?.status === Enums.InvoiceStatus.PENDING)
+    throw ApiError.businessRule('Chấp nhận hoá đơn gốc trước khi dùng phần thừa để gia hạn');
+};
+
 /** Hoá đơn đích: chọn hoá đơn có sẵn, hoặc tạo/tái sử dụng hoá đơn online cho gói đang bán. */
 const resolveTargetInvoice = async ({ invoiceId, memberId, planId }, actor) =>
   invoiceId ?? (await createOnlineOrder({ memberId, planId }, actor)).id;
@@ -157,9 +165,11 @@ export const confirmCase = async (id, { amount, reference }, actor) => {
  */
 export const renewFromCase = async (id, { planId }, actor) => {
   const preview = await precheck(id, RULES.renew);
+  await assertOverpaidAccepted(prisma, preview);
   const target = await resolveTargetInvoice({ memberId: preview.userId, planId }, actor);
   const out = await prisma.$transaction(async (tx) => {
     const kase = await lockForAction(tx, id, RULES.renew);
+    await assertOverpaidAccepted(tx, kase);
     const amount = kase.reason === REASON.OVERPAID ? kase.excessAmount : kase.amount;
     const invoice = await lockPayableInvoice(tx, target);
     const result = await applyTransfer(tx, invoice, {

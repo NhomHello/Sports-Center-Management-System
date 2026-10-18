@@ -4,7 +4,11 @@ import { PRISMA_ERROR, SEPAY } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 import { buildWebhookNotices } from '../reconciliation/payment-notices.js';
 import { sendNotices } from '../reconciliation/payment-notify.service.js';
-import { openCase, openOrRefreshTopupCase } from '../reconciliation/reconciliation-case.service.js';
+import {
+  openCase,
+  openOrRefreshOverpaidCase,
+  openOrRefreshTopupCase,
+} from '../reconciliation/reconciliation-case.service.js';
 import { applyTransfer, lockInvoice, PAYMENT_OUTCOME } from './payment-apply.service.js';
 
 const { ReconciliationReason: REASON, WebhookLogStatus: LOG } = Enums;
@@ -82,15 +86,7 @@ const handleTransfer = async (tx, payload, invoiceCode, invoice) => {
   if (result.outcome === PAYMENT_OUTCOME.UNDERPAID) {
     kase = await openOrRefreshTopupCase(tx, invoice, log);
   } else if (result.outcome === PAYMENT_OUTCOME.OVERPAID) {
-    kase = await openCase(tx, {
-      reason: REASON.OVERPAID,
-      webhookLogId: log.id,
-      invoiceId: invoice.id,
-      userId: invoice.userId,
-      amount: log.transferAmount,
-      excessAmount: result.excess,
-      note: `Chuyển thừa ${result.excess}`,
-    });
+    kase = await openOrRefreshOverpaidCase(tx, invoice, log, result.excess);
   }
   return { log, kase, invoice, result };
 };

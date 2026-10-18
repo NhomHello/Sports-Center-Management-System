@@ -61,7 +61,12 @@ const findReusablePending = (tx, memberId, planId, now) =>
       userId: memberId,
       planId,
       status: Enums.InvoiceStatus.PENDING,
-      OR: [{ channel: Enums.InvoiceChannel.COUNTER }, { expiresAt: { gt: now } }],
+      // Hoá đơn đã nhận tiền (chờ bù / chờ xác nhận chuyển thừa) vẫn là hoá đơn đang xử lý.
+      OR: [
+        { channel: Enums.InvoiceChannel.COUNTER },
+        { expiresAt: { gt: now } },
+        { payments: { some: {} } },
+      ],
     },
     include: INVOICE_INCLUDE,
   });

@@ -30,6 +30,8 @@ export const buildPaymentInstruction = async (invoice) => {
   qr.searchParams.set('acc', accountNumber);
   qr.searchParams.set('bank', bankCode);
   const { receivedAmount } = invoiceTotals(invoice);
+  // Đã nhận đủ/thừa (chờ quản lý xác nhận): không còn gì để chuyển.
+  if (receivedAmount >= invoice.amount) return null;
   const amount = Math.max(0, invoice.amount - receivedAmount);
   qr.searchParams.set('amount', String(amount));
   qr.searchParams.set('des', invoice.code);

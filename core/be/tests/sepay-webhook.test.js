@@ -134,7 +134,10 @@ describe('SePay webhook', () => {
   });
   it('mua tiếp khi còn hạn thì cộng dồn vào cùng membership và API trả số lần thanh toán', async () => {
     const first = await buy();
-    await send(transfer(first));
+    // Hóa đơn chờ chuyển bù của test trước được dùng lại (BR-1.13): chuyển đúng phần còn thiếu.
+    await send(
+      transfer(first, { transferAmount: first.paymentInstruction?.amount ?? first.amount }),
+    );
     const before = (
       await api.get(apiPath('/memberships/me/current')).set(bearer(fixture.memberToken))
     ).body.data;

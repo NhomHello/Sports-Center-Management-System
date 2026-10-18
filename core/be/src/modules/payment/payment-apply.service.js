@@ -77,9 +77,30 @@ const writeAudit = (tx, invoice, actorId, meta) =>
   });
 
 /**
+ * Chốt hoá đơn đã đủ tiền: PAID, kích hoạt gói (BR-1.3/1.4) và đóng phiếu chờ bù / báo đã chuyển.
+ * Dùng khi nhận đúng số tiền và khi quản lý chấp nhận hoá đơn chuyển thừa.
+ */
+export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) => {
+  const now = new Date();
+  await tx.invoice.update({
+    where: { id: invoice.id },
+    data: { status: Enums.InvoiceStatus.PAID, paidAt: now },
+  });
+  const membership = await activatePaidInvoice(invoice, now, tx);
+  await closeSettledCases(tx, invoice.id, actorId, now);
+  await writeAudit(tx, invoice, actorId, {
+    ...meta,
+    after: { status: Enums.InvoiceStatus.PAID },
+    membershipId: membership.id,
+  });
+  return membership;
+};
+
+/**
  * Ghi nhận một khoản tiền vào hoá đơn (webhook, map thủ công, gia hạn từ tiền thừa đều dùng hàm này).
- * Thiếu: hoá đơn giữ/chuyển về PENDING với hạn chuyển bù mới. Đủ hoặc thừa: PAID và kích hoạt gói
- * theo BR-1.3/1.4. Phải gọi trong transaction sau khi đã khoá hoá đơn bằng lockInvoice.
+ * BR-PAY-06/16: chỉ tự PAID khi tổng nhận bằng đúng số hoá đơn. Thiếu: giữ PENDING với hạn chuyển
+ * bù mới. Thừa: giữ PENDING, chưa kích hoạt gói, chờ quản lý liên hệ rồi chấp nhận hoặc hoàn tiền.
+ * Phải gọi trong transaction sau khi đã khoá hoá đơn bằng lockInvoice.
  * @param {import('@prisma/client').Prisma.TransactionClient} tx
  * @param {object} invoice hoá đơn đã khoá, có include plan
  * @param {{ amount: number, provider: string, reference?: string|null, actorId?: number|null, meta?: object }} input
@@ -112,19 +133,16 @@ export const applyTransfer = async (tx, invoice, input) => {
     const missing = invoice.amount - received;
     return { outcome: PAYMENT_OUTCOME.UNDERPAID, received, missing, excess: 0, expiresAt };
   }
-  await tx.invoice.update({
-    where: { id: invoice.id },
-    data: { status: Enums.InvoiceStatus.PAID, paidAt: now },
-  });
-  const membership = await activatePaidInvoice(invoice, now, tx);
-  await closeSettledCases(tx, invoice.id, actorId, now);
-  const excess = received - invoice.amount;
-  const outcome = excess > 0 ? PAYMENT_OUTCOME.OVERPAID : PAYMENT_OUTCOME.PAID;
-  await writeAudit(tx, invoice, actorId, {
-    ...base,
-    outcome,
-    after: { status: Enums.InvoiceStatus.PAID },
-    membershipId: membership.id,
-  });
-  return { outcome, received, missing: 0, excess };
+  if (received > invoice.amount) {
+    if (invoice.status !== Enums.InvoiceStatus.PENDING)
+      await tx.invoice.update({
+        where: { id: invoice.id },
+        data: { status: Enums.InvoiceStatus.PENDING },
+      });
+    await writeAudit(tx, invoice, actorId, { ...base, outcome: PAYMENT_OUTCOME.OVERPAID });
+    const excess = received - invoice.amount;
+    return { outcome: PAYMENT_OUTCOME.OVERPAID, received, missing: 0, excess };
+  }
+  await settleInvoice(tx, invoice, { actorId, meta: { ...base, outcome: PAYMENT_OUTCOME.PAID } });
+  return { outcome: PAYMENT_OUTCOME.PAID, received, missing: 0, excess: 0 };
 };

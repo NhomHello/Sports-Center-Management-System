@@ -9,6 +9,11 @@ import { InvoiceActions } from './InvoiceActions';
 const amountNote = (invoice, received) => {
   const money = (value) => formatCurrency(value, invoice.currency);
   if (received <= 0) return null;
+  if (invoice.status === INVOICE_STATUS.PENDING && received > invoice.amount)
+    return {
+      type: 'warning',
+      text: `Đã nhận ${money(received)} · thừa ${money(received - invoice.amount)}`,
+    };
   if (invoice.status === INVOICE_STATUS.PENDING)
     return {
       type: 'warning',

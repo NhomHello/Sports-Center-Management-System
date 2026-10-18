@@ -81,19 +81,26 @@ describe('Đối soát SePay: thiếu tiền và chuyển bù (UC-PAY-12)', () =
 });
 
 describe('Đối soát SePay: thừa tiền và chuyển lặp (UC-PAY-11, 13)', () => {
-  it('chuyển thừa ⇒ PAID + phiếu OVERPAID; hoàn phần thừa cần liên hệ trước', async () => {
+  it('chuyển thừa ⇒ hóa đơn chờ, quản lý liên hệ rồi chấp nhận; hoàn phần thừa', async () => {
     await resetMember(f.member.id);
     const invoice = await buyOnline(f);
     const res = await sendTransfer(f, invoice, { transferAmount: 350000 });
     expect(res.outcome).toBe('OVERPAID');
+    // BR-PAY-06: lệch tiền (kể cả thừa) không tự hoàn thành hóa đơn, chưa kích hoạt gói.
+    const held = await prisma.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
+    expect(held.status).toBe(Enums.InvoiceStatus.PENDING);
+    expect(held.membershipId).toBeNull();
     const kase = await latestCase(f, { invoiceId: invoice.id, reason: REASON.OVERPAID });
     expect(kase.excessAmount).toBe(50000);
 
-    const blocked = await asManager(f, 'post', `/reconciliations/${kase.id}/refund`, {
-      reason: 'Hoàn phần thừa',
-    });
+    const blocked = await asManager(f, 'post', `/reconciliations/${kase.id}/accept`);
     expect(blocked.status).toBe(422);
     expect((await contact(kase.id)).status).toBe(201);
+    const accepted = await asManager(f, 'post', `/reconciliations/${kase.id}/accept`);
+    expect(accepted.status).toBe(200);
+    const paid = await prisma.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
+    expect(paid.status).toBe(Enums.InvoiceStatus.PAID);
+    expect(paid.membershipId).not.toBeNull();
     const refund = await asManager(f, 'post', `/reconciliations/${kase.id}/refund`, {
       reason: 'Hoàn phần thừa',
       amount: 60000,

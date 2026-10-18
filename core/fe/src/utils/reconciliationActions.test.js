@@ -30,4 +30,10 @@ describe('caseActions', () => {
     const a = caseActions({ ...base, status: 'MATCHED', reason: 'NO_MATCH' });
     expect([a.active, a.map, a.refund, a.ignore]).toEqual([false, false, false, false]);
   });
+  it('chuyển thừa: hóa đơn chờ chấp nhận thì chỉ chấp nhận hoặc hoàn, chưa gia hạn', () => {
+    const awaiting = caseActions({ ...base, reason: 'OVERPAID', invoice: { status: 'PENDING' } });
+    expect([awaiting.accept, awaiting.renew, awaiting.refund]).toEqual([true, false, true]);
+    const accepted = caseActions({ ...base, reason: 'OVERPAID', invoice: { status: 'PAID' } });
+    expect([accepted.accept, accepted.renew]).toEqual([false, true]);
+  });
 });

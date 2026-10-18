@@ -1,9 +1,11 @@
 import { Alert, Button, Form, Input, Typography } from 'antd';
 import { CASE_REASON } from '@/constants/reconciliation';
 import { formatCurrency } from '@/utils/format';
+import { overpaidAwaiting } from '@/utils/reconciliationActions';
 
 const HINTS = Object.freeze({
-  [CASE_REASON.OVERPAID]: 'Hoàn phần chuyển thừa; hóa đơn gốc vẫn giữ trạng thái đã thanh toán.',
+  [CASE_REASON.OVERPAID]:
+    'Hoàn phần chuyển thừa; hóa đơn gốc đã chấp nhận vẫn giữ trạng thái đã thanh toán.',
   [CASE_REASON.DUPLICATE_TRANSFER]: 'Hoàn khoản chuyển lặp; gói tập không thay đổi.',
   [CASE_REASON.UNDERPAID]:
     'Hoàn số đã nhận của hóa đơn chưa đủ tiền; hóa đơn sẽ bị hủy và gói không được kích hoạt.',
@@ -13,6 +15,9 @@ const HINTS = Object.freeze({
 
 /** BR-PAY-13: tạo yêu cầu hoàn, tiền chuyển trả thủ công rồi xác nhận ở Hóa đơn → Theo dõi hoàn tiền. */
 export function CaseRefundForm({ item, pending, disabled, onAction }) {
+  const hint = overpaidAwaiting(item)
+    ? 'Hóa đơn chưa được chấp nhận: hoàn toàn bộ số đã nhận, hóa đơn bị hủy và gói không được kích hoạt.'
+    : HINTS[item.reason];
   return (
     <Form
       layout="vertical"
@@ -24,7 +29,7 @@ export function CaseRefundForm({ item, pending, disabled, onAction }) {
         showIcon
         type="warning"
         title={`Số hoàn tối đa do hệ thống tính (giao dịch ${formatCurrency(item.amount)})`}
-        description={HINTS[item.reason]}
+        description={hint}
       />
       <Form.Item
         name="reason"

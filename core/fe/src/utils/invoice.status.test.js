@@ -15,13 +15,30 @@ describe('invoiceStatusMeta', () => {
     ['tại quầy', { status: 'PENDING', channel: 'COUNTER', expiresAt: past }, 'Chờ thu tại quầy'],
     [
       'đã nhận một phần',
-      { status: 'PENDING', channel: 'ONLINE', expiresAt: future, receivedAmount: 100000 },
+      {
+        status: 'PENDING',
+        channel: 'ONLINE',
+        expiresAt: future,
+        receivedAmount: 100000,
+        amount: 120000,
+      },
       'Chờ chuyển bù',
     ],
     [
       'online quá hạn nhưng job chưa chạy',
       { status: 'PENDING', channel: 'ONLINE', expiresAt: past },
       'Đã hủy (quá hạn)',
+    ],
+    [
+      'chuyển thừa chờ quản lý xác nhận, kể cả đã quá hạn',
+      {
+        status: 'PENDING',
+        channel: 'ONLINE',
+        expiresAt: past,
+        receivedAmount: 200000,
+        amount: 100000,
+      },
+      'Chuyển thừa, chờ xác nhận',
     ],
     ['đã thanh toán', { status: 'PAID', channel: 'ONLINE' }, 'Đã thanh toán'],
   ])('%s', (_name, invoice, label) => {

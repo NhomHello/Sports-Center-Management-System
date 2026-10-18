@@ -48,6 +48,31 @@ export const openOrRefreshTopupCase = async (tx, invoice, log) => {
   });
 };
 
+/**
+ * Chuyển thừa (kể cả chuyển thêm khi đang chờ xử lý phần thừa): mỗi hoá đơn giữ một phiếu OVERPAID
+ * đang mở, cập nhật số thừa theo tổng đã nhận.
+ */
+export const openOrRefreshOverpaidCase = async (tx, invoice, log, excess) => {
+  const existing = await tx.reconciliationCase.findFirst({
+    where: { invoiceId: invoice.id, reason: REASON.OVERPAID, status: { in: ACTIVE_STATUSES } },
+  });
+  const note = `Chuyển thừa ${excess}, hoá đơn chờ xác nhận`;
+  if (existing)
+    return tx.reconciliationCase.update({
+      where: { id: existing.id },
+      data: { excessAmount: excess, amount: existing.amount + log.transferAmount, note },
+    });
+  return openCase(tx, {
+    reason: REASON.OVERPAID,
+    webhookLogId: log.id,
+    invoiceId: invoice.id,
+    userId: invoice.userId,
+    amount: log.transferAmount,
+    excessAmount: excess,
+    note,
+  });
+};
+
 /** Khoá phiếu (FOR UPDATE) và chặn thao tác trên phiếu đã đóng (409 để FE tải lại). */
 export const lockCase = async (tx, id) => {
   await tx.$queryRaw`SELECT id FROM reconciliation_cases WHERE id = ${id} FOR UPDATE`;

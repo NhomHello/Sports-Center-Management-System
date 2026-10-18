@@ -38,7 +38,13 @@ const refundNotice = (userId, amount, key) =>
 const refundableAmount = async (tx, kase) => {
   if (kase.reason === REASON.MEMBER_CLAIM)
     throw ApiError.businessRule('Phiếu báo đã chuyển chưa có tiền được xác nhận để hoàn');
-  if (kase.reason === REASON.OVERPAID) return kase.excessAmount;
+  if (kase.reason === REASON.OVERPAID) {
+    // Chưa chấp nhận hoá đơn: hoàn toàn bộ và huỷ hoá đơn; đã chấp nhận: chỉ hoàn phần thừa.
+    const invoice = await tx.invoice.findUnique({ where: { id: kase.invoiceId } });
+    return invoice?.status === Enums.InvoiceStatus.PENDING
+      ? sumReceived(tx, kase.invoiceId)
+      : kase.excessAmount;
+  }
   if (kase.reason === REASON.UNDERPAID) {
     const invoice = await tx.invoice.findUnique({ where: { id: kase.invoiceId } });
     if (invoice?.status === Enums.InvoiceStatus.PAID)
@@ -50,9 +56,9 @@ const refundableAmount = async (tx, kase) => {
   return kase.amount;
 };
 
-/** Thiếu tiền mà hoàn lại số đã nhận: hoá đơn không bao giờ được kích hoạt gói (BR-3.2). */
+/** Hoàn lại toàn bộ khi hoá đơn chưa PAID (thiếu, hoặc thừa chưa chấp nhận): huỷ hoá đơn (BR-3.2). */
 const failUnpaidInvoice = async (tx, kase, actor) => {
-  if (kase.reason !== REASON.UNDERPAID) return;
+  if (![REASON.UNDERPAID, REASON.OVERPAID].includes(kase.reason)) return;
   const invoice = await lockInvoice(tx, { id: kase.invoiceId });
   if (invoice?.status !== Enums.InvoiceStatus.PENDING) return;
   await tx.invoice.update({
@@ -65,7 +71,7 @@ const failUnpaidInvoice = async (tx, kase, actor) => {
     meta: {
       before: { status: invoice.status },
       after: { status: Enums.InvoiceStatus.FAILED },
-      reason: 'REFUND_UNDERPAID',
+      reason: `REFUND_${kase.reason}`,
     },
   });
 };
