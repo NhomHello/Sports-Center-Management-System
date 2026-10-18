@@ -2,18 +2,21 @@ import { SETTING_KEYS } from '@scms/shared';
 import { Enums } from '../../config/db.js';
 import { env } from '../../config/env.js';
 import * as settingService from '../setting/setting.service.js';
+import { invoiceTotals } from './invoice.service.js';
 
 /**
  * Thông tin hội viên cần để chuyển khoản cho hoá đơn online còn chờ.
  * Tài khoản nhận tiền đọc từ system_settings để mỗi môi trường/thành viên tự cấu hình qua UI;
  * nội dung chuyển khoản = mã hoá đơn để webhook khớp lại hoá đơn.
  * @param {{ code: string, amount: number, channel: string, status: string, expiresAt: Date }} invoice
- * @returns {Promise<object|null>} null khi không phải hoá đơn online đang chờ hoặc chưa cấu hình tài khoản
+ * @returns {Promise<object|null>} null khi không phải hoá đơn online còn hạn hoặc chưa cấu hình tài khoản
  */
 export const buildPaymentInstruction = async (invoice) => {
   if (
     invoice.channel !== Enums.InvoiceChannel.ONLINE ||
-    invoice.status !== Enums.InvoiceStatus.PENDING
+    invoice.status !== Enums.InvoiceStatus.PENDING ||
+    // Quá hạn nhưng job chưa kịp chuyển FAILED: không cho quét QR chuyển vào hoá đơn sắp huỷ.
+    new Date(invoice.expiresAt) <= new Date()
   ) {
     return null;
   }
@@ -26,7 +29,7 @@ export const buildPaymentInstruction = async (invoice) => {
   const qr = new URL(env.SEPAY_QR_BASE_URL);
   qr.searchParams.set('acc', accountNumber);
   qr.searchParams.set('bank', bankCode);
-  const receivedAmount = (invoice.payments ?? []).reduce((sum, p) => sum + p.receivedAmount, 0);
+  const { receivedAmount } = invoiceTotals(invoice);
   const amount = Math.max(0, invoice.amount - receivedAmount);
   qr.searchParams.set('amount', String(amount));
   qr.searchParams.set('des', invoice.code);

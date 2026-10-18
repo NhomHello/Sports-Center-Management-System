@@ -61,6 +61,16 @@ export const lockCase = async (tx, id) => {
   return kase;
 };
 
+/**
+ * Phiếu đã có lệnh hoàn (đang chờ chuyển hoặc đã chuyển) thì khoản tiền đó đã thuộc về hội viên:
+ * không được dùng lại để map, xác nhận hay gia hạn, tránh một khoản tiền tiêu hai lần.
+ */
+export const assertNotRefunded = async (tx, kase) => {
+  const refunds = await tx.refund.count({ where: { caseId: kase.id } });
+  if (refunds)
+    throw ApiError.conflict('Phiếu đã có yêu cầu hoàn tiền, không dùng khoản này được nữa');
+};
+
 /** BR-PAY-19: chặn đóng phiếu khi chưa ghi lại lần liên hệ nào với hội viên. */
 export const assertContacted = (kase) => {
   if (CONTACT_REQUIRED.includes(kase.reason) && kase._count.contacts === 0) {

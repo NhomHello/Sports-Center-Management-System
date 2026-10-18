@@ -15,7 +15,7 @@ const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  * (ngân hàng hay chèn thêm chữ/khoảng trắng quanh nội dung). BR-PAY-02.
  */
 export const extractInvoiceCode = ({ code, content }, prefix) => {
-  if (code) return code;
+  if (code) return code.trim().toUpperCase();
   const match = new RegExp(`${escapeRegex(prefix)}\\d+`, 'i').exec(content ?? '');
   return match?.[0]?.toUpperCase() ?? null;
 };

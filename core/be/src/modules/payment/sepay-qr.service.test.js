@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({ getValue: vi.fn() }));
 
 vi.mock('../../config/db.js', () => ({
   Enums: {
+    ReconciliationReason: { UNDERPAID: 'UNDERPAID', OVERPAID: 'OVERPAID' },
     InvoiceStatus: { PENDING: 'PENDING', PAID: 'PAID' },
     InvoiceChannel: { ONLINE: 'ONLINE', COUNTER: 'COUNTER' },
   },
@@ -17,7 +18,7 @@ const invoice = {
   amount: 450000,
   channel: 'ONLINE',
   status: 'PENDING',
-  expiresAt: new Date('2026-10-13T10:00:00Z'),
+  expiresAt: new Date('2099-10-13T10:00:00Z'),
 };
 const configure = (values) => mocks.getValue.mockImplementation(async (key) => values[key] ?? '');
 
@@ -48,5 +49,23 @@ describe('buildPaymentInstruction', () => {
     configure({ PAYMENT_BANK_CODE: 'ACB', PAYMENT_ACCOUNT_NUMBER: '0000000001' });
     expect(await buildPaymentInstruction({ ...invoice, channel: 'COUNTER' })).toBeNull();
     expect(await buildPaymentInstruction({ ...invoice, status: 'PAID' })).toBeNull();
+  });
+
+  it('trả null khi hoá đơn đã quá hạn dù job chưa chuyển FAILED', async () => {
+    configure({ PAYMENT_BANK_CODE: 'ACB', PAYMENT_ACCOUNT_NUMBER: '0000000001' });
+    const expired = { ...invoice, expiresAt: new Date(Date.now() - 1000) };
+    expect(await buildPaymentInstruction(expired)).toBeNull();
+  });
+
+  it('số cần chuyển trừ phần đã nhận sau khi trừ tiền đã hoàn', async () => {
+    configure({ PAYMENT_BANK_CODE: 'ACB', PAYMENT_ACCOUNT_NUMBER: '0000000001' });
+    const partial = {
+      ...invoice,
+      payments: [{ receivedAmount: 200000 }],
+      refunds: [{ amount: 50000 }],
+    };
+    const result = await buildPaymentInstruction(partial);
+    expect(result.receivedAmount).toBe(150000);
+    expect(result.amount).toBe(300000);
   });
 });

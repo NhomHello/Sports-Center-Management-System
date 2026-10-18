@@ -113,10 +113,20 @@ describe('Hội viên báo đã chuyển khoản (UC-PAY-14)', () => {
       note: 'Không thấy giao dịch',
     });
     expect(rejectNoContact.status).toBe(422);
-    const confirmed = await asManager(f, 'post', `/reconciliations/${id}/confirm`, {
-      amount: 300000,
-      reference: 'FT-SAO-KE-01',
+    const confirmInput = { amount: 300000, reference: 'FT-SAO-KE-01' };
+    // BR-PAY-19: xác nhận cũng như từ chối, phải có lần liên hệ hội viên được ghi lại.
+    const confirmNoContact = await asManager(
+      f,
+      'post',
+      `/reconciliations/${id}/confirm`,
+      confirmInput,
+    );
+    expect(confirmNoContact.status).toBe(422);
+    await asManager(f, 'post', `/reconciliations/${id}/contacts`, {
+      channel: 'PHONE',
+      content: 'Đã đối chiếu sao kê với hội viên',
     });
+    const confirmed = await asManager(f, 'post', `/reconciliations/${id}/confirm`, confirmInput);
     expect(confirmed.body.data).toMatchObject({ status: STATUS.MATCHED, outcome: 'PAID' });
   });
 

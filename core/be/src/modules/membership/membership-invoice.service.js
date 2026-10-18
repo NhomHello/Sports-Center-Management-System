@@ -26,7 +26,11 @@ const expireStalePendingInvoices = async ({ tx, memberId, planId, actorId, now }
       userId: memberId,
       planId,
       status: Enums.InvoiceStatus.PENDING,
+      // Hoá đơn tại quầy chờ lễ tân thu tiền, không có hạn online (giống job hết hạn).
+      channel: Enums.InvoiceChannel.ONLINE,
       expiresAt: { lte: now },
+      // Đã nhận một phần tiền thì để job hết hạn xử lý (chuyển phiếu sang chờ hoàn tiền).
+      payments: { none: {} },
     },
     select: { id: true },
   });
@@ -57,7 +61,7 @@ const findReusablePending = (tx, memberId, planId, now) =>
       userId: memberId,
       planId,
       status: Enums.InvoiceStatus.PENDING,
-      expiresAt: { gt: now },
+      OR: [{ channel: Enums.InvoiceChannel.COUNTER }, { expiresAt: { gt: now } }],
     },
     include: INVOICE_INCLUDE,
   });

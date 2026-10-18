@@ -3,7 +3,7 @@ import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
 import { activatePaidInvoice } from '../membership/membership-invoice.service.js';
 import * as settingService from '../setting/setting.service.js';
-import { INVOICE_INCLUDE } from './invoice.service.js';
+import { INVOICE_INCLUDE, INVOICE_REFUND_WHERE } from './invoice.service.js';
 
 export const PAYMENT_OUTCOME = Object.freeze({
   PAID: 'PAID',
@@ -25,13 +25,13 @@ export const lockInvoice = async (tx, { id, code }) => {
   return row ? tx.invoice.findUnique({ where: { id: row.id }, include: INVOICE_INCLUDE }) : null;
 };
 
-/** BR-PAY-16: số đã nhận của hoá đơn là tổng các payment, kể cả các lần chuyển bù. */
+/** BR-PAY-16: số đã nhận của hoá đơn là tổng các payment (kể cả chuyển bù) trừ phần đã hoàn. */
 export const sumReceived = async (tx, invoiceId) => {
-  const { _sum } = await tx.payment.aggregate({
-    where: { invoiceId },
-    _sum: { receivedAmount: true },
-  });
-  return _sum.receivedAmount ?? 0;
+  const [{ _sum: paid }, { _sum: refunded }] = await Promise.all([
+    tx.payment.aggregate({ where: { invoiceId }, _sum: { receivedAmount: true } }),
+    tx.refund.aggregate({ where: { invoiceId, ...INVOICE_REFUND_WHERE }, _sum: { amount: true } }),
+  ]);
+  return (paid.receivedAmount ?? 0) - (refunded.amount ?? 0);
 };
 
 /** Đủ tiền thì phiếu chờ chuyển bù / phiếu "đã chuyển khoản" của hoá đơn được đóng cùng lúc. */
@@ -39,10 +39,15 @@ const closeSettledCases = async (tx, invoiceId, actorId, now) => {
   const cases = await tx.reconciliationCase.findMany({
     where: {
       invoiceId,
-      status: { in: OPEN_STATUSES },
       reason: {
         in: [Enums.ReconciliationReason.UNDERPAID, Enums.ReconciliationReason.MEMBER_CLAIM],
       },
+      // Phiếu bị job chuyển "chờ hoàn" khi quá hạn chuyển bù nhưng chưa tạo lệnh hoàn: tiền bù về
+      // muộn làm hoá đơn đủ tiền thì phiếu đó cũng đóng, tránh hoàn nhầm toàn bộ số đã nhận.
+      OR: [
+        { status: { in: OPEN_STATUSES } },
+        { status: Enums.ReconciliationStatus.REFUND_PENDING, refunds: { none: {} } },
+      ],
     },
     select: { id: true, webhookLogId: true },
   });

@@ -39,7 +39,14 @@ const refundableAmount = async (tx, kase) => {
   if (kase.reason === REASON.MEMBER_CLAIM)
     throw ApiError.businessRule('Phiếu báo đã chuyển chưa có tiền được xác nhận để hoàn');
   if (kase.reason === REASON.OVERPAID) return kase.excessAmount;
-  if (kase.reason === REASON.UNDERPAID) return sumReceived(tx, kase.invoiceId);
+  if (kase.reason === REASON.UNDERPAID) {
+    const invoice = await tx.invoice.findUnique({ where: { id: kase.invoiceId } });
+    if (invoice?.status === Enums.InvoiceStatus.PAID)
+      throw ApiError.businessRule(
+        'Hoá đơn đã đủ tiền và đã kích hoạt gói, không hoàn từ phiếu này',
+      );
+    return sumReceived(tx, kase.invoiceId);
+  }
   return kase.amount;
 };
 
@@ -116,7 +123,7 @@ const shrinkMembership = async (tx, invoice) => {
   });
 };
 
-/** UC-PAY-09: Manager hoàn một hoá đơn PAID ⇒ REFUNDED, rút ngày khỏi gói, tạo yêu cầu chuyển trả. */
+/** UC-PAY-09: Manager hoàn toàn bộ một hoá đơn PAID ⇒ REFUNDED, rút ngày khỏi gói, tạo yêu cầu chuyển trả. */
 export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
   const refund = await prisma.$transaction(async (tx) => {
     const invoice = await lockInvoice(tx, { id: invoiceId });
@@ -125,8 +132,11 @@ export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
       throw ApiError.conflict('Chỉ hoàn tiền hoá đơn đã thanh toán');
     const received = await sumReceived(tx, invoice.id);
     const value = amount ?? received;
-    if (value <= 0 || value > received)
-      throw ApiError.businessRule(`Số hoàn phải từ 1 đến ${fmtMoney(received)}`);
+    if (received <= 0) throw ApiError.businessRule('Hoá đơn không còn tiền để hoàn');
+    // Hoàn hoá đơn = trả lại toàn bộ và rút toàn bộ số ngày; hoàn một phần không có quy tắc
+    // quy đổi ngày nên không hỗ trợ (phần thừa hoàn qua phiếu đối soát).
+    if (value !== received)
+      throw ApiError.businessRule(`Chỉ hoàn toàn bộ số đã nhận: ${fmtMoney(received)}`);
     await tx.invoice.update({
       where: { id: invoice.id },
       data: { status: Enums.InvoiceStatus.REFUNDED },

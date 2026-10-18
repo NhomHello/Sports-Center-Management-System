@@ -10,6 +10,28 @@ const invoiceScope = (q) => ({
   ...(q.planId && { planId: q.planId }),
 });
 
+/** Hoàn tiền hoá đơn đã chuyển xong trong kỳ, quy về phần làm giảm doanh thu. */
+const loadInvoiceRefunds = (db, range, scope) =>
+  db.refund
+    .findMany({
+      where: {
+        status: Enums.RefundStatus.DONE,
+        completedAt: range,
+        invoice: { ...scope, paidAt: { not: null } },
+        // Hoàn phần thừa không làm giảm doanh thu bán gói, chỉ hoàn invoice mới giảm.
+        caseId: null,
+      },
+      select: { amount: true, completedAt: true, invoice: { select: { amount: true } } },
+    })
+    // Doanh thu chỉ tính giá hoá đơn; hoàn cả phần chuyển thừa thì phần vượt giá không phải
+    // doanh thu nên chỉ trừ tối đa bằng giá hoá đơn.
+    .then((rows) =>
+      rows.map((row) => ({
+        amount: Math.min(row.amount, row.invoice.amount),
+        completedAt: row.completedAt,
+      })),
+    );
+
 /** Đọc toàn bộ chỉ số trong transaction nhất quán. */
 export const loadReportData = async (db, query) => {
   const range = dayRange(query);
@@ -32,16 +54,7 @@ export const loadReportData = async (db, query) => {
       },
       select: { amount: true, paidAt: true },
     }),
-    db.refund.findMany({
-      where: {
-        status: Enums.RefundStatus.DONE,
-        completedAt: range,
-        invoice: { ...scope, paidAt: { not: null } },
-        // Hoàn phần thừa không làm giảm doanh thu bán gói, chỉ hoàn invoice mới giảm.
-        caseId: null,
-      },
-      select: { amount: true, completedAt: true },
-    }),
+    loadInvoiceRefunds(db, range, scope),
     db.payment.aggregate({
       where: { paidAt: range, invoice: scope },
       _count: true,

@@ -11,7 +11,7 @@ import pinoHttp from 'pino-http';
 import { errorHandler, notFoundHandler } from './common/middlewares/error.middleware.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
-import { HEALTH_PATH, TIME } from './constants/index.js';
+import { HEALTH_PATH, SEPAY, TIME } from './constants/index.js';
 import apiRouter from './routes.js';
 
 const JSON_BODY_LIMIT = '1mb';
@@ -34,6 +34,9 @@ app.use(
     limit: env.RATE_LIMIT_MAX,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
+    // Webhook SePay đã xác thực bằng API key và idempotent; chặn theo IP chung với người dùng sẽ
+    // làm SePay nhận 429 và gửi lại, tiền về chậm khi nhiều người dùng chung một proxy/ngrok.
+    skip: (req) => req.path === `${env.API_PREFIX}${SEPAY.WEBHOOK_PATH}`,
     message: {
       success: false,
       code: ERROR_CODES.RATE_LIMITED,

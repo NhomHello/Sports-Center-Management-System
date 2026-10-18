@@ -2,15 +2,48 @@ import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
+import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 import { buildPaymentInstruction } from './sepay-qr.service.js';
+
+/**
+ * Khoản hoàn trừ vào tiền đã ghi của hoá đơn: hoàn cả hoá đơn, hoặc hoàn từ phiếu thiếu/thừa tiền
+ * (tiền của các phiếu này đã nằm trong payment). Hoàn khoản chuyển lặp/sai mã/về muộn không trừ vì
+ * khoản đó chưa bao giờ được ghi vào hoá đơn.
+ */
+export const INVOICE_REFUND_WHERE = Object.freeze({
+  OR: [
+    { caseId: null },
+    {
+      case: {
+        reason: {
+          in: [Enums.ReconciliationReason.UNDERPAID, Enums.ReconciliationReason.OVERPAID],
+        },
+      },
+    },
+  ],
+});
 
 /** Quan hệ được phép xem; thông tin người thu không bao gồm credential. */
 export const INVOICE_INCLUDE = {
   plan: true,
   membership: { include: { plan: true } },
   payments: { orderBy: { paidAt: 'desc' } },
+  refunds: {
+    where: INVOICE_REFUND_WHERE,
+    select: { id: true, amount: true, status: true, createdAt: true },
+  },
   user: { select: { id: true, fullName: true, email: true, phone: true } },
+};
+
+/**
+ * Tổng tiền của hoá đơn đã nạp kèm payments/refunds: đã thu, đã hoàn và thực giữ lại.
+ * @param {{ payments?: { receivedAmount: number }[], refunds?: { amount: number }[] }} invoice
+ */
+export const invoiceTotals = (invoice) => {
+  const paidAmount = (invoice.payments ?? []).reduce((sum, p) => sum + p.receivedAmount, 0);
+  const refundedAmount = (invoice.refunds ?? []).reduce((sum, r) => sum + r.amount, 0);
+  return { paidAmount, refundedAmount, receivedAmount: paidAmount - refundedAmount };
 };
 
 /** Dữ liệu bản in chỉ được tạo từ hoá đơn PAID và giữ nguyên số tiền gốc. */
@@ -67,11 +100,7 @@ export const listInvoices = async (query, actor, canReadAll) => {
   const currency = await settingService.getValue(SETTING_KEYS.CURRENCY);
   return {
     // UC-PAY-08: số đã nhận để hiện "đã nhận X / còn thiếu Y" với hoá đơn chuyển bù.
-    items: items.map((item) => ({
-      ...item,
-      currency,
-      receivedAmount: item.payments.reduce((sum, payment) => sum + payment.receivedAmount, 0),
-    })),
+    items: items.map((item) => ({ ...item, currency, ...invoiceTotals(item) })),
     meta: buildPageMeta({ ...query, total }),
   };
 };
@@ -83,12 +112,13 @@ export const getInvoice = async (id, actor, canReadAll) => {
     include: INVOICE_INCLUDE,
   });
   if (!invoice) throw ApiError.notFound('Không tìm thấy hóa đơn trong phạm vi truy cập');
-  const [name, address, phone, currency] = await Promise.all(
+  const [name, address, phone, currency, claimWindowDays] = await Promise.all(
     [
       SETTING_KEYS.CENTER_NAME,
       SETTING_KEYS.CENTER_ADDRESS,
       SETTING_KEYS.CENTER_PHONE,
       SETTING_KEYS.CURRENCY,
+      SETTING_KEYS.PAYMENT_CLAIM_WINDOW_DAYS,
     ].map((key) => settingService.getValue(key)),
   );
   const collectors = await prisma.user.findMany({
@@ -99,8 +129,16 @@ export const getInvoice = async (id, actor, canReadAll) => {
     ...payment,
     actor: collectors.find((collector) => collector.id === payment.actorId) ?? null,
   }));
+  const totals = invoiceTotals(invoice);
   return {
     ...invoice,
+    ...totals,
+    // FE không đọc được system_settings: trả sẵn số được hoàn và hạn báo "đã chuyển khoản".
+    refundableAmount: invoice.status === Enums.InvoiceStatus.PAID ? totals.receivedAmount : 0,
+    claimDeadline:
+      invoice.status === Enums.InvoiceStatus.FAILED
+        ? new Date(invoice.expiresAt.getTime() + claimWindowDays * TIME.MS_PER_DAY)
+        : null,
     payments,
     centerInfo: { name, address, phone },
     currency,

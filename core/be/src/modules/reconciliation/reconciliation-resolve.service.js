@@ -4,7 +4,14 @@ import { createOnlineOrder } from '../membership/membership-invoice.service.js';
 import { applyTransfer, lockInvoice, PAYMENT_OUTCOME } from '../payment/payment-apply.service.js';
 import { outcomeNotices } from './payment-notices.js';
 import { sendNotices } from './payment-notify.service.js';
-import { assertContacted, lockCase, openCase, updateCase } from './reconciliation-case.service.js';
+import {
+  ACTIVE_STATUSES,
+  assertContacted,
+  assertNotRefunded,
+  lockCase,
+  openCase,
+  updateCase,
+} from './reconciliation-case.service.js';
 
 const { ReconciliationStatus: STATUS, ReconciliationReason: REASON } = Enums;
 const TX = { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted };
@@ -60,6 +67,48 @@ const finish = async (out, key) => {
   return { ...out.kase, outcome: out.result.outcome, missing: out.result.missing };
 };
 
+const MAP_REASONS = [REASON.NO_MATCH, REASON.LATE];
+const RENEW_REASONS = [REASON.DUPLICATE_TRANSFER, REASON.OVERPAID];
+
+/** Điều kiện của từng thao tác; chạy cả trước khi tạo hoá đơn đích lẫn trong transaction. */
+const RULES = {
+  map: (kase) => {
+    if (!MAP_REASONS.includes(kase.reason) || !kase.webhookLog)
+      throw ApiError.businessRule('Chỉ map được giao dịch sai mã hoặc tiền về muộn');
+  },
+  renew: (kase) => {
+    if (!RENEW_REASONS.includes(kase.reason))
+      throw ApiError.businessRule('Chỉ dùng gia hạn cho tiền chuyển lặp hoặc chuyển thừa');
+    if (!kase.userId) throw ApiError.notFound('Không tìm thấy hội viên của phiếu đối soát');
+    assertContacted(kase);
+  },
+};
+
+/** Khoá phiếu rồi kiểm tra điều kiện thao tác và chặn khoản tiền đã có lệnh hoàn. */
+const lockForAction = async (tx, id, rule) => {
+  const kase = await lockCase(tx, id);
+  rule(kase);
+  await assertNotRefunded(tx, kase);
+  return kase;
+};
+
+/**
+ * Kiểm tra trước (không khoá) để không tạo hoá đơn online "mồ côi" khi thao tác bị từ chối;
+ * transaction phía sau vẫn kiểm tra lại dưới khoá.
+ */
+const precheck = async (id, rule) => {
+  const kase = await prisma.reconciliationCase.findUnique({
+    where: { id },
+    include: { webhookLog: true, _count: { select: { contacts: true } } },
+  });
+  if (!kase) throw ApiError.notFound('Không tìm thấy phiếu đối soát');
+  if (!ACTIVE_STATUSES.includes(kase.status))
+    throw ApiError.conflict('Phiếu đối soát đã được xử lý, vui lòng tải lại');
+  rule(kase);
+  await assertNotRefunded(prisma, kase);
+  return kase;
+};
+
 /** Hoá đơn đích: chọn hoá đơn có sẵn, hoặc tạo/tái sử dụng hoá đơn online cho gói đang bán. */
 const resolveTargetInvoice = async ({ invoiceId, memberId, planId }, actor) =>
   invoiceId ?? (await createOnlineOrder({ memberId, planId }, actor)).id;
@@ -70,11 +119,10 @@ const resolveTargetInvoice = async ({ invoiceId, memberId, planId }, actor) =>
  * @param {{ invoiceId?: number, memberId?: number, planId?: number }} body
  */
 export const mapCase = async (id, body, actor) => {
+  await precheck(id, RULES.map);
   const target = await resolveTargetInvoice(body, actor);
   const out = await prisma.$transaction(async (tx) => {
-    const kase = await lockCase(tx, id);
-    if (![REASON.NO_MATCH, REASON.LATE].includes(kase.reason) || !kase.webhookLog)
-      throw ApiError.businessRule('Chỉ map được giao dịch sai mã hoặc tiền về muộn');
+    const kase = await lockForAction(tx, id, RULES.map);
     const invoice = await lockPayableInvoice(tx, target);
     const payload = kase.webhookLog.payload ?? {};
     const reference = payload.referenceCode ?? kase.webhookLog.providerTransactionId;
@@ -85,15 +133,18 @@ export const mapCase = async (id, body, actor) => {
 
 /**
  * UC-PAY-05/14: xác nhận khoản tiền thấy trên sao kê nhưng không có webhook (lỗi mạng, chuyển bù
- * tại ngân hàng khác...). Bắt buộc mã tham chiếu để đối chiếu về sau.
+ * tại ngân hàng khác...). Bắt buộc mã tham chiếu để đối chiếu về sau; phiếu hội viên báo đã chuyển
+ * phải có lần liên hệ được ghi lại như khi từ chối (BR-PAY-19).
  */
 export const confirmCase = async (id, { amount, reference }, actor) => {
   const out = await prisma.$transaction(async (tx) => {
-    const kase = await lockCase(tx, id);
-    if (![REASON.MEMBER_CLAIM, REASON.UNDERPAID].includes(kase.reason) || !kase.invoiceId)
-      throw ApiError.businessRule(
-        'Chỉ xác nhận thủ công cho phiếu báo đã chuyển hoặc chờ chuyển bù',
-      );
+    const kase = await lockForAction(tx, id, (item) => {
+      if (![REASON.MEMBER_CLAIM, REASON.UNDERPAID].includes(item.reason) || !item.invoiceId)
+        throw ApiError.businessRule(
+          'Chỉ xác nhận thủ công cho phiếu báo đã chuyển hoặc chờ chuyển bù',
+        );
+      assertContacted(item);
+    });
     const invoice = await lockPayableInvoice(tx, kase.invoiceId);
     return settleCase(tx, kase, invoice, { amount, reference, actor, action: 'CONFIRM' });
   }, TX);
@@ -105,14 +156,10 @@ export const confirmCase = async (id, { amount, reference }, actor) => {
  * Phiếu gốc đóng; nếu số tiền không khớp giá gói thì hoá đơn mới mở phiếu thiếu/thừa riêng.
  */
 export const renewFromCase = async (id, { planId }, actor) => {
-  const preview = await prisma.reconciliationCase.findUnique({ where: { id } });
-  if (!preview?.userId) throw ApiError.notFound('Không tìm thấy hội viên của phiếu đối soát');
+  const preview = await precheck(id, RULES.renew);
   const target = await resolveTargetInvoice({ memberId: preview.userId, planId }, actor);
   const out = await prisma.$transaction(async (tx) => {
-    const kase = await lockCase(tx, id);
-    if (![REASON.DUPLICATE_TRANSFER, REASON.OVERPAID].includes(kase.reason))
-      throw ApiError.businessRule('Chỉ dùng gia hạn cho tiền chuyển lặp hoặc chuyển thừa');
-    assertContacted(kase);
+    const kase = await lockForAction(tx, id, RULES.renew);
     const amount = kase.reason === REASON.OVERPAID ? kase.excessAmount : kase.amount;
     const invoice = await lockPayableInvoice(tx, target);
     const result = await applyTransfer(tx, invoice, {

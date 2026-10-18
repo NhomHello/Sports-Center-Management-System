@@ -83,6 +83,8 @@ export const PRISMA_ERROR = Object.freeze({
 export const SEPAY = Object.freeze({
   AUTH_SCHEME: 'Apikey',
   TRANSFER_IN: 'in',
+  /** Đường dẫn webhook dưới API_PREFIX; routes.js gắn /payments/sepay + /webhook. */
+  WEBHOOK_PATH: '/payments/sepay/webhook',
 });
 
 /** Giới hạn kỹ thuật của job/đồng bộ thanh toán (không phải số nghiệp vụ). */

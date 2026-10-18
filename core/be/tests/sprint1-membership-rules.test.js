@@ -31,7 +31,7 @@ describe('Sprint 1: vòng đời membership và hóa đơn', () => {
     expect(await prisma.membership.count({ where: { userId: fixture.member.id } })).toBe(0);
   });
 
-  it('PENDING hết hạn thành FAILED; gói có hóa đơn chỉ được ngừng bán', async () => {
+  it('hóa đơn tại quầy không tự hết hạn khi tạo lại; gói có hóa đơn chỉ được ngừng bán', async () => {
     const createOrder = () =>
       api
         .post(apiPath('/memberships/orders'))
@@ -42,12 +42,14 @@ describe('Sprint 1: vòng đời membership và hóa đơn', () => {
       where: { id: first.body.data.id },
       data: { expiresAt: new Date(Date.now() - TIME.MS_PER_MINUTE) },
     });
+    // Hóa đơn tại quầy chờ lễ tân thu tiền: không bị huỷ ngầm sau thời gian chờ online (BR-3.4
+    // chỉ áp dụng giao dịch online), tạo lại thì dùng lại hóa đơn cũ (BR-1.13).
     const replacement = await createOrder();
     expect(replacement.status).toBe(201);
-    expect(replacement.body.data.id).not.toBe(first.body.data.id);
+    expect(replacement.body.data.id).toBe(first.body.data.id);
     expect(
       (await prisma.invoice.findUniqueOrThrow({ where: { id: first.body.data.id } })).status,
-    ).toBe(Enums.InvoiceStatus.FAILED);
+    ).toBe(Enums.InvoiceStatus.PENDING);
 
     const removed = await api
       .delete(apiPath(`/membership-plans/${plan.id}`))
