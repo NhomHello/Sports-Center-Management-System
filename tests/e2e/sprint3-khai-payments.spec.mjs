@@ -56,13 +56,15 @@ test('TC-S3-KPAY-01: manager records a top-up with a bank reference', async ({ p
   expect((await prisma.invoice.findUnique({ where: { id: invoice.id } })).status).toBe('PAID');
   await page.screenshot({ path: info.outputPath('confirmed.png'), fullPage: true });
 });
-test('TC-S3-KPAY-02: excess refund requires contact and preserves PAID invoice', async ({
+test('TC-S3-KPAY-02: overpaid invoice waits for acceptance; excess refund keeps it PAID', async ({
   page,
 }, info) => {
   await sendTransfer(f, invoice, { transferAmount: invoice.amount + 1000 });
   const kase = await openCase(page, 'OVERPAID');
   const drawer = page.locator('.ant-drawer');
-  await expect(drawer.getByRole('button', { name: 'Tạo yêu cầu hoàn tiền' })).toBeDisabled();
+  // BR-PAY-06: chuyển thừa không tự hoàn thành; chấp nhận cần liên hệ hội viên trước.
+  expect((await prisma.invoice.findUnique({ where: { id: invoice.id } })).status).toBe('PENDING');
+  await expect(drawer.getByRole('button', { name: 'Chấp nhận hóa đơn' })).toBeDisabled();
   await page.route('**/reconciliations/*/contacts', (route) =>
     route.fulfill({
       status: 409,
@@ -84,10 +86,15 @@ test('TC-S3-KPAY-02: excess refund requires contact and preserves PAID invoice',
   );
   await page.unroute('**/reconciliations/*/contacts');
   await contact(page);
+  await drawer.getByRole('button', { name: 'Chấp nhận hóa đơn' }).click();
+  await page.locator('.ant-popconfirm:visible').getByRole('button', { name: 'Chấp nhận' }).click();
+  await expect
+    .poll(async () => (await prisma.invoice.findUnique({ where: { id: invoice.id } })).status)
+    .toBe('PAID');
   await drawer
     .getByLabel('Lý do hoàn tiền', { exact: true })
     .fill('Hội viên yêu cầu hoàn phần thừa');
-  await drawer.getByRole('button', { name: 'Tạo yêu cầu hoàn tiền' }).click();
+  await drawer.getByRole('button', { name: 'Tạo yêu cầu hoàn' }).click();
   await expect(drawer.getByText('Chờ hoàn tiền', { exact: true })).toBeVisible();
   expect((await prisma.refund.findFirst({ where: { caseId: kase.id } })).amount).toBe(1000);
   expect((await prisma.invoice.findUnique({ where: { id: invoice.id } })).status).toBe('PAID');

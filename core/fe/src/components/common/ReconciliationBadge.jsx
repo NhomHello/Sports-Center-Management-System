@@ -1,3 +1,4 @@
+import { AuditOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Badge, Button, Tooltip } from 'antd';
@@ -25,8 +26,12 @@ export function ReconciliationBadge() {
     >
       <Link to={ROUTES.RECONCILIATION}>
         <Badge count={summary?.duplicate ?? 0}>
-          <Button danger={Boolean(summary?.duplicate)} aria-label="Xem cảnh báo đối soát">
-            Đối soát
+          <Button
+            danger={Boolean(summary?.duplicate)}
+            icon={<AuditOutlined />}
+            aria-label="Xem cảnh báo đối soát"
+          >
+            <span className="scms-reconcile-label">Đối soát</span>
           </Button>
         </Badge>
       </Link>

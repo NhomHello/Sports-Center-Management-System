@@ -111,13 +111,17 @@ test('S3-68: chuyển thừa và chuyển hai lần → liên hệ → hoàn ph�
   expect((await sendTransfer(f, invoice, { transferAmount: invoice.amount + 50000 })).outcome).toBe(
     'OVERPAID',
   );
+  // BR-PAY-06: chuyển thừa giữ hóa đơn chờ; quản lý liên hệ rồi chấp nhận mới PAID.
+  const overpaid = await latestCase(f, { invoiceId: invoice.id, reason: 'OVERPAID' });
+  expect((await contact(overpaid.id)).status).toBe(201);
+  expect((await asManager(f, 'post', `/reconciliations/${overpaid.id}/accept`)).status).toBe(200);
   await sendTransfer(f, invoice);
   const cases = await prisma.reconciliationCase.findMany({ where: { invoiceId: invoice.id } });
   expect(cases.map((c) => c.reason)).toContain('OVERPAID');
   expect(cases.map((c) => c.reason)).toContain('DUPLICATE_TRANSFER');
   for (const kase of cases) {
     f.caseIds.push(kase.id);
-    expect((await contact(kase.id)).status).toBe(201);
+    if (kase.id !== overpaid.id) expect((await contact(kase.id)).status).toBe(201);
     const res = await asManager(f, 'post', `/reconciliations/${kase.id}/refund`, {
       reason: 'Trả khoản chuyển dư / chuyển lặp',
     });

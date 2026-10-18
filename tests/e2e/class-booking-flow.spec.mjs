@@ -68,8 +68,10 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
   // 2-3. Hội viên: xem lịch, đăng ký toàn lớp, thấy hạn hủy.
   await login(page, f.member, f.password);
   const mine = card(page, classA.name);
-  await expect(mine.getByText(/Thứ .*, Thứ .* · 18:00–19:00/)).toBeVisible();
-  await expect(mine.getByText('Còn 2/2 chỗ')).toBeVisible();
+  await expect(
+    mine.getByText(/(Thứ \S+|Chủ nhật), (Thứ \S+|Chủ nhật) · 18:00–19:00/),
+  ).toBeVisible();
+  await expect(mine.getByText(/Còn 2 chỗ trống/)).toBeVisible();
   await mine.scrollIntoViewIfNeeded();
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/2-hoi-vien-xem-lop-va-lich-hoc.png` });
@@ -80,7 +82,7 @@ test('XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng 
   });
   await expect(mine.getByRole('button', { name: 'Hủy đăng ký', exact: true })).toBeVisible();
   await expect(mine.getByText(/Hạn hủy lớp:/)).toBeVisible();
-  await expect(mine.getByText('Còn 1/2 chỗ')).toBeVisible();
+  await expect(mine.getByText(/Còn 1 chỗ trống/)).toBeVisible();
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/3-hoi-vien-da-dang-ky-co-han-huy.png` });
 

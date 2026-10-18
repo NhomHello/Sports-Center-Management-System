@@ -1187,3 +1187,23 @@ a {
 .scms-reconcile-actions {
   flex: 0 0 auto;
 }
+
+/* Tiêu đề trang ở header co lại (cắt "…") thay vì đẩy nút tài khoản tràn khỏi màn hình hẹp. */
+.scms-main-header__inner > .ant-flex:first-child,
+.scms-header-context {
+  min-width: 0;
+}
+.scms-header-context > .ant-typography {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* Màn 320–480px: nút Đối soát chỉ còn biểu tượng để header không tràn ngang. */
+@media (max-width: 480px) {
+  .scms-reconcile-label {
+    display: none;
+  }
+  .scms-header-context > .ant-typography:last-child {
+    display: none;
+  }
+}
