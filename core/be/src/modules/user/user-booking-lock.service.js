@@ -3,27 +3,14 @@ import { AUDIT_ACTIONS } from '../../constants/index.js';
 import { Enums, prisma } from '../../config/db.js';
 import { createForUsers } from '../notification/notification.service.js';
 import { promoteWaitlist } from '../class/class-waitlist.service.js';
+import { coachFutureClassesWhere } from '../class/coach-availability.service.js';
 
 /** Xem trước lịch sẽ bị ảnh hưởng để FE yêu cầu xác nhận trước khi khoá. */
 export const preview = async (memberId, db = prisma) => {
   const now = new Date();
   const [classes, bookings] = await Promise.all([
     db.gymClass.findMany({
-      where: {
-        status: Enums.ClassStatus.OPEN,
-        OR: [
-          { coachId: memberId },
-          {
-            sessions: {
-              some: {
-                coachId: memberId,
-                status: Enums.SessionStatus.SCHEDULED,
-                endAt: { gt: now },
-              },
-            },
-          },
-        ],
-      },
+      where: coachFutureClassesWhere(memberId, now),
       select: { id: true, name: true },
     }),
     db.classEnrollment.findMany({

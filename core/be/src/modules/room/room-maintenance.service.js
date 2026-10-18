@@ -30,8 +30,7 @@ async function affected(db, roomId, range) {
 }
 
 async function availableRoom(session, room) {
-  if (room.capacity < session.gymClass._count.enrollments || session.startAt <= new Date())
-    return false;
+  if (room.capacity < session.gymClass.capacity || session.startAt <= new Date()) return false;
   try {
     await assertSessionResources(
       prisma,
@@ -65,7 +64,7 @@ export const preview = async (roomId, data) => {
 
 async function relocate(db, session, roomId, actor) {
   const room = await db.room.findFirst({ where: { id: roomId, isActive: true } });
-  if (!room || room.capacity < session.gymClass._count.enrollments)
+  if (!room || room.capacity < session.gymClass.capacity)
     throw ApiError.businessRule('Phòng mới không hoạt động hoặc không đủ sức chứa');
   await assertSessionResources(
     db,

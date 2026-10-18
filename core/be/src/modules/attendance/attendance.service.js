@@ -69,10 +69,19 @@ export const roster = async (id, context) => {
     },
     select: { member: { select: { id: true, fullName: true } }, status: true },
   });
+  const attendance = await prisma.attendance.findMany({
+    where: { sessionId: id },
+    include: { member: { select: { id: true, fullName: true } } },
+  });
+  // Đăng ký lại lớp ghi đè enrolledAt; người đã có điểm danh ở buổi này vẫn phải hiện trong roster.
+  const listed = new Set(items.map((item) => item.member.id));
+  const recorded = attendance
+    .filter((row) => !listed.has(row.memberId))
+    .map((row) => ({ member: row.member, status: Enums.EnrollmentStatus.BOOKED }));
   return {
     session,
-    items,
-    attendance: await prisma.attendance.findMany({ where: { sessionId: id } }),
+    items: [...items, ...recorded],
+    attendance: attendance.map(({ member: _member, ...row }) => row),
   };
 };
 
@@ -103,7 +112,12 @@ export const record = (id, entries, context) =>
         OR: [{ cancelledAt: null }, { cancelledAt: { gt: session.startAt } }],
       },
     });
-    if (eligible.length !== entries.length)
+    const recorded = await db.attendance.findMany({
+      where: { sessionId: id, memberId: { in: entries.map((e) => e.memberId) } },
+      select: { memberId: true },
+    });
+    const allowed = new Set([...eligible, ...recorded].map((row) => row.memberId));
+    if (entries.some((entry) => !allowed.has(entry.memberId)))
       throw ApiError.businessRule('Có hội viên chưa đăng ký buổi này');
     const result = [];
     for (const entry of entries) {

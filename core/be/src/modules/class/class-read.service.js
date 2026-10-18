@@ -7,9 +7,29 @@ import { CLASS_INCLUDE, PUBLIC_PERSON, toClassView } from './class.mapper.js';
 import { vietnamMidnight } from './class-schedule.service.js';
 
 /** Phạm vi management luôn kiểm tra lại ở server, không tin bộ lọc của FE. */
+/**
+ * HLV phụ trách lớp là HLV mặc định hoặc HLV được đổi sang dạy một số buổi còn hiệu lực;
+ * đổi HLV một phần không làm HLV mới mất quyền xem lớp và danh sách học viên.
+ * @param {number} userId
+ */
+export const teachingScope = (userId) => ({
+  OR: [
+    { coachId: userId },
+    { sessions: { some: { coachId: userId, status: { not: Enums.SessionStatus.CANCELLED } } } },
+  ],
+});
+
+/** Bản kiểm tra trong bộ nhớ của teachingScope cho lớp đã nạp kèm sessions. */
+export const teaches = (item, userId) =>
+  item.coachId === userId ||
+  (item.sessions ?? []).some(
+    (s) => s.coachId === userId && s.status !== Enums.SessionStatus.CANCELLED,
+  );
+
+/** Phạm vi "Quản lý lớp": quản lý thấy mọi lớp, HLV thấy lớp mình dạy. */
 export const managementScope = ({ user, permissions }) => {
   if (permissions.has(PERMISSIONS.CLASS_READ_ALL)) return {};
-  if (permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING)) return { coachId: user.id };
+  if (permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING)) return teachingScope(user.id);
   throw ApiError.forbidden();
 };
 
@@ -65,7 +85,7 @@ export const list = async (query, context) => {
       scope,
       ...(context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) &&
       !context.permissions.has(PERMISSIONS.CLASS_READ_ALL)
-        ? [{ coachId: context.user.id }]
+        ? [teachingScope(context.user.id)]
         : []),
       {
         ...(query.status && { status: query.status }),
@@ -100,7 +120,7 @@ export const list = async (query, context) => {
 
 const canManageClass = (item, context) =>
   context.permissions.has(PERMISSIONS.CLASS_READ_ALL) ||
-  (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) && item.coachId === context.user.id);
+  (context.permissions.has(PERMISSIONS.SCHEDULE_VIEW_TEACHING) && teaches(item, context.user.id));
 
 /** Lớp không mở chỉ đọc được khi phụ trách, quản lý hoặc đã có đăng ký được phép xử lý. */
 export const getById = async (id, context, memberId = context.user.id) => {

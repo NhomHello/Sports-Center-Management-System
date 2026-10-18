@@ -8,6 +8,14 @@ import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, TIME } from '../../constants/index.js';
 import { createForUsers } from '../notification/notification.service.js';
 import * as settings from '../setting/setting.service.js';
+import { vietnamDateTime } from '../../common/utils/vietnam-date.js';
+
+/** Hạn chặn tính từ buổi vắng gần nhất; chưa đủ số buổi hoặc đã qua hạn thì không chặn. */
+const blockEnd = (rows, { limit, blockDays, now }) => {
+  if (rows.length < limit) return null;
+  const until = new Date(rows[0].session.endAt.getTime() + blockDays * TIME.MS_PER_DAY);
+  return until > now ? until : null;
+};
 
 /** BR-2.17: chỉ ABSENT của buổi đã kết thúc, chưa huỷ và chưa đổi lịch mới được tính. */
 export const refreshNoShowBlock = async (db, memberId, now = new Date()) => {
@@ -17,9 +25,8 @@ export const refreshNoShowBlock = async (db, memberId, now = new Date()) => {
       settings.getValue,
     ),
   );
-  const lower = new Date(
-    Math.max(now.getTime() - windowDays * TIME.MS_PER_DAY, member.noShowWaivedAt?.getTime() ?? 0),
-  );
+  const waivedAt = member.noShowWaivedAt ? member.noShowWaivedAt.getTime() : 0;
+  const lower = new Date(Math.max(now.getTime() - windowDays * TIME.MS_PER_DAY, waivedAt));
   const rows = await db.attendance.findMany({
     where: {
       memberId,
@@ -33,17 +40,21 @@ export const refreshNoShowBlock = async (db, memberId, now = new Date()) => {
     include: { session: true },
     orderBy: { session: { endAt: 'desc' } },
   });
-  if (rows.length < limit) return member.bookingBlockedUntil;
-  const until = new Date(rows[0].session.endAt.getTime() + blockDays * TIME.MS_PER_DAY);
-  if (until <= now || (member.bookingBlockedUntil && member.bookingBlockedUntil >= until))
-    return member.bookingBlockedUntil;
+  const until = blockEnd(rows, { limit, blockDays, now });
+  const current = member.bookingBlockedUntil > now ? member.bookingBlockedUntil : null;
+  // Sửa điểm danh (vắng → có mặt) làm giảm số buổi vắng: rút ngắn hoặc gỡ chặn tương ứng.
+  if (current && (!until || until < current)) {
+    await db.user.update({ where: { id: memberId }, data: { bookingBlockedUntil: until } });
+    return until;
+  }
+  if (!until || (current && current >= until)) return member.bookingBlockedUntil;
   await db.user.update({ where: { id: memberId }, data: { bookingBlockedUntil: until } });
   await createForUsers({
     db,
     userIds: [memberId],
     kind: Enums.NotificationKind.BOOKING_BLOCKED,
     title: 'Tạm chặn đăng ký lớp',
-    message: `Bạn vắng nhiều buổi; được đăng ký lại từ ${until.toISOString()}.`,
+    message: `Bạn vắng nhiều buổi; được đăng ký lại từ ${vietnamDateTime(until)}.`,
     eventKey: `no-show:${memberId}:${until.toISOString()}`,
   });
   return until;

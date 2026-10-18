@@ -1,11 +1,12 @@
 import { Enums } from '../../config/db.js';
 import { overlaps } from './class-schedule.service.js';
+import { vietnamDateTime } from '../../common/utils/vietnam-date.js';
 
 /** BR-1.16/2.17: chặn bảo lưu và vắng nhiều lần cho cả tự đăng ký lẫn đăng ký hộ. */
 export const extraEnrollmentReason = async (db, memberId, sessions, now) => {
   const user = await db.user.findUnique({ where: { id: memberId } });
   if (user?.bookingBlockedUntil > now)
-    return `Tạm chặn đăng ký đến ${user.bookingBlockedUntil.toISOString()}`;
+    return `Tạm chặn đăng ký đến ${vietnamDateTime(user.bookingBlockedUntil)}`;
   const freezes = await db.membershipFreeze.findMany({
     where: {
       membership: { userId: memberId },

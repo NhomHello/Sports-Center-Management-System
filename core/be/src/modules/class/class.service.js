@@ -7,7 +7,7 @@ import {
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS } from '../../constants/index.js';
 import { queueClassEvent } from './class-event.service.js';
-import { refreshCancellationExceptions } from './class-exception.service.js';
+import { syncFutureSessions } from './class-session-sync.service.js';
 import { CLASS_INCLUDE, toClassView } from './class.mapper.js';
 import { buildSessions, validateResources } from './class-schedule.service.js';
 
@@ -40,38 +40,6 @@ export const create = (data, actor) =>
     return toClassView(item);
   });
 
-async function replaceFutureSessions(db, { old, actor, sessions, snapshots }) {
-  const now = new Date();
-  const ongoing = old.sessions.some(
-    (s) => s.startAt <= now && s.endAt > now && s.status === Enums.SessionStatus.SCHEDULED,
-  );
-  if (ongoing) throw ApiError.businessRule('Không đổi lịch khi lớp đang có buổi diễn ra');
-  await db.classSession.updateMany({
-    where: { classId: old.id, startAt: { gt: now }, status: Enums.SessionStatus.SCHEDULED },
-    data: { status: Enums.SessionStatus.CANCELLED },
-  });
-  await db.classSession.createMany({
-    data: sessions.map((s) => ({
-      ...s,
-      ...snapshots,
-      classId: old.id,
-    })),
-  });
-  await refreshCancellationExceptions(db, old.id, sessions);
-  await queueClassEvent(db, old, Enums.NotificationKind.CLASS_CHANGED, {
-    actorId: actor.id,
-    before: old.sessions.map((s) => ({
-      startAt: s.startAt.toISOString(),
-      endAt: s.endAt.toISOString(),
-      status: s.status,
-    })),
-    after: sessions.map((s) => ({
-      startAt: s.startAt.toISOString(),
-      endAt: s.endAt.toISOString(),
-    })),
-  });
-}
-
 /** Cập nhật cấu hình, giữ buổi quá khứ và thông báo khi lịch/phòng/HLV thực sự đổi. */
 export const update = (id, data, actor) =>
   withScheduleTransaction(async (db) => {
@@ -89,7 +57,7 @@ export const update = (id, data, actor) =>
       old.startsOn.toISOString().split('T')[0] !== data.startsOn ||
       old.endsOn.toISOString().split('T')[0] !== data.endsOn ||
       JSON.stringify(old.weeklySchedule) !== JSON.stringify(data.weeklySchedule);
-    if (scheduleChanged) await replaceFutureSessions(db, { old, actor, sessions, snapshots });
+    if (scheduleChanged) await syncFutureSessions(db, { old, actor, sessions, snapshots });
     const item = await db.gymClass.update({
       where: { id },
       data: toData(data),

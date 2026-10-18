@@ -12,6 +12,7 @@ import * as settings from '../setting/setting.service.js';
 import { getClassActions } from './class-booking-policy.service.js';
 import { CLASS_INCLUDE } from './class.mapper.js';
 import { heldSeats } from './class-member-eligibility.service.js';
+import { vietnamDateTime } from '../../common/utils/vietnam-date.js';
 
 const W = Enums.WaitlistStatus;
 const eligibleState = (db, item, memberId, now) =>
@@ -58,7 +59,7 @@ export const promoteWaitlist = async (db, classId, now = new Date()) => {
       userIds: [row.memberId],
       kind: Enums.NotificationKind.WAITLIST_OFFER,
       title: 'Đã có chỗ trong lớp',
-      message: `Lớp ${item.name} giữ chỗ cho bạn đến ${offeredUntil.toISOString()}. Hãy xác nhận đăng ký.`,
+      message: `Lớp ${item.name} giữ chỗ cho bạn đến ${vietnamDateTime(offeredUntil)}. Hãy xác nhận đăng ký.`,
       eventKey: `waitlist:${row.id}:${offeredUntil.toISOString()}`,
     });
     seats -= 1;

@@ -29,6 +29,9 @@ export const cancellationPolicy = ({ enrollment, sessions, hours, exceptionUntil
   };
 };
 
+/** Lý do "đủ chỗ" là lý do duy nhất còn cho phép vào danh sách chờ (BR-2.16). */
+const CLASS_FULL_REASON = 'Lớp đã đủ chỗ';
+
 const isRegistrationOpen = (item, now) =>
   item.status === Enums.ClassStatus.OPEN &&
   now >= item.registrationStartAt &&
@@ -40,8 +43,9 @@ function enrollmentReason({ item, enrollment, member, membership, conflict, sess
   if (!membership) return 'Cần membership còn hiệu lực';
   if (!isRegistrationOpen(item, now)) return 'Lớp ngoài thời gian mở đăng ký';
   if (!sessions.length) return 'Lớp không còn buổi chưa diễn ra';
-  if (item._count.enrollments >= item.capacity) return 'Lớp đã đủ chỗ';
+  // Kiểm tra trùng lịch trước sức chứa: lớp đủ chỗ mà trùng giờ thì cũng không được vào chờ.
   if (conflict) return 'Trùng lịch với lớp đã đăng ký';
+  if (item._count.enrollments >= item.capacity) return CLASS_FULL_REASON;
   return null;
 }
 
@@ -100,6 +104,7 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
     ...membershipWarning(membership, sessions),
     enrollment,
     canEnroll: !enrollReason,
+    canJoinWaitlist: enrollReason === CLASS_FULL_REASON,
     enrollReason,
     ...cancellationPolicy({ enrollment, sessions, hours, exceptionUntil }, now),
   };
