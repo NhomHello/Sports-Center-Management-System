@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { App, Modal } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { INVOICE_STATUS, QUERY_KEYS, ROUTES } from '@/constants';
+import { INVOICE_CHANNEL, INVOICE_STATUS, QUERY_KEYS, ROUTES } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import * as membershipPlanService from '@/services/membershipPlan.service';
@@ -21,8 +21,12 @@ const listValidPendingInvoices = async () => {
   const now = Date.now();
   return {
     ...response,
+    // Hoá đơn tại quầy không có hạn online: vẫn chờ lễ tân thu dù đã qua expiresAt.
     data: (response.data ?? []).filter(
-      (invoice) => !invoice.expiresAt || new Date(invoice.expiresAt).getTime() > now,
+      (invoice) =>
+        invoice.channel === INVOICE_CHANNEL.COUNTER ||
+        !invoice.expiresAt ||
+        new Date(invoice.expiresAt).getTime() > now,
     ),
   };
 };

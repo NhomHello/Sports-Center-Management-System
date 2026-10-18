@@ -40,8 +40,19 @@ export const CONTACT_LABELS = Object.freeze({
   EMAIL: 'Email',
   COUNTER: 'Tại quầy',
 });
+/** Khớp ACTIVE_STATUSES của BE: phiếu chờ hoàn tiền vẫn đang mở (chưa chuyển trả xong). */
 export const ACTIVE_CASE_STATUSES = Object.freeze([
   CASE_STATUS.OPEN,
   CASE_STATUS.WAITING_MEMBER,
   CASE_STATUS.WAITING_TOPUP,
+  CASE_STATUS.REFUND_PENDING,
 ]);
+/** BR-PAY-19: lý do phải ghi ít nhất một lần liên hệ trước khi đóng phiếu. */
+export const CONTACT_REQUIRED_REASONS = Object.freeze([
+  CASE_REASON.DUPLICATE_TRANSFER,
+  CASE_REASON.OVERPAID,
+  CASE_REASON.MEMBER_CLAIM,
+]);
+export const REFUND_STATUS = Object.freeze({ PENDING: 'PENDING', DONE: 'DONE' });
+/** Số hoá đơn tối đa mỗi trạng thái khi chọn hoá đơn để gán giao dịch (giới hạn pageSize của API). */
+export const MAP_INVOICE_PAGE_SIZE = 100;

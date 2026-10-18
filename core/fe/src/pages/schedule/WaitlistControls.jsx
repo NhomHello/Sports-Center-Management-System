@@ -28,7 +28,8 @@ export function WaitlistControls({ item, allowed, booked, memberId }) {
         </Popconfirm>
       </Space>
     );
-  if (item.seatsRemaining > 0) return null;
+  // Chỉ mời vào chờ khi lý do duy nhất là lớp đủ chỗ; bị chặn/trùng lịch/hết gói thì BE sẽ từ chối.
+  if (item.seatsRemaining > 0 || !item.canJoinWaitlist) return null;
   return (
     <Button onClick={() => join.mutate()} loading={join.isPending}>
       Vào danh sách chờ

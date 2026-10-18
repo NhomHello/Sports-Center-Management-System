@@ -46,7 +46,8 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
               </Button>
             )}
             {can(P.ATTENDANCE_RECORD, P.ATTENDANCE_MANAGE) &&
-              session.status !== SESSION_STATUS.CANCELLED && (
+              session.status !== SESSION_STATUS.CANCELLED &&
+              new Date(session.startAt) <= new Date() && (
                 <Button size="small" onClick={() => setAction({ session, mode: 'attendance' })}>
                   Điểm danh
                 </Button>

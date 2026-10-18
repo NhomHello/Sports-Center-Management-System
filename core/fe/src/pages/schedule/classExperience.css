@@ -33,9 +33,27 @@
 .scms-class-card .ant-card-body {
   padding: 16px 20px 20px;
 }
+.scms-class-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.scms-class-card > .ant-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+/* Flex cột + margin-top:auto cho hàng nút để nút của các thẻ cùng hàng thẳng nhau. */
 .scms-class-card__body {
-  display: grid;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   gap: 12px;
+}
+.scms-class-card__body > .scms-class-card__actions {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--scms-border);
 }
 .scms-class-card__tags {
   display: flex;
@@ -227,9 +245,19 @@
 }
 
 .scms-class-search-filters {
+  display: grid;
+  gap: 14px;
   padding: 16px;
-  border: 1px solid var(--ant-color-border);
-  border-radius: 8px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+/* Ô tìm kiếm và bộ lọc dùng chung một khung; bỏ viền lồng nhau của từng phần. */
+.scms-class-search-filters > .scms-class-list-toolbar,
+.scms-class-search-filters > .scms-class-filters {
+  padding: 0;
+  background: none;
+  border: 0;
 }
 
 .scms-class-card__actions {
@@ -238,6 +266,16 @@
   flex-wrap: wrap;
   gap: 8px;
 }
-.scms-class-card__actions .scms-booking-actions {
-  margin-left: auto;
+/* Khối đăng ký đứng đầu hàng nút; khi có ghi chú dài thì tự xuống thành một hàng riêng. */
+.scms-class-card__booking {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.scms-class-card .scms-class-card__booking .scms-booking-actions {
+  padding-top: 0;
+  border-top: 0;
+}
+.scms-class-card__seat-total {
+  color: var(--scms-muted);
+  font-weight: 400;
 }

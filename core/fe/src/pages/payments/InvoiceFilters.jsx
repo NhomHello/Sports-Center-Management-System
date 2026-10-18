@@ -15,7 +15,7 @@ const CHANNEL_OPTIONS = Object.entries(INVOICE_CHANNEL_LABELS).map(([value, labe
   label,
 }));
 
-const rangeValue = ({ from, to }) => from && to ? [dayjs(from), dayjs(to)] : null;
+const rangeValue = ({ from, to }) => (from && to ? [dayjs(from), dayjs(to)] : null);
 
 /** Bộ lọc truyền thẳng đến API phân trang; không lọc riêng một trang dữ liệu. */
 export function InvoiceFilters({ filters, onChange, loading, staff = false }) {

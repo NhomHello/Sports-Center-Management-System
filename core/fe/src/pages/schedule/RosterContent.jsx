@@ -19,6 +19,17 @@ const sessionOptions = (detail) =>
     label: `${formatDateTime(s.startAt)} · ${s.status === 'CANCELLED' ? 'Đã hủy' : 'Buổi học'}`,
   }));
 
+/** Cùng cách tính với "Chỗ còn lại" ở chi tiết lớp: chỗ giữ cho danh sách chờ cũng chiếm sức chứa. */
+function RosterHeader({ item, count }) {
+  const held = item.heldSeats ?? 0;
+  return (
+    <Typography.Title level={5}>
+      Đã đăng ký {count}/{item.capacity}
+      {held > 0 && ` · đang giữ chỗ ${held}`} · còn {Math.max(0, item.capacity - count - held)} chỗ
+    </Typography.Title>
+  );
+}
+
 export function RosterContent({
   item,
   data,
@@ -32,9 +43,7 @@ export function RosterContent({
 }) {
   return (
     <div className="scms-printable scms-roster-print">
-      <Typography.Title level={5}>
-        Đã đăng ký {count}/{item.capacity}
-      </Typography.Title>
+      <RosterHeader item={item} count={count} />
       <Space wrap className="scms-no-print">
         <Select
           aria-label="Chọn buổi"

@@ -7,16 +7,22 @@ import { usePermission } from '@/hooks/usePermission';
 import { PaymentClaimModal } from './PaymentClaimModal';
 import { InvoiceRefundModal } from './InvoiceRefundModal';
 
+/**
+ * Hoá đơn online đang chờ hoặc đã huỷ còn trong hạn báo; BE trả claimDeadline cho hoá đơn đã huỷ
+ * nên quá hạn thì ẩn nút thay vì để BE từ chối.
+ */
+const isClaimableInvoice = (invoice) =>
+  invoice.channel === INVOICE_CHANNEL.ONLINE &&
+  [INVOICE_STATUS.PENDING, INVOICE_STATUS.FAILED].includes(invoice.status) &&
+  (!invoice.claimDeadline || new Date(invoice.claimDeadline) > new Date());
+
 /** Chủ hóa đơn báo đã chuyển; hoàn tiền chỉ hiện với permission payment.refund. */
 export function InvoiceExceptionActions({ invoice }) {
   const [action, setAction] = useState(null);
   const { user } = useAuth();
   const { can } = usePermission();
   const claimable =
-    can(P.PAYMENT_CHECKOUT) &&
-    invoice.userId === user?.id &&
-    invoice.channel === INVOICE_CHANNEL.ONLINE &&
-    [INVOICE_STATUS.PENDING, INVOICE_STATUS.FAILED].includes(invoice.status);
+    can(P.PAYMENT_CHECKOUT) && invoice.userId === user?.id && isClaimableInvoice(invoice);
   return (
     <Space wrap className="scms-no-print">
       {claimable && <Button onClick={() => setAction('claim')}>Tôi đã chuyển khoản</Button>}

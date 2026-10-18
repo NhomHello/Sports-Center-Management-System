@@ -33,7 +33,7 @@ function PendingPanel({ instruction, currency }) {
         message={
           remaining > 0
             ? `Quét mã để chuyển khoản. Hóa đơn hết hạn sau ${formatCountdown(remaining)}`
-            : 'Hóa đơn đã quá hạn thanh toán. Nếu đã chuyển khoản, vui lòng liên hệ lễ tân.'
+            : 'Hóa đơn đã quá hạn thanh toán. Nếu bạn đã chuyển khoản, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra.'
         }
       />
       {instruction.receivedAmount > 0 && (
@@ -53,7 +53,9 @@ function PendingPanel({ instruction, currency }) {
         {instruction.accountName && (
           <Descriptions.Item label="Chủ tài khoản">{instruction.accountName}</Descriptions.Item>
         )}
-        <Descriptions.Item label="Số tiền">
+        <Descriptions.Item
+          label={instruction.receivedAmount > 0 ? 'Số tiền cần chuyển bù' : 'Số tiền cần chuyển'}
+        >
           <Typography.Text strong>{formatCurrency(instruction.amount, currency)}</Typography.Text>
         </Descriptions.Item>
         <Descriptions.Item label="Nội dung (bắt buộc đúng)">
@@ -86,6 +88,31 @@ export function OnlinePaymentPanel({ invoice }) {
       />
     );
   }
-  if (!invoice.paymentInstruction) return null;
+  if (!invoice.paymentInstruction) {
+    const pendingOnline =
+      invoice.status === INVOICE_STATUS.PENDING && invoice.channel === INVOICE_CHANNEL.ONLINE;
+    if (!pendingOnline) return null;
+    // BE ngừng trả QR khi hoá đơn đã quá hạn (job chưa kịp chuyển trạng thái).
+    if (new Date(invoice.expiresAt) <= new Date())
+      return (
+        <Alert
+          showIcon
+          type="warning"
+          style={{ marginBottom: 16 }}
+          message="Hóa đơn đã quá hạn thanh toán"
+          description='Không chuyển khoản vào hóa đơn này nữa. Nếu bạn đã chuyển, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra; nếu chưa, hãy tạo hóa đơn mới từ trang Gói tập.'
+        />
+      );
+    // BE trả paymentInstruction rỗng khi chưa cấu hình tài khoản nhận tiền: báo rõ thay vì để trống.
+    return (
+      <Alert
+        showIcon
+        type="warning"
+        style={{ marginBottom: 16 }}
+        message="Chưa thể hiển thị mã QR"
+        description="Trung tâm chưa cấu hình tài khoản nhận tiền online. Vui lòng liên hệ lễ tân để thanh toán tại quầy."
+      />
+    );
+  }
   return <PendingPanel instruction={invoice.paymentInstruction} currency={invoice.currency} />;
 }

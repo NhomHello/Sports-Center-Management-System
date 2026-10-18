@@ -1,8 +1,48 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Alert, Form, Input, InputNumber, Modal } from 'antd';
+import { Alert, Descriptions, Form, Input, Modal } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { requestRefund, completeRefund } from '@/services/sprint3.service';
 import { formatCurrency } from '@/utils/format';
+
+/** Cảnh báo hệ quả trước khi tạo yêu cầu và hướng dẫn bước chuyển trả sau đó. */
+function RefundNotice({ invoice, requested }) {
+  if (requested)
+    return (
+      <Alert
+        showIcon
+        type="warning"
+        title="Yêu cầu đã tạo, đang chờ chuyển trả"
+        description="Chuyển trả thủ công ngoài hệ thống rồi nhập mã tham chiếu ngân hàng để hoàn tất."
+      />
+    );
+  return (
+    <Alert
+      showIcon
+      type="warning"
+      title="Hoàn toàn bộ hóa đơn — không hoàn một phần"
+      description={`Khi tạo yêu cầu: hóa đơn chuyển sang "Đã hoàn tiền" và ${invoice.durationDays ?? invoice.plan?.durationDays ?? ''} ngày gói tập đã cộng từ hóa đơn này bị rút lại ngay. Phần chuyển thừa hãy hoàn ở Hàng chờ đối soát, không hoàn ở đây.`}
+    />
+  );
+}
+
+/** Số tiền hoàn chỉ để đọc: server tự tính toàn bộ số thực nhận còn lại. */
+function RequestFields({ invoice, refundable }) {
+  return (
+    <>
+      <Descriptions bordered size="small" column={1} className="scms-full-width">
+        <Descriptions.Item label="Số tiền sẽ hoàn">
+          <strong>{formatCurrency(refundable, invoice.currency)}</strong>
+        </Descriptions.Item>
+        <Descriptions.Item label="Gói bị rút ngày">
+          {invoice.planName ?? invoice.plan?.name ?? '—'}
+        </Descriptions.Item>
+      </Descriptions>
+      <Form.Item name="reason" label="Lý do hoàn" rules={[{ required: true, whitespace: true }]}>
+        <Input.TextArea maxLength={1000} />
+      </Form.Item>
+    </>
+  );
+}
 
 /** Yêu cầu hoàn và xác nhận đã chuyển trả là hai bước theo contract backend. */
 export function InvoiceRefundModal({ invoice, onClose }) {
@@ -19,7 +59,9 @@ export function InvoiceRefundModal({ invoice, onClose }) {
       onClose();
     },
   });
-  const maximum = invoice.payments.reduce((s, p) => s + p.receivedAmount, 0);
+  // BE chỉ hoàn toàn bộ số thực nhận còn lại (đã trừ các khoản hoàn trước); FE không gửi số tiền.
+  const refundable =
+    invoice.refundableAmount ?? invoice.payments.reduce((s, p) => s + p.receivedAmount, 0);
   const error = complete.error || request.error;
   return (
     <Modal
@@ -31,23 +73,13 @@ export function InvoiceRefundModal({ invoice, onClose }) {
       okText={request.isSuccess ? 'Xác nhận đã chuyển trả' : 'Tạo yêu cầu hoàn'}
       cancelText="Đóng"
     >
-      <Alert
-        showIcon
-        type="warning"
-        title={
-          request.isSuccess
-            ? 'Yêu cầu đã tạo, đang chờ chuyển trả'
-            : `Tối đa ${formatCurrency(maximum, invoice.currency)}`
-        }
-        description="Tiền được trả thủ công ngoài hệ thống. Hóa đơn chuyển sang Đã hoàn tiền và số ngày đã cộng vào gói sẽ bị rút lại khi tạo yêu cầu."
-      />
+      <RefundNotice invoice={invoice} requested={request.isSuccess} />
       {error && <Alert showIcon type="error" title={error.message} />}
       <Form
         key={String(request.isSuccess)}
         form={form}
         layout="vertical"
-        initialValues={{ amount: maximum }}
-        onFinish={request.isSuccess ? complete.mutate : request.mutate}
+        onFinish={request.isSuccess ? complete.mutate : ({ reason }) => request.mutate({ reason })}
       >
         {request.isSuccess ? (
           <Form.Item
@@ -58,18 +90,7 @@ export function InvoiceRefundModal({ invoice, onClose }) {
             <Input maxLength={191} />
           </Form.Item>
         ) : (
-          <>
-            <Form.Item name="amount" label="Số tiền hoàn" rules={[{ required: true }]}>
-              <InputNumber min={1} max={maximum} precision={0} />
-            </Form.Item>
-            <Form.Item
-              name="reason"
-              label="Lý do hoàn"
-              rules={[{ required: true, whitespace: true }]}
-            >
-              <Input.TextArea maxLength={1000} />
-            </Form.Item>
-          </>
+          <RequestFields invoice={invoice} refundable={refundable} />
         )}
       </Form>
     </Modal>

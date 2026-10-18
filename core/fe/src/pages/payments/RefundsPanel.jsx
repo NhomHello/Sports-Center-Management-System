@@ -1,7 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, Button, Collapse, Form, Input, Modal, Table } from 'antd';
-import { PERMISSIONS as P } from '@scms/shared';
-import { usePermission } from '@/hooks/usePermission';
+import { Alert, Button, Form, Input, Modal, Table } from 'antd';
 import { useState } from 'react';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import { listRefunds, completeRefund } from '@/services/sprint3.service';
@@ -9,7 +7,8 @@ import { formatCurrency } from '@/utils/format';
 import { QueryState } from '../schedule/QueryState';
 
 /** Có thể tiếp tục xác nhận chuyển trả sau khi đóng modal tạo hoàn tiền. */
-function RefundList() {
+/** Danh sách yêu cầu hoàn tiền chờ chuyển trả; trang Hóa đơn hiện ở tab riêng khi có quyền. */
+export function RefundList() {
   const table = useTableQuery();
   const client = useQueryClient();
   const [selected, setSelected] = useState(null);
@@ -84,12 +83,4 @@ function RefundList() {
       </Modal>
     </>
   );
-}
-
-/** Chỉ nạp danh sách khi có quyền hoàn tiền. */
-export function RefundsPanel() {
-  const { can } = usePermission();
-  return can(P.PAYMENT_REFUND) ? (
-    <Collapse items={[{ key: 'refunds', label: 'Theo dõi hoàn tiền', children: <RefundList /> }]} />
-  ) : null;
 }

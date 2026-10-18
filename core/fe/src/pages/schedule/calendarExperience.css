@@ -146,6 +146,11 @@
   gap: 12px;
 }
 .scms-app-content .scms-calendar-event.ant-card {
+  /* polish.css đặt display:grid + padding cho .scms-calendar-event (bản cũ không dùng Card);
+     áp lên Card làm cột co theo nội dung và tràn khỏi ô ngày trong lịch tuần. */
+  display: block;
+  padding: 0;
+  overflow: hidden;
   min-width: 0;
   border-radius: 10px;
   border-inline-start: 3px solid var(--scms-blue);

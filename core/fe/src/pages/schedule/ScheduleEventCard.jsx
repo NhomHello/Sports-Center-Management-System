@@ -9,9 +9,8 @@ import { ScheduleStatusTag } from './ScheduleStatusTag';
 /** Thời gian gọn trong cột ngày; mọi thao tác đăng ký vẫn áp dụng cho toàn lớp. */
 export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
   const hasEnded = event.status === SESSION_STATUS.SCHEDULED && new Date(event.endAt) < new Date();
-  const hasChanges = event.gymClass.sessions.some(
-    (session) => session.status === SESSION_STATUS.CANCELLED,
-  );
+  // Chỉ gắn nhãn cho đúng buổi bị đổi giờ hoặc hủy, không lan sang mọi buổi của lớp.
+  const hasChanges = event.status === SESSION_STATUS.CANCELLED || Boolean(event.rescheduledAt);
   return (
     <Card
       size="small"

@@ -2,9 +2,18 @@ import {
   ClockCircleOutlined,
   DeleteOutlined,
   EditOutlined,
+  ShopOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
+import { INVOICE_CHANNEL } from '@/constants';
+
+/** Hoá đơn tại quầy không có QR: hội viên thanh toán với lễ tân thay vì mở trang chuyển khoản. */
+const CounterPendingNote = ({ invoice }) => (
+  <span className="scms-plan-card__pending">
+    <ShopOutlined /> Có hóa đơn tại quầy {invoice.code} chờ thu — thanh toán tại quầy lễ tân
+  </span>
+);
 
 const PurchaseAction = ({
   plan,
@@ -15,11 +24,13 @@ const PurchaseAction = ({
   isRenewal,
 }) => {
   if (!onPurchase || !plan.isActive) return null;
+  if (pendingInvoice?.channel === INVOICE_CHANNEL.COUNTER)
+    return <CounterPendingNote invoice={pendingInvoice} />;
   return (
     <>
       {pendingInvoice && (
         <span className="scms-plan-card__pending">
-          <ClockCircleOutlined /> Đã có hóa đơn {pendingInvoice.code} chờ thanh toán
+          <ClockCircleOutlined /> Đã có hóa đơn {pendingInvoice.code} chờ chuyển khoản
         </span>
       )}
       <Button

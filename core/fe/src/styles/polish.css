@@ -1160,3 +1160,30 @@ a {
     display: none !important;
   }
 }
+
+/* Hóa đơn: các nút thao tác cùng một hàng để dòng bảng không cao lệch nhau. */
+.scms-invoice-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.scms-invoice-amount {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  white-space: nowrap;
+}
+.scms-invoice-amount .ant-typography {
+  font-size: 12px;
+}
+.scms-payments-tabs > .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+/* Hàng chờ đối soát: bộ lọc cùng khung với bảng, nút thao tác dồn phải. */
+.scms-reconcile-filter.ant-select {
+  min-width: 220px;
+}
+.scms-reconcile-actions {
+  flex: 0 0 auto;
+}

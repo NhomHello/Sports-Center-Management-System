@@ -9,8 +9,7 @@ import {
 import { Button, Card, Dropdown, App, Tag } from 'antd';
 import { CLASS_STATUS, ENROLLMENT_STATUS } from '@/constants/schedule';
 import { formatDate, formatDateTime } from '@/utils/format';
-import { describeWeeklySchedule } from '@/utils/schedule';
-import { ScheduleStatusTag } from './ScheduleStatusTag';
+import { classDisplayStatus, describeWeeklySchedule } from '@/utils/schedule';
 
 function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
   const { modal } = App.useApp();
@@ -41,12 +40,36 @@ function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
 }
 
 /** Card dùng chung cho danh sách lớp mở và phạm vi quản lý. */
+const WAITLIST_OFFERED = 'OFFERED';
+
+function SeatSummary({ item }) {
+  const booked = item.capacity - item.seatsRemaining;
+  if (item.waitlist?.status === WAITLIST_OFFERED)
+    return <strong>Đang giữ chỗ cho bạn · bấm Đăng ký lớp để xác nhận</strong>;
+  if (item.seatsRemaining <= 0)
+    return (
+      <strong className="scms-class-full">
+        Đã đủ chỗ ({booked}/{item.capacity})
+      </strong>
+    );
+  return (
+    <strong>
+      Còn {item.seatsRemaining} chỗ trống
+      <span className="scms-class-card__seat-total">
+        {' '}
+        · đã đăng ký {booked}/{item.capacity}
+      </span>
+    </strong>
+  );
+}
+
 export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, children }) {
+  const display = classDisplayStatus(item);
   return (
     <Card title={item.name} className="scms-class-card">
       <div className="scms-class-card__body">
         <div className="scms-class-card__tags">
-          <ScheduleStatusTag status={item.status} />
+          <Tag color={display.color}>{display.label}</Tag>
           {item.enrollment?.status === ENROLLMENT_STATUS.BOOKED && (
             <Tag color="green">Đã đăng ký</Tag>
           )}
@@ -75,22 +98,25 @@ export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, chil
         </div>
         <div className="scms-class-card__availability">
           <TeamOutlined />
-          <strong className={item.seatsRemaining === 0 ? 'scms-class-full' : undefined}>
-            Còn {item.seatsRemaining}/{item.capacity} chỗ
-          </strong>
+          <SeatSummary item={item} />
         </div>
         <div className="scms-class-card__deadline">
           <ClockCircleOutlined />
           <span>
-            Mở đăng ký đến {formatDateTime(item.registrationEndAt)}
-            <br />
-            Hủy trước: {formatDateTime(item.cancelDeadline)}
+            Hạn đăng ký: {formatDateTime(item.registrationEndAt)}
+            {(item.cancellationExceptionUntil || item.cancelDeadline) && (
+              <>
+                <br />
+                Hạn hủy buổi gần nhất:{' '}
+                {formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline)}
+              </>
+            )}
           </span>
         </div>
         <div className="scms-class-card__actions">
+          {children && <div className="scms-class-card__booking">{children}</div>}
           <Button onClick={onDetail}>Chi tiết</Button>
           <ClassManageMenu {...{ item, can, onEdit, onCancel, loading }} />
-          {children}
         </div>
       </div>
     </Card>

@@ -72,3 +72,30 @@ export const describeWeeklySchedule = (slots = []) => {
     });
   return [...groups].map(([range, days]) => `${days.join(', ')} · ${range}`);
 };
+
+export const CLASS_DISPLAY_STATUS = Object.freeze({
+  OPEN: { label: 'Mở đăng ký', color: 'blue' },
+  UPCOMING: { label: 'Sắp mở đăng ký', color: 'gold' },
+  REGISTRATION_ENDED: { label: 'Hết hạn đăng ký', color: 'default' },
+  ENDED: { label: 'Đã kết thúc', color: 'default' },
+  CLOSED: { label: 'Đóng đăng ký', color: 'default' },
+  CANCELLED: { label: 'Đã hủy', color: 'red' },
+});
+
+/**
+ * Trạng thái lớp theo góc nhìn người dùng: lớp OPEN nhưng đã qua hạn đăng ký hoặc đã kết thúc
+ * không còn hiện "Mở đăng ký", tránh hội viên bấm vào lớp không đăng ký được.
+ * @param {{ status: string, endsOn: string, registrationStartAt?: string, registrationEndAt?: string }} item
+ * @param {number} [now] ms
+ */
+export const classDisplayStatus = (item, now = Date.now()) => {
+  if (item.status === CLASS_STATUS.CANCELLED) return CLASS_DISPLAY_STATUS.CANCELLED;
+  const endsAt = dayjs.tz(item.endsOn, VIETNAM_TIME_ZONE).endOf('day').valueOf();
+  if (endsAt < now) return CLASS_DISPLAY_STATUS.ENDED;
+  if (item.status === CLASS_STATUS.CLOSED) return CLASS_DISPLAY_STATUS.CLOSED;
+  if (item.registrationStartAt && new Date(item.registrationStartAt).getTime() > now)
+    return CLASS_DISPLAY_STATUS.UPCOMING;
+  if (item.registrationEndAt && new Date(item.registrationEndAt).getTime() < now)
+    return CLASS_DISPLAY_STATUS.REGISTRATION_ENDED;
+  return CLASS_DISPLAY_STATUS.OPEN;
+};

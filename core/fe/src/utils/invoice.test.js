@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { INVOICE_STATUS } from '@/constants';
-import { canCollectCash, canPrintInvoice, getInvoiceListErrorNotice } from './invoice';
+import { canCollectCash, canPrintInvoice, cashDue, getInvoiceListErrorNotice } from './invoice';
 
 describe('canPrintInvoice', () => {
   const centerName = 'Trung tâm thể thao';
@@ -49,6 +49,17 @@ describe('cash collection eligibility', () => {
     [{ status: INVOICE_STATUS.PENDING, channel: 'COUNTER', amount: null }, true],
   ])('blocks unsafe collection', (invoice, canRecordCash) => {
     expect(canCollectCash({ invoice, canRecordCash })).toBe(false);
+  });
+  it('cho thu phần còn thiếu của hoá đơn online đã chuyển thiếu', () => {
+    const invoice = {
+      status: INVOICE_STATUS.PENDING,
+      channel: 'ONLINE',
+      amount: 500000,
+      receivedAmount: 200000,
+    };
+    expect(canCollectCash({ invoice, canRecordCash: true })).toBe(true);
+    expect(cashDue(invoice)).toBe(300000);
+    expect(cashDue({ channel: 'COUNTER', amount: 500000 })).toBe(500000);
   });
 });
 

@@ -1,17 +1,46 @@
 import { Link } from 'react-router';
-import { InvoiceActions } from './InvoiceActions';
-import { EyeOutlined, DollarOutlined } from '@ant-design/icons';
-import { PERMISSIONS } from '@scms/shared';
-import { Button, Space, Table, Tag, Tooltip, Empty } from 'antd';
-import { ROUTES, INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
+import { Button, Empty, Table, Tag, Typography } from 'antd';
+import { ROUTES, INVOICE_CHANNEL, INVOICE_STATUS } from '@/constants';
 import { formatCurrency, formatDate } from '@/utils/format';
-import { StatusTag } from '@/components/common/StatusTag';
+import { invoiceReceived, invoiceStatusMeta } from '@/utils/invoice';
+import { InvoiceActions } from './InvoiceActions';
 
-/** Hóa đơn của chính hội viên hoặc các hóa đơn trong phạm vi quyền được cấp. */
-export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, onDetail }) {
-  const columns = [
-    { title: 'Mã hóa đơn', dataIndex: 'code', key: 'code' },
-    { title: 'Hội viên', dataIndex: ['user', 'fullName'], key: 'member' },
+/** Dòng phụ dưới số tiền: còn thiếu, tiền đã nhận của hoá đơn bị huỷ, hoặc phần chuyển thừa. */
+const amountNote = (invoice, received) => {
+  const money = (value) => formatCurrency(value, invoice.currency);
+  if (received <= 0) return null;
+  if (invoice.status === INVOICE_STATUS.PENDING)
+    return {
+      type: 'warning',
+      text: `Đã nhận ${money(received)} · thiếu ${money(invoice.amount - received)}`,
+    };
+  if (invoice.status === INVOICE_STATUS.FAILED)
+    return { type: 'danger', text: `Đã nhận ${money(received)} · chờ hoàn trả` };
+  if (invoice.status === INVOICE_STATUS.PAID && received > invoice.amount)
+    return { type: 'warning', text: `Chuyển thừa ${money(received - invoice.amount)}` };
+  return null;
+};
+
+/** Số tiền kèm trạng thái tiền đã nhận (UC-PAY-08). */
+function AmountCell({ invoice }) {
+  const note = amountNote(invoice, invoiceReceived(invoice));
+  return (
+    <div className="scms-invoice-amount">
+      <strong>{formatCurrency(invoice.amount, invoice.currency)}</strong>
+      {note && <Typography.Text type={note.type}>{note.text}</Typography.Text>}
+    </div>
+  );
+}
+
+const buildColumns = ({ showMember, onCash, onDetail }) =>
+  [
+    { title: 'Mã hóa đơn', dataIndex: 'code', key: 'code', width: 120 },
+    showMember && {
+      title: 'Hội viên',
+      dataIndex: ['user', 'fullName'],
+      key: 'member',
+      ellipsis: true,
+    },
     {
       title: 'Gói tập',
       key: 'plan',
@@ -25,15 +54,14 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
         channel === INVOICE_CHANNEL.COUNTER ? (
           <Tag color="purple">Tại quầy</Tag>
         ) : (
-          <Tag color="blue">Trực tuyến</Tag>
+          <Tag color="blue">Chuyển khoản</Tag>
         ),
     },
     {
       title: 'Số tiền',
-      dataIndex: 'amount',
       key: 'amount',
       align: 'right',
-      render: (amount, invoice) => formatCurrency(amount, invoice.currency),
+      render: (_, invoice) => <AmountCell invoice={invoice} />,
     },
     {
       title: 'Ngày tạo',
@@ -43,9 +71,11 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
     },
     {
       title: 'Trạng thái',
-      dataIndex: 'status',
       key: 'status',
-      render: (status) => <StatusTag value={status} meta={INVOICE_STATUS_META} />,
+      render: (_, invoice) => {
+        const meta = invoiceStatusMeta(invoice);
+        return <Tag color={meta.color}>{meta.label}</Tag>;
+      },
     },
     {
       title: 'Thao tác',
@@ -54,12 +84,22 @@ export function InvoiceTable({ invoices, loading, pagination, onChange, onCash, 
         <InvoiceActions invoice={invoice} onCash={onCash} onDetail={onDetail} />
       ),
     },
-  ];
+  ].filter(Boolean);
 
+/** Hóa đơn của chính hội viên hoặc các hóa đơn trong phạm vi quyền được cấp. */
+export function InvoiceTable({
+  invoices,
+  loading,
+  pagination,
+  onChange,
+  onCash,
+  onDetail,
+  showMember = true,
+}) {
   return (
     <Table
       rowKey="id"
-      columns={columns}
+      columns={buildColumns({ showMember, onCash, onDetail })}
       dataSource={invoices}
       loading={loading}
       pagination={pagination}

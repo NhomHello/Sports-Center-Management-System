@@ -53,7 +53,7 @@ export function BookingNotice({ item, booked, allowed }) {
       <p className="scms-booking-note">
         <InfoCircleOutlined />
         <span>
-          {item.bookingBlockedUntil
+          {new Date(item.bookingBlockedUntil) > new Date()
             ? `Tạm chặn do vắng nhiều buổi. Được đăng ký lại từ ${formatDateTime(item.bookingBlockedUntil)}`
             : item.enrollReason}
         </span>

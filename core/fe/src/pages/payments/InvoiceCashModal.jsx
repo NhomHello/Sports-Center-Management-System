@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Descriptions, Modal, Typography } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
-import { QUERY_KEYS } from '@/constants';
+import { INVOICE_CHANNEL, QUERY_KEYS } from '@/constants';
 import { PageLoading } from '@/components/common/PageLoading';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import * as paymentService from '@/services/payment.service';
-import { canCollectCash } from '@/utils/invoice';
+import { canCollectCash, cashDue, invoiceReceived } from '@/utils/invoice';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { MembershipEffectPreview } from './MembershipEffectPreview';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@/utils/apiAvailability';
 
 function CashInvoiceSummary({ invoice }) {
+  const topup = invoice.channel === INVOICE_CHANNEL.ONLINE;
   return (
     <>
       <Descriptions column={1} bordered>
@@ -24,9 +25,15 @@ function CashInvoiceSummary({ invoice }) {
         <Descriptions.Item label="Gói tập">
           {invoice.planName ?? invoice.plan?.name}
         </Descriptions.Item>
-        <Descriptions.Item label="Số tiền phải thu">
-          <Typography.Text strong>
+        {topup && (
+          <Descriptions.Item label="Đã chuyển khoản">
+            {formatCurrency(invoiceReceived(invoice), invoice.currency)} /{' '}
             {formatCurrency(invoice.amount, invoice.currency)}
+          </Descriptions.Item>
+        )}
+        <Descriptions.Item label={topup ? 'Số tiền mặt cần thu bù' : 'Số tiền phải thu'}>
+          <Typography.Text strong>
+            {formatCurrency(cashDue(invoice), invoice.currency)}
           </Typography.Text>
         </Descriptions.Item>
       </Descriptions>

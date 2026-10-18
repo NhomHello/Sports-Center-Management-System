@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Drawer, Space } from 'antd';
 import { QUERY_KEYS } from '@/constants';
-import { ACTIVE_CASE_STATUSES, CASE_REASON } from '@/constants/reconciliation';
 import * as service from '@/services/reconciliation.service';
 import { CaseActions } from './CaseActions';
 import { CaseSummary } from './CaseSummary';
@@ -33,7 +32,6 @@ export function CaseDrawer({ id, onClose }) {
     },
   });
   const item = query.data?.data;
-  const active = item && ACTIVE_CASE_STATUSES.includes(item.status);
   return (
     <Drawer
       open={Boolean(id)}
@@ -46,7 +44,7 @@ export function CaseDrawer({ id, onClose }) {
       {item && (
         <Space orientation="vertical" className="scms-full-width" size="middle">
           <CaseSummary item={item} />
-          <CaseActions item={item} active={active} mutation={mutation} />
+          <CaseActions item={item} mutation={mutation} />
         </Space>
       )}
     </Drawer>

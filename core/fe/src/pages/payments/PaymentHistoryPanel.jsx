@@ -16,7 +16,7 @@ const columns = [
     dataIndex: ['invoice', 'status'],
     render: (status) => <StatusTag value={status} meta={INVOICE_STATUS_META} />,
   },
-  { title: 'Hội viên', dataIndex: ['invoice', 'user', 'fullName'] },
+  { title: 'Hội viên', key: 'member', dataIndex: ['invoice', 'user', 'fullName'] },
   {
     title: 'Kênh',
     dataIndex: 'provider',
@@ -45,11 +45,11 @@ export function PaymentHistoryPanel() {
   });
   if (!enabled) return null;
   return (
-    <Card title="Lịch sử giao dịch">
+    <Card variant="borderless" className="scms-workspace-card">
       {query.isError && <Alert type="error" title={query.error.message} />}
       <Table
         rowKey="id"
-        columns={columns}
+        columns={canReadAll ? columns : columns.filter((column) => column.key !== 'member')}
         dataSource={query.data?.data ?? []}
         loading={query.isPending}
         pagination={table.paginationProps(query.data?.meta)}

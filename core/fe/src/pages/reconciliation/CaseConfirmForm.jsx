@@ -1,8 +1,8 @@
 import { Button, Form, Input, InputNumber, Alert } from 'antd';
 /** Xác nhận số tiền thực nhận từ sao kê; không cho tự sửa giá hóa đơn. */
-export function CaseConfirmForm({ onSubmit, pending }) {
+export function CaseConfirmForm({ onSubmit, pending, disabled = false }) {
   return (
-    <Form layout="vertical" onFinish={onSubmit} disabled={pending}>
+    <Form layout="vertical" onFinish={onSubmit} disabled={pending || disabled}>
       <Alert
         type="info"
         showIcon

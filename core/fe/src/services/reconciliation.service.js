@@ -5,3 +5,5 @@ export const listCases = (params) => http.get('/reconciliations', { params });
 export const getCase = (id) => http.get(`/reconciliations/${id}`);
 /** Mọi thao tác được server kiểm tra trạng thái và chống ghi trùng. */
 export const actOnCase = (id, action, data) => http.post(`/reconciliations/${id}/${action}`, data);
+/** Lấy giao dịch tiền vào từ SePay trong khoảng thời gian, xử lý idempotent như webhook. */
+export const syncSepay = (from, to) => http.post('/reconciliations/sync', { from, to });

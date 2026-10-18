@@ -4,6 +4,7 @@ import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Select, Typography, Tabs, Input, Alert, Space } from 'antd';
 
 import { MEMBERSHIP_STATUS_META, QUERY_KEYS } from '@/constants';
+import { ENROLLMENT_STATUS } from '@/constants/schedule';
 import * as memberService from '@/services/member.service';
 import * as scheduleService from '@/services/schedule.service';
 import { ClassListPanel } from './ClassListPanel';
@@ -19,8 +20,11 @@ function MemberEnrollmentList({ memberId }) {
     queryKey: [...QUERY_KEYS.SCHEDULE, 'member', memberId],
     queryFn: () => scheduleService.getMemberEnrollments(memberId),
   });
-  const items = (query.data?.data || []).filter((i) =>
-    i.name.toLowerCase().includes(filter.toLowerCase()),
+  // API trả cả đăng ký đã hủy; tab "Đã đăng ký" chỉ giữ các lớp còn đang đăng ký.
+  const items = (query.data?.data || []).filter(
+    (i) =>
+      i.enrollment?.status === ENROLLMENT_STATUS.BOOKED &&
+      i.name.toLowerCase().includes(filter.toLowerCase()),
   );
   return (
     <>

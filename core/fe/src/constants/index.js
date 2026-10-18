@@ -119,7 +119,8 @@ export const NOTIFICATION_KIND_LABELS = Object.freeze({
 export const INVOICE_STATUS_META = Object.freeze({
   PENDING: { color: 'gold', label: 'Chờ thanh toán' },
   PAID: { color: 'green', label: 'Đã thanh toán' },
-  FAILED: { color: 'red', label: 'Thất bại' },
+  // FAILED = quá hạn chờ tiền hoặc bị hủy sau hoàn tiền; "Thất bại" khiến hội viên tưởng lỗi hệ thống.
+  FAILED: { color: 'default', label: 'Đã hủy (quá hạn)' },
   REFUNDED: { color: 'default', label: 'Đã hoàn tiền' },
 });
 

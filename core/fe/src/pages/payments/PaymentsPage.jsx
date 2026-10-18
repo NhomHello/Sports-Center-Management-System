@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function -- Bỏ giới hạn dòng theo yêu cầu Sprint 1. */
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, Button, Card, Segmented } from 'antd';
+import { Button, Card, Tabs } from 'antd';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -12,92 +12,36 @@ import { usePermission } from '@/hooks/usePermission';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import * as paymentService from '@/services/payment.service';
 import { shouldRetryApiQuery } from '@/utils/apiAvailability';
-import { getInvoiceListErrorNotice } from '@/utils/invoice';
 import { InvoiceReceiptModal } from './InvoiceReceiptModal';
-import { InvoiceTable } from './InvoiceTable';
-import { InvoiceFilters } from './InvoiceFilters';
 import { CounterInvoiceModal } from './CounterInvoiceModal';
 import { PaymentHistoryPanel } from './PaymentHistoryPanel';
-import { RefundsPanel } from './RefundsPanel';
+import { RefundList } from './RefundsPanel';
+import { InvoiceWorkspace } from './InvoiceWorkspace';
 import { InvoiceCashModal } from './InvoiceCashModal';
 
-function InvoiceListContent({ query, isOwn, table, onCash, onDetail }) {
-  if (query.isError) {
-    const notice = getInvoiceListErrorNotice(query.error, !isOwn);
-    return (
-      <Alert
-        showIcon
-        type={notice.type}
-        message={notice.message}
-        description={notice.description}
-        action={notice.retryable && <Button onClick={() => query.refetch()}>Thử lại</Button>}
-      />
-    );
-  }
-  return (
-    <InvoiceTable
-      invoices={query.data?.data ?? []}
-      loading={query.isPending}
-      pagination={table.paginationProps(query.data?.meta)}
-      onChange={table.onTableChange}
-      onCash={onCash}
-      onDetail={onDetail}
-    />
-  );
-}
-
-function InvoiceWorkspace({
-  query,
-  canReadAll,
-  showOwn,
-  isOwn,
-  table,
-  onScopeChange,
-  onCash,
-  onDetail,
-}) {
-  const notice = query.isError ? getInvoiceListErrorNotice(query.error, !isOwn) : null;
-  return (
-    <Card variant="borderless" className="scms-workspace-card">
-      <div className="scms-invoice-toolbar">
-        <div className="scms-invoice-toolbar__primary">
-          {canReadAll && (
-            <Segmented
-              value={showOwn}
-              options={[
-                { value: false, label: 'Mọi hóa đơn' },
-                { value: true, label: 'Do tôi tạo' },
-              ]}
-              onChange={onScopeChange}
-            />
-          )}
-          <InvoiceFilters
-            key={`${isOwn}:${table.filters.search ?? ''}`}
-            staff={canReadAll}
-            filters={table.filters}
-            onChange={table.setFilters}
-            loading={query.isFetching}
-          />
-        </div>
-        <Button
-          icon={<ReloadOutlined />}
-          loading={query.isFetching}
-          disabled={notice?.retryable === false}
-          onClick={() => query.refetch()}
-        >
-          Làm mới
-        </Button>
-      </div>
-      <InvoiceListContent
-        query={query}
-        isOwn={isOwn}
-        table={table}
-        onCash={onCash}
-        onDetail={onDetail}
-      />
-    </Card>
-  );
-}
+/** Tab hóa đơn luôn có; lịch sử giao dịch và hoàn tiền chỉ hiện khi có quyền. */
+const buildTabs = ({ can, workspace }) =>
+  [
+    {
+      key: 'invoices',
+      label: 'Hóa đơn',
+      children: workspace,
+    },
+    can(PERMISSIONS.PAYMENT_READ_ALL, PERMISSIONS.PAYMENT_READ_OWN) && {
+      key: 'payments',
+      label: 'Lịch sử giao dịch',
+      children: <PaymentHistoryPanel />,
+    },
+    can(PERMISSIONS.PAYMENT_REFUND) && {
+      key: 'refunds',
+      label: 'Theo dõi hoàn tiền',
+      children: (
+        <Card variant="borderless" className="scms-workspace-card">
+          <RefundList />
+        </Card>
+      ),
+    },
+  ].filter(Boolean);
 
 /** S16/S30: tạo hóa đơn, xác nhận thu tiền, tra cứu và in theo quyền API. */
 export default function PaymentsPage() {
@@ -143,6 +87,21 @@ export default function PaymentsPage() {
       setSearchParams(next, { replace: true });
     }
   };
+  const workspace = (
+    <InvoiceWorkspace
+      query={query}
+      canReadAll={canReadAll}
+      showOwn={showOwn}
+      isOwn={isOwn}
+      table={table}
+      onScopeChange={(value) => {
+        setShowOwn(value);
+        table.setFilters({});
+      }}
+      onCash={setCashInvoiceId}
+      onDetail={setInvoiceId}
+    />
+  );
   return (
     <>
       <PageHeader
@@ -160,21 +119,7 @@ export default function PaymentsPage() {
           )
         }
       />
-      <RefundsPanel />
-      <PaymentHistoryPanel />
-      <InvoiceWorkspace
-        query={query}
-        canReadAll={canReadAll}
-        showOwn={showOwn}
-        isOwn={isOwn}
-        table={table}
-        onScopeChange={(value) => {
-          setShowOwn(value);
-          table.setFilters({});
-        }}
-        onCash={setCashInvoiceId}
-        onDetail={setInvoiceId}
-      />
+      <Tabs className="scms-payments-tabs" destroyOnHidden items={buildTabs({ can, workspace })} />
       {canCreate && (
         <CounterInvoiceModal
           open={isCreateOpen}

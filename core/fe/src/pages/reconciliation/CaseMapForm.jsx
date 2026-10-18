@@ -6,7 +6,27 @@ import { usePermission } from '@/hooks/usePermission';
 import { listMembers } from '@/services/member.service';
 import { listInvoices } from '@/services/payment.service';
 import { listMembershipPlans } from '@/services/membershipPlan.service';
-import { INVOICE_STATUS } from '@/constants';
+import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
+import { MAP_INVOICE_PAGE_SIZE } from '@/constants/reconciliation';
+import { formatCurrency } from '@/utils/format';
+
+/**
+ * Hoá đơn nhận được khoản chuyển khoản: chỉ kênh online, đang chờ hoặc đã hết hạn. Lọc ở server
+ * theo từng trạng thái để không bỏ sót hoá đơn nằm ngoài trang đầu.
+ */
+const listTransferTargets = async (memberId) => {
+  const pages = await Promise.all(
+    [INVOICE_STATUS.PENDING, INVOICE_STATUS.FAILED].map((status) =>
+      listInvoices({
+        memberId,
+        status,
+        channel: INVOICE_CHANNEL.ONLINE,
+        pageSize: MAP_INVOICE_PAGE_SIZE,
+      }),
+    ),
+  );
+  return pages.flatMap((page) => page.data ?? []);
+};
 
 /** Gán sai mã vào hóa đơn còn chờ/thất bại hoặc tạo hóa đơn cho gói đang bán. */
 export function CaseMapForm({ pending, onAction }) {
@@ -21,7 +41,7 @@ export function CaseMapForm({ pending, onAction }) {
   });
   const invoices = useQuery({
     queryKey: ['reconcile-invoices', memberId],
-    queryFn: () => listInvoices({ memberId }),
+    queryFn: () => listTransferTargets(memberId),
     enabled: Boolean(memberId) && can(PERMISSIONS.INVOICE_READ_ALL),
   });
   const plans = useQuery({
@@ -68,9 +88,12 @@ export function CaseMapForm({ pending, onAction }) {
         <Select
           allowClear
           loading={invoices.isFetching}
-          options={(invoices.data?.data ?? [])
-            .filter((i) => [INVOICE_STATUS.PENDING, INVOICE_STATUS.FAILED].includes(i.status))
-            .map((i) => ({ value: i.id, label: i.code }))}
+          options={(invoices.data ?? []).map((i) => ({
+            value: i.id,
+            label: `${i.code} · ${i.planName ?? ''} · ${formatCurrency(i.amount)} · ${
+              INVOICE_STATUS_META[i.status]?.label ?? i.status
+            }`,
+          }))}
         />
       </Form.Item>
       <Form.Item name="planId" label="Hoặc gói đang bán">

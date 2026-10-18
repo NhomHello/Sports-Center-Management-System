@@ -32,7 +32,7 @@ export function ClassOverview({ item, selectedSession }) {
           {
             key: 'slots',
             label: 'Chỗ còn lại',
-            children: `${item.seatsRemaining}/${item.capacity}`,
+            children: `${item.seatsRemaining}/${item.capacity}${item.heldSeats > 0 ? ` (đang giữ chỗ ${item.heldSeats})` : ''}`,
           },
           {
             key: 'window',

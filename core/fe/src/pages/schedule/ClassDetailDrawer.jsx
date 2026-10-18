@@ -5,13 +5,18 @@ import { CoachChangeModal } from './CoachChangeModal';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Button, Drawer, Space, Timeline, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
+import { CLASS_STATUS } from '@/constants/schedule';
 import * as service from '@/services/schedule.service';
 import { formatDateTime } from '@/utils/format';
 import { QueryState } from './QueryState';
 import { ClassSessionsTable } from './ClassSessionsTable';
 import { ClassOverview } from './ClassOverview';
 
-const renderFooter = (item, renderActions) => item ? renderActions?.(item) : null;
+/** Lớp đã hủy không còn buổi nào để chuyển HLV. */
+const canChangeCoach = (can, item) =>
+  can(P.CLASS_UPDATE) && item?.status !== CLASS_STATUS.CANCELLED;
+
+const renderFooter = (item, renderActions) => (item ? renderActions?.(item) : null);
 
 /** Container chi tiết lớp, extension dùng chung cho booking/roster ở FE Khôi. */
 export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, renderActions }) {
@@ -30,7 +35,9 @@ export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, rend
       size="large"
       footer={renderFooter(item, renderActions)}
       extra={
-        can(P.CLASS_UPDATE) && <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
+        canChangeCoach(can, item) && (
+          <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
+        )
       }
     >
       <QueryState query={query}>

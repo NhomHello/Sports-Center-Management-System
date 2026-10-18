@@ -33,38 +33,23 @@ const PaymentsPage = lazy(() => import('@/pages/payments/PaymentsPage'));
 
 const GROUP_SYSTEM = 'Hệ thống';
 const GROUP_ACCOUNT = 'Tài khoản cá nhân';
+const GROUP_FINANCE = 'Tài chính';
+const GROUP_SCHEDULE = 'Lịch tập';
 const MembershipPlansPage = lazy(() => import('@/pages/membership/MembershipPlansPage'));
 const MembersPage = lazy(() => import('@/pages/members/MembersPage'));
 const SchedulePage = lazy(() => import('@/pages/schedule/SchedulePage'));
 
-const GROUP_MEMBER = 'Hội viên';
+const GROUP_MEMBER = 'Hội viên & gói tập';
 
 const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
 const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
+// Thứ tự mảng = thứ tự menu: việc hằng ngày trước, quản trị và tài khoản cá nhân sau cùng.
 export const routeRegistry = [
   {
-    path: ROUTES.RECONCILIATION,
-    element: <ReconciliationPage />,
-    permission: PERMISSIONS.PAYMENT_RECONCILE,
-    menu: { label: 'Hàng chờ đối soát', icon: <CreditCardOutlined />, group: 'Tài chính' },
-  },
-  {
-    path: ROUTES.SYSTEM_AUDIT,
-    element: <AuditPage />,
-    permission: PERMISSIONS.AUDIT_READ,
-    menu: { label: 'Nhật ký thao tác', icon: <SafetyOutlined />, group: GROUP_SYSTEM },
-  },
-  {
-    path: ROUTES.REPORTS,
-    element: <ReportsPage />,
-    permission: PERMISSIONS.REPORT_VIEW,
-    menu: { label: 'Báo cáo', icon: <DashboardOutlined />, group: 'Tài chính' },
-  },
-  {
-    path: ROUTES.ATTENDANCE,
-    element: <AttendanceHistoryPage />,
-    permission: PERMISSIONS.SCHEDULE_VIEW_OWN,
-    menu: { label: 'Lịch sử điểm danh', icon: <CalendarOutlined />, group: 'Lịch tập' },
+    path: ROUTES.DASHBOARD,
+    element: <DashboardPage />,
+    permission: PERMISSIONS.DASHBOARD_VIEW,
+    menu: { label: 'Tổng quan', icon: <DashboardOutlined /> },
   },
   {
     path: ROUTES.SCHEDULE,
@@ -75,34 +60,19 @@ export const routeRegistry = [
       PERMISSIONS.SCHEDULE_VIEW_OWN,
       PERMISSIONS.SCHEDULE_VIEW_TEACHING,
     ],
-    menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: 'Lịch tập' },
+    menu: { label: 'Lớp học và lịch tập', icon: <CalendarOutlined />, group: GROUP_SCHEDULE },
   },
   {
-    path: ROUTES.DASHBOARD,
-    element: <DashboardPage />,
-    permission: PERMISSIONS.DASHBOARD_VIEW,
-    menu: { label: 'Tổng quan', icon: <DashboardOutlined /> },
+    path: ROUTES.ATTENDANCE,
+    element: <AttendanceHistoryPage />,
+    permission: PERMISSIONS.SCHEDULE_VIEW_OWN,
+    menu: { label: 'Lịch sử điểm danh', icon: <CalendarOutlined />, group: GROUP_SCHEDULE },
   },
   {
-    path: ROUTES.PROFILE,
-    element: <ProfilePage />,
-    menu: { label: 'Hồ sơ cá nhân', icon: <UserOutlined />, group: GROUP_ACCOUNT },
-  },
-  {
-    path: ROUTES.CHANGE_PASSWORD,
-    element: <ChangePasswordPage />,
-    menu: { label: 'Đổi mật khẩu', icon: <LockOutlined />, group: GROUP_ACCOUNT },
-  },
-  {
-    path: ROUTES.NOTIFICATIONS,
-    element: <NotificationsPage />,
-    menu: { label: 'Thông báo', icon: <BellOutlined />, group: GROUP_ACCOUNT },
-  },
-  {
-    path: ROUTES.PAYMENTS,
-    element: <PaymentsPage />,
-    permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
-    menu: { label: 'Hóa đơn', icon: <CreditCardOutlined />, group: 'Tài chính' },
+    path: ROUTES.MEMBERS,
+    element: <MembersPage />,
+    permission: PERMISSIONS.MEMBER_READ,
+    menu: { label: 'Quản lý hội viên', icon: <TeamOutlined />, group: GROUP_MEMBER },
   },
   {
     path: ROUTES.MEMBERSHIP_PLANS,
@@ -111,10 +81,22 @@ export const routeRegistry = [
     menu: { label: 'Gói tập', icon: <GiftOutlined />, group: GROUP_MEMBER },
   },
   {
-    path: ROUTES.MEMBERS,
-    element: <MembersPage />,
-    permission: PERMISSIONS.MEMBER_READ,
-    menu: { label: 'Quản lý hội viên', icon: <TeamOutlined />, group: GROUP_MEMBER },
+    path: ROUTES.PAYMENTS,
+    element: <PaymentsPage />,
+    permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
+    menu: { label: 'Hóa đơn', icon: <CreditCardOutlined />, group: GROUP_FINANCE },
+  },
+  {
+    path: ROUTES.RECONCILIATION,
+    element: <ReconciliationPage />,
+    permission: PERMISSIONS.PAYMENT_RECONCILE,
+    menu: { label: 'Hàng chờ đối soát', icon: <CreditCardOutlined />, group: GROUP_FINANCE },
+  },
+  {
+    path: ROUTES.REPORTS,
+    element: <ReportsPage />,
+    permission: PERMISSIONS.REPORT_VIEW,
+    menu: { label: 'Báo cáo', icon: <DashboardOutlined />, group: GROUP_FINANCE },
   },
   {
     path: ROUTES.SYSTEM_USERS,
@@ -133,5 +115,26 @@ export const routeRegistry = [
     element: <SettingsPage />,
     permission: PERMISSIONS.SETTING_READ,
     menu: { label: 'Cấu hình', icon: <SettingOutlined />, group: GROUP_SYSTEM },
+  },
+  {
+    path: ROUTES.SYSTEM_AUDIT,
+    element: <AuditPage />,
+    permission: PERMISSIONS.AUDIT_READ,
+    menu: { label: 'Nhật ký thao tác', icon: <SafetyOutlined />, group: GROUP_SYSTEM },
+  },
+  {
+    path: ROUTES.PROFILE,
+    element: <ProfilePage />,
+    menu: { label: 'Hồ sơ cá nhân', icon: <UserOutlined />, group: GROUP_ACCOUNT },
+  },
+  {
+    path: ROUTES.NOTIFICATIONS,
+    element: <NotificationsPage />,
+    menu: { label: 'Thông báo', icon: <BellOutlined />, group: GROUP_ACCOUNT },
+  },
+  {
+    path: ROUTES.CHANGE_PASSWORD,
+    element: <ChangePasswordPage />,
+    menu: { label: 'Đổi mật khẩu', icon: <LockOutlined />, group: GROUP_ACCOUNT },
   },
 ];
