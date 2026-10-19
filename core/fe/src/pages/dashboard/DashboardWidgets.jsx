@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Card, Space, Statistic } from 'antd';
+import { Alert, Card, Statistic } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
 import { listOwnMemberships } from '@/services/membership.service';
@@ -35,7 +35,7 @@ export function DashboardWidgets() {
   const own = useQuery({
     queryKey: ['ownMembership'],
     queryFn: listOwnMemberships,
-    enabled: can(P.MEMBERSHIP_READ_OWN),
+    enabled: can(P.MEMBERSHIP_READ_OWN) && !can(P.MEMBERSHIP_READ_ALL),
   });
   const invoices = useQuery({
     queryKey: ['invoices', 'pending-widget'],
@@ -57,9 +57,11 @@ export function DashboardWidgets() {
     queryFn: getReconciliationSummary,
     enabled: can(P.PAYMENT_RECONCILE),
   });
+  // Ô "số ngày gói" là của hội viên; quản lý (có quyền xem gói của mọi người) không cần.
+  const personal = can(P.MEMBERSHIP_READ_OWN) && !can(P.MEMBERSHIP_READ_ALL);
   return (
-    <Space wrap>
-      {can(P.MEMBERSHIP_READ_OWN) && (
+    <div className="scms-kpi-grid">
+      {personal && (
         <Widget
           title="Số ngày gói còn lại"
           query={own}
@@ -90,6 +92,6 @@ export function DashboardWidgets() {
       {can(P.PAYMENT_RECONCILE) && (
         <Widget title="Phiếu đối soát đang mở" query={cases} value={(r) => r?.data.open || 0} />
       )}
-    </Space>
+    </div>
   );
 }

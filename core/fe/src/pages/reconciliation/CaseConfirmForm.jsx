@@ -1,8 +1,15 @@
 import { Button, Form, Input, InputNumber, Alert } from 'antd';
 /** Xác nhận số tiền thực nhận từ sao kê; không cho tự sửa giá hóa đơn. */
-export function CaseConfirmForm({ onSubmit, pending, disabled = false }) {
+export function CaseConfirmForm({ onSubmit, pending, disabled = false, claim }) {
+  // Phiếu "báo đã chuyển": điền sẵn số tiền/mã hội viên khai để quản lý chỉ cần đối chiếu sao kê.
+  const initialValues = claim ? { amount: claim.amount, reference: claim.reference } : undefined;
   return (
-    <Form layout="vertical" onFinish={onSubmit} disabled={pending || disabled}>
+    <Form
+      layout="vertical"
+      onFinish={onSubmit}
+      disabled={pending || disabled}
+      initialValues={initialValues}
+    >
       <Alert
         type="info"
         showIcon

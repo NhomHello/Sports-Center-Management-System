@@ -40,7 +40,7 @@ const isRegistrationOpen = (item, now) =>
 function enrollmentReason({ item, enrollment, member, membership, conflict, sessions }, now) {
   if (enrollment?.status === Enums.EnrollmentStatus.BOOKED) return 'Bạn đã đăng ký lớp này';
   if (member?.status !== Enums.UserStatus.ACTIVE) return 'Tài khoản hội viên đã bị khoá';
-  if (!membership) return 'Cần membership còn hiệu lực';
+  if (!membership) return 'Cần gói tập còn hiệu lực để đăng ký lớp';
   if (!isRegistrationOpen(item, now)) return 'Lớp ngoài thời gian mở đăng ký';
   if (!sessions.length) return 'Lớp không còn buổi chưa diễn ra';
   // Kiểm tra trùng lịch trước sức chứa: lớp đủ chỗ mà trùng giờ thì cũng không được vào chờ.

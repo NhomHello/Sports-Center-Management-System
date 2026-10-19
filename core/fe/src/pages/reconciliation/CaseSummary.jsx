@@ -1,6 +1,22 @@
 import { Descriptions, Tag } from 'antd';
 import { CASE_REASON_LABELS, CASE_STATUS_LABELS } from '@/constants/reconciliation';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency, formatDateTime } from '@/utils/format';
+/** Thông tin hội viên khai khi bấm "Tôi đã chuyển khoản" để quản lý đối chiếu sao kê. */
+const describeClaim = ({ claim, note }) =>
+  [
+    formatCurrency(claim.amount),
+    claim.bankName,
+    claim.reference && `mã ${claim.reference}`,
+    `lúc ${formatDateTime(claim.transferredAt)}`,
+    note && `ghi chú: ${note}`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+const sourceLabel = (item) => (item.claim ? 'Hội viên khai báo' : 'Nội dung chuyển khoản');
+const sourceText = (item) =>
+  item.claim ? describeClaim(item) : (item.webhookLog?.payload?.content ?? '—');
+
 /** Giao dịch gốc và số tiền được API đối chiếu. */
 export function CaseSummary({ item }) {
   return (
@@ -19,9 +35,7 @@ export function CaseSummary({ item }) {
       <Descriptions.Item label="Đã nhận / còn thiếu">
         {formatCurrency(item.invoiceReceived)} / {formatCurrency(item.invoiceMissing)}
       </Descriptions.Item>
-      <Descriptions.Item label="Nội dung chuyển khoản">
-        {item.webhookLog?.payload?.content ?? '—'}
-      </Descriptions.Item>
+      <Descriptions.Item label={sourceLabel(item)}>{sourceText(item)}</Descriptions.Item>
     </Descriptions>
   );
 }

@@ -1,4 +1,4 @@
-import { EditOutlined, EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Avatar, Button, Space, Typography, Tooltip, Tag } from 'antd';
 import { StatusTag } from '@/components/common/StatusTag';
 import { MEMBERSHIP_STATUS_META } from '@/constants';
@@ -47,7 +47,8 @@ const MEMBER_COLUMNS = [
     ),
   },
   {
-    title: 'GÓI ĐANG TẬP',
+    // Gia hạn cộng dồn vào cùng một gói hội viên nên đây là gói của lần mua gần nhất.
+    title: 'GÓI MUA GẦN NHẤT',
     key: 'membership',
     render: (_, member) => {
       const planName = member.currentMembership?.plan?.name;
@@ -100,22 +101,21 @@ const MEMBER_COLUMNS = [
 export const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail) => [
   ...MEMBER_COLUMNS,
   {
-    title: 'Thao tác',
+    title: 'THAO TÁC',
     key: 'actions',
     align: 'right',
     render: (_, member) => (
       <Space size="middle">
         <Tooltip title={canUpdate ? 'Xem và sửa hồ sơ' : 'Xem hồ sơ'}>
           <Button
-            icon={canUpdate ? <EditOutlined /> : <EyeOutlined />}
+            icon={<EyeOutlined />}
             aria-label={`${canUpdate ? 'Xem và sửa' : 'Xem'} hồ sơ ${member.fullName}`}
             onClick={(event) => {
               event.stopPropagation();
               onViewDetail(member);
             }}
-            style={{ color: '#595959', background: '#f5f5f5', border: 'none' }}
           >
-            Xem
+            {canUpdate ? 'Xem / sửa' : 'Xem'}
           </Button>
         </Tooltip>
         {canManage && (

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, Button, Form, Input, Modal, Table } from 'antd';
+import { Alert, App, Button, Form, Input, Modal, Table } from 'antd';
 import { useState } from 'react';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import { listRefunds, completeRefund } from '@/services/sprint3.service';
@@ -17,9 +17,11 @@ export function RefundList() {
     queryKey: ['refunds', table.params],
     queryFn: () => listRefunds(table.params),
   });
+  const { message } = App.useApp();
   const save = useMutation({
     mutationFn: ({ reference }) => completeRefund(selected.id, reference),
     onSuccess: () => {
+      message.success('Đã xác nhận chuyển trả cho hội viên');
       setSelected(null);
       client.invalidateQueries({ queryKey: ['refunds'] });
     },

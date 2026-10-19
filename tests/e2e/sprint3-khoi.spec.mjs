@@ -76,7 +76,7 @@ test('S3-68: thiếu tiền → QR chuyển bù → PAID → in PDF', async ({ p
   await capture(page, info, 'chuyen-bu');
   expect((await sendTransfer(f, invoice, { transferAmount: 200000 })).outcome).toBe('PAID');
   await expect(
-    receipt(page).getByText('Đã nhận thanh toán. Gói tập của bạn đã được kích hoạt.'),
+    receipt(page).getByText('Đã nhận thanh toán. Gói tập đã được kích hoạt.'),
   ).toBeVisible();
   await page.evaluate(() => localStorage.clear());
   await openInvoice(page, f.admin);

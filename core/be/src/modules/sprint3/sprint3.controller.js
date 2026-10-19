@@ -11,16 +11,19 @@ const context = (req) => ({ user: req.user, permissions: req.permissions });
 export const reschedule = async (req, res) =>
   sendSuccess(res, {
     data: await sessions.update(req.validated.params.id, req.validated.body, req.user),
+    message: 'Đã đổi giờ buổi học và thông báo hội viên',
   });
 /** Huỷ một buổi. */
 export const cancelSession = async (req, res) =>
   sendSuccess(res, {
     data: await sessions.cancel(req.validated.params.id, req.validated.body.reason, req.user),
+    message: 'Đã hủy buổi học và thông báo hội viên',
   });
 /** Đổi HLV. */
 export const changeCoach = async (req, res) =>
   sendSuccess(res, {
     data: await sessions.changeCoach(req.validated.params.id, req.validated.body, req.user),
+    message: 'Đã đổi huấn luyện viên phụ trách',
   });
 /** Vào danh sách chờ. */
 export const joinWaitlist = async (req, res) =>
@@ -36,7 +39,10 @@ export const createFreeze = async (req, res) =>
   sendCreated(res, await freeze.freeze(req.validated.params.id, req.validated.body, context(req)));
 /** Kết thúc bảo lưu. */
 export const resumeFreeze = async (req, res) =>
-  sendSuccess(res, { data: await freeze.resume(req.validated.params.id, context(req)) });
+  sendSuccess(res, {
+    data: await freeze.resume(req.validated.params.id, context(req)),
+    message: 'Đã kết thúc bảo lưu và cộng bù ngày đã dừng',
+  });
 /** Xem tác động bảo trì. */
 export const previewMaintenance = async (req, res) =>
   sendSuccess(res, {
@@ -72,4 +78,5 @@ export const lockPreview = async (req, res) =>
 export const unblockMember = async (req, res) =>
   sendSuccess(res, {
     data: await unblock(req.validated.params.id, req.validated.body.reason, req.user),
+    message: 'Đã gỡ chặn đăng ký lớp',
   });

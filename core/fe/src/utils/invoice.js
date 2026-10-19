@@ -42,6 +42,36 @@ export const invoiceReceived = (invoice) =>
       (invoice?.payments ?? []).reduce((sum, payment) => sum + payment.receivedAmount, 0),
   );
 
+/** Phiếu "Tôi đã chuyển khoản" còn đang xử lý (khớp ACTIVE_STATUSES của BE). */
+const CLAIM_OPEN = ['OPEN', 'WAITING_MEMBER', 'WAITING_TOPUP', 'REFUND_PENDING'];
+
+/** Trạng thái phiếu "Tôi đã chuyển khoản" mới nhất của hoá đơn chưa thanh toán (nếu có). */
+const claimStatusMeta = (invoice) => {
+  const claim = invoice.cases?.[0]?.status;
+  if (!claim) return null;
+  if (CLAIM_OPEN.includes(claim))
+    return { color: 'processing', label: 'Đã báo chuyển, chờ kiểm tra' };
+  if (claim === 'REJECTED') return { color: 'red', label: 'Báo chuyển bị từ chối' };
+  return null;
+};
+
+const statusMetaOf = (status) => INVOICE_STATUS_META[status] ?? { color: 'default', label: status };
+
+/** Hoá đơn còn chờ: tách theo việc đã nhận thiếu/thừa, quá hạn và kênh thanh toán. */
+const pendingMeta = (invoice, now) => {
+  const online = invoice.channel === INVOICE_CHANNEL.ONLINE;
+  const received = invoiceReceived(invoice);
+  if (received > Number(invoice.amount))
+    return { color: 'orange', label: 'Chuyển thừa, chờ xác nhận' };
+  // Đã nhận đủ/thừa thì không bị huỷ vì quá hạn (chờ quản lý xử lý).
+  if (online && new Date(invoice.expiresAt).getTime() <= now)
+    return INVOICE_STATUS_META[INVOICE_STATUS.FAILED];
+  if (received > 0) return { color: 'orange', label: 'Chờ chuyển bù' };
+  return online
+    ? { color: 'gold', label: 'Chờ chuyển khoản' }
+    : { color: 'gold', label: 'Chờ thu tại quầy' };
+};
+
 /**
  * Nhãn trạng thái nói rõ việc cần làm tiếp: hoá đơn chờ được tách theo kênh và theo việc đã nhận
  * một phần tiền hay chưa; hoá đơn quá hạn nhưng job chưa chạy cũng không còn hiện "chờ".
@@ -50,17 +80,11 @@ export const invoiceReceived = (invoice) =>
  * @returns {{ color: string, label: string }}
  */
 export const invoiceStatusMeta = (invoice, now = Date.now()) => {
-  if (invoice.status !== INVOICE_STATUS.PENDING)
-    return INVOICE_STATUS_META[invoice.status] ?? { color: 'default', label: invoice.status };
-  const online = invoice.channel === INVOICE_CHANNEL.ONLINE;
-  const received = invoiceReceived(invoice);
-  const amount = Number(invoice.amount);
-  if (received > amount) return { color: 'orange', label: 'Chuyển thừa, chờ xác nhận' };
-  // Đã nhận đủ/thừa thì không bị huỷ vì quá hạn (chờ quản lý xử lý).
-  if (online && new Date(invoice.expiresAt).getTime() <= now)
-    return INVOICE_STATUS_META[INVOICE_STATUS.FAILED];
-  if (received > 0) return { color: 'orange', label: 'Chờ chuyển bù' };
-  return online
-    ? { color: 'gold', label: 'Chờ chuyển khoản' }
-    : { color: 'gold', label: 'Chờ thu tại quầy' };
+  if (![INVOICE_STATUS.PENDING, INVOICE_STATUS.FAILED].includes(invoice.status))
+    return statusMetaOf(invoice.status);
+  const claim = claimStatusMeta(invoice);
+  if (claim) return claim;
+  return invoice.status === INVOICE_STATUS.PENDING
+    ? pendingMeta(invoice, now)
+    : statusMetaOf(invoice.status);
 };

@@ -1,9 +1,24 @@
 import { Enums, prisma } from '../../config/db.js';
 import { logger } from '../../config/logger.js';
 import { CLASS_LIMITS } from '../../constants/index.js';
+import { vietnamDateTime } from '../../common/utils/vietnam-date.js';
 import * as notificationService from '../notification/notification.service.js';
 
 let isDraining = false;
+
+/**
+ * Chi tiết đổi để hội viên không phải mở app mới biết: giờ cũ → giờ mới của buổi, buổi bị huỷ
+ * (kèm lý do) hoặc HLV mới; đổi cả lịch lớp thì nhắc xem lịch mới.
+ */
+const describeChange = (changes) => {
+  const at = (value) => vietnamDateTime(value);
+  if (changes.before?.startAt && changes.after?.startAt)
+    return `: ${at(changes.before.startAt)} → ${at(changes.after.startAt)}`;
+  if (changes.sessionStartAt)
+    return ` (buổi ${at(changes.sessionStartAt)}${changes.reason ? `, lý do: ${changes.reason}` : ''})`;
+  if (changes.coachName) return `: HLV mới là ${changes.coachName}`;
+  return '. Vui lòng xem lịch mới';
+};
 
 /** BR-2.7: outbox ghi trong transaction đổi lớp, gửi lỗi vẫn giữ sự kiện để thử lại. */
 export const queueClassEvent = async (db, item, kind, changes) => {
@@ -13,6 +28,7 @@ export const queueClassEvent = async (db, item, kind, changes) => {
   });
   const isCancelled = kind === Enums.NotificationKind.CLASS_CANCELLED;
   const label = changes.sessionId ? 'Buổi học' : 'Lớp học';
+  const detail = isCancelled && !changes.sessionStartAt ? '' : describeChange(changes);
   return db.classEvent.create({
     data: {
       classId: item.id,
@@ -20,7 +36,7 @@ export const queueClassEvent = async (db, item, kind, changes) => {
       recipientIds: enrollments.map((e) => e.memberId),
       changes,
       title: isCancelled ? `${label} đã bị huỷ` : `Lịch ${label.toLowerCase()} thay đổi`,
-      message: `${label} ${item.name} ${isCancelled ? 'đã bị huỷ' : 'đã thay đổi lịch. Vui lòng xem lịch mới'}.`,
+      message: `${label} ${item.name} ${isCancelled ? 'đã bị huỷ' : 'đã thay đổi lịch'}${detail}.`,
     },
   });
 };

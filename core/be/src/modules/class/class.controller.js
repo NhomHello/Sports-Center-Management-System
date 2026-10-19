@@ -29,7 +29,11 @@ export const create = async (req, res) =>
 export const update = async (req, res) =>
   sendSuccess(res, {
     data: await classService.update(req.validated.params.id, req.validated.body, req.user),
+    message: 'Đã cập nhật lớp và thông báo hội viên đã đăng ký',
   });
 /** Huỷ lớp. */
 export const cancel = async (req, res) =>
-  sendSuccess(res, { data: await classService.cancel(req.validated.params.id, req.user) });
+  sendSuccess(res, {
+    data: await classService.cancel(req.validated.params.id, req.user),
+    message: 'Đã hủy lớp và thông báo hội viên đã đăng ký',
+  });

@@ -146,7 +146,7 @@ describe('Sprint 2: quy tắc xếp lớp và ca biên (BR-2.x)', () => {
       data: { startDate: new Date(Date.now() + DAY_MS) },
     });
     const early = await enroll(item.id, f.memberToken);
-    expect(early.body.message).toContain('membership');
+    expect(early.body.message).toContain('gói tập còn hiệu lực');
     await prisma.membership.updateMany({
       where: { userId: f.member.id },
       data: { startDate: new Date(Date.now() - DAY_MS) },

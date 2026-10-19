@@ -17,10 +17,17 @@ const useRemainingSeconds = (expiresAt) => {
   return Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / TICK_MS));
 };
 
-const formatCountdown = (seconds) =>
-  `${String(Math.floor(seconds / SECONDS_PER_MINUTE)).padStart(PAD_WIDTH, '0')}:${String(
-    seconds % SECONDS_PER_MINUTE,
-  ).padStart(PAD_WIDTH, '0')}`;
+const SECONDS_PER_HOUR = 3600;
+const HOURS_PER_DAY = 24;
+/** mm:ss khi dưới 1 giờ; hạn chuyển bù (tính bằng giờ/ngày) hiện "x ngày y giờ" / "y giờ z phút". */
+const formatCountdown = (seconds) => {
+  const hours = Math.floor(seconds / SECONDS_PER_HOUR);
+  const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+  if (hours >= HOURS_PER_DAY)
+    return `${Math.floor(hours / HOURS_PER_DAY)} ngày ${hours % HOURS_PER_DAY} giờ`;
+  if (hours > 0) return `${hours} giờ ${minutes} phút`;
+  return `${String(minutes).padStart(PAD_WIDTH, '0')}:${String(seconds % SECONDS_PER_MINUTE).padStart(PAD_WIDTH, '0')}`;
+};
 
 function PendingPanel({ instruction, currency }) {
   const remaining = useRemainingSeconds(instruction.expiresAt);
@@ -84,7 +91,7 @@ export function OnlinePaymentPanel({ invoice }) {
         className="scms-online-paid"
         style={{ marginBottom: 16 }}
         icon={<CheckCircleFilled />}
-        message="Đã nhận thanh toán. Gói tập của bạn đã được kích hoạt."
+        message="Đã nhận thanh toán. Gói tập đã được kích hoạt."
       />
     );
   }

@@ -56,9 +56,7 @@ const MemberMembershipView = ({ member }) => {
     return <Typography.Text type="secondary">Chưa có gói tập nào đang hoạt động.</Typography.Text>;
   }
   const { currentMembership } = member;
-  const statusColor = currentMembership.status === 'ACTIVE' ? 'green' : 'orange';
-  const statusText =
-    currentMembership.status === 'ACTIVE' ? 'Đang hoạt động' : currentMembership.status;
+  const { color: statusColor, label: statusText } = membershipStatusMeta(currentMembership);
 
   return (
     <Descriptions column={1} bordered>
@@ -195,3 +193,15 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
     </Drawer>
   );
 }
+const isFrozenNow = (membership, now = Date.now()) =>
+  membership.isFrozen ??
+  (membership.freezes ?? []).some(
+    (f) => !f.endedAt && new Date(f.startAt) <= now && now < new Date(f.endAt),
+  );
+
+/** Nhãn tiếng Việt cho trạng thái gói (không hiện mã ACTIVE/EXPIRED). */
+const membershipStatusMeta = (membership) => {
+  if (isFrozenNow(membership)) return { color: 'blue', label: 'Đang bảo lưu' };
+  if (membership.status === 'ACTIVE') return { color: 'green', label: 'Đang hoạt động' };
+  return { color: 'orange', label: 'Đã hết hạn' };
+};

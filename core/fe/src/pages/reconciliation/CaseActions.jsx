@@ -82,6 +82,7 @@ function SettleForms({ item, allowed, mutation }) {
             key={item.id}
             pending={pending}
             disabled={blocked}
+            claim={item.claim}
             onSubmit={(data) => mutation.mutate({ action: 'confirm', data })}
           />
         </>

@@ -104,8 +104,13 @@ export const NOTIFICATION_READ_STATUS = Object.freeze({ READ: 'READ', UNREAD: 'U
 
 export const NOTIFICATION_KIND_LABELS = Object.freeze({
   MEMBERSHIP_EXPIRY_REMINDER: 'Nhắc hạn gói tập',
+  MEMBERSHIP_EXPIRED: 'Gói tập hết hạn',
+  MEMBERSHIP_FROZEN: 'Bảo lưu gói tập',
+  WAITLIST_OFFER: 'Có chỗ trống cho bạn',
+  ACCOUNT_LOCKED: 'Tài khoản bị khóa',
+  BOOKING_BLOCKED: 'Tạm chặn đăng ký lớp',
   CLASS_CHANGED: 'Thay đổi lớp học',
-  CLASS_CANCELLED: 'Lớp học bị hủy',
+  CLASS_CANCELLED: 'Lớp/buổi học bị hủy',
   TRAINING_PLAN_PUBLISHED: 'Giáo án mới',
   TRAINING_RESULT_CREATED: 'Kết quả tập luyện',
   PAYMENT_CONFIRMED: 'Thanh toán thành công',

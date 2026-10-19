@@ -150,6 +150,6 @@ test('TC-F2-V03: membership hết hạn hiển thị lý do và chặn nút đă
   await login(page, f.member, f.password);
   const source = card(page, item.name);
   await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeDisabled();
-  await expect(source.getByText('Cần membership còn hiệu lực', { exact: true })).toBeVisible();
+  await expect(source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Tạo lớp', exact: true })).toHaveCount(0);
 });

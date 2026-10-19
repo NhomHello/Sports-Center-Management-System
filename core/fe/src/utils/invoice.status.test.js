@@ -40,6 +40,16 @@ describe('invoiceStatusMeta', () => {
       },
       'Chuyển thừa, chờ xác nhận',
     ],
+    [
+      'đã báo chuyển khoản, chờ trung tâm kiểm tra',
+      { status: 'PENDING', channel: 'ONLINE', expiresAt: future, cases: [{ status: 'OPEN' }] },
+      'Đã báo chuyển, chờ kiểm tra',
+    ],
+    [
+      'báo chuyển bị từ chối trên hóa đơn đã hủy',
+      { status: 'FAILED', channel: 'ONLINE', expiresAt: past, cases: [{ status: 'REJECTED' }] },
+      'Báo chuyển bị từ chối',
+    ],
     ['đã thanh toán', { status: 'PAID', channel: 'ONLINE' }, 'Đã thanh toán'],
   ])('%s', (_name, invoice, label) => {
     expect(invoiceStatusMeta(invoice, NOW).label).toBe(label);

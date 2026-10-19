@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Alert, Descriptions, Form, Input, Modal } from 'antd';
+import { Alert, App, Descriptions, Form, Input, Modal } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { requestRefund, completeRefund } from '@/services/sprint3.service';
 import { formatCurrency } from '@/utils/format';
@@ -48,13 +48,18 @@ function RequestFields({ invoice, refundable }) {
 export function InvoiceRefundModal({ invoice, onClose }) {
   const [form] = Form.useForm();
   const client = useQueryClient();
+  const { message } = App.useApp();
   const request = useMutation({
     mutationFn: (data) => requestRefund(invoice.id, data),
-    onSuccess: () => client.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES }),
+    onSuccess: () => {
+      message.success('Đã tạo yêu cầu hoàn tiền. Chuyển trả rồi nhập mã tham chiếu.');
+      client.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES });
+    },
   });
   const complete = useMutation({
     mutationFn: ({ reference }) => completeRefund(request.data.data.id, reference),
     onSuccess: () => {
+      message.success('Đã xác nhận chuyển trả cho hội viên');
       client.invalidateQueries({ queryKey: ['refunds'] });
       onClose();
     },

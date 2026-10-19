@@ -14,19 +14,27 @@ const values = (row) => [
   row.paidCount,
   row.refundCount,
 ];
+const MONEY = true;
+// Cột tiền trong bảng theo ngày: Doanh thu, Hoàn tiền, Thực thu (khớp HEADERS).
+const MONEY_COLUMNS = new Set(
+  ['Doanh thu', 'Hoàn tiền', 'Thực thu'].map((title) => HEADERS.indexOf(title)),
+);
+const vnd = new Intl.NumberFormat('vi-VN');
+/** PDF để đọc: tiền có dấu chấm nghìn và "đ"; CSV/Excel giữ số thô để tính toán tiếp. */
+const readable = ([label, value, money]) => [label, money ? `${vnd.format(value)} đ` : value];
 const summaryRows = (report) => [
   ['Khoảng ngày', `${report.filters.from} – ${report.filters.to}`],
   ['Múi giờ', report.timeZone],
   ['Gói lọc', report.filters.planId ?? 'Tất cả'],
   ['Hội viên lọc', report.filters.memberId ?? 'Tất cả'],
-  ['Doanh thu', report.revenue],
-  ['Hoàn tiền', report.refunded],
-  ['Thực thu', report.net],
-  ['Số payment', report.payment.count],
-  ['Tiền nhận qua payment', report.payment.receivedAmount],
+  ['Doanh thu', report.revenue, MONEY],
+  ['Hoàn tiền', report.refunded, MONEY],
+  ['Thực thu', report.net, MONEY],
+  ['Số giao dịch', report.payment.count],
+  ['Tiền thực nhận', report.payment.receivedAmount, MONEY],
   ['Gói tập trong kỳ', report.membership.total],
-  ['Gói ACTIVE', report.membership.active],
-  ['Gói EXPIRED', report.membership.expired],
+  ['Gói đang hoạt động', report.membership.active],
+  ['Gói đã hết hạn', report.membership.expired],
   ['Số lớp', report.classes.total],
   ['Số buổi', report.classes.sessions],
   ['Buổi huỷ', report.classes.cancelledSessions],
@@ -37,7 +45,7 @@ const escapeCsv = (value) => `"${String(value).replaceAll('"', '""')}"`;
 async function xlsx(report) {
   const workbook = new ExcelJS.Workbook();
   const summary = workbook.addWorksheet('Tổng hợp');
-  summary.addRows(summaryRows(report));
+  summary.addRows(summaryRows(report).map(([label, value]) => [label, value]));
   const sheet = workbook.addWorksheet('Doanh thu theo ngày');
   sheet.addRow(HEADERS);
   sheet.addRows(report.rows.map(values));
@@ -52,9 +60,14 @@ function pdf(report) {
     doc.on('end', () => resolve(Buffer.concat(parts)));
     doc.on('error', reject);
     doc.font(font).fontSize(SPRINT3.PDF_FONT_SIZE).text('Báo cáo trung tâm thể thao').moveDown();
-    for (const row of summaryRows(report)) doc.text(row.join(': '));
+    for (const row of summaryRows(report)) doc.text(readable(row).join(': '));
     doc.moveDown().text(HEADERS.join(' | '));
-    for (const row of report.rows) doc.text(values(row).join(' | '));
+    for (const row of report.rows)
+      doc.text(
+        values(row)
+          .map((value, index) => (MONEY_COLUMNS.has(index) ? `${vnd.format(value)} đ` : value))
+          .join(' | '),
+      );
     doc.end();
   });
 }
@@ -66,7 +79,12 @@ export const exportReport = async (query) => {
     csv: () =>
       Buffer.from(
         '\uFEFF' +
-          [...summaryRows(report), [], HEADERS, ...report.rows.map(values)]
+          [
+            ...summaryRows(report).map(([label, value]) => [label, value]),
+            [],
+            HEADERS,
+            ...report.rows.map(values),
+          ]
             .map((row) => row.map(escapeCsv).join(','))
             .join('\r\n'),
       ),

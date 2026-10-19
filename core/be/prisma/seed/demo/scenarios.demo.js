@@ -74,7 +74,12 @@ const seedMemberExceptions = async ({ users: u, plans }, classes) => {
   await payOnline(u.member11, plans.STARTER_30);
   const today = Date.now();
   const range = { from: vnDate(today), to: vnDate(today + 10 * DAY) };
-  await freeze((await membershipOf(u.member11)).id, range, manager);
+  const frozen = await freeze((await membershipOf(u.member11)).id, range, manager);
+  // Lùi ngày bắt đầu bảo lưu 3 ngày để demo "kết thúc bảo lưu sớm" thấy được số ngày cộng bù.
+  await prisma.membershipFreeze.update({
+    where: { id: frozen.id },
+    data: { startAt: new Date(today - 3 * DAY) },
+  });
   await payOnline(u.member12, plans.TRIAL_7);
   await prisma.membership.update({
     where: { id: (await membershipOf(u.member12)).id },

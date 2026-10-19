@@ -11,6 +11,13 @@ import * as settings from '../setting/setting.service.js';
 import { isFrozen, completeDueFreezes } from '../membership/membership-freeze.service.js';
 import { refreshNoShowBlock } from './no-show.service.js';
 
+/** Gói còn hạn nhưng trong số ngày nhắc gia hạn: nhắc lễ tân mời hội viên gia hạn. */
+const expiringWarning = async (membership, now) => {
+  const days = await settings.getValue(K.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
+  const left = Math.ceil((membership.endDate - now) / TIME.MS_PER_DAY);
+  return left <= days ? `Gói sắp hết hạn: còn ${left} ngày, hãy mời hội viên gia hạn` : null;
+};
+
 /** Check-in tại quầy không kích hoạt membership, gói bảo lưu/tài khoản khoá bị từ chối. */
 export const checkIn = (memberId, actor) =>
   withScheduleTransaction(async (db) => {
@@ -29,13 +36,14 @@ export const checkIn = (memberId, actor) =>
     const expired = !item || item.status !== Enums.MembershipStatus.ACTIVE || item.endDate <= now;
     if (expired && !(await settings.getValue(K.CHECKIN_ALLOW_EXPIRED)))
       throw ApiError.businessRule('Cần gói còn hiệu lực để check-in');
+    const warning = expired ? 'Gói đã hết hạn hoặc chưa có gói' : await expiringWarning(item, now);
     const result = await db.checkIn.create({
       data: {
         memberId,
         actorId: actor.id,
         kind: Enums.CheckInKind.GENERAL,
         code: randomUUID(),
-        warning: expired ? 'Gói đã hết hạn hoặc chưa có gói' : null,
+        warning,
       },
     });
     await writeScheduleAudit(db, actor, {

@@ -28,6 +28,7 @@ export const cancelSession = async (db, session, reason, actor) => {
   });
   await queueClassEvent(db, session.gymClass, Enums.NotificationKind.CLASS_CANCELLED, {
     sessionId: session.id,
+    sessionStartAt: session.startAt.toISOString(),
     reason,
     actorId: actor.id,
   });
@@ -138,6 +139,7 @@ export const changeCoach = (classId, data, actor) =>
     await queueClassEvent(db, item, Enums.NotificationKind.CLASS_CHANGED, {
       actorId: actor.id,
       coachId: coach.id,
+      coachName: coach.fullName,
       sessionIds: sessions.map((s) => s.id),
     });
     await createForUsers({

@@ -71,8 +71,8 @@ function CashPaymentContent({ query, mutation, canCollect }) {
       )}
       <CashInvoiceSummary invoice={invoice} />
       <Typography.Paragraph type="secondary">
-        Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Membership chỉ được cập nhật sau khi hệ thống
-        ghi nhận thanh toán thành công.
+        Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Gói tập chỉ được cập nhật sau khi hệ thống ghi
+        nhận thanh toán thành công.
       </Typography.Paragraph>
       {!canCollect && (
         <Alert

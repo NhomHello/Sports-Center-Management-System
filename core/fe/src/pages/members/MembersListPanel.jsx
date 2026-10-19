@@ -50,6 +50,7 @@ export function MembersListPanel({ membersQuery, table, columns, onView }) {
           />
         </div>
         <Select
+          className="scms-member-filter"
           aria-label="Lọc trạng thái gói"
           placeholder="Tất cả hội viên"
           allowClear

@@ -33,6 +33,13 @@ export const INVOICE_INCLUDE = {
     where: INVOICE_REFUND_WHERE,
     select: { id: true, amount: true, status: true, createdAt: true },
   },
+  // Phiếu "Tôi đã chuyển khoản" mới nhất để hội viên thấy đang chờ kiểm tra hay đã bị từ chối.
+  cases: {
+    where: { reason: Enums.ReconciliationReason.MEMBER_CLAIM },
+    select: { id: true, status: true, note: true, createdAt: true },
+    orderBy: { id: 'desc' },
+    take: 1,
+  },
   user: { select: { id: true, fullName: true, email: true, phone: true } },
 };
 

@@ -1207,3 +1207,36 @@ a {
     display: none;
   }
 }
+
+/* Báo cáo: nhóm chỉ số theo chủ đề, mỗi ô đủ rộng cho số tiền dài. */
+.scms-report-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+}
+.scms-report-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px 20px;
+}
+.scms-report-stats .ant-statistic-content {
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+/* Tổng quan: ô chỉ số chia đều theo hàng và cách các thẻ bên dưới. */
+.scms-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.scms-kpi-grid:empty {
+  display: none;
+}
+
+/* Danh sách hội viên: bộ lọc trạng thái có độ rộng cố định, thẳng lề với ô tìm kiếm. */
+.scms-member-filter {
+  width: min(100%, 260px);
+  margin-bottom: 16px;
+}

@@ -144,7 +144,7 @@ export const rejectClaim = async (id, { note }, actor) => {
       kind: Enums.NotificationKind.PAYMENT_CLAIM_REJECTED,
       eventKey: `case:${kase.id}:rejected`,
       title: 'Chưa tìm thấy giao dịch chuyển khoản của bạn',
-      message: `Lý do: ${note}. Vui lòng liên hệ lễ tân kèm biên lai chuyển khoản.`,
+      message: `Lý do: ${note.trim().replace(/[.。]+$/, '')}. Vui lòng liên hệ lễ tân kèm biên lai chuyển khoản.`,
     }),
   ]);
   return kase;

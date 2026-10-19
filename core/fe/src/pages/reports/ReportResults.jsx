@@ -1,5 +1,23 @@
-import { Alert, Button, Select, Space, Statistic, Table } from 'antd';
+import { Alert, Button, Card, Select, Space, Statistic, Table } from 'antd';
 import { formatCurrency } from '@/utils/format';
+/** Một nhóm chỉ số cùng chủ đề; lưới đều cột để các con số không dồn sát nhau. */
+function StatGroup({ title, items }) {
+  return (
+    <Card size="small" title={title} className="scms-report-group">
+      <div className="scms-report-stats">
+        {items.map(([label, value, money]) => (
+          <Statistic
+            key={label}
+            title={label}
+            value={value}
+            formatter={money ? formatCurrency : undefined}
+          />
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 /** Chỉ số và hàng doanh thu dùng cùng dữ liệu server. */
 export function ReportResults({ report, format, setFormat, download }) {
   return (
@@ -8,26 +26,35 @@ export function ReportResults({ report, format, setFormat, download }) {
         type="info"
         title={`${report.filters.from} → ${report.filters.to} · ${report.timeZone}`}
       />
-      <Space wrap>
-        <Statistic title="Doanh thu" value={report.revenue} formatter={formatCurrency} />
-        <Statistic title="Đã hoàn" value={report.refunded} formatter={formatCurrency} />
-        <Statistic title="Thực thu" value={report.net} formatter={formatCurrency} />
-      </Space>
-      <Space wrap>
-        <Statistic title="Giao dịch" value={report.payment.count} />
-        <Statistic
-          title="Tiền thực nhận"
-          value={report.payment.receivedAmount}
-          formatter={formatCurrency}
+      <div className="scms-report-groups">
+        <StatGroup
+          title="Tài chính"
+          items={[
+            ['Doanh thu', report.revenue, true],
+            ['Đã hoàn', report.refunded, true],
+            ['Thực thu', report.net, true],
+            ['Giao dịch', report.payment.count],
+            ['Tiền thực nhận', report.payment.receivedAmount, true],
+          ]}
         />
-        <Statistic title="Gói trong kỳ" value={report.membership.total} />
-        <Statistic title="Gói hoạt động" value={report.membership.active} />
-        <Statistic title="Gói hết hạn" value={report.membership.expired} />
-        <Statistic title="Lớp" value={report.classes.total} />
-        <Statistic title="Buổi học" value={report.classes.sessions} />
-        <Statistic title="Buổi hủy" value={report.classes.cancelledSessions} />
-        <Statistic title="Đăng ký" value={report.classes.enrollments} />
-      </Space>
+        <StatGroup
+          title="Gói tập"
+          items={[
+            ['Gói trong kỳ', report.membership.total],
+            ['Gói hoạt động', report.membership.active],
+            ['Gói hết hạn', report.membership.expired],
+          ]}
+        />
+        <StatGroup
+          title="Lớp học"
+          items={[
+            ['Lớp', report.classes.total],
+            ['Buổi học', report.classes.sessions],
+            ['Buổi hủy', report.classes.cancelledSessions],
+            ['Đăng ký', report.classes.enrollments],
+          ]}
+        />
+      </div>
       <Space>
         <Select
           aria-label="Định dạng báo cáo"

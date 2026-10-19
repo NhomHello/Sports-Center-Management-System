@@ -151,7 +151,14 @@ export const listCoaches = () =>
   prisma.user.findMany({
     where: {
       status: Enums.UserStatus.ACTIVE,
-      role: { permissions: { some: { permission: { code: PERMISSIONS.SCHEDULE_VIEW_TEACHING } } } },
+      // HLV = có quyền xem lịch dạy nhưng không quản trị lớp; tránh admin/quản lý (có mọi quyền)
+      // lẫn vào danh sách chọn HLV.
+      role: {
+        AND: [
+          { permissions: { some: { permission: { code: PERMISSIONS.SCHEDULE_VIEW_TEACHING } } } },
+          { permissions: { none: { permission: { code: PERMISSIONS.CLASS_CREATE } } } },
+        ],
+      },
     },
     select: PUBLIC_PERSON,
     orderBy: { fullName: 'asc' },

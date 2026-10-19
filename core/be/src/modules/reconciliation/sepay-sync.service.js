@@ -62,7 +62,9 @@ const fetchTransactions = async (from, to) => {
  */
 export const syncFromSepay = async ({ from, to }, actor) => {
   if (!env.SEPAY_API_TOKEN)
-    throw ApiError.businessRule('Chưa cấu hình SEPAY_API_TOKEN nên chưa đồng bộ được từ SePay');
+    throw ApiError.businessRule(
+      'Trung tâm chưa kết nối API SePay nên chưa đồng bộ tự động được. Vui lòng đối chiếu sao kê thủ công.',
+    );
   if (from >= to) throw ApiError.badRequest('Thời điểm bắt đầu phải trước thời điểm kết thúc');
   const transactions = await fetchTransactions(from, to);
   const processed = {};
