@@ -1,0 +1,162 @@
+/**
+ * Dữ liệu demo "giống thật": bộ môn, phòng, gói tập, nhân viên, hội viên và lịch lớp hằng tuần.
+ * Email/SĐT cố định để tài liệu demo (docs/kiem-thu/nghiem-thu) dùng lại được sau mỗi lần reset.
+ * dayOfWeek: 0 = Chủ nhật, 1 = Thứ Hai ... 6 = Thứ Bảy.
+ */
+
+export const DEMO_SUBJECTS = [
+  { name: 'Yoga', description: 'Yoga thư giãn, dẻo dai và hít thở cho mọi lứa tuổi.' },
+  { name: 'Gym & Fitness', description: 'Tập sức mạnh, sức bền với máy và tạ tự do.' },
+  { name: 'Boxing', description: 'Kỹ thuật đấm, di chuyển và thể lực đối kháng.' },
+  { name: 'Pilates', description: 'Tăng sức mạnh vùng lõi, cải thiện tư thế.' },
+  { name: 'Zumba & Dance', description: 'Nhảy theo nhạc, đốt mỡ và vui vẻ.' },
+];
+
+export const DEMO_ROOMS = [
+  { name: 'Studio Yoga', capacity: 20, description: 'Tầng 2, sàn gỗ, có thảm và gạch tập.' },
+  { name: 'Phòng Gym', capacity: 25, description: 'Tầng 1, khu máy và tạ tự do.' },
+  { name: 'Sàn Boxing', capacity: 12, description: 'Tầng 3, có bao cát và sàn đài.' },
+  { name: 'Phòng Pilates', capacity: 12, description: 'Tầng 2, có máy reformer.' },
+  { name: 'Phòng Dance', capacity: 30, description: 'Tầng 3, gương lớn và hệ thống âm thanh.' },
+];
+
+// Gói chỉ khác nhau về thời hạn và đơn giá mỗi ngày; quyền lợi như nhau (xem plans.mock.js).
+const BENEFITS = [
+  'Sử dụng toàn bộ thiết bị và phòng tập',
+  'Đăng ký lớp học',
+  'Theo dõi lịch sử trên hệ thống',
+];
+const plan = (fields) => ({ benefits: BENEFITS, ...fields });
+export const DEMO_PLANS = [
+  plan({
+    code: 'TRIAL_7',
+    name: 'Trải nghiệm 7 ngày',
+    durationDays: 7,
+    price: 120000,
+    description: 'Gói dùng thử cho khách mới.',
+  }),
+  plan({
+    code: 'STARTER_30',
+    name: 'Khởi động 30 ngày',
+    durationDays: 30,
+    price: 360000,
+    description: 'Gói linh hoạt cho hội viên mới.',
+  }),
+  plan({
+    code: 'ACTIVE_90',
+    name: 'Năng động 90 ngày',
+    durationDays: 90,
+    price: 900000,
+    description: 'Cân bằng cho lịch tập đều đặn.',
+  }),
+  plan({
+    code: 'STEADY_180',
+    name: 'Bền bỉ 180 ngày',
+    durationDays: 180,
+    price: 1620000,
+    description: 'Nửa năm tập luyện, giá tốt hơn.',
+  }),
+  plan({
+    code: 'COMMIT_365',
+    name: 'Bứt phá 365 ngày',
+    durationDays: 365,
+    price: 2880000,
+    description: 'Đơn giá mỗi ngày thấp nhất.',
+  }),
+  // Gói đã ngừng bán: vẫn hiện trong lịch sử, không chọn được cho giao dịch mới (BR-1.6).
+  plan({
+    code: 'SUMMER_60',
+    name: 'Hè sôi động 60 ngày',
+    durationDays: 60,
+    price: 600000,
+    description: 'Khuyến mãi hè đã kết thúc.',
+    isActive: false,
+    status: 'STOPPED',
+  }),
+];
+
+export const DEMO_STAFF = [
+  {
+    email: 'quanly@scms.local',
+    fullName: 'Võ Thị Quản Lý',
+    phone: '0901000100',
+    role: 'CENTER_MANAGER',
+  },
+  {
+    email: 'letan@scms.local',
+    fullName: 'Trần Thị Lễ Tân',
+    phone: '0901000001',
+    role: 'RECEPTIONIST',
+  },
+  {
+    email: 'letan2@scms.local',
+    fullName: 'Đặng Minh Thư',
+    phone: '0901000004',
+    role: 'RECEPTIONIST',
+  },
+  {
+    email: 'coach.yoga@scms.local',
+    fullName: 'Nguyễn Văn Yoga',
+    phone: '0901000002',
+    role: 'COACH',
+  },
+  { email: 'coach.gym@scms.local', fullName: 'Lê Văn Gym', phone: '0901000003', role: 'COACH' },
+  {
+    email: 'coach.boxing@scms.local',
+    fullName: 'Đỗ Văn Boxing',
+    phone: '0901000005',
+    role: 'COACH',
+  },
+  {
+    email: 'coach.pilates@scms.local',
+    fullName: 'Hoàng Thu Hà',
+    phone: '0901000006',
+    role: 'COACH',
+  },
+  {
+    email: 'coach.dance@scms.local',
+    fullName: 'Phan Bảo Ngọc',
+    phone: '0901000007',
+    role: 'COACH',
+  },
+];
+
+const MEMBER_NAMES = [
+  'Nguyễn Minh Anh',
+  'Trần Quốc Bảo',
+  'Lê Thu Cúc',
+  'Hoàng Đức Dũng',
+  'Phạm Gia Hân',
+  'Vũ Ngọc Hà',
+  'Đặng Thanh Hải',
+  'Bùi Khánh Linh',
+  'Đỗ Hoàng Long',
+  'Ngô Phương Mai',
+  'Dương Tuấn Minh',
+  'Lý Bảo Ngọc',
+  'Trịnh Văn Phúc',
+  'Mai Thị Quỳnh',
+  'Hồ Đăng Khoa',
+  'Tạ Minh Tâm',
+  'Cao Thùy Trang',
+  'Lâm Quang Vinh',
+  'Châu Ngọc Yến',
+  'Kiều Anh Tuấn',
+  'Phùng Thảo Vy',
+  'Tô Gia Huy',
+  'Quách Mỹ Duyên',
+  'Lương Nhật Nam',
+  'Vương Hải Yến',
+  'Đinh Công Sơn',
+  'Triệu Kim Oanh',
+  'La Minh Khôi',
+  'Hà Bích Ngân',
+  'Mạc Đức Thịnh',
+];
+/** member1..member30; member1–15 dùng cho các tình huống trong tài liệu demo. */
+export const DEMO_MEMBERS = MEMBER_NAMES.map((fullName, index) => ({
+  email: `member${index + 1}@scms.local`,
+  fullName,
+  phone: `09020000${String(index + 1).padStart(2, '0')}`,
+  role: 'MEMBER',
+}));

@@ -64,11 +64,26 @@ scripts       npm run dev / setup
 | `npm run dev -- --prepare-only` | Chỉ chuẩn bị DB/seed để kiểm tra, không chiếm cổng BE/FE         |
 | `npm run db:migrate`    | Tạo migration mới sau khi sửa `schema.prisma` (hỏi tên)  |
 | `npm run db:seed`       | Đồng bộ permission / role / settings / mock user vào DB  |
+| `npm run db:demo`       | Reset dữ liệu nghiệp vụ rồi dựng dữ liệu demo (8 lớp, 30 hội viên, lịch sử thanh toán, tình huống đối soát) |
+| `npm run db:clean`      | Chỉ reset: xoá hoá đơn, lớp, hội viên… giữ quyền, vai trò, cấu hình và tài khoản admin |
 | `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
 | `npm run lint`          | Lint toàn bộ (tự chạy khi commit)                        |
 | `npm test`              | Test BE (cần MySQL đang chạy) + FE                       |
 | `npm run verify:sprint2` | Test toàn bộ và migration mới/nâng cấp trên DB tạm; cần quyền CREATE/DROP DATABASE |
 | `npm run test:e2e`       | Playwright: bốn vai trò desktop và mobile 320px; server riêng 3100/5180 |
+
+## Dữ liệu demo
+
+`npm run db:demo` (chỉ chạy ở môi trường dev, có chặn `NODE_ENV=production`) gọi đúng các service nghiệp vụ
+nên dữ liệu sinh ra giống khi người dùng thao tác thật. Mã nguồn ở `core/be/prisma/seed/demo/`.
+
+- Tài khoản: `admin@scms.local` / `SEED_ADMIN_PASSWORD`; `quanly`, `letan`, `letan2`, `coach.yoga|gym|boxing|pilates|dance`,
+  `member1`…`member30` `@scms.local` / `SEED_MOCK_PASSWORD`.
+- `member1`–`member15` có sẵn các tình huống của `docs/kiem-thu/nghiem-thu/LoTrinh_Demo_Sprint2_Sprint3.md` (mục 1.2):
+  giữ chỗ lớp đầy, danh sách chờ, chuyển thiếu/thừa/hai lần, báo đã chuyển, gói sắp hết hạn, bảo lưu, hết hạn,
+  chưa xác minh email, bị chặn đăng ký, bị khoá.
+- Lớp "Sức mạnh cơ bản" có một buổi đang diễn ra ngay lúc seed để HLV `coach.gym` thử điểm danh.
+- Hoá đơn online chờ thanh toán tự hết hạn sau `PAYMENT_ONLINE_TIMEOUT_MINUTES`; chạy lại `npm run db:demo` trước buổi demo.
 
 ## Sprint 2
 

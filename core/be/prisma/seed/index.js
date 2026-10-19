@@ -171,17 +171,25 @@ async function seedSettings() {
   logger.info({ count: SETTING_DEFINITIONS.length }, 'Seed settings xong');
 }
 
-async function main() {
+/**
+ * Seed nền: quyền, vai trò, admin, cấu hình; dữ liệu mock tuỳ SEED_MOCK_DATA.
+ * Script demo (prisma/seed/demo) gọi với mock=false để không lẫn dữ liệu mẫu cũ.
+ * @param {{ mock?: boolean }} [options]
+ */
+export async function seedBase({ mock = env.SEED_MOCK_DATA } = {}) {
   const permissions = await seedPermissions();
   await seedRoles(permissions);
   await seedAdminUser();
   await seedSettings();
-  if (env.SEED_MOCK_DATA) await seedMockData();
+  if (mock) await seedMockData();
 }
 
-main()
-  .catch((err) => {
-    logger.error({ err }, 'Seed that bai');
-    process.exitCode = 1;
-  })
-  .finally(() => prisma.$disconnect());
+// Chỉ tự chạy khi gọi trực tiếp (npm run db:seed), không chạy khi được import.
+if (process.argv[1]?.endsWith('seed/index.js') && !process.argv[1].includes('/demo/')) {
+  seedBase()
+    .catch((err) => {
+      logger.error({ err }, 'Seed that bai');
+      process.exitCode = 1;
+    })
+    .finally(() => prisma.$disconnect());
+}

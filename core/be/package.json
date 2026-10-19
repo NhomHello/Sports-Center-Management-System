@@ -14,6 +14,9 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "node --env-file-if-exists=.env prisma/seed/index.js",
+    "db:clean": "node --env-file-if-exists=.env prisma/seed/demo/clean.js",
+    "db:seed:demo": "node --env-file-if-exists=.env prisma/seed/demo/index.js",
+    "db:demo": "npm run db:clean -- --yes && npm run db:seed:demo",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
     "test": "vitest run --passWithNoTests"
