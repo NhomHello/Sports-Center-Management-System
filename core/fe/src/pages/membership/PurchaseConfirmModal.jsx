@@ -7,7 +7,7 @@ export function PurchaseConfirmModal({ plan, current, query, mutation, onClose }
     <Modal
       open={Boolean(plan)}
       destroyOnHidden
-      title="Xác nhận gói tập"
+      title="Xác nhận gói tự tập"
       okText="Tạo hóa đơn"
       cancelText="Hủy"
       onCancel={onClose}

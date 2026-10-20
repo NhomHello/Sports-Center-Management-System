@@ -4,6 +4,7 @@ import { formatCurrency } from '@/utils/format';
 import { computeSavings, pricePerDay } from '@/utils/planPricing';
 import { PlanActions } from './PlanActions';
 import './membershipPlans.css';
+import { PlanAccessSummary } from './PlanAccessSummary';
 
 const getDisplayCode = (plan) =>
   /^[A-Z0-9_]{1,18}$/.test(plan.code ?? '')
@@ -44,7 +45,7 @@ export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
       {plan.name}
     </Typography.Title>
     <Typography.Paragraph className="scms-plan-card__description">
-      {plan.description || 'Gói tập dành cho hội viên của trung tâm.'}
+      {plan.description || 'Gói tự tập dành cho hội viên của trung tâm.'}
     </Typography.Paragraph>
     <div className="scms-plan-card__pricing">
       <span className="scms-plan-card__price">{formatCurrency(plan.price)}</span>
@@ -60,6 +61,7 @@ export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
     </div>
     <div className="scms-plan-card__rule" />
     <Typography.Text className="scms-plan-card__benefits-title">Bao gồm</Typography.Text>
+    <PlanAccessSummary plan={plan} />
     <PlanBenefits benefits={plan.benefits} description={plan.description} />
     <PlanActions plan={plan} featured={featured} {...actions} />
   </Card>
@@ -70,7 +72,7 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
   const savings = computeSavings(sortedPlans);
   const featuredIndex = sortedPlans.length > 1 ? Math.floor(sortedPlans.length / 2) : -1;
   return (
-    <section className="scms-pricing-surface" aria-label="Bảng giá gói tập">
+    <section className="scms-pricing-surface" aria-label="Bảng giá gói tự tập">
       <Row gutter={[24, 24]} align="stretch">
         {sortedPlans.map((plan, index) => (
           <Col key={plan.id} xs={24} md={12} xl={8} className="scms-pricing-col">
@@ -86,7 +88,7 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
       </Row>
       <div className="scms-pricing-assurance">
         <SafetyCertificateOutlined />
-        Gói tập chỉ được kích hoạt hoặc gia hạn sau khi hóa đơn thanh toán thành công.
+        Gói tự tập chỉ được kích hoạt hoặc gia hạn sau khi hóa đơn thanh toán thành công.
       </div>
     </section>
   );

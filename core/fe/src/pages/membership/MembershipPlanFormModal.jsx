@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { PlanAccessFields } from './PlanAccessFields';
 import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
 
 const MembershipIdentityFields = ({ plan }) => (
@@ -26,18 +27,23 @@ const MembershipIdentityFields = ({ plan }) => (
   </>
 );
 
-/** Modal tạo hoặc sửa thông tin gói tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
+const getInitialValues = (plan = {}) => ({
+  ...plan,
+  frameIds: (plan.frames ?? []).map((frame) => frame.id),
+  roomTypeIds: (plan.areas ?? []).map((area) => area.id),
+  benefitsText: (plan.benefits ?? []).join('\n'),
+  isActive: plan.isActive ?? true,
+});
+
+/** Modal tạo hoặc sửa thông tin gói tự tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
 export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading }) {
   const [form] = Form.useForm();
   const { message } = App.useApp();
 
   useEffect(() => {
     if (!open) return;
-    form.setFieldsValue({
-      ...plan,
-      benefitsText: plan?.benefits?.join('\n') ?? '',
-      isActive: plan?.isActive ?? true,
-    });
+    form.resetFields();
+    form.setFieldsValue(getInitialValues(plan));
   }, [form, open, plan]);
 
   const handleFinish = ({ benefitsText, ...values }) => {
@@ -46,7 +52,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
       .map((item) => item.trim())
       .filter(Boolean);
     if (benefits.length > 12) {
-      message.error('Gói tập chỉ được có tối đa 12 quyền lợi');
+      message.error('Gói tự tập chỉ được có tối đa 12 quyền lợi');
       return;
     }
     onSubmit({ ...values, benefits });
@@ -56,7 +62,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     <Modal
       open={open}
       centered
-      title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
+      title={plan ? 'Chỉnh sửa gói tự tập' : 'Tạo gói tự tập mới'}
       okText="Lưu"
       cancelText="Hủy"
       confirmLoading={loading}
@@ -66,6 +72,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <MembershipIdentityFields plan={plan} />
+        <PlanAccessFields />
         <Form.Item
           name="durationDays"
           label="Thời hạn (ngày)"
@@ -93,7 +100,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
         <Form.Item name="benefitsText" label="Quyền lợi (mỗi dòng một quyền lợi)">
           <Input.TextArea
             rows={4}
-            placeholder="Ví dụ:&#10;Tập gym không giới hạn thời gian&#10;Tham gia mọi lớp Yoga"
+            placeholder="Ví dụ:&#10;Sử dụng thiết bị tại khu vực của gói"
           />
         </Form.Item>
         <Form.Item name="isActive" label="Đang mở bán" valuePropName="checked">
