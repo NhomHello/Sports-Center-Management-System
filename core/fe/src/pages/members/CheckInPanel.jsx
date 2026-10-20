@@ -52,6 +52,14 @@ export function CheckInPanel() {
           Xác nhận đến trung tâm
         </Button>
       </Space>
+      {mutation.isError && (
+        <Alert
+          showIcon
+          type="error"
+          title="Không thể check-in"
+          description={mutation.error.message}
+        />
+      )}
       {query.isError && <Alert type="error" title={query.error.message} />}
       {mutation.isSuccess && (
         <Alert
