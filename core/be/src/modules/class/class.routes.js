@@ -65,5 +65,11 @@ router.get(
 );
 router.post('/', authorize(P.CLASS_CREATE), validate(createClassSchema), controller.create);
 router.put('/:id', authorize(P.CLASS_UPDATE), validate(updateClassSchema), controller.update);
+router.post(
+  '/:id/update-preview',
+  authorize(P.CLASS_UPDATE),
+  validate(updateClassSchema),
+  controller.previewUpdate,
+);
 router.delete('/:id', authorize(P.CLASS_DELETE), validate(classIdSchema), controller.cancel);
 export default router;

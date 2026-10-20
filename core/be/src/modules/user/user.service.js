@@ -10,6 +10,7 @@ import { Enums, prisma } from '../../config/db.js';
 import { cancelBookingsForLock } from './user-booking-lock.service.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from './user.mapper.js';
+import { USER_TEACHING_INCLUDE, withTeaching } from './coach-subject.service.js';
 
 /**
  * Dieu kien where tu query tim kiem.
@@ -36,13 +37,16 @@ export const list = async (query) => {
   const [items, total] = await prisma.$transaction([
     prisma.user.findMany({
       where,
-      include: USER_WITH_ROLE,
+      include: USER_TEACHING_INCLUDE,
       orderBy: { id: 'desc' },
       ...toPrismaPage(query),
     }),
     prisma.user.count({ where }),
   ]);
-  return { items: items.map(toPublicUser), meta: buildPageMeta({ ...query, total }) };
+  return {
+    items: items.map((item) => withTeaching(toPublicUser(item))),
+    meta: buildPageMeta({ ...query, total }),
+  };
 };
 
 /** @param {number} id */

@@ -14,6 +14,13 @@ router.patch(
   c.reschedule,
 );
 router.post(
+  '/classes/sessions/:id/reschedule-preview',
+  authenticate,
+  authorize(P.CLASS_UPDATE),
+  validate(v.sessionSchema),
+  c.reschedulePreview,
+);
+router.post(
   '/classes/sessions/:id/cancellation',
   authenticate,
   authorize(P.CLASS_DELETE),

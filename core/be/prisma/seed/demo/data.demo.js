@@ -12,13 +12,39 @@ export const DEMO_SUBJECTS = [
   { name: 'Zumba & Dance', description: 'Nhảy theo nhạc, đốt mỡ và vui vẻ.' },
 ];
 
-export const DEMO_ROOMS = [
-  { name: 'Studio Yoga', capacity: 20, description: 'Tầng 2, sàn gỗ, có thảm và gạch tập.' },
-  { name: 'Phòng Gym', capacity: 25, description: 'Tầng 1, khu máy và tạ tự do.' },
-  { name: 'Sàn Boxing', capacity: 12, description: 'Tầng 3, có bao cát và sàn đài.' },
-  { name: 'Phòng Pilates', capacity: 12, description: 'Tầng 2, có máy reformer.' },
-  { name: 'Phòng Dance', capacity: 30, description: 'Tầng 3, gương lớn và hệ thống âm thanh.' },
+/** Loại phòng = chức năng phòng: bộ môn dạy được trong phòng và có phải khu tự tập không. */
+export const DEMO_ROOM_TYPES = [
+  {
+    name: 'Studio',
+    description: 'Sàn gỗ, thảm tập: lớp nhẹ nhàng, giữ thăng bằng.',
+    subjects: ['Yoga', 'Pilates'],
+  },
+  {
+    name: 'Phòng máy',
+    description: 'Máy tập, tạ tự do; dùng cho lớp sức mạnh và hội viên tự tập.',
+    subjects: ['Gym & Fitness'],
+    isSelfTrainingArea: true,
+  },
+  { name: 'Sàn võ', description: 'Bao cát, sàn đài, găng.', subjects: ['Boxing'] },
+  { name: 'Phòng nhảy', description: 'Gương lớn, âm thanh.', subjects: ['Zumba & Dance'] },
 ];
+
+export const DEMO_ROOMS = [
+  { name: 'Studio Yoga', capacity: 20, type: 'Studio', description: 'Tầng 2, sàn gỗ.' },
+  { name: 'Phòng Pilates', capacity: 12, type: 'Studio', description: 'Tầng 2, có máy reformer.' },
+  { name: 'Phòng Gym', capacity: 25, type: 'Phòng máy', description: 'Tầng 1, máy và tạ tự do.' },
+  { name: 'Sàn Boxing', capacity: 12, type: 'Sàn võ', description: 'Tầng 3, bao cát, sàn đài.' },
+  { name: 'Phòng Dance', capacity: 30, type: 'Phòng nhảy', description: 'Tầng 3, gương lớn.' },
+];
+
+/** Chuyên môn HLV (bộ môn được phân công dạy). */
+export const DEMO_COACH_SUBJECTS = {
+  'coach.yoga': ['Yoga', 'Pilates'],
+  'coach.gym': ['Gym & Fitness'],
+  'coach.boxing': ['Boxing'],
+  'coach.pilates': ['Pilates', 'Yoga'],
+  'coach.dance': ['Zumba & Dance'],
+};
 
 // Gói chỉ khác nhau về thời hạn và đơn giá mỗi ngày; quyền lợi như nhau (xem plans.mock.js).
 const BENEFITS = [

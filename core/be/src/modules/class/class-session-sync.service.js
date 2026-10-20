@@ -11,7 +11,7 @@ const toIso = (s) => ({ startAt: s.startAt.toISOString(), endAt: s.endAt.toISOSt
  * Giờ gốc theo lịch mẫu của các buổi đã đổi giờ riêng: lấy "before" của lần đổi đầu tiên trong
  * outbox class_events. Không có bản ghi thì coi giờ hiện tại là giờ gốc.
  */
-const originalStarts = async (db, classId, sessions) => {
+export const originalStarts = async (db, classId, sessions) => {
   const ids = new Set(sessions.filter((s) => s.rescheduledAt).map((s) => s.id));
   const origins = new Map();
   if (!ids.size) return origins;
@@ -39,7 +39,7 @@ const resourcePatch = (session, old, snapshots) => {
 };
 
 /** Phân loại buổi tương lai hiện có theo lịch mẫu mới; trả các thay đổi cần ghi. */
-const planChanges = ({ future, origins, template, old, snapshots }) => {
+export const planChanges = ({ future, origins, template, old, snapshots }) => {
   const byStart = new Map(template.map((s) => [time(s.startAt), s]));
   const covered = new Set();
   const cancel = [];

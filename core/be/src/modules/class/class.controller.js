@@ -1,3 +1,4 @@
+import { previewClassUpdate } from './class-change-preview.service.js';
 import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
 import * as readService from './class-read.service.js';
 import * as classService from './class.service.js';
@@ -36,4 +37,10 @@ export const cancel = async (req, res) =>
   sendSuccess(res, {
     data: await classService.cancel(req.validated.params.id, req.user),
     message: 'Đã hủy lớp và thông báo hội viên đã đăng ký',
+  });
+
+/** POST /classes/:id/update-preview: số buổi đổi và học viên bị ảnh hưởng trước khi lưu. */
+export const previewUpdate = async (req, res) =>
+  sendSuccess(res, {
+    data: await previewClassUpdate(req.validated.params.id, req.validated.body),
   });

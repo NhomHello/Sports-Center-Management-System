@@ -3,7 +3,7 @@
  * GIỮ: permissions, roles, system_settings (gồm tài khoản nhận tiền SePay), tài khoản admin
  * (SEED_ADMIN_EMAIL), bảng migration và các bảng legacy Sprint 1 không còn trong schema.
  * XOÁ: hoá đơn, thanh toán, đối soát, gói hội viên, lớp/buổi/đăng ký, thông báo, nhật ký,
- * bộ môn, phòng, gói tập và mọi tài khoản khác.
+ * bộ môn, loại phòng, phòng, gói tập và mọi tài khoản khác (khung giờ hoạt động là cấu hình, được giữ).
  *
  * Chạy: npm run db:clean -- --yes   (từ chối khi NODE_ENV=production hoặc thiếu --yes)
  */
@@ -31,6 +31,7 @@ const TABLES_IN_ORDER = [
   'gymClass',
   'subject',
   'room',
+  'roomType',
   'membershipPlan',
   'notification',
   'auditLog',

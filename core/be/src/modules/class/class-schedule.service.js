@@ -1,4 +1,5 @@
 import { assertSessionResources } from './session-resource.service.js';
+import { assertWithinFrames } from '../operating-frame/operating-frame.service.js';
 import { PERMISSIONS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
@@ -38,11 +39,31 @@ export const buildSessions = (data, now = new Date()) => {
   return future;
 };
 
-/** BR-2.4: HLV/phòng hợp lệ và không trùng cả lớp OPEN lẫn CLOSED chưa huỷ. */
+/** Phòng phải thuộc loại phòng dạy được bộ môn của lớp (góp ý GV: mỗi loại phòng một chức năng). */
+export const assertRoomServesSubject = (room, subjectId) => {
+  if (!room.roomType?.subjects.some((s) => s.subjectId === subjectId))
+    throw ApiError.businessRule(
+      `Phòng "${room.name}" (${room.roomType?.name ?? 'chưa phân loại'}) không dùng cho bộ môn này`,
+    );
+};
+
+/** HLV phải có chuyên môn đúng bộ môn của lớp. */
+export const assertCoachTeachesSubject = (coach, subjectId) => {
+  if (!coach.coachSubjects.some((s) => s.subjectId === subjectId))
+    throw ApiError.businessRule(`HLV ${coach.fullName} chưa có chuyên môn bộ môn này`);
+};
+
+export const ROOM_WITH_TYPE = { roomType: { include: { subjects: true } } };
+export const COACH_WITH_SUBJECTS = { coachSubjects: true };
+
+/**
+ * BR-2.4 + góp ý GV: giờ học nằm trong khung giờ hoạt động, phòng đúng loại cho bộ môn và đủ sức
+ * chứa, HLV đúng chuyên môn; không trùng phòng/HLV với lớp OPEN lẫn CLOSED chưa huỷ.
+ */
 export const validateResources = async (db, data, sessions, excludeId) => {
   const [subject, room, coach] = await Promise.all([
     db.subject.findFirst({ where: { id: data.subjectId, isActive: true } }),
-    db.room.findFirst({ where: { id: data.roomId, isActive: true } }),
+    db.room.findFirst({ where: { id: data.roomId, isActive: true }, include: ROOM_WITH_TYPE }),
     db.user.findFirst({
       where: {
         id: data.coachId,
@@ -51,12 +72,16 @@ export const validateResources = async (db, data, sessions, excludeId) => {
           permissions: { some: { permission: { code: PERMISSIONS.SCHEDULE_VIEW_TEACHING } } },
         },
       },
+      include: COACH_WITH_SUBJECTS,
     }),
   ]);
   if (!subject || !room || !coach)
     throw ApiError.businessRule('Bộ môn, phòng hoặc HLV không hoạt động');
   if (data.capacity > room.capacity)
     throw ApiError.businessRule('Sức chứa lớp vượt sức chứa phòng');
+  assertRoomServesSubject(room, subject.id);
+  assertCoachTeachesSubject(coach, subject.id);
+  await assertWithinFrames(db, data.weeklySchedule);
   await assertSessionResources(db, sessions, data, { classId: excludeId });
   return { roomId: room.id, coachId: coach.id, roomName: room.name, coachName: coach.fullName };
 };

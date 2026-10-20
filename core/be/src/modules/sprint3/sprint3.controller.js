@@ -1,3 +1,4 @@
+import { previewSessionReschedule } from '../class/class-change-preview.service.js';
 import { sendSuccess, sendCreated } from '../../common/utils/api-response.js';
 import * as sessions from '../class/class-session.service.js';
 import * as waitlist from '../class/class-waitlist.service.js';
@@ -79,4 +80,10 @@ export const unblockMember = async (req, res) =>
   sendSuccess(res, {
     data: await unblock(req.validated.params.id, req.validated.body.reason, req.user),
     message: 'Đã gỡ chặn đăng ký lớp',
+  });
+
+/** Xem trước đổi giờ một buổi: kiểm tra khung giờ/phòng/HLV và học viên bị trùng. */
+export const reschedulePreview = async (req, res) =>
+  sendSuccess(res, {
+    data: await previewSessionReschedule(req.validated.params.id, req.validated.body),
   });
