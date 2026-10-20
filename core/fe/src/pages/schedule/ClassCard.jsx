@@ -1,3 +1,4 @@
+import { CourseOrderPrice } from './CourseOrderPrice';
 import { PERMISSIONS as P } from '@scms/shared';
 import {
   CalendarOutlined,
@@ -96,6 +97,7 @@ export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, chil
           <UserOutlined />
           <span>HLV: {item.coach.fullName}</span>
         </div>
+        <CourseOrderPrice item={item} />
         <div className="scms-class-card__availability">
           <TeamOutlined />
           <SeatSummary item={item} />
