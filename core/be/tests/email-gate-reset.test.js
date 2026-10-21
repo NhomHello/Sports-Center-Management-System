@@ -87,7 +87,9 @@ describe('quên mật khẩu', () => {
     await vi.waitFor(() => {
       resetMail = mail.sendMail.mock.calls
         .map(([message]) => message)
-        .findLast((message) => message.to === email && message.subject.includes('Đặt lại mật khẩu'));
+        .findLast(
+          (message) => message.to === email && message.subject.includes('Đặt lại mật khẩu'),
+        );
       expect(resetMail).toBeDefined();
     });
     const resetToken = resetMail.text.match(/token=([a-f0-9]{64})/)[1];
