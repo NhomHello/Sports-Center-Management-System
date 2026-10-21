@@ -59,14 +59,26 @@ const seedResources = async () => {
   return { subjects, rooms };
 };
 
-/** Gói tập theo mã; cập nhật lại giá/thời hạn về bản chuẩn nếu đã có. */
+/** Gói tự tập theo mã kèm khung giờ / khu vực; cập nhật lại về bản chuẩn nếu đã có. */
 const seedPlans = async () => {
+  const frames = await prisma.operatingFrame.findMany();
+  const types = await prisma.roomType.findMany();
+  const frameId = new Map(frames.map((item) => [item.name, item.id]));
+  const typeId = new Map(types.map((item) => [item.name, item.id]));
   const plans = {};
-  for (const { code, ...data } of DEMO_PLANS) {
+  for (const { code, frames: frameNames, areas, ...data } of DEMO_PLANS) {
+    const access = {
+      frames: { create: frameNames.map((name) => ({ frameId: frameId.get(name) })) },
+      areas: { create: areas.map((name) => ({ roomTypeId: typeId.get(name) })) },
+    };
     plans[code] = await prisma.membershipPlan.upsert({
       where: { code },
-      update: data,
-      create: { code, ...data },
+      update: {
+        ...data,
+        frames: { deleteMany: {}, ...access.frames },
+        areas: { deleteMany: {}, ...access.areas },
+      },
+      create: { code, ...data, ...access },
     });
   }
   return plans;

@@ -54,7 +54,12 @@ export const createMaintenance = async (req, res) =>
   sendCreated(res, await maintenance.create(req.validated.params.id, req.validated.body, req.user));
 /** Check-in tại quầy. */
 export const checkIn = async (req, res) =>
-  sendCreated(res, await attendance.checkIn(req.validated.body.memberId, req.user));
+  sendCreated(
+    res,
+    await attendance.checkIn(req.validated.body.memberId, req.user, {
+      roomTypeId: req.validated.body.roomTypeId,
+    }),
+  );
 /** Roster từng buổi. */
 export const roster = async (req, res) =>
   sendSuccess(res, { data: await attendance.roster(req.validated.params.id, context(req)) });

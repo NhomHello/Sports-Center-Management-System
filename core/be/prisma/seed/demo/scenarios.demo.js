@@ -69,10 +69,18 @@ const seedMemberExceptions = async ({ users: u, plans }, classes) => {
     where: { id: (await membershipOf(u.member10)).id },
     data: { endDate: new Date(Date.now() + 3 * DAY) },
   });
-  // Đăng ký lớp kéo dài quá ngày hết hạn gói: được phép nhưng có cảnh báo (BR-1.12).
+  // Gói sắp hết hạn (3 ngày): lễ tân thấy cảnh báo gia hạn khi check-in; lớp miễn phí vẫn học được.
   await enroll(classes.yogaEvening.id, u.member10.id, u.member10);
   await payOnline(u.member11, plans.STARTER_30);
   const today = Date.now();
+  // Kỳ gói bắt đầu 10 ngày trước để lịch bảo lưu (lùi 3 ngày bên dưới) nằm trong kỳ.
+  await prisma.membership.update({
+    where: { id: (await membershipOf(u.member11)).id },
+    data: {
+      startDate: new Date(today - 10 * DAY),
+      endDate: new Date(today + 20 * DAY),
+    },
+  });
   const range = { from: vnDate(today), to: vnDate(today + 10 * DAY) };
   const frozen = await freeze((await membershipOf(u.member11)).id, range, manager);
   // Lùi ngày bắt đầu bảo lưu 3 ngày để demo "kết thúc bảo lưu sớm" thấy được số ngày cộng bù.

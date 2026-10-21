@@ -146,16 +146,16 @@ test('TC-F2-V02: lịch HLV có trạng thái rỗng, đang tải, lỗi và th�
   ).toBeVisible();
 });
 
-test('TC-F2-V03: membership hết hạn hiển thị lý do và chặn nút đăng ký', async ({ page }) => {
+// Góp ý GV: khóa học tách khỏi gói tự tập, gói hết hạn vẫn đăng ký được lớp miễn phí.
+test('TC-F2-V03: gói tự tập hết hạn không chặn đăng ký lớp miễn phí', async ({ page }) => {
   await prisma.membership.updateMany({
     where: { userId: f.member.id },
     data: { endDate: new Date() },
   });
   await login(page, f.member, f.password);
   const source = card(page, item.name);
-  await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeDisabled();
-  await expect(
-    source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp', { exact: true }),
-  ).toBeVisible();
+  await expect(source.getByText('Miễn phí', { exact: true })).toBeVisible();
+  await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeEnabled();
+  await expect(source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Tạo lớp', exact: true })).toHaveCount(0);
 });

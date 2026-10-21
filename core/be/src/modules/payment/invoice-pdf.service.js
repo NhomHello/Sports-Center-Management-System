@@ -1,7 +1,7 @@
 import PDFDocument from 'pdfkit';
 import { fileURLToPath } from 'node:url';
 import { amountInWords } from '@scms/shared';
-import { getReceipt } from './invoice.service.js';
+import { getReceipt, purchaseLabel, purchaseTerm } from './invoice.service.js';
 
 const FONT = fileURLToPath(new URL('../../../assets/fonts/DejaVuSans.ttf', import.meta.url));
 const PDF = Object.freeze({ margin: 28, title: 16, body: 9, logo: 22 });
@@ -25,8 +25,8 @@ function drawReceipt(doc, { invoice, center, currency }) {
   const fields = [
     ['Mã hóa đơn', invoice.code],
     ['Hội viên', invoice.user.fullName],
-    ['Gói tập', invoice.planName ?? invoice.plan.name],
-    ['Thời hạn mua', `${invoice.durationDays ?? invoice.plan.durationDays} ngày`],
+    ['Sản phẩm', purchaseLabel(invoice)],
+    ['Thời hạn mua', purchaseTerm(invoice)],
     ['Ngày thanh toán', date(invoice.paidAt)],
     ['Trạng thái', 'Đã thanh toán'],
     ['Số tiền', money(invoice.amount, currency)],

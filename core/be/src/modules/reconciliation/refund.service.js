@@ -1,9 +1,11 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { Enums, prisma } from '../../config/db.js';
-import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
+import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { lockInvoice, sumReceived } from '../payment/payment-apply.service.js';
 import { fmtMoney, sendNotices, toMember } from './payment-notify.service.js';
+import { releaseHoldsForInvoice } from '../course-order/course-hold.service.js';
+import { revokePurchase } from './refund-revoke.service.js';
 import { assertContacted, lockCase, updateCase } from './reconciliation-case.service.js';
 
 const { ReconciliationStatus: STATUS, ReconciliationReason: REASON } = Enums;
@@ -65,6 +67,7 @@ const failUnpaidInvoice = async (tx, kase, actor) => {
     where: { id: invoice.id },
     data: { status: Enums.InvoiceStatus.FAILED },
   });
+  await releaseHoldsForInvoice(tx, invoice.id);
   await audit(tx, actor, {
     entity: ENTITIES.INVOICE,
     entityId: invoice.id,
@@ -112,23 +115,6 @@ export const requestCaseRefund = async (id, { amount, reason }, actor) => {
   return refund;
 };
 
-/** Hoàn hoá đơn rút lại đúng số ngày hoá đơn đã cộng; hết ngày thì gói kết thúc (chốt nhóm 14/10). */
-const shrinkMembership = async (tx, invoice) => {
-  if (!invoice.membershipId) return null;
-  await tx.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
-  const membership = await tx.membership.findUnique({ where: { id: invoice.membershipId } });
-  const days = invoice.durationDays ?? invoice.plan.durationDays;
-  const endDate = new Date(membership.endDate.getTime() - days * TIME.MS_PER_DAY);
-  const ended = endDate <= new Date();
-  return tx.membership.update({
-    where: { id: membership.id },
-    data: {
-      endDate,
-      ...(ended && { status: Enums.MembershipStatus.EXPIRED, activeUserId: null }),
-    },
-  });
-};
-
 /** UC-PAY-09: Manager hoàn toàn bộ một hoá đơn PAID ⇒ REFUNDED, rút ngày khỏi gói, tạo yêu cầu chuyển trả. */
 export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
   const refund = await prisma.$transaction(async (tx) => {
@@ -147,7 +133,7 @@ export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
       where: { id: invoice.id },
       data: { status: Enums.InvoiceStatus.REFUNDED },
     });
-    const membership = await shrinkMembership(tx, invoice);
+    const membership = await revokePurchase(tx, invoice);
     const created = await tx.refund.create({
       data: { invoiceId: invoice.id, amount: value, reason, requestedById: actor.id },
     });
@@ -160,7 +146,7 @@ export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
         refundId: created.id,
         amount: value,
         reason,
-        membershipEndDate: membership?.endDate,
+        cancelledMembershipId: membership?.id ?? null,
       },
     });
     return { ...created, userId: invoice.userId };

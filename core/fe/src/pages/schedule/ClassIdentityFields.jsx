@@ -61,6 +61,21 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
       >
         <InputNumber min={1} />
       </Form.Item>
+      <Form.Item
+        name="price"
+        label="Học phí cả khóa (VNĐ)"
+        extra="0 = lớp miễn phí. Đăng ký giữa khóa tính theo số buổi còn lại."
+        rules={[{ type: 'integer', min: 0 }]}
+      >
+        <InputNumber
+          min={0}
+          step={50000}
+          precision={0}
+          formatter={(value) => String(value ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+          parser={(value) => value?.replace(/\./g, '')}
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
       <Form.Item name="status" label="Trạng thái">
         <Select
           options={[CLASS_STATUS.OPEN, CLASS_STATUS.CLOSED].map((value) => ({

@@ -23,6 +23,8 @@ export const classBody = z
     roomId: id,
     coachId: id,
     capacity: id,
+    // Học phí cả khóa (VND); 0 = lớp miễn phí, đăng ký trực tiếp không cần hóa đơn.
+    price: z.coerce.number().int().nonnegative().optional(),
     startsOn: z.iso.date(),
     endsOn: z.iso.date(),
     weeklySchedule: z.array(weeklySlot).min(1).max(CLASS_LIMITS.DAYS_PER_WEEK),

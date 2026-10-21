@@ -132,7 +132,7 @@ describe('SePay webhook', () => {
     const after = await prisma.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
     expect(after.status).toBe(Enums.InvoiceStatus.PENDING);
   });
-  it('mua tiếp khi còn hạn thì cộng dồn vào cùng membership và API trả số lần thanh toán', async () => {
+  it('mua tiếp khi còn hạn tạo kỳ nối tiếp; API trả kỳ hiện tại, kỳ sau và số lần thanh toán', async () => {
     const first = await buy();
     // Hóa đơn PENDING được tái sử dụng; QR có thể null nếu chưa cấu hình ngân hàng.
     // Tính khoản còn thiếu từ payment thực nhận, tránh gửi thừa tiền và mở phiếu đối soát.
@@ -147,11 +147,15 @@ describe('SePay webhook', () => {
     const after = (
       await api.get(apiPath('/memberships/me/current')).set(bearer(fixture.memberToken))
     ).body.data;
+    // GY-20: kỳ đang dùng giữ nguyên, lần mua mới thành kỳ nối tiếp bắt đầu khi kỳ cũ hết hạn.
     expect(after.id).toBe(before.id);
-    expect(new Date(after.endDate) - new Date(before.endDate)).toBe(plan.durationDays * 86400000);
+    expect(after.endDate).toBe(before.endDate);
+    const next = after.nextPeriods.find((period) => period.invoiceId === invoice.id);
+    expect(next.startDate).toBe(before.endDate);
+    expect(new Date(next.endDate) - new Date(next.startDate)).toBe(plan.durationDays * 86400000);
     expect(after.paidInvoiceCount).toBe(
       await prisma.invoice.count({
-        where: { membershipId: after.id, status: Enums.InvoiceStatus.PAID },
+        where: { userId: fixture.member.id, kind: 'MEMBERSHIP', status: Enums.InvoiceStatus.PAID },
       }),
     );
     expect(after.paidInvoiceCount).toBeGreaterThan(before.paidInvoiceCount);

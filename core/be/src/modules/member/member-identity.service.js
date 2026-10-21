@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
-import { prisma } from '../../config/db.js';
+import { Enums, prisma } from '../../config/db.js';
 
 const PHONE_VISIBLE_LENGTH = 3;
 /** BR-1.1/1.10: chỉ nhân viên có member.read được thấy thẻ hồ sơ trùng. */
@@ -17,6 +17,7 @@ export const checkCounterIdentity = async (data, permissions) => {
       phone: true,
       status: true,
       memberships: {
+        where: { status: { not: Enums.MembershipStatus.CANCELLED } },
         take: 1,
         orderBy: { endDate: 'desc' },
         select: { endDate: true, plan: { select: { name: true } } },

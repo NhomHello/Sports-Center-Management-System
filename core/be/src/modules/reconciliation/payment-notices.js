@@ -1,4 +1,5 @@
 import { Enums } from '../../config/db.js';
+import { purchaseLabel } from '../payment/invoice.service.js';
 import { PAYMENT_OUTCOME } from '../payment/payment-apply.service.js';
 import { fmtMoney, fmtTime, toMember, toReconcilers } from './payment-notify.service.js';
 
@@ -51,7 +52,7 @@ export const outcomeNotices = (invoice, result, key) => {
       kind: KIND.PAYMENT_CONFIRMED,
       eventKey: `${key}:paid`,
       title: `Đã thanh toán hoá đơn ${invoice.code}`,
-      message: `Gói ${invoice.planName ?? invoice.plan?.name} đã được kích hoạt. Bạn có thể tải hoá đơn PDF.`,
+      message: `${purchaseLabel(invoice)}: đã thanh toán và có hiệu lực. Bạn có thể tải hoá đơn PDF.`,
     }),
   ];
 };

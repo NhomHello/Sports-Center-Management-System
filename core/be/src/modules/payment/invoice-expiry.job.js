@@ -7,6 +7,8 @@ import {
   toMember,
   toReconcilers,
 } from '../reconciliation/payment-notify.service.js';
+import { releaseHoldsForInvoice } from '../course-order/course-hold.service.js';
+import { restoreCreditPayments } from '../credit/credit.service.js';
 import { lockInvoice, sumReceived } from './payment-apply.service.js';
 
 const { ReconciliationStatus: STATUS, ReconciliationReason: REASON } = Enums;
@@ -28,7 +30,10 @@ const expireOne = (id, now) =>
       // Đã nhận đủ hoặc thừa: tiền nằm ở trung tâm, chờ quản lý chấp nhận/hoàn, không tự huỷ.
       if (received >= invoice.amount) return null;
       await tx.invoice.update({ where: { id }, data: { status: Enums.InvoiceStatus.FAILED } });
-      if (received > 0) await moveTopupCasesToRefund(tx, id);
+      // Phần trả bằng số dư quay lại số dư; chỉ tiền chuyển khoản thật mới phải hoàn tay.
+      const restored = await restoreCreditPayments(tx, invoice, null);
+      await releaseHoldsForInvoice(tx, id);
+      if (received - restored > 0) await moveTopupCasesToRefund(tx, id);
       await tx.auditLog.create({
         data: {
           action: AUDIT_ACTIONS.UPDATE,
@@ -39,10 +44,11 @@ const expireOne = (id, now) =>
             after: { status: Enums.InvoiceStatus.FAILED },
             reason: received > 0 ? 'TOPUP_TIMEOUT' : 'PAYMENT_TIMEOUT',
             received,
+            restoredCredit: restored,
           },
         },
       });
-      return { invoice, received };
+      return { invoice, received: received - restored };
     },
     { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
   );

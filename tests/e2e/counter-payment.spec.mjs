@@ -103,9 +103,14 @@ test('QUAY-UI-01: lễ tân tạo hóa đơn quầy, thấy tác động gia h�
   await settle(page);
   await page.screenshot({ path: `${SHOTS}/5-loc-theo-kenh-tai-quay.png` });
 
-  const membership = await prisma.membership.findFirstOrThrow({ where: { userId: f.member.id } });
-  const remainingDays = (membership.endDate.getTime() - Date.now()) / TIME.MS_PER_DAY;
+  // GY-20: lần mua tại quầy là một kỳ gói mới nối sau kỳ đang chạy (không cộng dồn vào kỳ cũ).
+  const latest = await prisma.membership.findFirstOrThrow({
+    where: { userId: f.member.id },
+    orderBy: { endDate: 'desc' },
+  });
+  const remainingDays = (latest.endDate.getTime() - Date.now()) / TIME.MS_PER_DAY;
   expect(remainingDays).toBeGreaterThan(39);
-  expect(await prisma.membership.count({ where: { userId: f.member.id } })).toBe(1);
+  expect(await prisma.membership.count({ where: { userId: f.member.id } })).toBe(2);
+  expect(await prisma.membership.count({ where: { activeUserId: f.member.id } })).toBe(1);
   expect(errors).toEqual([]);
 });

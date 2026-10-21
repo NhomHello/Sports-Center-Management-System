@@ -46,27 +46,36 @@ export const DEMO_COACH_SUBJECTS = {
   'coach.dance': ['Zumba & Dance'],
 };
 
-// Gói chỉ khác nhau về thời hạn và đơn giá mỗi ngày; quyền lợi như nhau (xem plans.mock.js).
+// Gói tự tập (góp ý GV): bán theo thời hạn + khung giờ + khu vực; lớp học bán riêng theo khóa.
+// frames/areas theo tên khung giờ hoạt động / loại phòng khu tự tập; bỏ trống = không giới hạn.
 const BENEFITS = [
-  'Sử dụng toàn bộ thiết bị và phòng tập',
-  'Đăng ký lớp học',
-  'Theo dõi lịch sử trên hệ thống',
+  'Tự tập tại khu Phòng máy, check-in tại quầy',
+  'Không cần đặt chỗ trước',
+  'Bảo lưu tổng tối đa 60 ngày mỗi kỳ',
 ];
-const plan = (fields) => ({ benefits: BENEFITS, ...fields });
+const plan = (fields) => ({ benefits: BENEFITS, areas: ['Phòng máy'], frames: [], ...fields });
 export const DEMO_PLANS = [
   plan({
     code: 'TRIAL_7',
     name: 'Trải nghiệm 7 ngày',
     durationDays: 7,
     price: 120000,
-    description: 'Gói dùng thử cho khách mới.',
+    description: 'Gói dùng thử cho khách mới, vào mọi khung giờ.',
+  }),
+  plan({
+    code: 'EARLY_30',
+    name: 'Tự tập sáng sớm 30 ngày',
+    durationDays: 30,
+    price: 290000,
+    frames: ['Sáng sớm'],
+    description: 'Chỉ vào khung Sáng sớm 05:00–09:00, giá mềm cho người tập trước giờ làm.',
   }),
   plan({
     code: 'STARTER_30',
     name: 'Khởi động 30 ngày',
     durationDays: 30,
     price: 360000,
-    description: 'Gói linh hoạt cho hội viên mới.',
+    description: 'Gói linh hoạt cho hội viên mới, mọi khung giờ.',
   }),
   plan({
     code: 'ACTIVE_90',

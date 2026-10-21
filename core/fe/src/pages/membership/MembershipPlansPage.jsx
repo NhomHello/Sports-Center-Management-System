@@ -60,11 +60,11 @@ export default function MembershipPlansPage() {
   return (
     <div className="scms-page-enter">
       <PageHeader
-        title="Gói tập"
+        title="Gói tự tập"
         subtitle={
           hooks.canPurchase
-            ? 'Chọn gói phù hợp và xem ngày hiệu lực trước khi thanh toán.'
-            : 'Quản lý danh mục dịch vụ đang mở bán.'
+            ? 'Gói tự tập theo thời hạn, khung giờ và khu vực. Lớp học có học phí riêng ở mục Lịch tập.'
+            : 'Quản lý danh mục gói tự tập đang mở bán (khung giờ, khu vực, giá, thời hạn).'
         }
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBERSHIP_PLAN_CREATE}>
@@ -76,7 +76,11 @@ export default function MembershipPlansPage() {
       />
 
       <div>
-        <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
+        <CurrentMembershipCard
+          membership={currentMembership}
+          canPurchase={hooks.canPurchase}
+          onChanged={() => hooks.ownMembershipQuery.refetch()}
+        />
         <FreezeControls membership={currentMembership} own />
 
         <PlansContent

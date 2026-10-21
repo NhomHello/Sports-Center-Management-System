@@ -53,7 +53,7 @@ afterAll(async () => {
 const started = new Date();
 
 describe('Sprint 3 Bảo: bảo lưu và job gói', () => {
-  it('bảo lưu chặn check-in/đăng ký; gói người khác bị từ chối', async () => {
+  it('bảo lưu chặn check-in (không chặn học lớp); gói người khác bị từ chối', async () => {
     const membership = await prisma.membership.findFirst({ where: { userId: f.member.id } });
     const dates = { from: vietnamDate(), to: vietnamDate(new Date(Date.now() + 7 * DAY)) };
     expect(
@@ -62,9 +62,13 @@ describe('Sprint 3 Bảo: bảo lưu và job gói', () => {
     const res = await call('post', `/memberships/${membership.id}/freezes`, dates);
     expect(res.status).toBe(201);
     expect((await call('post', '/check-ins', { memberId: f.member.id })).status).toBe(422);
+    expect((await prisma.membership.findUnique({ where: { id: membership.id } })).status).toBe(
+      'FROZEN',
+    );
+    // Góp ý GV: khóa học tách khỏi gói tự tập nên bảo lưu gói không chặn đăng ký lớp.
     expect(
       (await call('post', `/classes/${item.id}/enrollments/me`, {}, f.memberToken)).status,
-    ).toBe(422);
+    ).toBe(201);
     expect((await call('post', `/memberships/${membership.id}/freezes/resume`, {})).status).toBe(
       200,
     );
@@ -108,7 +112,7 @@ describe('Sprint 3 Bảo: bảo lưu và job gói', () => {
     expect(res.status).toBe(201);
     expect(res.body.data.warning).toBeTruthy();
   });
-  it('thanh toán ngay sau hết bảo lưu cộng ngày bảo lưu trước khi gia hạn, giữ cùng gói', async () => {
+  it('thanh toán ngay sau hết bảo lưu cộng ngày bảo lưu trước, kỳ mới nối sau kỳ cũ', async () => {
     const m = await prisma.membership.findFirst({ where: { userId: f.other.id } });
     const endDate = new Date(vietnamDay().getTime() - DAY);
     await prisma.membership.update({ where: { id: m.id }, data: { endDate } });
@@ -136,7 +140,10 @@ describe('Sprint 3 Bảo: bảo lưu và job gói', () => {
     const renewed = await withScheduleTransaction((db) =>
       activatePaidInvoice(invoice, new Date(), db),
     );
-    expect(renewed.id).toBe(m.id);
+    // GY-20: mỗi hóa đơn là một kỳ riêng; kỳ cũ đã được cộng 7 ngày bảo lưu trước khi nối kỳ mới.
+    expect(renewed.id).not.toBe(m.id);
+    expect(renewed.invoiceId).toBe(invoice.id);
+    expect(renewed.startDate.getTime()).toBe(endDate.getTime() + 7 * DAY);
     expect(renewed.endDate.getTime()).toBe(endDate.getTime() + 12 * DAY);
     expect(
       (await prisma.membershipFreeze.findUnique({ where: { id: freeze.id } })).creditedDays,

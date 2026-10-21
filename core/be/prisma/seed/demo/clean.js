@@ -2,7 +2,7 @@
  * Reset dữ liệu nghiệp vụ của DB dev về trống để dựng lại demo.
  * GIỮ: permissions, roles, system_settings (gồm tài khoản nhận tiền SePay), tài khoản admin
  * (SEED_ADMIN_EMAIL), bảng migration và các bảng legacy Sprint 1 không còn trong schema.
- * XOÁ: hoá đơn, thanh toán, đối soát, gói hội viên, lớp/buổi/đăng ký, thông báo, nhật ký,
+ * XOÁ: hoá đơn, thanh toán, đối soát, số dư, lịch sử hủy/đổi, gói hội viên, lớp/buổi/đăng ký, thông báo, nhật ký,
  * bộ môn, loại phòng, phòng, gói tập và mọi tài khoản khác (khung giờ hoạt động là cấu hình, được giữ).
  *
  * Chạy: npm run db:clean -- --yes   (từ chối khi NODE_ENV=production hoặc thiếu --yes)
@@ -13,6 +13,9 @@ import { logger } from '../../../src/config/logger.js';
 
 // Thứ tự con → cha để không vướng khoá ngoại; không tắt FOREIGN_KEY_CHECKS.
 const TABLES_IN_ORDER = [
+  // Sổ số dư và lịch sử hủy/đổi tham chiếu hoá đơn, kỳ gói, đăng ký và khoản hoàn.
+  'creditTransaction',
+  'purchaseChange',
   'reconciliationContact',
   'refund',
   'reconciliationCase',
@@ -31,6 +34,9 @@ const TABLES_IN_ORDER = [
   'gymClass',
   'subject',
   'room',
+  // Gói tự tập tham chiếu loại phòng (khu tự tập) với RESTRICT: gỡ liên kết trước.
+  'planRoomType',
+  'planFrame',
   'roomType',
   'membershipPlan',
   'notification',

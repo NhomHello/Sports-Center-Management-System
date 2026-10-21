@@ -23,7 +23,9 @@ export const freezeSchema = {
     .strict()
     .refine((v) => v.to > v.from, 'Ngày kết thúc phải sau bắt đầu'),
 };
-export const checkInSchema = { body: z.object({ memberId: id }).strict() };
+export const checkInSchema = {
+  body: z.object({ memberId: id, roomTypeId: id.optional() }).strict(),
+};
 export const attendanceSchema = {
   params,
   body: z

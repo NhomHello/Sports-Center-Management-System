@@ -1,15 +1,43 @@
+import { PERMISSIONS as P } from '@scms/shared';
 import { Router } from 'express';
+import { authenticate } from '../../common/middlewares/auth.middleware.js';
+import { authorize } from '../../common/middlewares/authorize.middleware.js';
+import { validate } from '../../common/middlewares/validate.middleware.js';
+import * as controller from './cancellation.controller.js';
+import { cancelPurchaseSchema, purchaseIdSchema } from './cancellation.validation.js';
 
 const router = Router();
-const NOT_IMPLEMENTED_STATUS = 501;
+const plan = authorize(P.MEMBERSHIP_PURCHASE, P.MEMBERSHIP_MANAGE);
+const course = authorize(P.CLASS_CANCEL_SELF, P.CLASS_ENROLL_FOR_MEMBER);
 
-/** GY-00: reserved routes; GY-32 will implement authorization and business rules. */
-router.use((_req, res) => {
-  res.status(NOT_IMPLEMENTED_STATUS).json({
-    success: false,
-    data: null,
-    message: 'Chức năng đang phát triển',
-  });
-});
+// Quyền theo chủ sở hữu được kiểm tra lại trong service (tự làm hay làm hộ).
+router.get(
+  '/memberships/:id/cancel-preview',
+  authenticate,
+  plan,
+  validate(purchaseIdSchema),
+  controller.previewMembership,
+);
+router.post(
+  '/memberships/:id/cancel',
+  authenticate,
+  plan,
+  validate(cancelPurchaseSchema),
+  controller.cancelMembership,
+);
+router.get(
+  '/enrollments/:id/cancel-preview',
+  authenticate,
+  course,
+  validate(purchaseIdSchema),
+  controller.previewEnrollment,
+);
+router.post(
+  '/enrollments/:id/cancel',
+  authenticate,
+  course,
+  validate(cancelPurchaseSchema),
+  controller.cancelEnrollment,
+);
 
 export default router;
