@@ -42,15 +42,12 @@ describe('Sprint 3 Khải: history, receipt and identity', () => {
     expect((await get(`/invoices/${pending.id}/receipt.pdf`, f.otherToken)).status).toBe(422);
   });
   it('TC-S3-KAPI-05: duplicate response is masked and never contains credentials', async () => {
-    const res = await api
-      .post(apiPath('/members'))
-      .set(bearer(f.adminToken))
-      .send({
-        fullName: 'TEST duplicate',
-        email: f.member.email,
-        phone: '0909999999',
-        password: f.password,
-      });
+    const res = await api.post(apiPath('/members')).set(bearer(f.adminToken)).send({
+      fullName: 'TEST duplicate',
+      email: f.member.email,
+      phone: '0909999999',
+      password: f.password,
+    });
     expect(res.status).toBe(409);
     expect(res.body.details.duplicates[0].id).toBe(f.member.id);
     expect(JSON.stringify(res.body)).not.toContain('passwordHash');
