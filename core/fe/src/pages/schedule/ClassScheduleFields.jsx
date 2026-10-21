@@ -2,11 +2,14 @@ import { Button, DatePicker, Form, TimePicker, Select, Space, Typography } from 
 import { WEEKDAYS } from '@/constants/schedule';
 const required = [{ required: true, message: 'Vui lòng chọn thời gian' }];
 /** Lịch lặp theo giờ Việt Nam, có thể thêm/xóa thứ học. */
-export function ClassScheduleFields() {
+export function ClassScheduleFields({ frames = [] }) {
+  const active = frames.filter((f) => f.isActive);
   return (
     <>
       <Typography.Paragraph type="secondary">
-        Các mốc ngày và giờ dưới đây theo giờ Việt Nam.
+        Các mốc ngày và giờ dưới đây theo giờ Việt Nam. Mỗi khung giờ học phải nằm trọn trong một
+        khung giờ hoạt động:{' '}
+        {active.map((f) => `${f.name} ${f.startTime}–${f.endTime}`).join(' · ') || 'chưa cấu hình'}.
       </Typography.Paragraph>
       <Form.Item name="startsOn" label="Ngày bắt đầu" rules={required}>
         <DatePicker />

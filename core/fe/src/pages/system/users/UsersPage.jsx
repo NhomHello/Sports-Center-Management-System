@@ -15,6 +15,7 @@ import { UserFilters } from './UserFilters';
 import { UserFormModal } from './UserFormModal';
 import { useUserLock } from './useUserLock';
 import { getUserColumns } from './UserTableColumns';
+import { CoachSubjectsModal } from './CoachSubjectsModal';
 
 /** Trang quan ly tai khoan: mau chuan cho bang phan trang phia server + filter. */
 export default function UsersPage() {
@@ -24,6 +25,7 @@ export default function UsersPage() {
   const { user: currentUser } = useAuth();
   const table = useTableQuery();
   const [createOpen, setCreateOpen] = useState(false);
+  const [coach, setCoach] = useState(null);
 
   const usersQuery = useQuery({
     queryKey: [...QUERY_KEYS.USERS, table.params],
@@ -56,6 +58,7 @@ export default function UsersPage() {
         roleOptions,
         onChangeRole: (user, roleId) => changeRole({ user, roleId }),
         onToggleStatus: toggleStatus,
+        onEditSubjects: setCoach,
       }),
     [can, currentUser?.id, roleOptions, changeRole, toggleStatus],
   );
@@ -84,6 +87,7 @@ export default function UsersPage() {
         scroll={{ x: true }}
       />
       <UserFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      {coach && <CoachSubjectsModal coach={coach} onClose={() => setCoach(null)} />}
     </>
   );
 }

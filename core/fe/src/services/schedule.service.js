@@ -42,3 +42,22 @@ export const saveResource = (resource, { id, ...values }) =>
   id ? http.put(`/${resource}/${id}`, values) : http.post(`/${resource}`, values);
 /** Ngừng hoạt động tài nguyên. */
 export const stopResource = (resource, id) => http.delete(`/${resource}/${id}`);
+/** Xem trước sửa lớp: số buổi đổi và học viên bị ảnh hưởng (server kiểm tra như khi lưu). */
+export const previewClassUpdate = (id, values) =>
+  http.post(`/classes/${id}/update-preview`, values);
+/** Xem trước đổi giờ một buổi. */
+export const previewReschedule = (id, values) =>
+  http.post(`/classes/sessions/${id}/reschedule-preview`, values);
+/** Khung giờ hoạt động trong ngày. */
+export const listFrames = () => http.get('/operating-frames');
+/** Thêm hoặc sửa khung giờ. */
+export const saveFrame = ({ id, ...values }) =>
+  id ? http.put(`/operating-frames/${id}`, values) : http.post('/operating-frames', values);
+/** Loại phòng kèm bộ môn được dạy. */
+export const listRoomTypes = () => http.get('/room-types');
+/** Thêm hoặc sửa loại phòng. */
+export const saveRoomType = ({ id, ...values }) =>
+  id ? http.put(`/room-types/${id}`, values) : http.post('/room-types', values);
+/** Khai báo chuyên môn (bộ môn dạy được) của HLV. */
+export const setCoachSubjects = (userId, subjectIds) =>
+  http.put(`/users/${userId}/subjects`, { subjectIds });

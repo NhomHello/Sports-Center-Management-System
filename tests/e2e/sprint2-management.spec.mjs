@@ -58,7 +58,11 @@ test('TC-F2-V01: quản lý tạo và hủy toàn lớp từ form; sửa và ng�
   });
   await page.getByLabel('Tên lớp', { exact: true }).fill(data.name);
   await selectOption(page, 'Bộ môn', f.subject.name);
-  await selectOption(page, 'Phòng tập', `${f.room.name} · tối đa ${f.room.capacity} người`);
+  await selectOption(
+    page,
+    'Phòng tập',
+    `${f.room.name} · ${f.roomType.name} · tối đa ${f.room.capacity} người`,
+  );
   await selectOption(page, 'Huấn luyện viên', f.coach.fullName);
   await page.getByLabel('Sức chứa', { exact: true }).fill(String(data.capacity));
   await setPicker(page, 'Ngày bắt đầu', data.startsOn);
@@ -150,6 +154,8 @@ test('TC-F2-V03: membership hết hạn hiển thị lý do và chặn nút đă
   await login(page, f.member, f.password);
   const source = card(page, item.name);
   await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeDisabled();
-  await expect(source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp', { exact: true })).toBeVisible();
+  await expect(
+    source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp', { exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Tạo lớp', exact: true })).toHaveCount(0);
 });

@@ -15,6 +15,8 @@ import memberRoutes from './modules/member/member.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
 import invoiceRoutes from './modules/payment/invoice.routes.js';
 import sepayRoutes from './modules/payment/sepay.routes.js';
+import operatingFrameRoutes from './modules/operating-frame/operating-frame.routes.js';
+import roomTypeRoutes from './modules/room-type/room-type.routes.js';
 import paymentRoutes from './modules/payment/payment.routes.js';
 import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 import membershipRoutes from './modules/membership/membership.routes.js';
@@ -55,6 +57,8 @@ router.use('/settings', settingRoutes);
 router.use('/membership-plans', membershipPlanRoutes);
 router.use('/subjects', subjectRoutes);
 router.use('/rooms', roomRoutes);
+router.use('/room-types', roomTypeRoutes);
+router.use('/operating-frames', operatingFrameRoutes);
 router.use('/classes', classRoutes);
 router.use('/schedule', scheduleRoutes);
 

@@ -18,7 +18,7 @@ export const listCatalogSchema = {
 export const subjectBody = z
   .object({ name, description, isActive: z.boolean().optional() })
   .strict();
-export const roomBody = subjectBody.extend({ capacity: id });
+export const roomBody = subjectBody.extend({ capacity: id, roomTypeId: id });
 /** Ghép schema theo tài nguyên; PUT cập nhật từng phần nhưng không nhận body rỗng. */
 export const catalogBodySchema = (body, isUpdate = false) => ({
   ...(isUpdate && catalogIdSchema),
