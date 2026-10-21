@@ -5,10 +5,26 @@ import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 
-const ACCESS_INCLUDE = {
-  frames: { include: { frame: true } },
+export const ACCESS_INCLUDE = Object.freeze({
+  frames: { include: { frame: true }, orderBy: { frame: { startTime: 'asc' } } },
   areas: { include: { roomType: true } },
-};
+});
+
+/**
+ * Gói tự tập kèm khung giờ và khu vực dạng phẳng như hợp đồng API (GY-20).
+ * Gói không chọn khung giờ = vào mọi khung; không chọn khu vực = mọi khu tự tập.
+ */
+export const toPlanView = (plan) =>
+  plan && {
+    ...plan,
+    frames: (plan.frames ?? []).map(({ frame }) => ({
+      id: frame.id,
+      name: frame.name,
+      startTime: frame.startTime,
+      endTime: frame.endTime,
+    })),
+    areas: (plan.areas ?? []).map(({ roomType }) => ({ id: roomType.id, name: roomType.name })),
+  };
 
 /** Only active frames and self-training areas are eligible for an access plan. */
 const validateAccess = async (tx, frameIds, roomTypeIds) => {
@@ -54,7 +70,7 @@ export const list = async (query) => {
   ]);
 
   return {
-    data,
+    data: data.map(toPlanView),
     meta: buildPageMeta({ page, pageSize, total }),
   };
 };
@@ -64,16 +80,18 @@ export const list = async (query) => {
  * @returns {Promise<object[]>}
  */
 export const listSelling = async () =>
-  prisma.membershipPlan.findMany({
-    where: {
-      status: MembershipPlanStatus.SELLING,
-      isActive: true,
-    },
-    orderBy: {
-      id: 'desc',
-    },
-    include: ACCESS_INCLUDE,
-  });
+  (
+    await prisma.membershipPlan.findMany({
+      where: {
+        status: MembershipPlanStatus.SELLING,
+        isActive: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+      include: ACCESS_INCLUDE,
+    })
+  ).map(toPlanView);
 
 /**
  * Lấy chi tiết gói tập.
@@ -90,7 +108,7 @@ export const getById = async (id) => {
     throw ApiError.notFound('Không tìm thấy gói tập');
   }
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**
@@ -126,7 +144,7 @@ export const create = async (data, actor) => {
     entityId: plan.id,
   });
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**
@@ -171,7 +189,7 @@ export const update = async (id, data, actor) => {
     },
   });
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**

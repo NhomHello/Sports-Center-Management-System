@@ -108,23 +108,27 @@ describe('Sprint 1: hóa đơn và thanh toán tại quầy', () => {
     expect((await collectCash(id)).status).toBe(200);
     expect(await prisma.payment.count({ where: { invoiceId: id } })).toBe(1);
     const audit = await prisma.auditLog.findFirst({
-      where: { entity: 'Invoice', entityId: String(id), action: 'UPDATE' },
+      where: { entity: 'Invoice', entityId: String(id), action: 'PAYMENT' },
     });
     fixture.auditIds.push(audit.id);
     expect(audit.meta.paymentId).toBe(paid.payments[0].id);
   });
 
-  it('gia hạn còn hiệu lực cộng từ ngày hết hạn; không phát sinh membership ACTIVE thứ hai', async () => {
+  it('gia hạn còn hiệu lực: kỳ mới nối từ ngày hết hạn, chỉ một kỳ đang hiệu lực', async () => {
     const before = await prisma.membership.findFirstOrThrow({
       where: { userId: fixture.member.id, status: Enums.MembershipStatus.ACTIVE },
     });
     const order = await createOrder();
     const paid = await collectCash(order.body.data.id);
     expect(paid.status).toBe(200);
-    expect(paid.body.data.membership.id).toBe(before.id);
-    expect(new Date(paid.body.data.membership.endDate) - before.endDate).toBe(60 * TIME.MS_PER_DAY);
-    expect(new Date(paid.body.data.membership.startDate).getTime()).toBe(
-      before.startDate.getTime(),
+    // GY-20: mỗi hóa đơn là một kỳ gói riêng để hủy/đổi tính đúng cho từng lần mua.
+    const next = paid.body.data.membership;
+    expect(next.id).not.toBe(before.id);
+    expect(new Date(next.startDate).getTime()).toBe(before.endDate.getTime());
+    expect(new Date(next.endDate) - before.endDate).toBe(60 * TIME.MS_PER_DAY);
+    expect(await prisma.membership.count({ where: { activeUserId: fixture.member.id } })).toBe(1);
+    expect((await prisma.membership.findUnique({ where: { id: before.id } })).activeUserId).toBe(
+      fixture.member.id,
     );
   });
 

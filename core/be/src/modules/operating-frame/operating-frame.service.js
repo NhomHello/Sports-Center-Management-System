@@ -21,6 +21,10 @@ export const vietnamClock = (date) => clock.format(date);
 export const loadActiveFrames = (db = prisma) =>
   db.operatingFrame.findMany({ where: { isActive: true }, orderBy: { startTime: 'asc' } });
 
+/** Thời điểm "HH:mm" thuộc khung (bắt đầu tính, kết thúc không tính). */
+export const frameContains = (frame, clockTime) =>
+  frame.startTime <= clockTime && clockTime < frame.endTime;
+
 /** Khung chứa trọn khoảng [start, end] ("HH:mm"), hoặc undefined. */
 export const frameFor = (frames, start, end) =>
   frames.find((frame) => frame.startTime <= start && end <= frame.endTime);

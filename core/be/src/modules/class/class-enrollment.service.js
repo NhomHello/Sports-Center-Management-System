@@ -1,4 +1,4 @@
-import { completeDueFreezes } from '../membership/membership-freeze.service.js';
+import { releaseCourseHold } from '../course-order/course-hold.service.js';
 import { promoteWaitlist } from './class-waitlist.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
@@ -16,12 +16,12 @@ async function loadClass(db, id) {
   return item;
 }
 
-/** BR-2.1/2.2/2.3: cùng luật cho tự đăng ký và đăng ký hộ, ghi rõ actor. */
+/** BR-2.1/2.2/2.3: cùng luật cho tự đăng ký và đăng ký hộ, ghi rõ actor. Chỉ lớp miễn phí. */
 export const enroll = (classId, memberId, actor) =>
   withScheduleTransaction(async (db) => {
-    await completeDueFreezes(db, memberId, new Date());
     await promoteWaitlist(db, classId);
     const item = await loadClass(db, classId);
+    if (item.price > 0) throw ApiError.businessRule('Lớp có học phí, hãy đăng ký khóa học');
     const state = await getClassActions(db, item, memberId);
     if (state.enrollment?.status === Enums.EnrollmentStatus.BOOKED) {
       throw ApiError.conflict('Hội viên đã đăng ký lớp này');
@@ -64,6 +64,9 @@ export const cancel = (classId, memberId, actor) =>
     const state = await getClassActions(db, item, memberId);
     if (!state.enrollment) throw ApiError.notFound('Không tìm thấy đăng ký');
     if (state.enrollment.status === Enums.EnrollmentStatus.CANCELLED) return state.enrollment;
+    // Bỏ giữ chỗ khi chưa thanh toán: hủy hóa đơn khóa học chưa nhận tiền, nhả chỗ cho người chờ.
+    if (state.enrollment.status === Enums.EnrollmentStatus.PENDING_PAYMENT)
+      return releaseCourseHold(db, state.enrollment, actor);
     if (!state.canCancel) throw ApiError.businessRule(state.cancelReason);
     const enrollment = await db.classEnrollment.update({
       where: { id: state.enrollment.id },

@@ -139,18 +139,17 @@ describe('Sprint 2: quy tắc xếp lớp và ca biên (BR-2.x)', () => {
     expect((await enroll(b.id, f.memberToken)).status).toBe(201);
   });
 
-  it('TC-F2-K09 (BR-2.1): membership chưa tới ngày bắt đầu hoặc tài khoản bị khoá đều bị chặn, đúng lý do', async () => {
+  it('TC-F2-K09 (BR-2.1 mới): lớp có học phí phải mua khóa; tài khoản bị khoá bị chặn, đúng lý do', async () => {
     const item = await create();
-    await prisma.membership.updateMany({
-      where: { userId: f.member.id },
-      data: { startDate: new Date(Date.now() + DAY_MS) },
+    const paid = await create({
+      name: `${f.prefix} Paid`,
+      price: 600000,
+      roomId: f.roomOther.id,
+      coachId: f.coachOther.id,
     });
-    const early = await enroll(item.id, f.memberToken);
-    expect(early.body.message).toContain('gói tập còn hiệu lực');
-    await prisma.membership.updateMany({
-      where: { userId: f.member.id },
-      data: { startDate: new Date(Date.now() - DAY_MS) },
-    });
+    const free = await enroll(paid.id, f.memberToken);
+    expect(free.status).toBe(422);
+    expect(free.body.message).toContain('hãy đăng ký khóa học');
     await prisma.user.update({ where: { id: f.member.id }, data: { status: 'INACTIVE' } });
     const forMember = await send('post', `/classes/${item.id}/enrollments`, f.adminToken, {
       memberId: f.member.id,

@@ -48,7 +48,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       await prisma.classEnrollment.count({ where: { classId: item.id, status: 'BOOKED' } }),
     ).toBe(1);
   });
-  it('TC-F2-B02: đăng ký trùng 409, membership hết hạn bị chặn', async () => {
+  it('TC-F2-B02: đăng ký trùng 409; lớp miễn phí không cần gói tự tập (góp ý GV)', async () => {
     const item = await create();
     expect((await enroll(item.id, f.memberToken)).status).toBe(201);
     expect((await enroll(item.id, f.memberToken)).status).toBe(409);
@@ -56,7 +56,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       where: { userId: f.other.id },
       data: { endDate: new Date(Date.now() - DAY_MS) },
     });
-    expect((await enroll(item.id, f.otherToken)).status).toBe(422);
+    expect((await enroll(item.id, f.otherToken)).status).toBe(201);
   });
   it('TC-F2-B03: lớp ngoài cửa sổ đăng ký không được giữ chỗ', async () => {
     const item = await create({ registrationStartAt: new Date(Date.now() + DAY_MS).toISOString() });

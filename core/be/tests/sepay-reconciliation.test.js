@@ -146,7 +146,12 @@ describe('Đối soát SePay: thừa tiền và chuyển lặp (UC-PAY-11, 13)',
       planId: f.renewal.id,
     });
     expect(renewed.body.data).toMatchObject({ status: STATUS.MATCHED, outcome: 'PAID' });
-    const after = await prisma.membership.findFirstOrThrow({ where: { userId: f.other.id } });
+    // GY-20: gia hạn bằng khoản lặp là một kỳ mới nối sau kỳ vừa mua.
+    const after = await prisma.membership.findFirstOrThrow({
+      where: { userId: f.other.id, id: { not: before.id } },
+      orderBy: { id: 'desc' },
+    });
+    expect(after.startDate).toEqual(before.endDate);
     expect(after.endDate.getTime() - before.endDate.getTime()).toBe(10 * 24 * 3600 * 1000);
   });
 });

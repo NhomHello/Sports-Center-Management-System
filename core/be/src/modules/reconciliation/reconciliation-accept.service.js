@@ -1,5 +1,6 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
+import { purchaseLabel } from '../payment/invoice.service.js';
 import { lockInvoice, settleInvoice, sumReceived } from '../payment/payment-apply.service.js';
 import { fmtMoney, sendNotices, toMember } from './payment-notify.service.js';
 import {
@@ -48,7 +49,7 @@ export const acceptOverpaidCase = async (id, actor) => {
       eventKey: `case:${id}:accept`,
       title: `Đã thanh toán hoá đơn ${out.invoice.code}`,
       message:
-        `Gói ${out.invoice.planName ?? out.invoice.plan?.name} đã được kích hoạt. ` +
+        `${purchaseLabel(out.invoice)}: đã thanh toán và có hiệu lực. ` +
         `Phần chuyển thừa ${fmtMoney(out.excess)} sẽ được hoàn hoặc dùng cho lần gia hạn theo thoả thuận.`,
     }),
   ]);

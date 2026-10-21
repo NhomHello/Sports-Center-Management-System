@@ -32,6 +32,32 @@ const loadInvoiceRefunds = (db, range, scope) =>
       })),
     );
 
+/** Hoá đơn đã thu trong kỳ; doanh thu không tính phần trả bằng số dư. */
+const loadPaidInvoices = (db, range, scope) =>
+  db.invoice
+    .findMany({
+      where: {
+        ...scope,
+        status: { in: [Enums.InvoiceStatus.PAID, Enums.InvoiceStatus.REFUNDED] },
+        paidAt: range,
+      },
+      select: {
+        amount: true,
+        paidAt: true,
+        payments: {
+          where: { provider: Enums.PaymentProvider.CREDIT },
+          select: { receivedAmount: true },
+        },
+      },
+    })
+    // Phần trả bằng số dư đã là doanh thu của lần mua trước (hủy/đổi ghi số dư) nên không tính lại.
+    .then((rows) =>
+      rows.map(({ payments, ...row }) => ({
+        ...row,
+        amount: row.amount - payments.reduce((sum, p) => sum + p.receivedAmount, 0),
+      })),
+    );
+
 /** Đọc toàn bộ chỉ số trong transaction nhất quán. */
 export const loadReportData = async (db, query) => {
   const range = dayRange(query);
@@ -46,17 +72,10 @@ export const loadReportData = async (db, query) => {
     ...(query.planId && { member: { memberships: { some: membershipScope } } }),
   };
   return Promise.all([
-    db.invoice.findMany({
-      where: {
-        ...scope,
-        status: { in: [Enums.InvoiceStatus.PAID, Enums.InvoiceStatus.REFUNDED] },
-        paidAt: range,
-      },
-      select: { amount: true, paidAt: true },
-    }),
+    loadPaidInvoices(db, range, scope),
     loadInvoiceRefunds(db, range, scope),
     db.payment.aggregate({
-      where: { paidAt: range, invoice: scope },
+      where: { paidAt: range, invoice: scope, provider: { not: Enums.PaymentProvider.CREDIT } },
       _count: true,
       _sum: { receivedAmount: true },
     }),

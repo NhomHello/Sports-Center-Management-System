@@ -4,36 +4,54 @@ import { vietnamDay, nextDay } from '../../common/utils/vietnam-date.js';
 import { Enums } from '../../config/db.js';
 import { logger } from '../../config/logger.js';
 import { AUDIT_ACTIONS, SPRINT3, TIME } from '../../constants/index.js';
-import { finishFreeze } from '../membership/membership-freeze.service.js';
+import { runFreezeTransitions } from '../membership/freeze-resume.job.js';
+import { LIVE_STATUSES, syncPeriods } from '../membership/membership-period.service.js';
 import * as settings from '../setting/setting.service.js';
+
+const lifecycleNotice = (item, isExpired) => ({
+  userId: item.userId,
+  membershipId: item.id,
+  kind: isExpired
+    ? Enums.NotificationKind.MEMBERSHIP_EXPIRED
+    : Enums.NotificationKind.MEMBERSHIP_EXPIRY_REMINDER,
+  dedupeKey: `membership-${isExpired ? 'expired' : 'expiry'}:${item.id}:${item.endDate.toISOString()}`,
+  title: isExpired ? 'Gói tập đã hết hạn' : 'Gói tập sắp hết hạn',
+  message: `${item.plan.name}: ${isExpired ? 'đã hết hạn' : 'sắp hết hạn'}. Gia hạn tại mục Gói tập.`,
+});
+
+/** Kỳ có kỳ mua nối tiếp phía sau thì không nhắc gia hạn / báo hết hạn (hội viên vẫn còn gói). */
+const hasNextPeriod = (db, item) =>
+  db.membership.count({
+    where: {
+      userId: item.userId,
+      id: { not: item.id },
+      status: { in: LIVE_STATUSES },
+      startDate: { gte: item.endDate },
+    },
+  });
 
 /** BR-1.11: kiểm tra lại dưới khoá; notification và trạng thái commit cùng nhau. */
 export const runMembershipLifecycle = async (now = new Date(), userId) => {
   const days = await settings.getValue(K.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
-  const today = vietnamDay(now);
-  const upper = new Date(nextDay(today).getTime() + days * TIME.MS_PER_DAY);
+  const upper = new Date(nextDay(vietnamDay(now)).getTime() + days * TIME.MS_PER_DAY);
   const scope = userId ? { userId } : {};
   return withScheduleTransaction(async (db) => {
-    const ended = await db.membershipFreeze.findMany({
-      where: { endedAt: null, endAt: { lte: now }, membership: scope },
-    });
-    for (const freeze of ended) await finishFreeze(db, freeze, now);
+    await runFreezeTransitions(db, now, scope);
     const items = await db.membership.findMany({
       where: { status: Enums.MembershipStatus.ACTIVE, endDate: { lt: upper }, ...scope },
-      include: { plan: true, freezes: { where: { endedAt: null } } },
+      include: { plan: true },
     });
+    const starting = await db.membership.findMany({
+      where: { ...scope, status: Enums.MembershipStatus.ACTIVE, activeUserId: null },
+      select: { userId: true },
+    });
+    const users = new Set([...items, ...starting].map((item) => item.userId));
+    for (const id of users) await syncPeriods(db, id, now);
     let expired = 0;
     for (const item of items) {
-      if (item.freezes.some((f) => f.startAt <= now)) continue;
       const isExpired = item.endDate <= now;
       if (isExpired) {
-        await db.membership.update({
-          where: { id: item.id },
-          data: {
-            status: Enums.MembershipStatus.EXPIRED,
-            activeUserId: null,
-          },
-        });
+        expired += 1;
         await db.auditLog.create({
           data: {
             action: AUDIT_ACTIONS.UPDATE,
@@ -42,22 +60,11 @@ export const runMembershipLifecycle = async (now = new Date(), userId) => {
             meta: { status: Enums.MembershipStatus.EXPIRED },
           },
         });
-        expired += 1;
       }
+      if (await hasNextPeriod(db, item)) continue;
       await db.notification.createMany({
         skipDuplicates: true,
-        data: [
-          {
-            userId: item.userId,
-            membershipId: item.id,
-            kind: isExpired
-              ? Enums.NotificationKind.MEMBERSHIP_EXPIRED
-              : Enums.NotificationKind.MEMBERSHIP_EXPIRY_REMINDER,
-            dedupeKey: `membership-${isExpired ? 'expired' : 'expiry'}:${item.id}:${item.endDate.toISOString()}`,
-            title: isExpired ? 'Gói tập đã hết hạn' : 'Gói tập sắp hết hạn',
-            message: `${item.plan.name}: ${isExpired ? 'đã hết hạn' : 'sắp hết hạn'}. Gia hạn tại mục Gói tập.`,
-          },
-        ],
+        data: [lifecycleNotice(item, isExpired)],
       });
     }
     logger.info({ expired, checked: items.length }, 'Đã chạy nhắc gia hạn / hết hạn gói');

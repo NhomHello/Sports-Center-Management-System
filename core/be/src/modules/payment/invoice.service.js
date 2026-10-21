@@ -43,6 +43,16 @@ export const INVOICE_INCLUDE = {
   user: { select: { id: true, fullName: true, email: true, phone: true } },
 };
 
+/** Tên sản phẩm của hoá đơn (gói tự tập, khóa học hoặc chênh lệch đổi) để hiển thị / in. */
+export const purchaseLabel = (invoice) => invoice.planName ?? invoice.plan?.name ?? 'Hoá đơn';
+
+/** Thời hạn mua: số ngày của gói, hoặc số buổi của khóa học. */
+export const purchaseTerm = (invoice) => {
+  if (invoice.sessionCount) return `${invoice.sessionCount} buổi`;
+  const days = invoice.durationDays ?? invoice.plan?.durationDays;
+  return days ? `${days} ngày` : '—';
+};
+
 /**
  * Tổng tiền của hoá đơn đã nạp kèm payments/refunds: đã thu, đã hoàn và thực giữ lại.
  * @param {{ payments?: { receivedAmount: number }[], refunds?: { amount: number }[] }} invoice

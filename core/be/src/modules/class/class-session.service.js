@@ -1,3 +1,4 @@
+import { compensateSessionCancelled } from '../cancellation/center-cancel.service.js';
 import { PERMISSIONS as P } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
@@ -28,6 +29,7 @@ export const cancelSession = async (db, session, reason, actor) => {
     where: { id: session.id },
     data: { status: Enums.SessionStatus.CANCELLED },
   });
+  await compensateSessionCancelled(db, session, actor);
   await queueClassEvent(db, session.gymClass, Enums.NotificationKind.CLASS_CANCELLED, {
     sessionId: session.id,
     sessionStartAt: session.startAt.toISOString(),
