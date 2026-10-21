@@ -108,8 +108,12 @@ export const create = async (data, actor) => {
         ...fields,
         status:
           data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
-        ...(frameIds && { frames: { create: frameIds.map((frameId) => ({ frameId })) } }),
-        ...(roomTypeIds && { areas: { create: roomTypeIds.map((roomTypeId) => ({ roomTypeId })) } }),
+        ...(frameIds && {
+          frames: { create: frameIds.map((frameId) => ({ frameId })) },
+        }),
+        ...(roomTypeIds && {
+          areas: { create: roomTypeIds.map((roomTypeId) => ({ roomTypeId })) },
+        }),
       },
       include: ACCESS_INCLUDE,
     });
