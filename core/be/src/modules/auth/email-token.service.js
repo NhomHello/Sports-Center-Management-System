@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { ERROR_CODES, SETTING_KEYS } from '@scms/shared';
 import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../../common/errors/api-error.js';
-import { prisma } from '../../config/db.js';
+import { Enums, prisma } from '../../config/db.js';
 import { env } from '../../config/env.js';
 import { EMAIL_VERIFICATION, TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
@@ -43,18 +43,21 @@ export const isInCooldown = async (userId, purpose) => {
 export const issueToken = async ({ userId, email, purpose, ttlSettingKey }) => {
   const ttlMinutes = await settingService.getValue(ttlSettingKey);
   const token = randomBytes(EMAIL_VERIFICATION.TOKEN_BYTES).toString('hex');
-  await prisma.$transaction([
-    prisma.emailVerificationToken.deleteMany({ where: { userId, purpose, usedAt: null } }),
-    prisma.emailVerificationToken.create({
-      data: {
-        userId,
-        email,
-        purpose,
-        tokenHash: hashToken(token),
-        expiresAt: new Date(Date.now() + ttlMinutes * TIME.MS_PER_MINUTE),
-      },
-    }),
-  ]);
+  await prisma.$transaction(
+    [
+      prisma.emailVerificationToken.deleteMany({ where: { userId, purpose, usedAt: null } }),
+      prisma.emailVerificationToken.create({
+        data: {
+          userId,
+          email,
+          purpose,
+          tokenHash: hashToken(token),
+          expiresAt: new Date(Date.now() + ttlMinutes * TIME.MS_PER_MINUTE),
+        },
+      }),
+    ],
+    { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
+  );
   return { token, ttlMinutes };
 };
 
