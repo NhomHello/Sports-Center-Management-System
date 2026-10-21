@@ -147,19 +147,21 @@ export const getById = async (id, context, memberId = context.user.id) => {
 };
 
 /** Danh sách chọn HLV dựa vào permission giảng dạy, không so sánh tên role. */
-export const listCoaches = () =>
-  prisma.user.findMany({
-    where: {
-      status: Enums.UserStatus.ACTIVE,
-      // HLV = có quyền xem lịch dạy nhưng không quản trị lớp; tránh admin/quản lý (có mọi quyền)
-      // lẫn vào danh sách chọn HLV.
-      role: {
-        AND: [
-          { permissions: { some: { permission: { code: PERMISSIONS.SCHEDULE_VIEW_TEACHING } } } },
-          { permissions: { none: { permission: { code: PERMISSIONS.CLASS_CREATE } } } },
-        ],
+export const listCoaches = async () =>
+  (
+    await prisma.user.findMany({
+      where: {
+        status: Enums.UserStatus.ACTIVE,
+        // HLV = có quyền xem lịch dạy và đã khai báo chuyên môn (bộ môn dạy được).
+        role: {
+          permissions: { some: { permission: { code: PERMISSIONS.SCHEDULE_VIEW_TEACHING } } },
+        },
+        coachSubjects: { some: {} },
       },
-    },
-    select: PUBLIC_PERSON,
-    orderBy: { fullName: 'asc' },
-  });
+      select: { ...PUBLIC_PERSON, coachSubjects: { select: { subjectId: true } } },
+      orderBy: { fullName: 'asc' },
+    })
+  ).map(({ coachSubjects, ...coach }) => ({
+    ...coach,
+    subjectIds: coachSubjects.map((row) => row.subjectId),
+  }));

@@ -208,6 +208,8 @@ test('TC-F2-U04: quản lý lọc lớp, sửa cấu hình, xem chi tiết và q
     (r) => r.url().endsWith(`/classes/${primary.id}`) && r.request().method() === 'PUT',
   );
   await page.getByRole('button', { name: 'Lưu lớp', exact: true }).click();
+  // Góp ý GV: sửa lớp có bước xem trước số buổi đổi và học viên bị ảnh hưởng.
+  await page.getByRole('button', { name: 'Lưu thay đổi', exact: true }).click();
   expect((await saved).status()).toBe(200);
   primary.name += ' Updated';
   await card(page, primary.name).getByRole('button', { name: 'Chi tiết', exact: true }).click();

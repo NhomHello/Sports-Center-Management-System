@@ -8,6 +8,7 @@ import { AUDIT_ACTIONS } from '../../constants/index.js';
 import { queueClassEvent } from '../class/class-event.service.js';
 import { loadFutureSession, cancelSession } from '../class/class-session.service.js';
 import { assertSessionResources } from '../class/session-resource.service.js';
+import { ROOM_WITH_TYPE } from '../class/class-schedule.service.js';
 
 const rangeFor = (data) => ({ startAt: new Date(data.startAt), endAt: new Date(data.endAt) });
 async function affected(db, roomId, range) {
@@ -29,8 +30,17 @@ async function affected(db, roomId, range) {
   });
 }
 
+/** Loại phòng có dạy bộ môn của lớp không (góp ý GV: mỗi loại phòng một chức năng). */
+const servesSubject = (room, subjectId) =>
+  Boolean(room.roomType?.subjects.some((s) => s.subjectId === subjectId));
+
 async function availableRoom(session, room) {
-  if (room.capacity < session.gymClass.capacity || session.startAt <= new Date()) return false;
+  if (
+    room.capacity < session.gymClass.capacity ||
+    session.startAt <= new Date() ||
+    !servesSubject(room, session.gymClass.subjectId)
+  )
+    return false;
   try {
     await assertSessionResources(
       prisma,
@@ -50,7 +60,10 @@ export const preview = async (roomId, data) => {
   if (!(await prisma.room.findUnique({ where: { id: roomId } })))
     throw ApiError.notFound('Không tìm thấy phòng');
   const sessions = await affected(prisma, roomId, rangeFor(data));
-  const rooms = await prisma.room.findMany({ where: { id: { not: roomId }, isActive: true } });
+  const rooms = await prisma.room.findMany({
+    where: { id: { not: roomId }, isActive: true },
+    include: ROOM_WITH_TYPE,
+  });
   const result = [];
   for (const session of sessions) {
     const suggestions = [];
@@ -63,9 +76,14 @@ export const preview = async (roomId, data) => {
 };
 
 async function relocate(db, session, roomId, actor) {
-  const room = await db.room.findFirst({ where: { id: roomId, isActive: true } });
+  const room = await db.room.findFirst({
+    where: { id: roomId, isActive: true },
+    include: ROOM_WITH_TYPE,
+  });
   if (!room || room.capacity < session.gymClass.capacity)
     throw ApiError.businessRule('Phòng mới không hoạt động hoặc không đủ sức chứa');
+  if (!servesSubject(room, session.gymClass.subjectId))
+    throw ApiError.businessRule(`Phòng "${room.name}" không dùng cho bộ môn của lớp`);
   await assertSessionResources(
     db,
     [session],

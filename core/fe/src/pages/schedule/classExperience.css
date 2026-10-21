@@ -279,3 +279,7 @@
   color: var(--scms-muted);
   font-weight: 400;
 }
+
+.scms-panel-action {
+  align-self: flex-start;
+}

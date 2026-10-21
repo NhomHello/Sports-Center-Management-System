@@ -45,3 +45,12 @@ export const updateUserStatusSchema = {
     })
     .strict(),
 };
+
+export const coachSubjectsSchema = {
+  params: idParam,
+  body: z
+    .object({
+      subjectIds: z.array(z.coerce.number().int().positive()).max(VALIDATION.NAME_MAX_LENGTH),
+    })
+    .strict(),
+};

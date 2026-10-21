@@ -15,6 +15,24 @@ async function attachCoachTokens(f, withApi) {
 const DAY_MS = 86400000;
 const FIXTURE_DAYS = Object.freeze({ membership: 90, start: 14, end: 35, registrationEnd: 10 });
 
+/** Bộ môn, loại phòng (dạy bộ môn đó), 2 phòng và chuyên môn cho 2 HLV của fixture. */
+const createScheduleResources = async (f) => {
+  f.subject = await prisma.subject.create({ data: { name: `${f.prefix} Subject` } });
+  // Góp ý GV: phòng thuộc loại phòng dạy được bộ môn; HLV có chuyên môn bộ môn.
+  f.roomType = await prisma.roomType.create({
+    data: { name: `${f.prefix} Room Type`, subjects: { create: { subjectId: f.subject.id } } },
+  });
+  f.room = await prisma.room.create({
+    data: { name: `${f.prefix} Room`, capacity: 10, roomTypeId: f.roomType.id },
+  });
+  f.roomOther = await prisma.room.create({
+    data: { name: `${f.prefix} Other Room`, capacity: 10, roomTypeId: f.roomType.id },
+  });
+  await prisma.coachSubject.createMany({
+    data: [f.coach.id, f.coachOther.id].map((coachId) => ({ coachId, subjectId: f.subject.id })),
+  });
+};
+
 /** Fixture Flow 2 riêng từng suite, không sửa dữ liệu demo/quyền hệ thống. */
 export const createClassFixture = async ({ withApi = true } = {}) => {
   const f = await createSprintFixture({ withApi });
@@ -54,11 +72,7 @@ export const createClassFixture = async ({ withApi = true } = {}) => {
   });
   f.userIds.push(f.coach.id, f.coachOther.id);
   await attachCoachTokens(f, withApi);
-  f.subject = await prisma.subject.create({ data: { name: `${f.prefix} Subject` } });
-  f.room = await prisma.room.create({ data: { name: `${f.prefix} Room`, capacity: 10 } });
-  f.roomOther = await prisma.room.create({
-    data: { name: `${f.prefix} Other Room`, capacity: 10 },
-  });
+  await createScheduleResources(f);
   f.plan = await prisma.membershipPlan.create({
     data: { code: f.prefix, name: `${f.prefix} Plan`, price: 100, durationDays: 90 },
   });
@@ -118,7 +132,8 @@ export const cleanupClassFixture = async (f) => {
       ],
     },
   });
-  await prisma.room.deleteMany({ where: { id: { in: [f.room.id, f.roomOther.id] } } });
+  await prisma.room.deleteMany({ where: { roomTypeId: f.roomType.id } });
+  await prisma.roomType.delete({ where: { id: f.roomType.id } });
   await prisma.subject.delete({ where: { id: f.subject.id } });
   await cleanupSprintFixture(f);
 };

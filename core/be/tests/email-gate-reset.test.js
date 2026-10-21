@@ -81,8 +81,19 @@ describe('quên mật khẩu', () => {
   it('người chưa xác minh đặt lại qua email xong thì đăng nhập được ngay', async () => {
     const { email } = await kit.register('resetunverified');
     mail.sendMail.mockClear();
-    await requestReset(email);
-    await confirmReset(await kit.tokenFor(email), NEW_PASSWORD);
+    expect((await requestReset(email)).status).toBe(202);
+    // Đợi đúng email reset: tài khoản chưa xác minh còn có mail VERIFY_EMAIL.
+    let resetMail;
+    await vi.waitFor(() => {
+      resetMail = mail.sendMail.mock.calls
+        .map(([message]) => message)
+        .findLast(
+          (message) => message.to === email && message.subject.includes('Đặt lại mật khẩu'),
+        );
+      expect(resetMail).toBeDefined();
+    });
+    const resetToken = resetMail.text.match(/token=([a-f0-9]{64})/)[1];
+    expect((await confirmReset(resetToken, NEW_PASSWORD)).status).toBe(200);
     expect((await kit.login(email, NEW_PASSWORD)).status).toBe(200);
   });
 
