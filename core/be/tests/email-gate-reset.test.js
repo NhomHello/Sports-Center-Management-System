@@ -82,7 +82,15 @@ describe('quên mật khẩu', () => {
     const { email } = await kit.register('resetunverified');
     mail.sendMail.mockClear();
     expect((await requestReset(email)).status).toBe(202);
-    const resetToken = await kit.tokenFor(email);
+    // Đợi đúng email reset: tài khoản chưa xác minh còn có mail VERIFY_EMAIL.
+    let resetMail;
+    await vi.waitFor(() => {
+      resetMail = mail.sendMail.mock.calls
+        .map(([message]) => message)
+        .findLast((message) => message.to === email && message.subject.includes('Đặt lại mật khẩu'));
+      expect(resetMail).toBeDefined();
+    });
+    const resetToken = resetMail.text.match(/token=([a-f0-9]{64})/)[1];
     expect((await confirmReset(resetToken, NEW_PASSWORD)).status).toBe(200);
     expect((await kit.login(email, NEW_PASSWORD)).status).toBe(200);
   });
