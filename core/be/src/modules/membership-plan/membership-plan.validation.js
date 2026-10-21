@@ -5,6 +5,8 @@ import { VALIDATION } from '../../constants/index.js';
 const PLAN_CODE_MAX_LENGTH = 50;
 const BENEFIT_MAX_LENGTH = 200;
 const BENEFITS_MAX_ITEMS = 12;
+const MAX_PLAN_FRAMES = 20;
+const MAX_PLAN_ROOM_TYPES = 30;
 
 const idParam = z.object({
   id: z.coerce.number().int().positive(),
@@ -30,8 +32,8 @@ const planFields = {
     .max(BENEFITS_MAX_ITEMS)
     .optional(),
   isActive: z.boolean().optional(),
-  frameIds: z.array(z.number().int().positive()).max(20).refine((ids) => new Set(ids).size === ids.length, 'Khung giờ bị trùng').optional(),
-  roomTypeIds: z.array(z.number().int().positive()).max(30).refine((ids) => new Set(ids).size === ids.length, 'Loại phòng bị trùng').optional(),
+  frameIds: z.array(z.number().int().positive()).max(MAX_PLAN_FRAMES).refine((ids) => new Set(ids).size === ids.length, 'Khung giờ bị trùng').optional(),
+  roomTypeIds: z.array(z.number().int().positive()).max(MAX_PLAN_ROOM_TYPES).refine((ids) => new Set(ids).size === ids.length, 'Loại phòng bị trùng').optional(),
 };
 
 export const listMembershipPlanSchema = {
