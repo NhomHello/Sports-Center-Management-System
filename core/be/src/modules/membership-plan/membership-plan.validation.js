@@ -32,8 +32,16 @@ const planFields = {
     .max(BENEFITS_MAX_ITEMS)
     .optional(),
   isActive: z.boolean().optional(),
-  frameIds: z.array(z.number().int().positive()).max(MAX_PLAN_FRAMES).refine((ids) => new Set(ids).size === ids.length, 'Khung giờ bị trùng').optional(),
-  roomTypeIds: z.array(z.number().int().positive()).max(MAX_PLAN_ROOM_TYPES).refine((ids) => new Set(ids).size === ids.length, 'Loại phòng bị trùng').optional(),
+  frameIds: z
+    .array(z.number().int().positive())
+    .max(MAX_PLAN_FRAMES)
+    .refine((ids) => new Set(ids).size === ids.length, 'Khung giờ bị trùng')
+    .optional(),
+  roomTypeIds: z
+    .array(z.number().int().positive())
+    .max(MAX_PLAN_ROOM_TYPES)
+    .refine((ids) => new Set(ids).size === ids.length, 'Loại phòng bị trùng')
+    .optional(),
 };
 
 export const listMembershipPlanSchema = {
