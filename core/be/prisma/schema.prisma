@@ -47,6 +47,8 @@ enum SettingType {
 enum MembershipStatus {
   ACTIVE
   EXPIRED
+  FROZEN
+  CANCELLED
 }
 
 enum InvoiceStatus {
@@ -66,6 +68,7 @@ enum PaymentProvider {
   MANUAL
   SEPAY
   SIMULATOR
+  CREDIT
 }
 
 enum WebhookLogStatus {
@@ -102,6 +105,38 @@ enum NotificationKind {
   INVOICE_EXPIRED
 }
 
+enum InvoiceKind {
+  MEMBERSHIP
+  COURSE
+  ADJUSTMENT
+}
+
+enum SettlementMode {
+  REFUND
+  CREDIT
+  NONE
+}
+
+enum PurchaseChangeKind {
+  CANCEL_PLAN
+  CANCEL_COURSE
+  CHANGE_PLAN
+  CHANGE_CLASS
+}
+
+enum PurchaseChangeStatus {
+  PENDING_PAYMENT
+  DONE
+  CANCELLED
+}
+
+enum CreditReason {
+  CANCELLATION
+  CHANGE
+  PAYMENT
+  ADJUSTMENT
+}
+
 // ---------------- AUTH & RBAC (dynamic) ----------------
 
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
@@ -136,6 +171,11 @@ model User {
   cancelledClassBookings  ClassEnrollment[]        @relation("ClassCancelledBy")
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
+  creditBalance           Int                      @default(0) @map("credit_balance")
+  creditTransactions      CreditTransaction[]      @relation("CreditOwner")
+  creditActions           CreditTransaction[]      @relation("CreditActor")
+  purchaseChanges         PurchaseChange[]         @relation("PurchaseOwner")
+  purchaseActions         PurchaseChange[]         @relation("PurchaseActor")
 
   @@index([roleId])
   @@map("users")
@@ -246,19 +286,22 @@ model AuditLog {
 
 /// Danh mục gói dùng bởi hóa đơn tại quầy; không xóa gói đã được tham chiếu.
 model MembershipPlan {
-  id           Int                  @id @default(autoincrement())
-  code         String               @unique @db.VarChar(50)
-  name         String               @unique @db.VarChar(100)
-  description  String?              @db.VarChar(500)
-  durationDays Int                  @map("duration_days")
-  price        Int
-  benefits     Json?
-  isActive     Boolean              @default(true) @map("is_active")
-  status       MembershipPlanStatus @default(SELLING)
-  memberships  Membership[]
-  invoices     Invoice[]
-  createdAt    DateTime             @default(now()) @map("created_at")
-  updatedAt    DateTime             @updatedAt @map("updated_at")
+  id              Int                  @id @default(autoincrement())
+  code            String               @unique @db.VarChar(50)
+  name            String               @unique @db.VarChar(100)
+  description     String?              @db.VarChar(500)
+  durationDays    Int                  @map("duration_days")
+  price           Int
+  benefits        Json?
+  isActive        Boolean              @default(true) @map("is_active")
+  status          MembershipPlanStatus @default(SELLING)
+  memberships     Membership[]
+  invoices        Invoice[]
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+  frames          PlanFrame[]
+  areas           PlanRoomType[]
+  targetedChanges PurchaseChange[]
 
   @@index([isActive])
   @@index([status])
@@ -267,20 +310,25 @@ model MembershipPlan {
 
 /// BR-1.2: activeUserId duy nhất bảo vệ một membership ACTIVE cho mỗi hội viên.
 model Membership {
-  id            Int                @id @default(autoincrement())
-  userId        Int                @map("user_id")
-  activeUserId  Int?               @unique @map("active_user_id")
-  planId        Int                @map("plan_id")
-  startDate     DateTime           @map("start_date")
-  endDate       DateTime           @map("end_date")
-  status        MembershipStatus   @default(ACTIVE)
-  user          User               @relation(fields: [userId], references: [id])
-  plan          MembershipPlan     @relation(fields: [planId], references: [id])
-  freezes       MembershipFreeze[]
-  invoices      Invoice[]
-  notifications Notification[]
-  createdAt     DateTime           @default(now()) @map("created_at")
-  updatedAt     DateTime           @updatedAt @map("updated_at")
+  id           Int                @id @default(autoincrement())
+  userId       Int                @map("user_id")
+  activeUserId Int?               @unique @map("active_user_id")
+  planId       Int                @map("plan_id")
+  startDate    DateTime           @map("start_date")
+  endDate      DateTime           @map("end_date")
+  status       MembershipStatus   @default(ACTIVE)
+  user         User               @relation(fields: [userId], references: [id])
+  plan         MembershipPlan     @relation(fields: [planId], references: [id])
+  freezes      MembershipFreeze[]
+
+  invoices        Invoice[]        @relation("MembershipInvoices")
+  notifications   Notification[]
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  invoiceId       Int?             @unique @map("invoice_id")
+  purchaseInvoice Invoice?         @relation("MembershipPurchaseInvoice", fields: [invoiceId], references: [id])
+  cancelledAt     DateTime?        @map("cancelled_at")
+  purchaseChanges PurchaseChange[]
 
   @@index([userId, status, endDate])
   @@index([planId])
@@ -289,27 +337,40 @@ model Membership {
 
 /// Giá và thời hạn được chụp lúc tạo; thay đổi danh mục không sửa giao dịch cũ.
 model Invoice {
-  id           Int                  @id @default(autoincrement())
-  code         String               @unique @db.VarChar(50)
-  userId       Int                  @map("user_id")
-  planId       Int                  @map("plan_id")
-  planName     String?              @map("plan_name") @db.VarChar(100)
-  durationDays Int?                 @map("duration_days")
-  membershipId Int?                 @map("membership_id")
+  id     Int    @id @default(autoincrement())
+  code   String @unique @db.VarChar(50)
+  userId Int    @map("user_id")
+
+  planId       Int?           @map("plan_id")
+  planName     String?        @map("plan_name") @db.VarChar(100)
+  durationDays Int?           @map("duration_days")
+  membershipId Int?           @map("membership_id")
   amount       Int
-  status       InvoiceStatus        @default(PENDING)
-  channel      InvoiceChannel       @default(COUNTER)
-  expiresAt    DateTime             @map("expires_at")
-  paidAt       DateTime?            @map("paid_at")
-  user         User                 @relation(fields: [userId], references: [id])
-  plan         MembershipPlan       @relation(fields: [planId], references: [id])
-  membership   Membership?          @relation(fields: [membershipId], references: [id])
-  payments     Payment[]
-  webhookLogs  PaymentWebhookLog[]
-  cases        ReconciliationCase[]
-  refunds      Refund[]
-  createdAt    DateTime             @default(now()) @map("created_at")
-  updatedAt    DateTime             @updatedAt @map("updated_at")
+  status       InvoiceStatus  @default(PENDING)
+  channel      InvoiceChannel @default(COUNTER)
+  expiresAt    DateTime       @map("expires_at")
+  paidAt       DateTime?      @map("paid_at")
+  user         User           @relation(fields: [userId], references: [id])
+
+  plan MembershipPlan? @relation(fields: [planId], references: [id])
+
+  membership            Membership?          @relation("MembershipInvoices", fields: [membershipId], references: [id])
+  payments              Payment[]
+  webhookLogs           PaymentWebhookLog[]
+  cases                 ReconciliationCase[]
+  refunds               Refund[]
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+  kind                  InvoiceKind          @default(MEMBERSHIP)
+  classId               Int?                 @map("class_id")
+  sessionCount          Int?                 @map("session_count")
+  totalSessions         Int?                 @map("total_sessions")
+  changeId              Int?                 @map("change_id")
+  courseClass           GymClass?            @relation("CourseInvoices", fields: [classId], references: [id])
+  createdMembership     Membership?          @relation("MembershipPurchaseInvoice")
+  enrollments           ClassEnrollment[]
+  sourcePurchaseChanges PurchaseChange[]     @relation("PurchaseSourceInvoice")
+  creditTransactions    CreditTransaction[]
 
   @@index([userId, planId, status])
   @@index([status, expiresAt])
@@ -433,19 +494,20 @@ model ReconciliationContact {
 
 /// Yêu cầu hoàn tiền: tiền trả thủ công ngoài hệ thống, đóng bằng mã tham chiếu ngân hàng (BR-PAY-13).
 model Refund {
-  id            Int                 @id @default(autoincrement())
-  invoiceId     Int?                @map("invoice_id")
-  invoice       Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
-  caseId        Int?                @map("case_id")
-  case          ReconciliationCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
-  amount        Int
-  reason        String              @db.VarChar(255)
-  status        RefundStatus        @default(PENDING)
-  reference     String?             @db.VarChar(100)
-  requestedById Int                 @map("requested_by_id")
-  completedById Int?                @map("completed_by_id")
-  completedAt   DateTime?           @map("completed_at")
-  createdAt     DateTime            @default(now()) @map("created_at")
+  id              Int                 @id @default(autoincrement())
+  invoiceId       Int?                @map("invoice_id")
+  invoice         Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  caseId          Int?                @map("case_id")
+  case            ReconciliationCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  amount          Int
+  reason          String              @db.VarChar(255)
+  status          RefundStatus        @default(PENDING)
+  reference       String?             @db.VarChar(100)
+  requestedById   Int                 @map("requested_by_id")
+  completedById   Int?                @map("completed_by_id")
+  completedAt     DateTime?           @map("completed_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  purchaseChanges PurchaseChange[]
 
   @@index([status, createdAt])
   @@map("refunds")
@@ -484,6 +546,7 @@ enum SessionStatus {
 enum EnrollmentStatus {
   BOOKED
   CANCELLED
+  PENDING_PAYMENT
 }
 
 /// Danh mục đã tồn tại trong migration Flow 2; không tạo lại bảng.
@@ -532,6 +595,8 @@ model RoomType {
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
 
+  selfTrainingPlans PlanRoomType[]
+
   @@map("room_types")
 }
 
@@ -569,6 +634,8 @@ model OperatingFrame {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  selfTrainingPlans PlanFrame[]
+
   @@map("operating_frames")
 }
 
@@ -595,6 +662,9 @@ model GymClass {
   events              ClassEvent[]
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt @map("updated_at")
+  price               Int               @default(0)
+  courseInvoices      Invoice[]         @relation("CourseInvoices")
+  targetChanges       PurchaseChange[]
 
   @@index([subjectId, status])
   @@index([coachId, status])
@@ -644,6 +714,10 @@ model ClassEnrollment {
   cancelledByUser User?            @relation("ClassCancelledBy", fields: [cancelledBy], references: [id], onDelete: Restrict, onUpdate: Restrict)
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  invoiceId       Int?             @map("invoice_id")
+  invoice         Invoice?         @relation(fields: [invoiceId], references: [id])
+  holdExpiresAt   DateTime?        @map("hold_expires_at")
+  purchaseChanges PurchaseChange[]
 
   @@unique([classId, memberId])
   @@index([memberId, status])
@@ -720,6 +794,7 @@ model CheckIn {
 enum AttendanceStatus {
   PRESENT
   ABSENT
+  EXCUSED
 }
 
 /// Một kết quả cho mỗi hội viên/buổi, sửa có audit thay vì xoá lịch sử.
@@ -733,6 +808,7 @@ model Attendance {
   member    User             @relation(fields: [memberId], references: [id], onDelete: Restrict)
   createdAt DateTime         @default(now()) @map("created_at")
   updatedAt DateTime         @updatedAt @map("updated_at")
+  excusedAt DateTime?        @map("excused_at")
 
   @@unique([sessionId, memberId])
   @@index([memberId, status])
@@ -777,4 +853,84 @@ model RoomMaintenance {
 
   @@index([roomId, startAt, endAt])
   @@map("room_maintenance")
+}
+
+// ---------------- GY-00: SELF-TRAINING ACCESS ----------------
+
+model PlanFrame {
+  planId  Int            @map("plan_id")
+  frameId Int            @map("frame_id")
+  plan    MembershipPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  frame   OperatingFrame @relation(fields: [frameId], references: [id], onDelete: Restrict)
+
+  @@id([planId, frameId])
+  @@map("plan_frames")
+}
+
+model PlanRoomType {
+  planId     Int            @map("plan_id")
+  roomTypeId Int            @map("room_type_id")
+  plan       MembershipPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  roomType   RoomType       @relation(fields: [roomTypeId], references: [id], onDelete: Restrict)
+
+  @@id([planId, roomTypeId])
+  @@map("plan_room_types")
+}
+
+// Append-only credit ledger. Update User.creditBalance in the same locked transaction.
+model CreditTransaction {
+  id           Int             @id @default(autoincrement())
+  userId       Int             @map("user_id")
+  amount       Int
+  balanceAfter Int             @map("balance_after")
+  reason       CreditReason
+  invoiceId    Int?            @map("invoice_id")
+  changeId     Int?            @map("change_id")
+  note         String?         @db.VarChar(500)
+  actorId      Int             @map("actor_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  user         User            @relation("CreditOwner", fields: [userId], references: [id])
+  actor        User            @relation("CreditActor", fields: [actorId], references: [id])
+  invoice      Invoice?        @relation(fields: [invoiceId], references: [id])
+  change       PurchaseChange? @relation(fields: [changeId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("credit_transactions")
+}
+
+// History of purchase cancellation and plan/class changes.
+model PurchaseChange {
+  id                  Int                  @id @default(autoincrement())
+  kind                PurchaseChangeKind
+  status              PurchaseChangeStatus @default(DONE)
+  userId              Int                  @map("user_id")
+  actorId             Int                  @map("actor_id")
+  fromInvoiceId       Int                  @map("from_invoice_id")
+  fromMembershipId    Int?                 @map("from_membership_id")
+  fromEnrollmentId    Int?                 @map("from_enrollment_id")
+  toPlanId            Int?                 @map("to_plan_id")
+  toClassId           Int?                 @map("to_class_id")
+  paidAmount          Int                  @map("paid_amount")
+  remainingValue      Int                  @map("remaining_value")
+  fee                 Int                  @default(0)
+  newPrice            Int                  @default(0) @map("new_price")
+  difference          Int                  @default(0)
+  settlement          SettlementMode       @default(NONE)
+  adjustmentInvoiceId Int?                 @map("adjustment_invoice_id")
+  refundId            Int?                 @map("refund_id")
+  creditTransactionId Int?                 @map("credit_transaction_id")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  completedAt         DateTime?            @map("completed_at")
+  user                User                 @relation("PurchaseOwner", fields: [userId], references: [id])
+  actor               User                 @relation("PurchaseActor", fields: [actorId], references: [id])
+  fromInvoice         Invoice              @relation("PurchaseSourceInvoice", fields: [fromInvoiceId], references: [id])
+  fromMembership      Membership?          @relation(fields: [fromMembershipId], references: [id])
+  fromEnrollment      ClassEnrollment?     @relation(fields: [fromEnrollmentId], references: [id])
+  toPlan              MembershipPlan?      @relation(fields: [toPlanId], references: [id])
+  toClass             GymClass?            @relation(fields: [toClassId], references: [id])
+  refund              Refund?              @relation(fields: [refundId], references: [id])
+  creditTransactions  CreditTransaction[]
+
+  @@index([userId, createdAt])
+  @@map("purchase_changes")
 }
