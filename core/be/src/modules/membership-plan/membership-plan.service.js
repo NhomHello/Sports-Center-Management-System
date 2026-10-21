@@ -5,19 +5,26 @@ import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 
-const ACCESS_INCLUDE = { frames: { include: { frame: true } }, areas: { include: { roomType: true } } };
+const ACCESS_INCLUDE = {
+  frames: { include: { frame: true } },
+  areas: { include: { roomType: true } },
+};
 
 /** Only active frames and self-training areas are eligible for an access plan. */
 const validateAccess = async (tx, frameIds, roomTypeIds) => {
   if (frameIds !== undefined) {
-    const count = await tx.operatingFrame.count({ where: { id: { in: frameIds }, isActive: true } });
-    if (count !== frameIds.length) throw ApiError.businessRule('Khung giờ không tồn tại hoặc ngừng hoạt động');
+    const count = await tx.operatingFrame.count({
+      where: { id: { in: frameIds }, isActive: true },
+    });
+    if (count !== frameIds.length)
+      throw ApiError.businessRule('Khung giờ không tồn tại hoặc ngừng hoạt động');
   }
   if (roomTypeIds !== undefined) {
     const count = await tx.roomType.count({
       where: { id: { in: roomTypeIds }, isActive: true, isSelfTrainingArea: true },
     });
-    if (count !== roomTypeIds.length) throw ApiError.businessRule('Loại phòng không phải khu tự tập đang hoạt động');
+    if (count !== roomTypeIds.length)
+      throw ApiError.businessRule('Loại phòng không phải khu tự tập đang hoạt động');
   }
 };
 
@@ -99,7 +106,8 @@ export const create = async (data, actor) => {
     return tx.membershipPlan.create({
       data: {
         ...fields,
-        status: data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
+        status:
+          data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
         ...(frameIds && { frames: { create: frameIds.map((frameId) => ({ frameId })) } }),
         ...(roomTypeIds && { areas: { create: roomTypeIds.map((roomTypeId) => ({ roomTypeId })) } }),
       },
