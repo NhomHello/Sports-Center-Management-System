@@ -81,8 +81,9 @@ describe('quên mật khẩu', () => {
   it('người chưa xác minh đặt lại qua email xong thì đăng nhập được ngay', async () => {
     const { email } = await kit.register('resetunverified');
     mail.sendMail.mockClear();
-    await requestReset(email);
-    await confirmReset(await kit.tokenFor(email), NEW_PASSWORD);
+    expect((await requestReset(email)).status).toBe(202);
+    const resetToken = await kit.tokenFor(email);
+    expect((await confirmReset(resetToken, NEW_PASSWORD)).status).toBe(200);
     expect((await kit.login(email, NEW_PASSWORD)).status).toBe(200);
   });
 
