@@ -83,7 +83,8 @@ export async function openFixture(page, options = {}) {
     if (path.endsWith('/excuse')) return respond({ id: 1, status: 'EXCUSED', memberId: 1 });
     if (path.endsWith('/cancel')) {
       if (options.cancelError) return respond({ message: 'Khóa đã kết thúc, không thể hủy' }, 422);
-      state.context.course.enrollment.status = 'CANCELLED';
+      if (path.startsWith('/memberships/')) state.context.membership.status = 'CANCELLED';
+      else state.context.course.enrollment.status = 'CANCELLED';
       if (body.settlement === 'CREDIT') {
         state.balance += state.preview.refundAmount;
         state.entries.push({
@@ -100,6 +101,13 @@ export async function openFixture(page, options = {}) {
       if (options.creditError)
         return respond({ message: 'Số dư đã thay đổi, vui lòng tải lại' }, 409);
       state.balance = 430000;
+      state.entries.push({
+        id: 2,
+        amount: -290000,
+        balanceAfter: 430000,
+        reason: 'PAYMENT',
+        createdAt: NOW,
+      });
       state.context.invoice = {
         ...state.context.invoice,
         status: 'PAID',
@@ -107,8 +115,21 @@ export async function openFixture(page, options = {}) {
       };
       return respond(state.context.invoice);
     }
-    if (path.endsWith('/change'))
+    if (path.endsWith('/change')) {
+      if (options.returnMoney) {
+        state.balance = 200000;
+        state.entries.push({
+          id: 3,
+          amount: 200000,
+          balanceAfter: 200000,
+          reason: 'CHANGE',
+          createdAt: NOW,
+        });
+        state.context.membership.planId = body.planId;
+        return respond({ id: 62, status: 'DONE', settlement: body.settlement });
+      }
       return respond({ id: 62, status: 'PENDING_PAYMENT', adjustmentInvoiceId: 301 });
+    }
     if (path.endsWith('/freezes/resume')) {
       state.context.membership = {
         ...state.context.membership,

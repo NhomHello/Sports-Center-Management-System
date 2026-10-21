@@ -5,7 +5,7 @@ const dialog = (page) => page.getByRole('dialog');
 const posts = (state, suffix) =>
   state.requests.filter((r) => r.method === 'POST' && r.path.endsWith(suffix));
 const shot = (page, info, name) =>
-  page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
+  page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true, animations: 'disabled' });
 
 test('TC-UI-GY31-03: báo nghỉ giữ khóa và nhận tag Xin nghỉ', async ({ page }, info) => {
   const state = await openFixture(page);
@@ -31,11 +31,14 @@ test('TC-UI-GY34-06: hủy khóa nhận số dư và dùng thanh toán hóa đơ
   await expect(dialog(page).getByText('720.000', { exact: false })).toBeVisible();
   await dialog(page).getByLabel('Ghi vào số dư').check();
   await dialog(page).getByLabel('Lý do hủy').fill('Thay đổi lịch làm việc');
+  await shot(page, info, 'preview-huy-khoa');
   await dialog(page).getByRole('button', { name: 'Xác nhận hủy' }).click();
   await expect(dialog(page)).toHaveCount(0);
   await page.getByRole('button', { name: /Dùng số dư \(còn/ }).click();
   await dialog(page).getByRole('button', { name: 'Dùng số dư', exact: true }).click();
   await expect(page.getByText('PAID', { exact: true })).toBeVisible();
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(page.getByRole('cell', { name: 'Thanh toán', exact: true })).toBeVisible();
   expect(posts(state, '/cancel')[0].body).toEqual({
     settlement: 'CREDIT',
     reason: 'Thay đổi lịch làm việc',
@@ -52,6 +55,7 @@ test('TC-UI-GY34-07: đổi lớp lọc lớp hết chỗ, mở hóa đơn thu t
   await expect(page.getByText('Yoga đã đầy', { exact: true })).toHaveCount(0);
   await page.getByText('Yoga mới còn chỗ', { exact: true }).click();
   await expect(dialog(page).getByText(/700.000/)).toBeVisible();
+  await shot(page, info, 'preview-doi-lop');
   await dialog(page).getByRole('button', { name: 'Xác nhận đổi' }).click();
   await expect(page.getByTestId('location')).toHaveText('/payments?invoice=301');
   expect(posts(state, '/change')[0].body).toEqual({ classId: 22 });
@@ -88,6 +92,7 @@ test('TC-UI-GY41-02: bảo lưu và kết thúc sớm đọc ngày từ BE', asy
   await page.getByRole('button', { name: 'Kết thúc bảo lưu', exact: true }).click();
   await page.getByRole('button', { name: 'Kết thúc bảo lưu', exact: true }).last().click();
   await expect(page.getByText('Đã bảo lưu 22 / 60 ngày')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hủy gói', exact: true })).toBeEnabled();
   expect(posts(state, '/freezes')[0].body).toEqual({ from: '2026-10-21', to: '2026-11-01' });
   expect(posts(state, '/resume')).toHaveLength(1);
   expect(state.errors).toEqual([]);
@@ -141,6 +146,8 @@ test('TC-UI-GY34-12: đổi thừa tiền yêu cầu chọn hoàn hoặc số d�
   await dialog(page).getByRole('button', { name: 'Xác nhận đổi' }).click();
   await expect.poll(() => posts(state, '/change').length).toBe(1);
   expect(posts(state, '/change')[0].body).toEqual({ planId: 32, settlement: 'CREDIT' });
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(page.getByTestId('location')).toHaveText('/');
 });
 
 test('TC-UI-GY34-13: số dư thay đổi thì hiện lỗi BE và giữ hóa đơn', async ({ page }) => {
