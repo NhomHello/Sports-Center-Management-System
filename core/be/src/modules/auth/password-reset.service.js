@@ -65,7 +65,8 @@ export const confirmPasswordReset = async ({ token, password }) => {
   await prisma.$transaction(async (tx) => {
     await claimToken(tx, record, usedAt);
     await tx.loginThrottle.updateMany({
-      where: { key: loginKey(record.user) }, data: { attempts: 0, lockedUntil: null },
+      where: { key: loginKey(record.user) },
+      data: { attempts: 0, lockedUntil: null },
     });
     await tx.user.update({
       where: { id: record.userId },
