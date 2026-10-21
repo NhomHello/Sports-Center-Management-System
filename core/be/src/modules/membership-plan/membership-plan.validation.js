@@ -30,6 +30,8 @@ const planFields = {
     .max(BENEFITS_MAX_ITEMS)
     .optional(),
   isActive: z.boolean().optional(),
+  frameIds: z.array(z.number().int().positive()).max(20).refine((ids) => new Set(ids).size === ids.length, 'Khung giờ bị trùng').optional(),
+  roomTypeIds: z.array(z.number().int().positive()).max(30).refine((ids) => new Set(ids).size === ids.length, 'Loại phòng bị trùng').optional(),
 };
 
 export const listMembershipPlanSchema = {
@@ -59,5 +61,7 @@ export const updateMembershipPlanSchema = {
     durationDays: planFields.durationDays.optional(),
     benefits: planFields.benefits,
     isActive: planFields.isActive,
+    frameIds: planFields.frameIds,
+    roomTypeIds: planFields.roomTypeIds,
   }),
 };
