@@ -46,6 +46,7 @@ export const issueToken = async ({ userId, email, purpose, ttlSettingKey }) => {
   // InnoDB có thể deadlock khi nhiều test/luồng ghi token đồng thời.
   // Prisma P2034 là lỗi transaction có thể thử lại, không phải lỗi token.
   const MAX_ATTEMPTS = 3;
+  const RETRY_DELAY_MS = 40;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
       await prisma.$transaction(
@@ -66,7 +67,7 @@ export const issueToken = async ({ userId, email, purpose, ttlSettingKey }) => {
       break;
     } catch (error) {
       if (error.code !== 'P2034' || attempt === MAX_ATTEMPTS) throw error;
-      await new Promise((resolve) => setTimeout(resolve, attempt * 40));
+      await new Promise((resolve) => setTimeout(resolve, attempt * RETRY_DELAY_MS));
     }
   }
   return { token, ttlMinutes };
