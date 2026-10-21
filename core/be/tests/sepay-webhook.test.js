@@ -134,10 +134,11 @@ describe('SePay webhook', () => {
   });
   it('mua tiếp khi còn hạn thì cộng dồn vào cùng membership và API trả số lần thanh toán', async () => {
     const first = await buy();
-    // Hóa đơn chờ chuyển bù của test trước được dùng lại (BR-1.13): chuyển đúng phần còn thiếu.
-    await send(
-      transfer(first, { transferAmount: first.paymentInstruction?.amount ?? first.amount }),
-    );
+    // Hóa đơn PENDING được tái sử dụng; QR có thể null nếu chưa cấu hình ngân hàng.
+    // Tính khoản còn thiếu từ payment thực nhận, tránh gửi thừa tiền và mở phiếu đối soát.
+    const received = first.payments.reduce((total, payment) => total + payment.receivedAmount, 0);
+    const toppedUp = await send(transfer(first, { transferAmount: first.amount - received }));
+    expect(toppedUp.body.data.status).toBe(Enums.WebhookLogStatus.PROCESSED);
     const before = (
       await api.get(apiPath('/memberships/me/current')).set(bearer(fixture.memberToken))
     ).body.data;
