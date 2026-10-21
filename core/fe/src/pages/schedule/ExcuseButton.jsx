@@ -12,7 +12,8 @@ const CLOCK_TICK_MS = 1000;
 const isExcused = (session) =>
   session.attendanceStatus === 'EXCUSED' || session.attendance?.status === 'EXCUSED';
 function excuseNotice(session, now) {
-  if (session.status !== 'SCHEDULED' || new Date(session.startAt).getTime() <= now) return '';
+  const start = new Date(session.startAt).getTime();
+  if (!Number.isFinite(start) || session.status !== 'SCHEDULED' || start <= now) return '';
   const deadline = new Date(session.excuseDeadline).getTime();
   if (!Number.isFinite(deadline)) return 'Chưa có hạn báo nghỉ từ hệ thống.';
   if (now > deadline) return 'Đã quá hạn báo nghỉ';

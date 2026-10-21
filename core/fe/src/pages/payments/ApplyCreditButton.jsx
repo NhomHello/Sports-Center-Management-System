@@ -31,6 +31,10 @@ function useCreditPayment(invoice, onApplied) {
   });
   const mutation = useMutation({
     mutationFn: () => applyCredit(invoice.id),
+    onError: (error) => {
+      message.error(error.message);
+      client.invalidateQueries({ queryKey: ['credit'] });
+    },
     onSuccess: async ({ data }) => {
       message.success(
         data.status === INVOICE_STATUS.PAID

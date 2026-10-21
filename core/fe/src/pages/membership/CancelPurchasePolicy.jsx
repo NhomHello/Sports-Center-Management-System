@@ -10,7 +10,10 @@ const isMoney = (value) => Number.isSafeInteger(value) && value >= 0;
 /** Chỉ kiểm tra kiểu dữ liệu, không áp dụng công thức tiền hoặc phí trên FE. */
 export const validCancelPreview = (data) =>
   Boolean(data) &&
-  ['paidAmount', 'remainingValue', 'fee', 'refundAmount'].every((key) => isMoney(data[key]));
+  ['paidAmount', 'remainingValue', 'fee', 'refundAmount'].every((key) => isMoney(data[key])) &&
+  data.remainingValue <= data.paidAmount &&
+  data.fee <= data.remainingValue &&
+  data.refundAmount <= data.remainingValue;
 /** Chênh lệch được phép âm nhưng vẫn phải là số nguyên do API trả. */
 export const validChangePreview = (data) =>
   Boolean(data) &&
@@ -20,6 +23,7 @@ export const validChangePreview = (data) =>
 /** Quyền thực hiện phụ thuộc chính chủ hay thao tác hộ, không so sánh tên role. */
 export function canManagePurchase({ kind, ownerId, userId, can }) {
   if (!ownerId || !userId) return false;
+  if (!['membership', 'enrollment'].includes(kind)) return false;
   if (kind === 'membership')
     return can(ownerId === userId ? P.MEMBERSHIP_PURCHASE : P.MEMBERSHIP_MANAGE);
   return can(ownerId === userId ? P.CLASS_CANCEL_SELF : P.CLASS_ENROLL_FOR_MEMBER);
