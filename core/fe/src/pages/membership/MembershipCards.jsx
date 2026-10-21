@@ -2,6 +2,7 @@ import { CheckOutlined, SafetyCertificateOutlined, StarFilled } from '@ant-desig
 import { Card, Col, Row, Tag, Typography } from 'antd';
 import { formatCurrency } from '@/utils/format';
 import { computeSavings, pricePerDay } from '@/utils/planPricing';
+import { PlanAccessTags } from './PlanAccessTags';
 import { PlanActions } from './PlanActions';
 import './membershipPlans.css';
 
@@ -58,6 +59,7 @@ export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
         </Tag>
       )}
     </div>
+    <PlanAccessTags plan={plan} />
     <div className="scms-plan-card__rule" />
     <Typography.Text className="scms-plan-card__benefits-title">Bao gồm</Typography.Text>
     <PlanBenefits benefits={plan.benefits} description={plan.description} />
@@ -86,7 +88,8 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
       </Row>
       <div className="scms-pricing-assurance">
         <SafetyCertificateOutlined />
-        Gói tập chỉ được kích hoạt hoặc gia hạn sau khi hóa đơn thanh toán thành công.
+        Gói tự tập dùng trong khung giờ và khu vực ghi trên gói, kích hoạt sau khi hóa đơn thanh
+        toán thành công. Lớp học bán riêng theo khóa ở mục Lịch tập.
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import { ApplyCreditButton } from './ApplyCreditButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Descriptions, Modal, Typography } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
@@ -70,6 +71,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
         />
       )}
       <CashInvoiceSummary invoice={invoice} />
+      <ApplyCreditButton invoice={invoice} onApplied={() => query.refetch()} />
       <Typography.Paragraph type="secondary">
         Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Gói tập chỉ được cập nhật sau khi hệ thống ghi
         nhận thanh toán thành công.
@@ -104,7 +106,11 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
     onSuccess: ({ data }) => {
       // Đóng modal trước rồi mới làm mới dữ liệu: nếu làm mới trước, hóa đơn PAID khiến modal
       // đang đóng chớp lên cảnh báo "không cho phép thu tiền".
-      message.success(`Đã thu tiền. Gói tập hiệu lực đến ${formatDate(data.membership?.endDate)}.`);
+      message.success(
+        data.membership
+          ? `Đã thu tiền. Gói tập hiệu lực đến ${formatDate(data.membership.endDate)}.`
+          : 'Đã thu tiền.',
+      );
       onPaid(data.id);
       mutation.reset();
       [QUERY_KEYS.INVOICES, QUERY_KEYS.MEMBERS, QUERY_KEYS.NOTIFICATIONS].forEach((queryKey) =>

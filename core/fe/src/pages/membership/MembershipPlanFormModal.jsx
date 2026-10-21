@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
+import { PlanAccessFields } from './PlanAccessFields';
 
 const MembershipIdentityFields = ({ plan }) => (
   <>
@@ -26,6 +27,19 @@ const MembershipIdentityFields = ({ plan }) => (
   </>
 );
 
+const ids = (items) => (items ?? []).map((item) => item.id);
+
+const planFormValues = (plan) =>
+  plan
+    ? {
+        ...plan,
+        benefitsText: (plan.benefits ?? []).join('\n'),
+        frameIds: ids(plan.frames),
+        roomTypeIds: ids(plan.areas),
+        isActive: plan.isActive ?? true,
+      }
+    : { benefitsText: '', frameIds: [], roomTypeIds: [], isActive: true };
+
 /** Modal tạo hoặc sửa thông tin gói tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
 export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading }) {
   const [form] = Form.useForm();
@@ -33,11 +47,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
 
   useEffect(() => {
     if (!open) return;
-    form.setFieldsValue({
-      ...plan,
-      benefitsText: plan?.benefits?.join('\n') ?? '',
-      isActive: plan?.isActive ?? true,
-    });
+    form.setFieldsValue(planFormValues(plan));
   }, [form, open, plan]);
 
   const handleFinish = ({ benefitsText, ...values }) => {
@@ -56,7 +66,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     <Modal
       open={open}
       centered
-      title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
+      title={plan ? 'Chỉnh sửa gói tự tập' : 'Tạo gói tự tập mới'}
       okText="Lưu"
       cancelText="Hủy"
       confirmLoading={loading}
@@ -87,6 +97,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
             placeholder="Ví dụ: 500.000"
           />
         </Form.Item>
+        <PlanAccessFields />
         <Form.Item name="description" label="Mô tả gói">
           <Input.TextArea placeholder="Giới thiệu nội dung và đối tượng phù hợp" />
         </Form.Item>

@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Card, Dropdown, App, Tag } from 'antd';
 import { CLASS_STATUS, ENROLLMENT_STATUS } from '@/constants/schedule';
-import { formatDate, formatDateTime } from '@/utils/format';
+import { formatCurrency, formatDate, formatDateTime } from '@/utils/format';
 import { classDisplayStatus, describeWeeklySchedule } from '@/utils/schedule';
 
 function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
@@ -63,18 +63,27 @@ function SeatSummary({ item }) {
   );
 }
 
+function ClassTags({ item, display }) {
+  const status = item.enrollment?.status;
+  return (
+    <div className="scms-class-card__tags">
+      <Tag color={display.color}>{display.label}</Tag>
+      {status === ENROLLMENT_STATUS.BOOKED && <Tag color="green">Đã đăng ký</Tag>}
+      {status === ENROLLMENT_STATUS.PENDING_PAYMENT && <Tag color="orange">Chờ thanh toán</Tag>}
+      <Tag color={item.price > 0 ? 'gold' : 'default'}>
+        {item.price > 0 ? `Học phí ${formatCurrency(item.priceForRemaining)}` : 'Miễn phí'}
+      </Tag>
+      <Tag>{item.subject.name}</Tag>
+    </div>
+  );
+}
+
 export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, children }) {
   const display = classDisplayStatus(item);
   return (
     <Card title={item.name} className="scms-class-card">
       <div className="scms-class-card__body">
-        <div className="scms-class-card__tags">
-          <Tag color={display.color}>{display.label}</Tag>
-          {item.enrollment?.status === ENROLLMENT_STATUS.BOOKED && (
-            <Tag color="green">Đã đăng ký</Tag>
-          )}
-          <Tag>{item.subject.name}</Tag>
-        </div>
+        <ClassTags item={item} display={display} />
         <div className="scms-class-card__meta scms-class-card__schedule">
           <CalendarOutlined />
           <span>

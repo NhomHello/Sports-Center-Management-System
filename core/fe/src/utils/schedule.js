@@ -32,7 +32,7 @@ export const classFormValues = (item) =>
         registrationStartAt: vietnamInput(item.registrationStartAt),
         registrationEndAt: vietnamInput(item.registrationEndAt),
       }
-    : { status: CLASS_STATUS.OPEN, weeklySchedule: [{}] };
+    : { status: CLASS_STATUS.OPEN, price: 0, weeklySchedule: [{}] };
 /** Chỉ gửi field cấu hình lớp, không gửi các DTO/quyền từ màn hình chi tiết. */
 export const classFormPayload = (values) => ({
   ...values,

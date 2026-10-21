@@ -19,11 +19,11 @@ import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
-import { MemberFreezePanel } from './MemberFreezePanel';
+import { CreditPanel } from '@/pages/member/CreditPanel';
+import { MembershipTab } from './MemberMembershipTab';
 import { BookingBlockPanel } from './BookingBlockPanel';
 import { MemberInfoView } from './MemberInfoView';
 import { useVerifyMemberEmail } from './useVerifyMemberEmail';
-import { formatDate } from '@/utils/format';
 
 const MemberInfoForm = ({ form, onSubmit }) => (
   <Form form={form} layout="vertical" onFinish={onSubmit}>
@@ -51,29 +51,6 @@ const MemberInfoForm = ({ form, onSubmit }) => (
   </Form>
 );
 
-const MemberMembershipView = ({ member }) => {
-  if (!member.currentMembership) {
-    return <Typography.Text type="secondary">Chưa có gói tập nào đang hoạt động.</Typography.Text>;
-  }
-  const { currentMembership } = member;
-  const { color: statusColor, label: statusText } = membershipStatusMeta(currentMembership);
-
-  return (
-    <Descriptions column={1} bordered>
-      <Descriptions.Item label="Gói hiện tại">
-        <Typography.Text strong>{currentMembership.plan?.name}</Typography.Text>
-      </Descriptions.Item>
-      <Descriptions.Item label="Mã gói">{currentMembership.plan?.code}</Descriptions.Item>
-      <Descriptions.Item label="Trạng thái">
-        <Tag color={statusColor}>{statusText}</Tag>
-      </Descriptions.Item>
-      <Descriptions.Item label="Hiệu lực">
-        {formatDate(currentMembership.startDate)} - {formatDate(currentMembership.endDate)}
-      </Descriptions.Item>
-    </Descriptions>
-  );
-};
-
 const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) => (
   <Space>
     {isEditing ? (
@@ -96,12 +73,39 @@ const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) =>
   </Space>
 );
 
-function MembershipTab({ member, canFreeze }) {
+function MemberDetailTabs({ member, can, isEditing, form, updateMutation, verifyMutation }) {
   return (
-    <>
-      <MemberMembershipView member={member} />
-      {canFreeze && <MemberFreezePanel memberId={member.id} />}
-    </>
+    <Tabs
+      defaultActiveKey="info"
+      items={[
+        {
+          key: 'info',
+          label: 'Thông tin cơ bản',
+          children: isEditing ? (
+            <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
+          ) : (
+            <MemberInfoView
+              member={member}
+              canVerify={can(PERMISSIONS.USER_VERIFY_EMAIL)}
+              onVerify={verifyMutation.mutate}
+              verifying={verifyMutation.isPending}
+            />
+          ),
+        },
+        {
+          key: 'membership',
+          label: 'Gói tập',
+          children: (
+            <MembershipTab member={member} canFreeze={can(PERMISSIONS.MEMBERSHIP_FREEZE_ALL)} />
+          ),
+        },
+        can(PERMISSIONS.PAYMENT_READ_ALL) && {
+          key: 'credit',
+          label: 'Số dư',
+          children: <CreditPanel memberId={member.id} />,
+        },
+      ].filter(Boolean)}
+    />
   );
 }
 
@@ -164,44 +168,7 @@ export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
       destroyOnHidden
     >
       <BookingBlockPanel member={member} onUpdated={onUpdated} />
-      <Tabs
-        defaultActiveKey="info"
-        items={[
-          {
-            key: 'info',
-            label: 'Thông tin cơ bản',
-            children: isEditing ? (
-              <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
-            ) : (
-              <MemberInfoView
-                member={member}
-                canVerify={can(PERMISSIONS.USER_VERIFY_EMAIL)}
-                onVerify={verifyMutation.mutate}
-                verifying={verifyMutation.isPending}
-              />
-            ),
-          },
-          {
-            key: 'membership',
-            label: 'Gói tập',
-            children: (
-              <MembershipTab member={member} canFreeze={can(PERMISSIONS.MEMBERSHIP_FREEZE_ALL)} />
-            ),
-          },
-        ]}
-      />
+      <MemberDetailTabs {...{ member, can, isEditing, form, updateMutation, verifyMutation }} />
     </Drawer>
   );
 }
-const isFrozenNow = (membership, now = Date.now()) =>
-  membership.isFrozen ??
-  (membership.freezes ?? []).some(
-    (f) => !f.endedAt && new Date(f.startAt) <= now && now < new Date(f.endAt),
-  );
-
-/** Nhãn tiếng Việt cho trạng thái gói (không hiện mã ACTIVE/EXPIRED). */
-const membershipStatusMeta = (membership) => {
-  if (isFrozenNow(membership)) return { color: 'blue', label: 'Đang bảo lưu' };
-  if (membership.status === 'ACTIVE') return { color: 'green', label: 'Đang hoạt động' };
-  return { color: 'orange', label: 'Đã hết hạn' };
-};

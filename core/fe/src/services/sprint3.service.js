@@ -43,7 +43,9 @@ export const getReconciliationSummary = () => http.get('/reconciliations/summary
 export const getMemberSummary = () => http.get('/members/summary');
 
 /** Ghi nhận đến trung tâm, backend áp dụng policy tài khoản và gói. */
-export const checkIn = (memberId) => http.post('/check-ins', { memberId });
+/** GY-23: roomTypeId là khu tự tập hội viên vào (tuỳ chọn); server kiểm tra khung giờ / khu vực của gói. */
+export const checkIn = (memberId, roomTypeId) =>
+  http.post('/check-ins', roomTypeId ? { memberId, roomTypeId } : { memberId });
 
 /** Tạo bảo lưu; mọi giới hạn kiểm tra ở server. */
 export const freezeMembership = (id, data) => http.post(`/memberships/${id}/freezes`, data);
