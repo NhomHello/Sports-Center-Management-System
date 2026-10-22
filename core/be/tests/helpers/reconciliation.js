@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
-import { api, apiPath, bearer } from './api.js';
 import { cleanupSprintFixture, createSprintFixture } from './sprint1.js';
 
-const WEBHOOK = apiPath('/payments/sepay/webhook');
+const getApi = () => import('./api.js');
+const WEBHOOK_PATH = '/payments/sepay/webhook';
 const SEPAY_AUTH = { Authorization: `Apikey ${env.SEPAY_WEBHOOK_API_KEY}` };
 // Giá trị giả lập cho payload test, không phải số nghiệp vụ.
 const ID_SPREAD = 100000;
@@ -12,8 +12,8 @@ const DEFAULT_AMOUNT = 1000;
 const REF_LENGTH = 8;
 
 /** Bộ test đối soát: hai hội viên, một gói riêng, theo dõi id SePay và phiếu để dọn sạch. */
-export const createReconciliationFixture = async () => {
-  const fixture = await createSprintFixture();
+export const createReconciliationFixture = async ({ withApi = true } = {}) => {
+  const fixture = await createSprintFixture({ withApi });
   const plan = await prisma.membershipPlan.create({
     data: { code: fixture.prefix, name: fixture.prefix, price: 300000, durationDays: 30 },
   });
@@ -66,8 +66,11 @@ export const cleanupReconciliationFixture = async (f) => {
 };
 
 /** Hội viên tự mua gói online, trả về hoá đơn PENDING. */
-export const buyOnline = async (f, token = f.memberToken, planId = f.plan.id) =>
-  (await api.post(apiPath('/memberships/me/orders')).set(bearer(token)).send({ planId })).body.data;
+export const buyOnline = async (f, token = f.memberToken, planId = f.plan.id) => {
+  const { api, apiPath, bearer } = await getApi();
+  return (await api.post(apiPath('/memberships/me/orders')).set(bearer(token)).send({ planId })).body
+    .data;
+};
 
 /** Gửi một webhook tiền vào; mặc định đúng mã và đúng số tiền của hoá đơn. */
 export const sendTransfer = async (f, invoice, overrides = {}) => {
@@ -83,7 +86,8 @@ export const sendTransfer = async (f, invoice, overrides = {}) => {
     referenceCode: `FT${randomUUID().slice(0, REF_LENGTH)}`,
     ...overrides,
   };
-  const res = await api.post(WEBHOOK).set(SEPAY_AUTH).send(body);
+  const { api, apiPath } = await getApi();
+  const res = await api.post(apiPath(WEBHOOK_PATH)).set(SEPAY_AUTH).send(body);
   return res.body.data;
 };
 
@@ -95,5 +99,7 @@ export const latestCase = async (f, where) => {
 };
 
 /** Gọi API đối soát bằng tài khoản quản lý. */
-export const asManager = (f, method, path, body) =>
-  api[method](apiPath(path)).set(bearer(f.adminToken)).send(body);
+export const asManager = async (f, method, path, body) => {
+  const { api, apiPath, bearer } = await getApi();
+  return api[method](apiPath(path)).set(bearer(f.adminToken)).send(body);
+};

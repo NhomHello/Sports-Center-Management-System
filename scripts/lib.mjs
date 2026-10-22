@@ -40,8 +40,9 @@ export const run = (cmd, args, { cwd = ROOT, shell = IS_WINDOWS } = {}) => {
   if (result.status !== 0) fail(`Lenh that bai: ${cmd} ${args.join(' ')}`);
 };
 
-/** Goi npm truc tiep de tranh shell quoting khac nhau giua cac he dieu hanh. */
-export const npm = (args, cwd = ROOT) => run(resolveCommand('npm'), args, { cwd, shell: false });
+/** Gọi npm qua shell trên Windows để thực thi được npm.cmd. */
+export const npm = (args, cwd = ROOT) =>
+  run(resolveCommand('npm'), args, { cwd, shell: IS_WINDOWS });
 
 export const checkNodeVersion = () => {
   const major = Number(process.versions.node.split('.')[0]);
