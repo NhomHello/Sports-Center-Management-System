@@ -9,11 +9,11 @@ const MEMBER_COLUMNS = [
     title: 'HỘI VIÊN',
     dataIndex: 'fullName',
     key: 'fullName',
-    width: 300,
+    width: 260,
     render: (fullName, member) => (
-      <Space size="middle">
+      <Space size="middle" className="scms-member-identity">
         <Avatar
-          size={44}
+          size={38}
           style={{ backgroundColor: '#e6f4ff', color: '#1677ff', fontWeight: 700, fontSize: 16 }}
         >
           {fullName?.trim().slice(0, 1)?.toUpperCase() || 'H'}
@@ -37,6 +37,7 @@ const MEMBER_COLUMNS = [
   {
     title: 'LIÊN HỆ',
     key: 'contact',
+    width: 130,
     render: (_, member) => (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Typography.Text style={{ fontWeight: 500 }}>{member.phone || '--'}</Typography.Text>
@@ -50,6 +51,7 @@ const MEMBER_COLUMNS = [
     // Gia hạn cộng dồn vào cùng một gói hội viên nên đây là gói của lần mua gần nhất.
     title: 'GÓI MUA GẦN NHẤT',
     key: 'membership',
+    width: 180,
     render: (_, member) => {
       const planName = member.currentMembership?.plan?.name;
       return planName ? (
@@ -77,6 +79,7 @@ const MEMBER_COLUMNS = [
   {
     title: 'HIỆU LỰC',
     key: 'status',
+    width: 160,
     render: (_, member) => {
       const status = member.currentMembership?.status;
       return status ? (
@@ -104,8 +107,9 @@ export const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail)
     title: 'THAO TÁC',
     key: 'actions',
     align: 'right',
+    width: 230,
     render: (_, member) => (
-      <Space size="middle">
+      <Space size="small" className="scms-member-actions">
         <Tooltip title={canUpdate ? 'Xem và sửa hồ sơ' : 'Xem hồ sơ'}>
           <Button
             icon={<EyeOutlined />}
@@ -125,11 +129,6 @@ export const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail)
             onClick={(event) => {
               event.stopPropagation();
               onPurchase(member);
-            }}
-            style={{
-              borderRadius: 6,
-              fontWeight: 500,
-              boxShadow: '0 2px 8px rgba(22,119,255,0.25)',
             }}
           >
             {member.currentMembership?.status === 'ACTIVE' ? 'Gia hạn' : 'Mua gói'}

@@ -2,7 +2,7 @@ import { Space, Tag, Typography } from 'antd';
 /** Hiển thị khung giờ và khu vực được sử dụng theo API. */
 export function PlanAccessSummary({ plan }) {
   return (
-    <Space orientation="vertical" size="small">
+    <Space orientation="vertical" size="small" className="scms-plan-access">
       <div>
         <Typography.Text strong>Khung giờ: </Typography.Text>
         {plan.frames?.length

@@ -1,119 +1,71 @@
 .scms-class-list-panel {
   display: grid;
-  gap: 18px;
+  gap: 16px;
+}
+.scms-class-search-filters {
+  display: grid;
+  gap: 14px;
 }
 .scms-class-list-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
+}
+.scms-class-search-filters > .scms-class-list-toolbar {
+  justify-content: flex-start;
+  padding: 0;
+  background: none;
+  border: 0;
 }
 .scms-class-list-toolbar .scms-search-input {
-  width: min(100%, 420px);
+  flex: 1 1 240px;
+  width: auto;
+  max-width: 520px;
 }
-.scms-class-grid {
+.scms-class-list-toolbar > .ant-btn-primary {
+  margin-left: auto;
+}
+.scms-class-filters {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 18px;
-}
-.scms-class-grid .ant-card {
-  min-width: 0;
-}
-.scms-class-grid .ant-card-head-title {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  font-size: 16px;
-  line-height: 1.45;
-}
-.scms-class-card .ant-card-head {
-  padding: 18px 20px 0;
-  border-bottom: 0;
-}
-.scms-class-card .ant-card-body {
-  padding: 16px 20px 20px;
-}
-.scms-class-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.scms-class-card > .ant-card-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-/* Flex cột + margin-top:auto cho hàng nút để nút của các thẻ cùng hàng thẳng nhau. */
-.scms-class-card__body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-items: end;
   gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--scms-border);
 }
-.scms-class-card__body > .scms-class-card__actions {
-  margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid var(--scms-border);
-}
-.scms-class-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-.scms-class-card__tags .ant-tag {
-  margin: 0;
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-.scms-class-card__meta,
-.scms-class-card__deadline,
-.scms-class-card__availability {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 13px;
-  line-height: 1.5;
-}
-.scms-class-card__meta > .anticon,
-.scms-class-card__deadline > .anticon {
-  flex-shrink: 0;
-  margin-top: 3px;
-  color: var(--scms-muted);
-}
-.scms-class-card__meta > span:last-child,
-.scms-class-card__deadline > span:last-child {
+.scms-filter-field {
+  display: grid;
+  gap: 6px;
   min-width: 0;
-  overflow-wrap: anywhere;
 }
-.scms-class-card__availability {
-  align-items: center;
-  padding: 11px 12px;
-  color: var(--scms-blue);
-  background: var(--scms-soft-blue);
-  border-radius: 9px;
-}
-.scms-class-card__deadline {
+.scms-filter-field > span {
   color: var(--scms-muted);
   font-size: 12px;
 }
-.scms-class-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.scms-class-card__actions .ant-btn {
-  padding-inline: 12px;
-  font-size: 13px;
+.scms-filter-field .ant-select,
+.scms-filter-field .ant-picker {
+  width: 100%;
+  min-width: 0;
 }
 .scms-booking-actions {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 .scms-booking-actions__buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+}
+.scms-booking-actions__buttons > .scms-booking-note,
+.scms-booking-actions__buttons > .ant-alert {
+  flex-basis: 100%;
+  min-width: 0;
+  order: -1;
+}
+.scms-booking-actions__buttons > .ant-btn-text {
+  order: 2;
 }
 .scms-booking-note {
   display: flex;
@@ -132,38 +84,24 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.scms-class-card .scms-booking-actions {
-  padding-top: 14px;
-  border-top: 1px solid var(--scms-border);
+.scms-booking-note--waitlist {
+  color: var(--scms-blue);
+}
+.scms-membership-expiry-notice {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.scms-booking-confirmation {
+  max-width: min(320px, calc(100vw - 64px));
+}
+.scms-booking-confirmation p {
+  margin: 0 0 6px;
 }
 .scms-class-pagination {
   justify-content: flex-end;
   padding-top: 4px;
-}
-.scms-class-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  align-items: end;
-  gap: 12px;
-  padding: 16px;
-  background: var(--scms-surface);
-  border: 1px solid var(--scms-border);
-  border-radius: var(--scms-card-radius);
-}
-.scms-filter-field {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
-}
-.scms-filter-field > span {
-  color: var(--scms-muted);
-  font-size: 12px;
-  font-weight: 600;
-}
-.scms-filter-field .ant-select,
-.scms-filter-field .ant-picker {
-  width: 100%;
-  min-width: 0;
 }
 .scms-staff-booking {
   display: grid;
@@ -173,7 +111,6 @@
 }
 .scms-staff-member-search {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   gap: 12px;
   padding: 20px;
@@ -198,84 +135,13 @@
   margin: 0;
 }
 @media (max-width: 480px) {
-  .scms-class-list-toolbar {
-    align-items: stretch;
-  }
-  .scms-class-list-toolbar > .ant-btn {
-    width: 100%;
-  }
   .scms-class-list-toolbar .scms-search-input {
-    width: 100%;
+    flex-basis: 100%;
   }
-  .scms-class-card .ant-card-body {
-    padding: 16px;
-  }
-  .scms-class-card .ant-card-head {
-    padding: 16px 16px 0;
-  }
-  .scms-class-filters,
-  .scms-staff-member-search {
-    padding: 14px;
+  .scms-class-list-toolbar > .ant-btn-primary {
+    margin-left: 0;
   }
   .scms-class-pagination {
     justify-content: flex-start;
   }
-  .scms-booking-actions__buttons > .ant-btn {
-    flex: 1;
-  }
-}
-
-.scms-class-card__schedule > span:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.scms-class-card__slot {
-  font-weight: 600;
-}
-
-.scms-class-card__range {
-  color: var(--ant-color-text-tertiary);
-  font-size: 13px;
-}
-
-.scms-class-full {
-  color: var(--ant-color-error, #b42318);
-}
-
-.scms-class-search-filters {
-  display: grid;
-  gap: 14px;
-  padding: 16px;
-  background: var(--scms-surface);
-  border: 1px solid var(--scms-border);
-  border-radius: var(--scms-card-radius);
-}
-/* Ô tìm kiếm và bộ lọc dùng chung một khung; bỏ viền lồng nhau của từng phần. */
-.scms-class-search-filters > .scms-class-list-toolbar,
-.scms-class-search-filters > .scms-class-filters {
-  padding: 0;
-  background: none;
-  border: 0;
-}
-
-.scms-class-card__actions {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-/* Khối đăng ký đứng đầu hàng nút; khi có ghi chú dài thì tự xuống thành một hàng riêng. */
-.scms-class-card__booking {
-  flex: 0 1 auto;
-  max-width: 100%;
-}
-.scms-class-card .scms-class-card__booking .scms-booking-actions {
-  padding-top: 0;
-  border-top: 0;
-}
-.scms-class-card__seat-total {
-  color: var(--scms-muted);
-  font-weight: 400;
 }

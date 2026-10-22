@@ -1,5 +1,7 @@
-import { Button, DatePicker, Form, TimePicker, Select, Space, Typography } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Form, TimePicker, Select, Typography } from 'antd';
 import { WEEKDAYS } from '@/constants/schedule';
+import { DATE_FORMATS } from '@/constants';
 const required = [{ required: true, message: 'Vui lòng chọn thời gian' }];
 /** Lịch lặp theo giờ Việt Nam, có thể thêm/xóa thứ học. */
 export function ClassScheduleFields() {
@@ -8,18 +10,21 @@ export function ClassScheduleFields() {
       <Typography.Paragraph type="secondary">
         Các mốc ngày và giờ dưới đây theo giờ Việt Nam.
       </Typography.Paragraph>
-      <Form.Item name="startsOn" label="Ngày bắt đầu" rules={required}>
-        <DatePicker />
-      </Form.Item>
-      <Form.Item name="endsOn" label="Ngày kết thúc" rules={required}>
-        <DatePicker />
-      </Form.Item>
-      <Form.Item name="registrationStartAt" label="Mở đăng ký lúc" rules={required}>
-        <DatePicker showTime />
-      </Form.Item>
-      <Form.Item name="registrationEndAt" label="Đóng đăng ký lúc" rules={required}>
-        <DatePicker showTime />
-      </Form.Item>
+      <div className="scms-class-date-fields">
+        <Form.Item name="startsOn" label="Ngày bắt đầu" rules={required}>
+          <DatePicker format={DATE_FORMATS.DATE} />
+        </Form.Item>
+        <Form.Item name="endsOn" label="Ngày kết thúc" rules={required}>
+          <DatePicker format={DATE_FORMATS.DATE} />
+        </Form.Item>
+        <Form.Item name="registrationStartAt" label="Mở đăng ký lúc" rules={required}>
+          <DatePicker showTime format={DATE_FORMATS.DATE_TIME} />
+        </Form.Item>
+        <Form.Item name="registrationEndAt" label="Đóng đăng ký lúc" rules={required}>
+          <DatePicker showTime format={DATE_FORMATS.DATE_TIME} />
+        </Form.Item>
+      </div>
+      <Typography.Title level={5}>Lịch học hằng tuần</Typography.Title>
       <Form.List
         name="weeklySchedule"
         rules={[
@@ -34,20 +39,26 @@ export function ClassScheduleFields() {
         {(fields, { add, remove }, { errors }) => (
           <>
             {fields.map((field) => (
-              <Space key={field.key} wrap align="start">
+              <div key={field.key} className="scms-class-weekly-row">
                 <Form.Item name={[field.name, 'dayOfWeek']} label="Thứ" rules={required}>
-                  <Select options={WEEKDAYS} virtual={false} style={{ minWidth: 120 }} />
+                  <Select options={WEEKDAYS} virtual={false} placeholder="Chọn thứ" />
                 </Form.Item>
                 <Form.Item name={[field.name, 'timeRange']} label="Giờ học" rules={required}>
-                  <TimePicker.RangePicker format="HH:mm" />
+                  <TimePicker.RangePicker format="HH:mm" placeholder={['Bắt đầu', 'Kết thúc']} />
                 </Form.Item>
-                <Button danger onClick={() => remove(field.name)}>
-                  Bỏ buổi
-                </Button>
-              </Space>
+                <Button
+                  danger
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  aria-label={`Bỏ buổi ${field.name + 1}`}
+                  onClick={() => remove(field.name)}
+                />
+              </div>
             ))}
             <Form.ErrorList errors={errors} />
-            <Button onClick={() => add({})}>Thêm thứ học</Button>
+            <Button block type="dashed" icon={<PlusOutlined />} onClick={() => add({})}>
+              Thêm thứ học
+            </Button>
           </>
         )}
       </Form.List>

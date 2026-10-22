@@ -33,36 +33,40 @@ export function MembersListPanel({ membersQuery, table, columns, onView }) {
         </Col>
       </Row>
 
-      <Card className="scms-data-card">
+      <Card className="scms-data-card scms-members-directory">
         <div className="scms-data-card__toolbar">
-          <span>
+          <div className="scms-members-directory__heading">
             <Typography.Title level={4}>
               <IdcardOutlined /> Danh sách hồ sơ
+              <span className="scms-members-directory__count">{total}</span>
             </Typography.Title>
             <Typography.Text type="secondary">
               Quản lý thông tin và gói tập của hội viên
             </Typography.Text>
-          </span>
+          </div>
+        </div>
+        <div className="scms-members-directory__filters">
           <SearchInput
             allowClear
+            aria-label="Tìm hội viên"
             placeholder="Tìm theo tên, SĐT hoặc email"
             onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
           />
+          <Select
+            className="scms-member-filter"
+            aria-label="Lọc trạng thái gói"
+            placeholder="Tất cả hội viên"
+            allowClear
+            options={[
+              { value: 'ACTIVE', label: 'Đang hoạt động' },
+              { value: 'EXPIRING', label: 'Sắp hết hạn' },
+              { value: 'NO_PLAN', label: 'Chưa có gói' },
+              { value: 'UNVERIFIED', label: 'Chưa xác minh email' },
+              { value: 'FROZEN', label: 'Đang bảo lưu' },
+            ]}
+            onChange={(membershipFilter) => table.setFilters({ membershipFilter })}
+          />
         </div>
-        <Select
-          className="scms-member-filter"
-          aria-label="Lọc trạng thái gói"
-          placeholder="Tất cả hội viên"
-          allowClear
-          options={[
-            { value: 'ACTIVE', label: 'Đang hoạt động' },
-            { value: 'EXPIRING', label: 'Sắp hết hạn' },
-            { value: 'NO_PLAN', label: 'Chưa có gói' },
-            { value: 'UNVERIFIED', label: 'Chưa xác minh email' },
-            { value: 'FROZEN', label: 'Đang bảo lưu' },
-          ]}
-          onChange={(membershipFilter) => table.setFilters({ membershipFilter })}
-        />
         {membersQuery.isError && <Alert type="error" title={membersQuery.error.message} />}
         <Table
           rowKey="id"
@@ -72,7 +76,7 @@ export function MembersListPanel({ membersQuery, table, columns, onView }) {
           loading={membersQuery.isPending}
           pagination={{ ...table.paginationProps(membersQuery.data?.meta), showSizeChanger: true }}
           onChange={table.onTableChange}
-          scroll={{ x: 900 }}
+          scroll={{ x: 960 }}
           className="scms-data-table scms-member-table"
         />
       </Card>

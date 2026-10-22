@@ -78,7 +78,7 @@ export const routeRegistry = [
     path: ROUTES.MEMBERSHIP_PLANS,
     element: <MembershipPlansPage />,
     permission: PERMISSIONS.MEMBERSHIP_PLAN_READ,
-    menu: { label: 'Gói tập', icon: <GiftOutlined />, group: GROUP_MEMBER },
+    menu: { label: 'Gói tự tập', icon: <GiftOutlined />, group: GROUP_MEMBER },
   },
   {
     path: ROUTES.PAYMENTS,

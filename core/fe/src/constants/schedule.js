@@ -3,7 +3,12 @@ export const CLASS_STATUS = Object.freeze({
   CLOSED: 'CLOSED',
   CANCELLED: 'CANCELLED',
 });
-export const ENROLLMENT_STATUS = Object.freeze({ BOOKED: 'BOOKED', CANCELLED: 'CANCELLED' });
+export const ENROLLMENT_STATUS = Object.freeze({
+  BOOKED: 'BOOKED',
+  CANCELLED: 'CANCELLED',
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+});
+export const WAITLIST_STATUS = Object.freeze({ WAITING: 'WAITING', OFFERED: 'OFFERED' });
 export const SESSION_STATUS = Object.freeze({
   SCHEDULED: 'SCHEDULED',
   CANCELLED: 'CANCELLED',

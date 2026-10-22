@@ -41,7 +41,7 @@ export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
       )}
       {kind === 'teaching' && (
         <>
-          <p>
+          <p className="scms-calendar-event__enrolled">
             Đã đăng ký {event.gymClass.enrolledCount}/{event.gymClass.capacity}
           </p>
           <TeachingEventActions event={event} />

@@ -9,7 +9,10 @@ export function DashboardHero({ user, primary, today }) {
     <section className="scms-dashboard-hero">
       <div className="scms-dashboard-hero__copy">
         <Typography.Text className="scms-dashboard-hero__eyebrow">SPORTS CENTER</Typography.Text>
-        <Typography.Title level={1}>Chào mừng trở lại, {user?.fullName || 'bạn'}</Typography.Title>
+        <Typography.Title level={1}>
+          <span className="scms-dashboard-hero__greeting">Chào mừng trở lại,</span>
+          <span className="scms-dashboard-hero__name">{user?.fullName || 'bạn'}</span>
+        </Typography.Title>
         <Typography.Paragraph>
           Lớp học, lịch tập và những cập nhật bạn cần — sẵn sàng để tiếp tục ngày hôm nay.
         </Typography.Paragraph>

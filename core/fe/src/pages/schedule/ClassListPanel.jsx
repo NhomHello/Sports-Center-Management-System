@@ -1,4 +1,5 @@
 import { PERMISSIONS as P } from '@scms/shared';
+import { useState } from 'react';
 import { Pagination } from 'antd';
 import { ClassCard } from './ClassCard';
 import { ClassDetailDrawer } from './ClassDetailDrawer';
@@ -9,6 +10,10 @@ import { ClassListToolbar } from './ClassListToolbar';
 import { useClassList } from './useClassList';
 
 function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }) {
+  const filterCount = ['date', 'status', 'subjectId', 'coachId'].filter(
+    (key) => table.params[key],
+  ).length;
+  const [filtersOpen, setFiltersOpen] = useState(filterCount > 0);
   return (
     <div className="scms-class-search-filters">
       <ClassListToolbar
@@ -16,8 +21,17 @@ function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }
         onSearchChange={setSearch}
         onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
         onCreate={can(P.CLASS_CREATE) ? () => setEditing({}) : undefined}
+        filters={
+          renderFilters
+            ? {
+                open: filtersOpen,
+                count: filterCount,
+                toggle: () => setFiltersOpen((open) => !open),
+              }
+            : null
+        }
       />
-      {renderFilters?.(table)}
+      {filtersOpen && renderFilters?.(table)}
     </div>
   );
 }
@@ -61,9 +75,8 @@ export function ClassListPanel({
                 onEdit={() => setEditing(item)}
                 onCancel={() => cancel.mutate(item.id)}
                 loading={cancel.isPending}
-              >
-                {renderActions?.(item)}
-              </ClassCard>
+                renderActions={renderActions}
+              />
             ))}
           </div>
         ) : (

@@ -1,0 +1,179 @@
+.scms-membership-content {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.scms-membership-page .scms-current-membership.ant-card {
+  margin: 0;
+  border: 1px solid var(--scms-border);
+  border-left: 4px solid var(--scms-blue);
+  background: var(--scms-surface);
+}
+.scms-membership-page .scms-current-membership > .ant-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 24px;
+}
+.scms-membership-page .scms-current-membership__icon {
+  flex: 0 0 48px;
+  background: var(--scms-soft-blue);
+  color: var(--scms-blue);
+}
+.scms-current-membership__periods {
+  display: grid;
+  flex: 1;
+  gap: 18px;
+  min-width: 0;
+}
+.scms-membership-period__heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px 16px;
+}
+.scms-membership-period__heading > div {
+  min-width: 0;
+}
+.scms-membership-period__heading h4.ant-typography {
+  margin: 5px 0 0;
+  color: var(--scms-text);
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.scms-membership-period__heading .ant-tag {
+  margin: 0;
+}
+.scms-membership-period__dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 16px;
+  color: var(--scms-muted);
+  font-size: 13px;
+}
+.scms-membership-period--upcoming {
+  padding-top: 18px;
+  border-top: 1px solid var(--scms-border);
+}
+.scms-plan-access {
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 14px;
+  background: var(--scms-canvas);
+  border-radius: var(--scms-control-radius);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.scms-plan-access .ant-tag {
+  max-width: 100%;
+  margin-block: 2px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.scms-membership-period .scms-plan-access {
+  margin-bottom: 0;
+}
+.scms-membership-period:not(.scms-membership-period--upcoming) .scms-plan-access {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 18px;
+}
+.scms-membership-period .scms-plan-access > .ant-space-item:last-child {
+  grid-column: 1 / -1;
+}
+.scms-membership-period__details summary {
+  width: fit-content;
+  color: var(--scms-blue);
+  font-size: 12px;
+  cursor: pointer;
+}
+.scms-membership-period__details[open] summary {
+  margin-bottom: 10px;
+}
+.scms-membership-period--upcoming .scms-membership-period__heading h4 {
+  font-size: 16px;
+}
+.scms-membership-catalog-heading {
+  margin-top: 8px;
+}
+.scms-membership-catalog-heading h3.ant-typography {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+.scms-membership-catalog-heading .ant-typography-secondary {
+  font-size: 13px;
+}
+.scms-pricing-surface {
+  min-width: 0;
+  padding-top: 12px;
+}
+.scms-freeze-panel.ant-collapse {
+  border-color: var(--scms-border);
+  background: var(--scms-surface);
+}
+.scms-freeze-panel__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+.scms-freeze-panel__label .anticon {
+  color: var(--scms-blue);
+  font-size: 17px;
+}
+.scms-freeze-panel__summary,
+.scms-freeze-empty {
+  color: var(--scms-muted);
+  font-size: 13px;
+}
+.scms-freeze-content {
+  display: grid;
+  min-width: 0;
+  gap: 18px;
+}
+.scms-freeze-form {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.scms-freeze-form .ant-form-item {
+  flex: 1 1 280px;
+  max-width: 480px;
+  margin: 0;
+}
+.scms-freeze-form > .ant-btn {
+  margin-top: 30px;
+}
+.scms-freeze-empty {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--scms-border);
+}
+@media (max-width: 600px) {
+  .scms-membership-period:not(.scms-membership-period--upcoming) .scms-plan-access {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-membership-page .scms-current-membership > .ant-card-body {
+    padding: 18px;
+  }
+  .scms-current-membership__icon {
+    display: none !important;
+  }
+  .scms-freeze-panel__summary {
+    display: none;
+  }
+  .scms-freeze-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-freeze-form > .ant-btn {
+    margin-top: 0;
+  }
+  .scms-pricing-assurance {
+    align-items: flex-start;
+    line-height: 1.65;
+  }
+}

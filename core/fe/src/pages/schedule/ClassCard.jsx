@@ -1,16 +1,8 @@
-import { CourseOrderPrice } from './CourseOrderPrice';
 import { PERMISSIONS as P } from '@scms/shared';
-import {
-  CalendarOutlined,
-  ClockCircleOutlined,
-  EnvironmentOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
 import { Button, Card, Dropdown, App, Tag } from 'antd';
 import { CLASS_STATUS, ENROLLMENT_STATUS } from '@/constants/schedule';
-import { formatDate, formatDateTime } from '@/utils/format';
-import { classDisplayStatus, describeWeeklySchedule } from '@/utils/schedule';
+import { CLASS_DISPLAY_STATUS, classDisplayStatus } from '@/utils/schedule';
+import { ClassCardSummary, ClassSeatSummary } from './ClassCardSummary';
 
 function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
   const { modal } = App.useApp();
@@ -33,94 +25,62 @@ function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
   if (!items.length) return null;
   return (
     <Dropdown menu={{ items }} trigger={['click']}>
-      <Button aria-label="Thao tác quản lý lớp" loading={loading}>
+      <Button type="text" aria-label="Thao tác quản lý lớp" loading={loading}>
         ⋯
       </Button>
     </Dropdown>
   );
 }
 
-/** Card dùng chung cho danh sách lớp mở và phạm vi quản lý. */
-const WAITLIST_OFFERED = 'OFFERED';
-
-function SeatSummary({ item }) {
-  const booked = item.capacity - item.seatsRemaining;
-  if (item.waitlist?.status === WAITLIST_OFFERED)
-    return <strong>Đang giữ chỗ cho bạn · bấm Đăng ký lớp để xác nhận</strong>;
-  if (item.seatsRemaining <= 0)
-    return (
-      <strong className="scms-class-full">
-        Đã đủ chỗ ({booked}/{item.capacity})
-      </strong>
-    );
+function ClassIdentity({ item }) {
+  const booked = item.enrollment?.status === ENROLLMENT_STATUS.BOOKED;
+  const display = classDisplayStatus(item);
   return (
-    <strong>
-      Còn {item.seatsRemaining} chỗ trống
-      <span className="scms-class-card__seat-total">
-        {' '}
-        · đã đăng ký {booked}/{item.capacity}
-      </span>
-    </strong>
+    <div className="scms-class-card__identity">
+      <div className="scms-class-card__topline">
+        <Tag
+          className="scms-class-card__subject"
+          color="blue"
+          variant="filled"
+          title={item.subject.name}
+        >
+          {item.subject.name}
+        </Tag>
+        {booked ? (
+          <Tag color="green" variant="filled">
+            Đã đăng ký
+          </Tag>
+        ) : (
+          display !== CLASS_DISPLAY_STATUS.OPEN && (
+            <Tag color={display.color} variant="filled">
+              {display.label}
+            </Tag>
+          )
+        )}
+      </div>
+      <h3>{item.name}</h3>
+    </div>
   );
 }
 
-export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, children }) {
-  const display = classDisplayStatus(item);
+/** Thẻ lớp gọn: lịch học là thông tin chính, sĩ số và thao tác nằm cùng chân thẻ. */
+export function ClassCard({ item, can, onDetail, onEdit, onCancel, loading, renderActions }) {
+  const secondaryAction = (
+    <Button className="scms-class-card__detail" onClick={onDetail}>
+      Chi tiết
+    </Button>
+  );
   return (
-    <Card title={item.name} className="scms-class-card">
-      <div className="scms-class-card__body">
-        <div className="scms-class-card__tags">
-          <Tag color={display.color}>{display.label}</Tag>
-          {item.enrollment?.status === ENROLLMENT_STATUS.BOOKED && (
-            <Tag color="green">Đã đăng ký</Tag>
-          )}
-          <Tag>{item.subject.name}</Tag>
-        </div>
-        <div className="scms-class-card__meta scms-class-card__schedule">
-          <CalendarOutlined />
-          <span>
-            {describeWeeklySchedule(item.weeklySchedule).map((line) => (
-              <span key={line} className="scms-class-card__slot">
-                {line}
-              </span>
-            ))}
-            <span className="scms-class-card__range">
-              {formatDate(item.startsOn)} – {formatDate(item.endsOn)}
-            </span>
-          </span>
-        </div>
-        <div className="scms-class-card__meta">
-          <EnvironmentOutlined />
-          <span>{item.room.name}</span>
-        </div>
-        <div className="scms-class-card__meta">
-          <UserOutlined />
-          <span>HLV: {item.coach.fullName}</span>
-        </div>
-        <CourseOrderPrice item={item} />
-        <div className="scms-class-card__availability">
-          <TeamOutlined />
-          <SeatSummary item={item} />
-        </div>
-        <div className="scms-class-card__deadline">
-          <ClockCircleOutlined />
-          <span>
-            Hạn đăng ký: {formatDateTime(item.registrationEndAt)}
-            {(item.cancellationExceptionUntil || item.cancelDeadline) && (
-              <>
-                <br />
-                Hạn hủy buổi gần nhất:{' '}
-                {formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline)}
-              </>
-            )}
-          </span>
-        </div>
-        <div className="scms-class-card__actions">
-          {children && <div className="scms-class-card__booking">{children}</div>}
-          <Button onClick={onDetail}>Chi tiết</Button>
-          <ClassManageMenu {...{ item, can, onEdit, onCancel, loading }} />
-        </div>
-      </div>
+    <Card
+      title={<ClassIdentity item={item} />}
+      extra={<ClassManageMenu {...{ item, can, onEdit, onCancel, loading }} />}
+      className="scms-class-card"
+    >
+      <ClassCardSummary item={item} />
+      <section className="scms-class-card__booking">
+        <ClassSeatSummary item={item} />
+        {renderActions ? renderActions(item, { compact: true, secondaryAction }) : secondaryAction}
+      </section>
     </Card>
   );
 }

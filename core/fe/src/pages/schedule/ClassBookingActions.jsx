@@ -6,15 +6,33 @@ import { ENROLLMENT_STATUS } from '@/constants/schedule';
 import { usePermission } from '@/hooks/usePermission';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/schedule.service';
-import { BookingEnrollButton, BookingCancelButton, BookingNotice } from './BookingControls';
+import { BookingEnrollButton, BookingCancelButton } from './BookingControls';
 import { WaitlistControls } from './WaitlistControls';
 import { ClassRosterModal } from './ClassRosterModal';
+import { ClassBookingNotices } from './ClassBookingNotices';
+import { shouldShowEnrollmentAction } from '@/utils/classBookingPresentation';
 
-const hasBookingPermission = (enrollAllowed, cancelAllowed) => enrollAllowed || cancelAllowed;
-const isCourseOrder = (item, booked) => item.price > 0 && !booked;
+function EnrollmentControl({ item, memberId, allowed, booked, mutation, compact }) {
+  if (!shouldShowEnrollmentAction({ item, memberId, allowed, booked })) return null;
+  return item.price > 0 ? (
+    <CourseOrderActions {...{ item, memberId, allowed, compact }} />
+  ) : (
+    <BookingEnrollButton {...{ item, memberId, allowed, booked, mutation }} />
+  );
+}
+
+function BookingRoster({ item, open, onClose }) {
+  return open ? <ClassRosterModal item={item} onClose={onClose} /> : null;
+}
 
 /** Chỉ dùng điều kiện server trả, không tính hạn hủy ở FE. */
-export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
+export function ClassBookingActions({
+  item,
+  memberId,
+  rosterOnly = false,
+  compact = false,
+  secondaryAction,
+}) {
   const { can } = usePermission();
   const [rosterOpen, setRosterOpen] = useState(false);
   const enrollAllowed = can(memberId ? P.CLASS_ENROLL_FOR_MEMBER : P.CLASS_ENROLL_SELF);
@@ -28,26 +46,28 @@ export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
   // Tab quản lý lớp dành cho vận hành: đăng ký của chính mình nằm ở tab "Lớp đang mở".
   if (rosterOnly) {
     return (
-      <div className="scms-booking-actions">
-        <div className="scms-booking-actions__buttons">{rosterButton}</div>
-        {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
+      <div className={`scms-booking-actions${compact ? ' scms-booking-actions--compact' : ''}`}>
+        <div className="scms-booking-actions__notices" />
+        <div className="scms-booking-actions__buttons">
+          {rosterButton}
+          {secondaryAction}
+        </div>
+        <BookingRoster item={item} open={rosterOpen} onClose={() => setRosterOpen(false)} />
       </div>
     );
   }
   return (
-    <div className="scms-booking-actions">
+    <div className={`scms-booking-actions${compact ? ' scms-booking-actions--compact' : ''}`}>
+      <ClassBookingNotices {...{ item, memberId, booked, enrollAllowed, cancelAllowed, compact }} />
       <div className="scms-booking-actions__buttons">
-        {isCourseOrder(item, booked) ? (
-          <CourseOrderActions item={item} memberId={memberId} allowed={enrollAllowed} />
-        ) : (
-          <BookingEnrollButton
-            item={item}
-            memberId={memberId}
-            allowed={enrollAllowed}
-            booked={booked}
-            mutation={enroll}
-          />
-        )}
+        <EnrollmentControl
+          item={item}
+          memberId={memberId}
+          allowed={enrollAllowed}
+          booked={booked}
+          mutation={enroll}
+          compact={compact}
+        />
         <BookingCancelButton
           item={item}
           memberId={memberId}
@@ -55,15 +75,17 @@ export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
           booked={booked}
           mutation={cancel}
         />
+        <WaitlistControls
+          item={item}
+          allowed={enrollAllowed}
+          memberId={memberId}
+          booked={booked}
+          compact={compact}
+        />
         {rosterButton}
+        {secondaryAction}
       </div>
-      <WaitlistControls item={item} allowed={enrollAllowed} memberId={memberId} booked={booked} />
-      <BookingNotice
-        item={item}
-        booked={booked}
-        allowed={hasBookingPermission(enrollAllowed, cancelAllowed)}
-      />
-      {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
+      <BookingRoster item={item} open={rosterOpen} onClose={() => setRosterOpen(false)} />
     </div>
   );
 }

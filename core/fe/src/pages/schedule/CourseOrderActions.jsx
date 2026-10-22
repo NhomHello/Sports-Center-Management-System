@@ -36,7 +36,7 @@ function useCourseHold(enrollment) {
 }
 
 /** Giữ chỗ đến hạn BE trả; hết hạn làm mới lớp để server kiểm tra lại điều kiện. */
-export function CourseOrderActions({ item, memberId, allowed }) {
+export function CourseOrderActions({ item, memberId, allowed, compact = false }) {
   const navigate = useNavigate();
   const [cashId, setCashId] = useState(null);
   const enrollment = item.enrollment;
@@ -57,12 +57,13 @@ export function CourseOrderActions({ item, memberId, allowed }) {
     <>
       {held ? (
         <>
-          <Alert
-            type="info"
-            showIcon
-            title={`Đang giữ chỗ – chờ thanh toán đến ${formatDateTime(expiresAt)}`}
-          />
+          {!compact && (
+            <p className="scms-booking-note scms-booking-note--waitlist">
+              Chờ thanh toán đến {formatDateTime(expiresAt)}.
+            </p>
+          )}
           <Button
+            type="primary"
             onClick={() => openInvoice(enrollment.invoiceId)}
             disabled={!enrollment.invoiceId}
           >

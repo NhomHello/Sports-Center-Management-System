@@ -67,7 +67,7 @@ export default function MembershipPlansPage() {
   const currentMembership = periodQuery.data?.data;
 
   return (
-    <div className="scms-page-enter">
+    <div className="scms-page-enter scms-membership-page">
       <PageHeader
         title="Gói tự tập"
         subtitle={
@@ -84,7 +84,7 @@ export default function MembershipPlansPage() {
         }
       />
 
-      <div>
+      <div className="scms-membership-content">
         {periodQuery.isError && (
           <Alert
             type="error"
@@ -96,7 +96,12 @@ export default function MembershipPlansPage() {
         )}
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
         <FreezeControls membership={currentMembership} own />
-
+        <div className="scms-membership-catalog-heading">
+          <Typography.Title level={3}>Chọn gói tự tập</Typography.Title>
+          <Typography.Text type="secondary">
+            So sánh thời hạn, khung giờ và khu vực sử dụng của từng gói.
+          </Typography.Text>
+        </div>
         <PlansContent
           plansQuery={hooks.plansQuery}
           plans={hooks.plans}
