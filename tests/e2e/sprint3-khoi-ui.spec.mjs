@@ -132,6 +132,7 @@ test('S3-49/51: điểm danh và lịch sử chính chủ; hội viên không tr
     await page.screenshot({
       path: `outputs/ui-khai-2026-10-22/refinement-demo/attendance-populated-${mode === 'Sáng' ? 'light' : 'dark'}.png`,
       fullPage: true,
+      animations: 'disabled',
     });
   }
   await page.goto('/reports');
