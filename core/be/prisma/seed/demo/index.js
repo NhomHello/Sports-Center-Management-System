@@ -1,6 +1,6 @@
 /**
  * Dựng dữ liệu demo "giống thật" sau khi reset (chạy qua service nghiệp vụ, không cần bật server):
- *  - 5 bộ môn, 5 phòng, 7 gói tự tập (khung giờ + khu vực; 1 gói ngừng bán), 8 nhân viên, 30 hội viên
+ *  - 5 bộ môn, 5 phòng, 9 gói tự tập (khung giờ + khu vực; 1 gói ngừng bán), 8 nhân viên, 45 hội viên
  *  - 8 lớp (5 lớp có học phí bán theo khóa, 3 lớp miễn phí) trong 6 tuần tới, hội viên đã đăng ký
  *  - lịch sử mua gói 4 tuần gần nhất (online + tại quầy) để báo cáo/biểu đồ có số liệu
  *  - một buổi "Sức mạnh cơ bản" đang diễn ra để HLV điểm danh ngay
@@ -21,11 +21,18 @@ import { seedFeedbackScenarios } from './scenarios-gopy.demo.js';
 import { seedDemoScenarios } from './scenarios.demo.js';
 
 const HISTORY_FIRST = 16;
-const HISTORY_LAST = 30;
-const HISTORY_PLANS = ['STARTER_30', 'ACTIVE_90', 'STEADY_180', 'COMMIT_365', 'STARTER_30'];
+const HISTORY_LAST = 45;
+const HISTORY_PLANS = [
+  'STARTER_30',
+  'ACTIVE_90',
+  'STEADY_180',
+  'BASIC_60',
+  'PLUS_120',
+  'COMMIT_365',
+];
 const HISTORY_SPAN_DAYS = 28;
 
-/** member16–30 mua gói rải rác trong 4 tuần qua, xen kẽ online và tại quầy. */
+/** member16–45 mua gói rải rác trong 4 tuần qua, xen kẽ online và tại quầy. */
 const seedPurchaseHistory = async ({ users, plans }) => {
   const members = [];
   for (let n = HISTORY_FIRST; n <= HISTORY_LAST; n += 1) {
@@ -41,11 +48,11 @@ const seedPurchaseHistory = async ({ users, plans }) => {
   return members;
 };
 
-/** Mỗi hội viên có gói vào 2–3 lớp; trùng giờ thì service tự từ chối như thực tế. */
+/** Đăng ký hội viên vào lớp đến sức chứa; service từ chối trùng giờ như thực tế. */
 const seedEnrollments = async (classes, members, staff) => {
   const list = Object.values(classes).filter((item) => item.capacity > 2);
-  for (const [index, item] of list.entries()) {
-    const picked = members.filter((_, m) => (m + index) % 3 !== 0);
+  for (const item of list) {
+    const picked = members.slice(0, item.capacity);
     await enrollMembers(item, picked, staff);
   }
 };
@@ -74,7 +81,7 @@ const run = async () => {
   logger.info(counts, 'Đã dựng dữ liệu demo');
   logger.info(
     `Tài khoản: ${env.SEED_ADMIN_EMAIL} / mật khẩu admin; quanly, letan, letan2, coach.*, ` +
-      `member1..member30 @scms.local / ${env.SEED_MOCK_PASSWORD}`,
+      `member1..member45 @scms.local / ${env.SEED_MOCK_PASSWORD}`,
   );
 };
 

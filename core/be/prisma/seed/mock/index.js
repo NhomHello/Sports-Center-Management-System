@@ -53,14 +53,5 @@ async function seedMockMembershipPlans() {
 export async function seedMockData() {
   await seedMockUsers();
   await seedMockMembershipPlans();
-  // DB đã có lịch lớp còn hiệu lực (vd. dữ liệu từ npm run db:demo) thì không chèn lớp/gói
-  // mẫu "DEMO · …" chồng lên mỗi lần chạy npm run dev.
-  const liveClasses = await prisma.gymClass.count({
-    where: { status: { not: 'CANCELLED' }, endsOn: { gte: new Date() } },
-  });
-  if (liveClasses) {
-    logger.info({ liveClasses }, 'Đã có lịch lớp, bỏ qua lớp mẫu');
-    return;
-  }
   await seedMockClasses();
 }

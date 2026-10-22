@@ -26,6 +26,22 @@ export const SEED_MOCK_PLANS = [
     benefits: COMMON_BENEFITS,
   },
   {
+    code: 'BASIC_60',
+    name: 'Cân bằng 60 ngày',
+    description: 'Gói tập vừa đủ cho hội viên duy trì thói quen.',
+    durationDays: 60,
+    price: 600000,
+    benefits: COMMON_BENEFITS,
+  },
+  {
+    code: 'PLUS_120',
+    name: 'Bứt tốc 120 ngày',
+    description: 'Gói dài hạn linh hoạt cho lịch tập thường xuyên.',
+    durationDays: 120,
+    price: 1080000,
+    benefits: COMMON_BENEFITS,
+  },
+  {
     code: 'COMMIT_365',
     name: 'Bứt phá 365 ngày',
     description: 'Đơn giá mỗi ngày thấp nhất cho hành trình tập luyện dài hạn.',

@@ -6,8 +6,8 @@ const OPTIONS = [
   { value: 'ABSENT', label: 'Vắng mặt' },
   { value: EXCUSED, label: 'Xin nghỉ', disabled: true },
 ];
-/** Chỉ cho ghi vắng sau giờ kết thúc, backend kiểm tra lại toàn bộ danh sách. */
-export function AttendanceTable({ data, session }) {
+/** Cho phép đổi Có mặt/Vắng mặt trong thời gian buổi học; backend luôn xác nhận lại hạn. */
+export function AttendanceTable({ data }) {
   return (
     <Table
       rowKey={(row) => row.member.id}
@@ -24,11 +24,7 @@ export function AttendanceTable({ data, session }) {
                 aria-label={`Điểm danh ${row.member.fullName}`}
                 placeholder="Chưa ghi"
                 style={{ width: 180 }}
-                options={OPTIONS.map((o) => ({
-                  ...o,
-                  disabled:
-                    o.disabled || (o.value === 'ABSENT' && new Date(session.endAt) > new Date()),
-                }))}
+                options={OPTIONS}
               />
             </Form.Item>
           ),
