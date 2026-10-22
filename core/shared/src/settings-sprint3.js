@@ -23,7 +23,7 @@ export const SPRINT3_SETTINGS = [
   number('CLASS_NO_SHOW_LIMIT', 3, 'Số buổi vắng để chặn đăng ký', G.CLASS, 1, 100),
   number('CLASS_NO_SHOW_WINDOW_DAYS', 30, 'Khoảng đếm vắng mặt (ngày)', G.CLASS, 1, 365),
   number('CLASS_NO_SHOW_BLOCK_DAYS', 7, 'Thời gian chặn đăng ký (ngày)', G.CLASS, 1, 365),
-  number('ATTENDANCE_EDIT_HOURS', 24, 'Hạn sửa điểm danh sau buổi (giờ)', G.CLASS, 1, 168),
+  number('ATTENDANCE_EDIT_HOURS', 24, 'Thời lượng mở lại điểm danh thủ công (giờ)', G.CLASS, 1, 168),
   {
     key: 'CHECKIN_ALLOW_EXPIRED',
     defaultValue: 'true',

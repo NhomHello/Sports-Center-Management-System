@@ -27,7 +27,7 @@ Bổ sung bộ lọc `roomId`, `coachId`, `subjectId` cho lịch tuần để FE
 - Huỷ buổi / mở hạn điểm danh / gỡ chặn: body `{ reason }` bắt buộc không rỗng.
 - Đổi HLV: `{ coachId, from? }`, `from` là `YYYY-MM-DD` Việt Nam. Buổi đã bắt đầu không đổi HLV.
 - Check-in: `{ memberId }`; nếu policy cho phép gói hết hạn thì response có `warning`. Không tạo/kích hoạt gói từ check-in.
-- Điểm danh: `{ entries: [{ memberId, status: 'PRESENT' | 'ABSENT' }] }`. Không ghi ABSENT trước khi buổi kết thúc. Quá hạn `ATTENDANCE_EDIT_HOURS` cần API mở hạn với `attendance.manage`, kể cả người ghi là quản lý.
+- Điểm danh: `{ entries: [{ memberId, status: 'PRESENT' | 'ABSENT' }] }`. HLV được ghi và sửa Có mặt/Vắng mặt trong giờ buổi học; kết thúc buổi sẽ khóa sửa. Quản lý có thể mở lại thủ công bằng `attendance.manage`.
 - Khoá tài khoản: giữ `{ status }`, thêm `cancelFutureBookings: true` sau khi người dùng xác nhận. Thiếu xác nhận trả 409 với `details.bookings`; HLV có lớp OPEN trả `details.classes`.
 - Bảo lưu: `{ from, to }` là ngày Việt Nam, **to là biên loại trừ**. Ví dụ 20/10 đến trước 27/10 = 7 ngày. Kết thúc sớm chỉ cộng số ngày lịch đã trôi qua; huỷ lịch chưa bắt đầu cộng 0 ngày. Trạng thái gói trả thêm `isFrozen`, `freezes`.
 - Hàng chờ: vào/rời/xem bằng endpoint `/waitlist/me`; xác nhận chỗ bằng `POST /classes/:id/enrollments/me` hiện có. DTO lớp thêm `waitlist`, `heldSeats`; `seatsRemaining` đã trừ chỗ giữ. Job chạy mỗi phút; mọi phép enroll/cancel xử lý lại hàng chờ trước khi ghi.

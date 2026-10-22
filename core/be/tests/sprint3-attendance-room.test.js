@@ -42,8 +42,8 @@ describe('Điểm danh và luật vắng mặt', () => {
         classId: item.id,
         coachId: f.coach.id,
         roomId: f.room.id,
-        startAt: new Date(Date.now() - 2 * HOUR),
-        endAt: new Date(Date.now() - HOUR),
+        startAt: new Date(Date.now() - HOUR),
+        endAt: new Date(Date.now() + HOUR),
       },
     });
     await prisma.classEnrollment.updateMany({
@@ -59,6 +59,20 @@ describe('Điểm danh và luật vắng mặt', () => {
       (await call('put', `/classes/sessions/${past.id}/attendance`, { entries }, f.coachToken))
         .status,
     ).toBe(200);
+    const absent = [{ memberId: f.member.id, status: 'ABSENT' }];
+    expect(
+      (await call('put', `/classes/sessions/${past.id}/attendance`, { entries: absent }, f.coachToken))
+        .status,
+    ).toBe(200);
+    expect(
+      (await call('put', `/classes/sessions/${past.id}/attendance`, { entries }, f.coachToken))
+        .status,
+    ).toBe(200);
+    expect(
+      await prisma.attendance.findUnique({
+        where: { sessionId_memberId: { sessionId: past.id, memberId: f.member.id } },
+      }),
+    ).toMatchObject({ status: 'PRESENT' });
     expect(
       (
         await call('put', `/classes/sessions/${past.id}/attendance`, {
@@ -84,6 +98,9 @@ describe('Điểm danh và luật vắng mặt', () => {
       (await call('put', `/classes/sessions/${past.id}/attendance`, { entries }, f.coachToken))
         .status,
     ).toBe(422);
+    expect((await call('put', `/classes/sessions/${past.id}/attendance`, { entries })).status).toBe(
+      422,
+    );
     expect(
       (
         await call(
@@ -121,6 +138,15 @@ describe('Điểm danh và luật vắng mặt', () => {
           endAt: new Date(Date.now() - (5 + i * 2) * HOUR),
         },
       });
+      expect(
+        (
+          await call(
+            'post',
+            `/classes/sessions/${s.id}/attendance-unlock`,
+            { reason: 'Kiểm thử vắng mặt sau buổi' },
+          )
+        ).status,
+      ).toBe(200);
       expect(
         (
           await call('put', `/classes/sessions/${s.id}/attendance`, {

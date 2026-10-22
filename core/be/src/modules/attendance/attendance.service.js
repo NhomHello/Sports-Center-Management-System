@@ -125,10 +125,11 @@ async function assertEditable(session, now) {
   )
     throw ApiError.businessRule('Không điểm danh buổi đã huỷ');
   if (session.startAt > now) throw ApiError.businessRule('Buổi học chưa bắt đầu');
-  const hours = await settings.getValue(K.ATTENDANCE_EDIT_HOURS);
-  const deadline = new Date(session.endAt.getTime() + hours * TIME.MS_PER_HOUR);
-  if (now > deadline && !(session.attendanceUnlockedUntil > now))
-    throw ApiError.businessRule('Đã quá hạn điểm danh; cần quản lý mở quyền sửa');
+  if (
+    session.endAt <= now &&
+    !(session.attendanceUnlockedUntil > now)
+  )
+    throw ApiError.businessRule('Buổi học đã kết thúc; cần quản lý mở quyền sửa');
 }
 
 /** UC-AT-02: danh sách được kiểm tra toàn bộ trước khi ghi, audit và no-show cùng transaction. */
@@ -154,8 +155,6 @@ export const record = (id, entries, context) =>
       throw ApiError.businessRule('Có hội viên chưa đăng ký buổi này');
     const result = [];
     for (const entry of entries) {
-      if (entry.status === Enums.AttendanceStatus.ABSENT && session.endAt > now)
-        throw ApiError.businessRule('Chỉ ghi vắng khi buổi học đã kết thúc');
       const before = await db.attendance.findUnique({
         where: { sessionId_memberId: { sessionId: id, memberId: entry.memberId } },
       });

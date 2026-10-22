@@ -4,6 +4,7 @@ import { hashPassword } from '../../src/common/utils/password.js';
 
 async function attachApiTokens(fixture) {
   const { loginAs, loginAsAdmin } = await import('./api.js');
+
   return {
     ...fixture,
     memberToken: await loginAs(fixture.member.email, fixture.password),
@@ -16,8 +17,12 @@ async function attachApiTokens(fixture) {
 export const createSprintFixture = async ({ withApi = true } = {}) => {
   const prefix = `TEST_S1_${randomUUID().replaceAll('-', '')}`;
   const password = 'Sprint1@Test123';
-  const role = await prisma.role.findFirstOrThrow({ where: { isDefault: true } });
+  const role = await prisma.role.findFirstOrThrow({
+    where: { isDefault: true },
+  });
   const passwordHash = await hashPassword(password);
+
+  // Giữ prefix trong tên và email để test tìm đúng dữ liệu của fixture.
   const member = await prisma.user.create({
     data: {
       emailVerifiedAt: new Date(),
@@ -27,6 +32,7 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
       passwordHash,
     },
   });
+
   const other = await prisma.user.create({
     data: {
       emailVerifiedAt: new Date(),
@@ -36,6 +42,7 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
       passwordHash,
     },
   });
+
   const fixture = {
     prefix,
     password,
@@ -45,30 +52,50 @@ export const createSprintFixture = async ({ withApi = true } = {}) => {
     roleIds: [],
     auditIds: [],
   };
+
   return withApi ? attachApiTokens(fixture) : fixture;
 };
 
-/** Chỉ dọn bản ghi của fixture; dữ liệu nghiệp vụ và lịch sử đang có được giữ. */
+/** Chỉ dọn bản ghi của fixture; giữ dữ liệu nghiệp vụ ngoài fixture. */
 export const cleanupSprintFixture = async (fixture) => {
   if (!fixture) return;
+
   const whereUser = { userId: { in: fixture.userIds } };
-  // Phiếu đối soát/hoàn tiền tham chiếu hoá đơn của fixture (webhook mở phiếu khi tiền lệch).
   const byInvoice = { invoice: whereUser };
-  // Sổ số dư và lịch sử hủy/đổi (góp ý GV) tham chiếu hoá đơn, hoàn tiền và kỳ gói.
+
+  // Xóa các bản ghi phụ thuộc trước để tránh vi phạm khóa ngoại.
   await prisma.creditTransaction.deleteMany({ where: whereUser });
   await prisma.purchaseChange.deleteMany({ where: whereUser });
-  await prisma.membershipFreeze.deleteMany({ where: { membership: whereUser } });
-  await prisma.refund.deleteMany({ where: { OR: [byInvoice, { case: whereUser }] } });
-  await prisma.reconciliationCase.deleteMany({ where: { OR: [whereUser, byInvoice] } });
+  await prisma.membershipFreeze.deleteMany({
+    where: { membership: whereUser },
+  });
+  await prisma.refund.deleteMany({
+    where: { OR: [byInvoice, { case: whereUser }] },
+  });
+  await prisma.reconciliationCase.deleteMany({
+    where: { OR: [whereUser, byInvoice] },
+  });
   await prisma.notification.deleteMany({ where: whereUser });
-  await prisma.payment.deleteMany({ where: { invoice: whereUser } });
+  await prisma.payment.deleteMany({
+    where: { invoice: whereUser },
+  });
   await prisma.invoice.deleteMany({ where: whereUser });
   await prisma.membership.deleteMany({ where: whereUser });
   await prisma.auditLog.deleteMany({
-    where: { OR: [{ userId: { in: fixture.userIds } }, { id: { in: fixture.auditIds } }] },
+    where: {
+      OR: [{ userId: { in: fixture.userIds } }, { id: { in: fixture.auditIds } }],
+    },
   });
-  await prisma.user.deleteMany({ where: { id: { in: fixture.userIds } } });
-  await prisma.membershipPlan.deleteMany({ where: { code: { startsWith: fixture.prefix } } });
-  await prisma.systemSetting.deleteMany({ where: { key: { startsWith: fixture.prefix } } });
-  await prisma.role.deleteMany({ where: { id: { in: fixture.roleIds } } });
+  await prisma.user.deleteMany({
+    where: { id: { in: fixture.userIds } },
+  });
+  await prisma.membershipPlan.deleteMany({
+    where: { code: { startsWith: fixture.prefix } },
+  });
+  await prisma.systemSetting.deleteMany({
+    where: { key: { startsWith: fixture.prefix } },
+  });
+  await prisma.role.deleteMany({
+    where: { id: { in: fixture.roleIds } },
+  });
 };

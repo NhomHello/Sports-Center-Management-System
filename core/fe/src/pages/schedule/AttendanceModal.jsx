@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Button, Form, Input, Modal, Space } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
@@ -8,9 +9,32 @@ import * as service from '@/services/sprint3.service';
 import { AttendanceTable } from './AttendanceTable';
 import { QueryState } from './QueryState';
 
+const CLOCK_TICK_MS = 1000;
+
+function useAttendanceClock() {
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+}
+
+function attendanceLock(session, now, unlockedUntil) {
+  const isUnlocked = new Date(unlockedUntil ?? 0).getTime() > now;
+  if (session.status === 'CANCELLED')
+    return { disabled: true, message: 'Buổi học đã bị hủy.' };
+  if (new Date(session.startAt).getTime() > now)
+    return { disabled: true, message: 'Chưa đến giờ bắt đầu điểm danh.' };
+  if (new Date(session.endAt).getTime() <= now && !isUnlocked)
+    return { disabled: true, message: 'Buổi học đã kết thúc; cần quản lý mở quyền sửa.' };
+  return { disabled: false, message: null };
+}
+
 /** Chỉ gửi các lựa chọn đã ghi; không mặc định mọi người vắng khi mở form. */
 export function AttendanceModal({ session, onClose }) {
   const { can } = usePermission();
+  const now = useAttendanceClock();
   const [form] = Form.useForm();
   const query = useQuery({
     queryKey: [...QUERY_KEYS.SCHEDULE, 'attendance', session.id],
@@ -29,7 +53,12 @@ export function AttendanceModal({ session, onClose }) {
   const unlock = useScheduleMutation(({ reason }) => service.unlockAttendance(session.id, reason));
   const [unlockForm] = Form.useForm();
   const data = query.data?.data;
-  const disabled = session.status === 'CANCELLED' || new Date(session.startAt) > new Date();
+  const currentSession = data?.session ?? session;
+  const { disabled, message: disabledMessage } = attendanceLock(
+    currentSession,
+    now,
+    currentSession.attendanceUnlockedUntil,
+  );
   return (
     <Modal
       open
@@ -44,11 +73,7 @@ export function AttendanceModal({ session, onClose }) {
     >
       <QueryState query={query}>
         {disabled && (
-          <Alert
-            showIcon
-            type="warning"
-            title="Không thể điểm danh buổi chưa bắt đầu hoặc đã hủy."
-          />
+          <Alert showIcon type="warning" title={disabledMessage} />
         )}
         {save.isError && <Alert showIcon type="error" title={save.error.message} />}
         {data && (
@@ -59,7 +84,7 @@ export function AttendanceModal({ session, onClose }) {
             disabled={disabled}
             initialValues={Object.fromEntries(data.attendance.map((a) => [a.memberId, a.status]))}
           >
-            <AttendanceTable data={data} session={session} />
+            <AttendanceTable data={data} />
           </Form>
         )}
         {can(P.ATTENDANCE_MANAGE) && (
