@@ -1,12 +1,20 @@
 import { Form, Input, InputNumber, Select } from 'antd';
 import { CLASS_STATUS, SCHEDULE_STATUS_LABELS } from '@/constants/schedule';
+
 const required = [{ required: true, message: 'Vui lòng nhập thông tin' }];
+
 const options = (items) =>
-  items.map((item) => ({ value: item.id, label: item.name || item.fullName }));
-/** Phòng có loại phòng dạy bộ môn đã chọn; HLV có chuyên môn bộ môn đó (góp ý GV). */
+  items.map((item) => ({
+    value: item.id,
+    label: item.name || item.fullName,
+  }));
+
+/** Lọc phòng và huấn luyện viên phù hợp với bộ môn đã chọn. */
 const forSubject = ({ rooms, coaches }, subjectId) => ({
-  rooms: rooms.filter((r) => r.roomType?.subjects.some((s) => s.subjectId === subjectId)),
-  coaches: coaches.filter((c) => c.subjectIds?.includes(subjectId)),
+  rooms: rooms.filter((room) =>
+    room.roomType?.subjects.some((subject) => subject.subjectId === subjectId),
+  ),
+  coaches: coaches.filter((coach) => coach.subjectIds?.includes(subjectId)),
 });
 
 /** Thông tin lớp và tài nguyên từ API. */
@@ -14,23 +22,30 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
   const form = Form.useFormInstance();
   const subjectId = Form.useWatch('subjectId', form);
   const allowed = forSubject({ rooms, coaches }, subjectId);
+
   const resetInvalid = (nextSubject) => {
     const next = forSubject({ rooms, coaches }, nextSubject);
     const { roomId, coachId } = form.getFieldsValue(['roomId', 'coachId']);
+
+    // Chỉ giữ lựa chọn cũ nếu vẫn phù hợp với bộ môn mới.
     form.setFieldsValue({
-      roomId: next.rooms.some((r) => r.id === roomId) ? roomId : undefined,
-      coachId: next.coaches.some((c) => c.id === coachId) ? coachId : undefined,
+      roomId: next.rooms.some((room) => room.id === roomId) ? roomId : undefined,
+      coachId: next.coaches.some((coach) => coach.id === coachId) ? coachId : undefined,
     });
   };
+
   const hint = subjectId ? undefined : 'Chọn bộ môn trước';
+
   return (
     <>
       <Form.Item name="name" label="Tên lớp" rules={required}>
         <Input maxLength={120} />
       </Form.Item>
+
       <Form.Item name="subjectId" label="Bộ môn" rules={required}>
         <Select options={options(subjects)} virtual={false} onChange={resetInvalid} />
       </Form.Item>
+
       <Form.Item
         name="roomId"
         label="Phòng tập"
@@ -46,6 +61,7 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
           virtual={false}
         />
       </Form.Item>
+
       <Form.Item
         name="coachId"
         label="Huấn luyện viên"
@@ -54,6 +70,7 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
       >
         <Select disabled={!subjectId} options={options(allowed.coaches)} virtual={false} />
       </Form.Item>
+
       <Form.Item
         name="capacity"
         label="Sức chứa"
@@ -61,21 +78,7 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
       >
         <InputNumber min={1} />
       </Form.Item>
-      <Form.Item
-        name="price"
-        label="Học phí cả khóa (VNĐ)"
-        extra="0 = lớp miễn phí. Đăng ký giữa khóa tính theo số buổi còn lại."
-        rules={[{ type: 'integer', min: 0 }]}
-      >
-        <InputNumber
-          min={0}
-          step={50000}
-          precision={0}
-          formatter={(value) => String(value ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-          parser={(value) => value?.replace(/\./g, '')}
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
+
       <Form.Item name="status" label="Trạng thái">
         <Select
           options={[CLASS_STATUS.OPEN, CLASS_STATUS.CLOSED].map((value) => ({
@@ -84,6 +87,7 @@ export function ClassIdentityFields({ subjects, rooms, coaches }) {
           }))}
         />
       </Form.Item>
+
       <Form.Item name="description" label="Mô tả">
         <Input.TextArea maxLength={1000} />
       </Form.Item>
