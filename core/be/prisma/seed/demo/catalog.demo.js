@@ -3,13 +3,13 @@ import { prisma } from '../../../src/config/db.js';
 import { env } from '../../../src/config/env.js';
 import {
   DEMO_COACH_SUBJECTS,
-  DEMO_MEMBERS,
   DEMO_PLANS,
   DEMO_ROOM_TYPES,
   DEMO_ROOMS,
   DEMO_STAFF,
   DEMO_SUBJECTS,
 } from './data.demo.js';
+import { DEMO_MEMBERS } from './members.demo.js';
 
 /** Loại phòng với bộ môn được dạy (góp ý GV: mỗi loại phòng một chức năng). */
 const seedRoomTypes = async (subjects) => {

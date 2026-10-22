@@ -64,7 +64,7 @@ scripts       npm run dev / setup
 | `npm run dev -- --prepare-only` | Chỉ chuẩn bị DB/seed để kiểm tra, không chiếm cổng BE/FE         |
 | `npm run db:migrate`    | Tạo migration mới sau khi sửa `schema.prisma` (hỏi tên)  |
 | `npm run db:seed`       | Đồng bộ permission / role / settings / mock user vào DB  |
-| `npm run db:demo`       | Reset dữ liệu nghiệp vụ rồi dựng dữ liệu demo (8 lớp, 30 hội viên, lịch sử thanh toán, tình huống đối soát) |
+| `npm run db:demo`       | Reset dữ liệu nghiệp vụ rồi dựng dữ liệu demo (8 lớp, 45 hội viên, 9 gói tập, lịch sử thanh toán, tình huống đối soát) |
 | `npm run db:clean`      | Chỉ reset: xoá hoá đơn, lớp, hội viên… giữ quyền, vai trò, cấu hình và tài khoản admin |
 | `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
 | `npm run lint`          | Lint toàn bộ (tự chạy khi commit)                        |
@@ -77,14 +77,16 @@ scripts       npm run dev / setup
 `npm run db:demo` (chỉ chạy ở môi trường dev, có chặn `NODE_ENV=production`) gọi đúng các service nghiệp vụ
 nên dữ liệu sinh ra giống khi người dùng thao tác thật. Mã nguồn ở `core/be/prisma/seed/demo/`.
 
-- Tài khoản: `admin@scms.local` / `SEED_ADMIN_PASSWORD`; `quanly`, `letan`, `letan2`, `coach.yoga|gym|boxing|pilates|dance`,
-  `member1`…`member30` `@scms.local` / `SEED_MOCK_PASSWORD`.
+- Tài khoản: `admin@scms.local` / `SEED_ADMIN_PASSWORD`; `quanly`, `letan`, `letan2`, `coach.yoga|gym|boxing|pilates|dance|abcd|zxcv`,
+  `member1`…`member45` `@scms.local` / `SEED_MOCK_PASSWORD`.
 - `member1`–`member15` có sẵn các tình huống của `docs/kiem-thu/nghiem-thu/LoTrinh_Demo_Sprint2_Sprint3.md` (mục 1.2):
   giữ chỗ lớp đầy, danh sách chờ, chuyển thiếu/thừa/hai lần, báo đã chuyển, gói sắp hết hạn, bảo lưu, hết hạn,
   chưa xác minh email, bị chặn đăng ký, bị khoá.
 - `member16`–`member21`: tình huống góp ý giảng viên (Phần C của tài liệu demo): số dư sau hủy khóa, giữ chỗ khóa
   chờ thanh toán, kỳ gói nối tiếp, gói "Tự tập sáng sớm" (check-in ngoài khung bị từ chối), đổi gói chờ thu chênh
   lệch, báo nghỉ buổi. 5/8 lớp có học phí (bán theo khóa), 3 lớp miễn phí.
+- Có 9 gói tập mẫu; các lớp được đăng ký đến đủ sức chứa để kiểm tra danh sách và điểm danh. Lớp
+  "Boxing nhóm nhỏ" vẫn đầy để giữ tình huống danh sách chờ.
 - Lớp "Sức mạnh cơ bản" có một buổi đang diễn ra ngay lúc seed để HLV `coach.gym` thử điểm danh.
 - Hoá đơn online chờ thanh toán tự hết hạn sau `PAYMENT_ONLINE_TIMEOUT_MINUTES`; chạy lại `npm run db:demo` trước buổi demo.
 
@@ -94,6 +96,6 @@ Bản tích hợp local ở `sprint-2/integration`, nền Sprint 1 từ `origin/
 
 Trang **`/schedule`** gồm danh mục, quản lý lớp, đăng ký/huỷ toàn lớp, xử lý hộ, lịch cá nhân/lịch dạy và roster theo permission. Mobile dùng danh sách chọn màn hình để truy cập đủ các chức năng. Huỷ dùng hạn do backend trả về; đổi lịch giữ buổi cũ và gửi thông báo qua outbox.
 
-Khi `SEED_MOCK_DATA=true`, seed thêm hai lớp `DEMO · …` cho ngày kế tiếp và gói tập mẫu cho member1/member2 **chỉ khi chưa có lịch sử membership**. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
+Khi `SEED_MOCK_DATA=true`, seed thêm 20 hội viên `member1`…`member20` với email đăng nhập `@scms.local`, 5 gói mẫu và hai lớp `DEMO · …` bắt đầu ngày kế tiếp (Gym 07:00, Yoga 18:00). Mỗi lớp mẫu được lấp đến sức chứa bằng các hội viên mẫu; lịch tạo qua service nên sẽ bỏ qua khung giờ xung đột. Email `@scms.local` chỉ dùng đăng nhập local, không phải hộp thư Gmail. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
 
 Chi tiết (Word/Excel trong `outputs/tai-lieu/`): bàn giao Sprint 2 (18 chức năng và bằng chứng), thiết kế API xếp lớp, test case `SWP391_TestCase.xlsx`. Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.

@@ -1,9 +1,12 @@
 import { PERMISSIONS as P } from '@scms/shared';
+import { ApiError } from '../../../src/common/errors/api-error.js';
 import { Enums, prisma } from '../../../src/config/db.js';
 import { env } from '../../../src/config/env.js';
 import { logger } from '../../../src/config/logger.js';
 import { TIME } from '../../../src/constants/index.js';
+import { enroll } from '../../../src/modules/class/class-enrollment.service.js';
 import * as classService from '../../../src/modules/class/class.service.js';
+import { SEED_MOCK_USERS } from './users.mock.js';
 
 const DEMO_CLASSES = [
   {
@@ -19,8 +22,8 @@ const DEMO_CLASSES = [
     subject: 'DEMO · Fitness',
     room: 'DEMO · Phòng Gym',
     teacherEmail: 'coach.gym@scms.local',
-    startTime: '19:00',
-    endTime: '20:00',
+    startTime: '07:00',
+    endTime: '08:00',
   },
 ];
 const DEMO_DAYS = 21;
@@ -74,13 +77,19 @@ async function seedDemoMemberships() {
 
 async function seedDemoClass(definition, actor) {
   const now = new Date();
-  const existing = await prisma.gymClass.findFirst({
+  const tomorrow = localDate(new Date(now.getTime() + TIME.MS_PER_DAY));
+  const dayStart = new Date(`${tomorrow}T00:00:00+07:00`);
+  const dayEnd = new Date(dayStart.getTime() + TIME.MS_PER_DAY);
+  let gymClass = await prisma.gymClass.findFirst({
     where: {
       name: definition.name,
-      endsOn: { gte: new Date(localDate(now)) },
+      sessions: { some: { startAt: { gte: dayStart, lt: dayEnd } } },
     },
   });
-  if (existing) return;
+  if (gymClass) {
+    await enrollMockMembers(gymClass, actor);
+    return;
+  }
   const teacher = await prisma.user.findFirst({
     where: {
       email: definition.teacherEmail,
@@ -122,21 +131,66 @@ async function seedDemoClass(definition, actor) {
   });
   if (!subject.isActive || !room.isActive) return;
   try {
-    await classService.create(demoClassPayload({ definition, subject, room, teacher }, now), actor);
+    gymClass = await classService.create(
+      demoClassPayload({ definition, subject, room, teacher }, now),
+      actor,
+    );
   } catch (error) {
     if (![409, 422].includes(error.statusCode)) throw error;
     logger.warn(
       { className: definition.name, reason: error.message },
       'Bỏ qua lớp demo không còn phù hợp',
     );
+    return;
+  }
+  await enrollMockMembers(gymClass, actor);
+}
+
+async function enrollMockMembers(gymClass, actor) {
+  const mockEmails = SEED_MOCK_USERS.filter(({ roleCode }) => roleCode === 'MEMBER').map(
+    ({ email }) => email,
+  );
+  const [members, enrolledRows] = await Promise.all([
+    prisma.user.findMany({
+      where: { email: { in: mockEmails }, status: Enums.UserStatus.ACTIVE },
+      select: { id: true, email: true },
+      orderBy: { email: 'asc' },
+    }),
+    prisma.classEnrollment.findMany({
+      where: { classId: gymClass.id, status: Enums.EnrollmentStatus.BOOKED },
+      select: { memberId: true },
+    }),
+  ]);
+  const enrolled = new Set(enrolledRows.map(({ memberId }) => memberId));
+  for (const member of members) {
+    if (enrolled.size >= gymClass.capacity) break;
+    if (enrolled.has(member.id)) continue;
+    try {
+      await enroll(gymClass.id, member.id, actor);
+      enrolled.add(member.id);
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error;
+      logger.debug(
+        { className: gymClass.name, memberEmail: member.email, reason: error.message },
+        'Bỏ qua hội viên không đủ điều kiện vào lớp demo',
+      );
+    }
+  }
+  if (enrolled.size < gymClass.capacity) {
+    logger.warn(
+      { className: gymClass.name, enrolled: enrolled.size, capacity: gymClass.capacity },
+      'Lớp mẫu chưa đủ hội viên đăng ký',
+    );
   }
 }
 
-/** Chỉ chạy với SEED_MOCK_DATA; không gia hạn gói cũ hoặc ghi đè lớp đã chỉnh sửa. */
+/** Tạo lớp ngày mai qua service kiểm tra lịch; bổ sung hội viên cho roster lớp demo hiện có. */
 export async function seedMockClasses() {
   await seedDemoMemberships();
   const actor = await prisma.user.findUnique({ where: { email: env.SEED_ADMIN_EMAIL } });
   if (!actor) return;
-  for (const definition of DEMO_CLASSES) await seedDemoClass(definition, actor);
+  for (const definition of DEMO_CLASSES) {
+    await seedDemoClass(definition, actor);
+  }
   logger.info('Seed mock classes xong');
 }
