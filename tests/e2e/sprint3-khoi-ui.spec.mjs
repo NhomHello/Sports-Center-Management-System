@@ -70,6 +70,11 @@ test('S3-11/13/83: đổi HLV, đổi giờ và hủy một buổi, giữ lịch
   await inputs.nth(1).fill(fmt(nextEnd));
   await inputs.nth(1).press('Enter');
   await change.getByRole('button', { name: 'Lưu giờ mới' }).click();
+  // Góp ý GV: xem trước học viên bị ảnh hưởng rồi mới đổi giờ.
+  await page
+    .locator('.ant-modal-confirm')
+    .getByRole('button', { name: 'Đổi giờ', exact: true })
+    .click();
   await expect(change).not.toBeVisible();
   expect(
     (

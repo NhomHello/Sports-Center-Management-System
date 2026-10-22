@@ -1,43 +1,20 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
-import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
-import { activatePaidInvoice } from '../membership/membership-invoice.service.js';
 import { INVOICE_INCLUDE } from './invoice.service.js';
 import { applyTransfer, lockInvoice, sumReceived } from './payment-apply.service.js';
 
-/** Hoá đơn tại quầy: thu đúng giá gốc, chuyển PAID và kích hoạt gói (BR-PAY-14/3.2). */
+/**
+ * Hoá đơn tại quầy: thu phần còn lại bằng tiền mặt (đủ giá gốc, trừ phần đã trả bằng số dư) qua
+ * cùng hàm khớp tiền với webhook nên quyền lợi được trao trong cùng transaction (BR-PAY-14/3.2).
+ */
 const collectCounterInvoice = async (tx, invoice, actor) => {
-  const paidAt = new Date();
-  await tx.invoice.update({
-    where: { id: invoice.id },
-    data: { status: Enums.InvoiceStatus.PAID, paidAt },
-  });
-  const payment = await tx.payment.create({
-    data: {
-      invoiceId: invoice.id,
-      provider: Enums.PaymentProvider.COUNTER,
-      requestedAmount: invoice.amount,
-      receivedAmount: invoice.amount,
-      paidAt,
-      actorId: actor.id,
-      reference: invoice.code,
-    },
-  });
-  const membership = await activatePaidInvoice(invoice, paidAt, tx);
-  await tx.auditLog.create({
-    data: {
-      userId: actor.id,
-      action: AUDIT_ACTIONS.UPDATE,
-      entity: ENTITIES.INVOICE,
-      entityId: String(invoice.id),
-      meta: {
-        before: { status: invoice.status },
-        after: { status: Enums.InvoiceStatus.PAID },
-        paymentId: payment.id,
-        membershipId: membership.id,
-        amount: invoice.amount,
-      },
-    },
+  const received = await sumReceived(tx, invoice.id);
+  await applyTransfer(tx, invoice, {
+    amount: invoice.amount - received,
+    provider: Enums.PaymentProvider.COUNTER,
+    reference: invoice.code,
+    actorId: actor.id,
+    meta: { action: 'COUNTER_CASH' },
   });
 };
 

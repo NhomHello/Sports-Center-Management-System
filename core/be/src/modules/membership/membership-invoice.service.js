@@ -1,12 +1,11 @@
 import { completeDueFreezes } from './membership-freeze.service.js';
-import { randomUUID } from 'node:crypto';
-import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
-import { AUDIT_ACTIONS, ENTITIES, TIME, VALIDATION } from '../../constants/index.js';
+import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
 import { INVOICE_INCLUDE } from '../payment/invoice.service.js';
 import { buildPaymentInstruction } from '../payment/sepay-qr.service.js';
-import * as settingService from '../setting/setting.service.js';
+import { createInvoiceRecord, loadInvoicePolicy } from '../payment/invoice-create.service.js';
+import { nextPeriodStart, syncPeriods } from './membership-period.service.js';
 
 const getSellingPlan = async (tx, planId) => {
   const plan = await tx.membershipPlan.findUnique({ where: { id: planId } });
@@ -25,6 +24,7 @@ const expireStalePendingInvoices = async ({ tx, memberId, planId, actorId, now }
     where: {
       userId: memberId,
       planId,
+      kind: Enums.InvoiceKind.MEMBERSHIP,
       status: Enums.InvoiceStatus.PENDING,
       // Hoá đơn tại quầy chờ lễ tân thu tiền, không có hạn online (giống job hết hạn).
       channel: Enums.InvoiceChannel.ONLINE,
@@ -60,6 +60,7 @@ const findReusablePending = (tx, memberId, planId, now) =>
     where: {
       userId: memberId,
       planId,
+      kind: Enums.InvoiceKind.MEMBERSHIP,
       status: Enums.InvoiceStatus.PENDING,
       // Hoá đơn đã nhận tiền (chờ bù / chờ xác nhận chuyển thừa) vẫn là hoá đơn đang xử lý.
       OR: [
@@ -71,37 +72,22 @@ const findReusablePending = (tx, memberId, planId, now) =>
     include: INVOICE_INCLUDE,
   });
 
-const createInvoice = async ({ tx, memberId, plan, prefix, timeout, actorId, now, channel }) => {
-  const created = await tx.invoice.create({
+const createInvoice = ({ tx, memberId, plan, policy, actorId, now, channel }) =>
+  createInvoiceRecord(tx, {
     data: {
-      code: `PENDING-${randomUUID()}`,
       userId: memberId,
+      kind: Enums.InvoiceKind.MEMBERSHIP,
       planId: plan.id,
       planName: plan.name,
       durationDays: plan.durationDays,
       amount: plan.price,
       channel,
-      expiresAt: new Date(now.getTime() + timeout * TIME.MS_PER_MINUTE),
     },
+    policy,
+    actorId,
+    now,
+    meta: { planId: plan.id },
   });
-  const invoice = await tx.invoice.update({
-    where: { id: created.id },
-    data: {
-      code: `${prefix}${String(created.id).padStart(VALIDATION.INVOICE_SEQUENCE_WIDTH, '0')}`,
-    },
-    include: INVOICE_INCLUDE,
-  });
-  await tx.auditLog.create({
-    data: {
-      userId: actorId,
-      action: AUDIT_ACTIONS.CREATE,
-      entity: ENTITIES.INVOICE,
-      entityId: String(invoice.id),
-      meta: { memberId, planId: plan.id, amount: invoice.amount, channel: invoice.channel },
-    },
-  });
-  return invoice;
-};
 
 const CHANNEL_LABEL = Object.freeze({
   [Enums.InvoiceChannel.COUNTER]: 'tại quầy',
@@ -110,8 +96,7 @@ const CHANNEL_LABEL = Object.freeze({
 
 /** Khóa theo hội viên, tái sử dụng hóa đơn PENDING cùng kênh và lấy giá từ DB. */
 const createOrder = async ({ memberId, planId, channel }, actor) => {
-  const prefix = await settingService.getValue(SETTING_KEYS.INVOICE_CODE_PREFIX);
-  const timeout = await settingService.getValue(SETTING_KEYS.PAYMENT_ONLINE_TIMEOUT_MINUTES);
+  const policy = await loadInvoicePolicy();
   return prisma.$transaction(
     async (tx) => {
       await tx.$queryRaw`SELECT id FROM users WHERE id = ${memberId} FOR UPDATE`;
@@ -133,8 +118,7 @@ const createOrder = async ({ memberId, planId, channel }, actor) => {
         tx,
         memberId,
         plan,
-        prefix,
-        timeout,
+        policy,
         actorId: actor.id,
         now,
         channel,
@@ -154,45 +138,29 @@ export const createOnlineOrder = async (input, actor) => {
   return { ...invoice, paymentInstruction: await buildPaymentInstruction(invoice) };
 };
 
-/** Còn hạn cộng từ cuối gói; hết hạn bắt đầu tại ngày thu tiền. */
+/**
+ * Mỗi hoá đơn gói đã thanh toán tạo một kỳ gói riêng (GY-20). Còn kỳ đang chạy/mua trước thì kỳ
+ * mới nối tiếp sau kỳ muộn nhất (BR-1.3), không thì bắt đầu từ lúc thanh toán (BR-1.4).
+ */
 export const activatePaidInvoice = async (invoice, paidAt, tx) => {
   await tx.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
   await completeDueFreezes(tx, invoice.userId, paidAt);
-  const frozen = { endedAt: null, startAt: { lte: paidAt }, endAt: { gt: paidAt } };
-  await tx.membership.updateMany({
-    where: {
+  const existing = await tx.membership.findUnique({ where: { invoiceId: invoice.id } });
+  if (existing) return existing;
+  const startDate = await nextPeriodStart(tx, invoice.userId, paidAt);
+  const days = invoice.durationDays ?? invoice.plan.durationDays;
+  const membership = await tx.membership.create({
+    data: {
       userId: invoice.userId,
+      planId: invoice.planId,
+      invoiceId: invoice.id,
+      startDate,
+      endDate: new Date(startDate.getTime() + days * TIME.MS_PER_DAY),
       status: Enums.MembershipStatus.ACTIVE,
-      endDate: { lte: paidAt },
-      freezes: { none: frozen },
     },
-    data: { status: Enums.MembershipStatus.EXPIRED, activeUserId: null },
+    include: { plan: true },
   });
-  const current = await tx.membership.findFirst({
-    where: {
-      userId: invoice.userId,
-      status: Enums.MembershipStatus.ACTIVE,
-      OR: [{ endDate: { gt: paidAt } }, { freezes: { some: frozen } }],
-    },
-  });
-  const startDate = current?.startDate ?? paidAt;
-  const endDate = new Date(
-    (current?.endDate ?? paidAt).getTime() +
-      (invoice.durationDays ?? invoice.plan.durationDays) * TIME.MS_PER_DAY,
-  );
-  const data = {
-    planId: invoice.planId,
-    startDate,
-    endDate,
-    activeUserId: invoice.userId,
-    status: Enums.MembershipStatus.ACTIVE,
-  };
-  const membership = current
-    ? await tx.membership.update({ where: { id: current.id }, data, include: { plan: true } })
-    : await tx.membership.create({
-        data: { ...data, userId: invoice.userId },
-        include: { plan: true },
-      });
   await tx.invoice.update({ where: { id: invoice.id }, data: { membershipId: membership.id } });
+  await syncPeriods(tx, invoice.userId, paidAt);
   return membership;
 };

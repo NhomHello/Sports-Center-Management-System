@@ -6,6 +6,11 @@
 import auditRoutes from './modules/audit/audit.routes.js';
 import attendanceHistoryRoutes from './modules/attendance/attendance-history.routes.js';
 import sprint3Routes from './modules/sprint3/sprint3.routes.js';
+import attendanceExcuseRoutes from './modules/attendance/attendance-excuse.routes.js';
+import cancellationRoutes from './modules/cancellation/cancellation.routes.js';
+import courseOrderRoutes from './modules/course-order/course-order.routes.js';
+import creditRoutes from './modules/credit/credit.routes.js';
+import purchaseChangeRoutes from './modules/purchase-change/purchase-change.routes.js';
 import reportRoutes from './modules/report/report.routes.js';
 import { Router } from 'express';
 import { HEALTH_PATH } from './constants/index.js';
@@ -15,6 +20,8 @@ import memberRoutes from './modules/member/member.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
 import invoiceRoutes from './modules/payment/invoice.routes.js';
 import sepayRoutes from './modules/payment/sepay.routes.js';
+import operatingFrameRoutes from './modules/operating-frame/operating-frame.routes.js';
+import roomTypeRoutes from './modules/room-type/room-type.routes.js';
 import paymentRoutes from './modules/payment/payment.routes.js';
 import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
 import membershipRoutes from './modules/membership/membership.routes.js';
@@ -39,6 +46,12 @@ router.use('/auth', authRoutes);
 router.use('/reports', reportRoutes);
 router.use('/attendance', attendanceHistoryRoutes);
 router.use(sprint3Routes);
+// Góp ý GV GĐ2–4: đường dẫn đầy đủ, đứng trước các router theo tiền tố (/members, /invoices…).
+router.use(attendanceExcuseRoutes);
+router.use(courseOrderRoutes);
+router.use(cancellationRoutes);
+router.use(purchaseChangeRoutes);
+router.use(creditRoutes);
 router.use('/members', memberRoutes);
 router.use('/notifications', notificationRoutes);
 // Phải đứng trước /payments vì paymentRoutes bắt buộc JWT cho mọi đường dẫn con.
@@ -55,6 +68,8 @@ router.use('/settings', settingRoutes);
 router.use('/membership-plans', membershipPlanRoutes);
 router.use('/subjects', subjectRoutes);
 router.use('/rooms', roomRoutes);
+router.use('/room-types', roomTypeRoutes);
+router.use('/operating-frames', operatingFrameRoutes);
 router.use('/classes', classRoutes);
 router.use('/schedule', scheduleRoutes);
 

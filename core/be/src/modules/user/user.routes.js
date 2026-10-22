@@ -5,6 +5,7 @@ import { authorize } from '../../common/middlewares/authorize.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import * as controller from './user.controller.js';
 import {
+  coachSubjectsSchema,
   createUserSchema,
   listUsersSchema,
   updateUserRoleSchema,
@@ -30,6 +31,13 @@ router.patch(
   authorize(PERMISSIONS.USER_UPDATE, PERMISSIONS.USER_DELETE),
   validate(updateUserStatusSchema),
   controller.updateStatus,
+);
+
+router.put(
+  '/:id/subjects',
+  authorize(PERMISSIONS.USER_UPDATE),
+  validate(coachSubjectsSchema),
+  controller.setSubjects,
 );
 
 router.post(

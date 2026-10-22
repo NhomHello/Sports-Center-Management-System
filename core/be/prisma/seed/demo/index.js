@@ -1,10 +1,12 @@
 /**
  * Dựng dữ liệu demo "giống thật" sau khi reset (chạy qua service nghiệp vụ, không cần bật server):
- *  - 5 bộ môn, 5 phòng, 6 gói tập (1 gói ngừng bán), 8 nhân viên, 30 hội viên
- *  - 8 lớp với lịch hằng tuần trong 6 tuần tới, hội viên đã đăng ký vào các lớp
+ *  - 5 bộ môn, 5 phòng, 7 gói tự tập (khung giờ + khu vực; 1 gói ngừng bán), 8 nhân viên, 30 hội viên
+ *  - 8 lớp (5 lớp có học phí bán theo khóa, 3 lớp miễn phí) trong 6 tuần tới, hội viên đã đăng ký
  *  - lịch sử mua gói 4 tuần gần nhất (online + tại quầy) để báo cáo/biểu đồ có số liệu
  *  - một buổi "Sức mạnh cơ bản" đang diễn ra để HLV điểm danh ngay
  *  - member1–15: các tình huống của tài liệu demo (chuyển thiếu/thừa/2 lần, bảo lưu, khoá...)
+ *  - member16–21: tình huống góp ý GV (số dư sau hủy khóa, giữ chỗ chờ thanh toán, kỳ nối tiếp,
+ *    gói sáng sớm, đổi gói chờ thu chênh lệch, báo nghỉ buổi)
  *
  * Chạy: npm run db:demo  (= reset + seed nền + seed demo). Từ chối khi NODE_ENV=production.
  */
@@ -15,6 +17,7 @@ import { seedBase } from '../index.js';
 import { seedDemoCatalog } from './catalog.demo.js';
 import { addOngoingSession, enrollMembers, seedDemoClasses } from './classes.demo.js';
 import { backdateInvoice, payAtCounter, payOnline } from './payments.demo.js';
+import { seedFeedbackScenarios } from './scenarios-gopy.demo.js';
 import { seedDemoScenarios } from './scenarios.demo.js';
 
 const HISTORY_FIRST = 16;
@@ -61,6 +64,7 @@ const run = async () => {
   await seedEnrollments(classes, members, catalog.users.letan);
   await addOngoingSession(classes.strength, { startedMinutesAgo: 20, durationMinutes: 60 });
   await seedDemoScenarios(catalog, classes);
+  await seedFeedbackScenarios(catalog, classes);
   const counts = {
     classes: await prisma.gymClass.count(),
     enrollments: await prisma.classEnrollment.count({ where: { status: 'BOOKED' } }),

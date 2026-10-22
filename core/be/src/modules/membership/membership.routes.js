@@ -6,7 +6,11 @@ import { validate } from '../../common/middlewares/validate.middleware.js';
 import { createCounterOrder } from '../payment/payment.controller.js';
 import { createCounterOrderSchema } from '../payment/payment.validation.js';
 import * as controller from './membership.controller.js';
-import { createOwnOrderSchema, memberMembershipSchema } from './membership.validation.js';
+import {
+  createOwnOrderSchema,
+  memberMembershipSchema,
+  membershipIdSchema,
+} from './membership.validation.js';
 
 const router = Router();
 
@@ -43,6 +47,13 @@ router.get(
   authorize(PERMISSIONS.MEMBERSHIP_READ_ALL),
   validate(memberMembershipSchema),
   controller.getCurrentByMemberId,
+);
+
+router.get(
+  '/:id',
+  authorize(PERMISSIONS.MEMBERSHIP_READ_OWN, PERMISSIONS.MEMBERSHIP_READ_ALL),
+  validate(membershipIdSchema),
+  controller.getPeriod,
 );
 
 export default router;

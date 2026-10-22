@@ -1,7 +1,9 @@
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
+import { confirmCourseInvoice, extendHolds } from '../course-order/course-hold.service.js';
 import { activatePaidInvoice } from '../membership/membership-invoice.service.js';
+import { onAdjustmentPaid } from '../purchase-change/purchase-change.service.js';
 import * as settingService from '../setting/setting.service.js';
 import { INVOICE_INCLUDE, INVOICE_REFUND_WHERE } from './invoice.service.js';
 
@@ -76,9 +78,16 @@ const writeAudit = (tx, invoice, actorId, meta) =>
     },
   });
 
+/** Quyền lợi của từng loại hoá đơn khi đủ tiền: kỳ gói, chỗ học chính thức, hoặc hoàn tất đổi. */
+const grantPurchase = (tx, invoice, now) => {
+  if (invoice.kind === Enums.InvoiceKind.COURSE) return confirmCourseInvoice(tx, invoice);
+  if (invoice.kind === Enums.InvoiceKind.ADJUSTMENT) return onAdjustmentPaid(tx, invoice);
+  return activatePaidInvoice(invoice, now, tx);
+};
+
 /**
- * Chốt hoá đơn đã đủ tiền: PAID, kích hoạt gói (BR-1.3/1.4) và đóng phiếu chờ bù / báo đã chuyển.
- * Dùng khi nhận đúng số tiền và khi quản lý chấp nhận hoá đơn chuyển thừa.
+ * Chốt hoá đơn đã đủ tiền: PAID, trao quyền lợi (kỳ gói BR-1.3/1.4, chỗ học, đổi gói/lớp) và đóng
+ * phiếu chờ bù / báo đã chuyển. Dùng khi nhận đúng số tiền và khi quản lý chấp nhận chuyển thừa.
  */
 export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) => {
   const now = new Date();
@@ -86,14 +95,15 @@ export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) 
     where: { id: invoice.id },
     data: { status: Enums.InvoiceStatus.PAID, paidAt: now },
   });
-  const membership = await activatePaidInvoice(invoice, now, tx);
+  const granted = await grantPurchase(tx, invoice, now);
   await closeSettledCases(tx, invoice.id, actorId, now);
   await writeAudit(tx, invoice, actorId, {
     ...meta,
     after: { status: Enums.InvoiceStatus.PAID },
-    membershipId: membership.id,
+    kind: invoice.kind,
+    grantedId: granted?.id ?? null,
   });
-  return membership;
+  return granted;
 };
 
 /**
@@ -129,6 +139,7 @@ export const applyTransfer = async (tx, invoice, input) => {
       where: { id: invoice.id },
       data: { status: Enums.InvoiceStatus.PENDING, expiresAt },
     });
+    await extendHolds(tx, invoice.id, expiresAt);
     await writeAudit(tx, invoice, actorId, { ...base, outcome: PAYMENT_OUTCOME.UNDERPAID });
     const missing = invoice.amount - received;
     return { outcome: PAYMENT_OUTCOME.UNDERPAID, received, missing, excess: 0, expiresAt };

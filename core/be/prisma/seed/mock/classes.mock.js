@@ -24,6 +24,8 @@ const DEMO_CLASSES = [
   },
 ];
 const DEMO_DAYS = 21;
+const MOCK_ROOM_TYPE = 'Đa năng';
+
 const DEMO_CAPACITY = 15;
 const localDate = (date) =>
   new Date(date.getTime() + 7 * TIME.MS_PER_HOUR).toISOString().split('T')[0];
@@ -92,10 +94,31 @@ async function seedDemoClass(definition, actor) {
     update: {},
     create: { name: definition.subject, description: 'Dữ liệu mẫu Sprint 2' },
   });
+  // Góp ý GV: phòng phải thuộc loại phòng dạy được bộ môn, HLV phải có chuyên môn bộ môn.
+  const roomType = await prisma.roomType.upsert({
+    where: { name: MOCK_ROOM_TYPE },
+    update: {},
+    create: { name: MOCK_ROOM_TYPE },
+  });
+  await prisma.roomTypeSubject.upsert({
+    where: { roomTypeId_subjectId: { roomTypeId: roomType.id, subjectId: subject.id } },
+    update: {},
+    create: { roomTypeId: roomType.id, subjectId: subject.id },
+  });
   const room = await prisma.room.upsert({
     where: { name: definition.room },
+    update: { roomTypeId: roomType.id },
+    create: {
+      name: definition.room,
+      capacity: DEMO_CAPACITY,
+      description: 'Dữ liệu mẫu Sprint 2',
+      roomTypeId: roomType.id,
+    },
+  });
+  await prisma.coachSubject.upsert({
+    where: { coachId_subjectId: { coachId: teacher.id, subjectId: subject.id } },
     update: {},
-    create: { name: definition.room, capacity: DEMO_CAPACITY, description: 'Dữ liệu mẫu Sprint 2' },
+    create: { coachId: teacher.id, subjectId: subject.id },
   });
   if (!subject.isActive || !room.isActive) return;
   try {

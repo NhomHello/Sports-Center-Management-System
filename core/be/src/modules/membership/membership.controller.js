@@ -16,6 +16,15 @@ export const getCurrentByMemberId = async (req, res) => {
   sendSuccess(res, { data });
 };
 
+/** GET /memberships/:id — chi tiết kỳ gói kèm lịch sử và ngân sách bảo lưu. */
+export const getPeriod = async (req, res) =>
+  sendSuccess(res, {
+    data: await membershipService.getPeriod(req.validated.params.id, {
+      user: req.user,
+      permissions: req.permissions,
+    }),
+  });
+
 /** POST /memberships/me/orders */
 export const createOwnOrder = async (req, res) =>
   sendCreated(

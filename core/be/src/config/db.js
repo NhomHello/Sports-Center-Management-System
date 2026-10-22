@@ -29,6 +29,11 @@ const {
   ReconciliationStatus,
   ContactChannel,
   RefundStatus,
+  InvoiceKind,
+  SettlementMode,
+  PurchaseChangeKind,
+  PurchaseChangeStatus,
+  CreditReason,
   Prisma,
 } = prismaPkg;
 
@@ -83,5 +88,10 @@ export const Enums = Object.freeze({
   ReconciliationStatus,
   ContactChannel,
   RefundStatus,
+  InvoiceKind,
+  SettlementMode,
+  PurchaseChangeKind,
+  PurchaseChangeStatus,
+  CreditReason,
   TransactionIsolationLevel: Prisma.TransactionIsolationLevel,
 });

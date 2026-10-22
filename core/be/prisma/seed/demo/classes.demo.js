@@ -5,6 +5,7 @@ import { TIME } from '../../../src/constants/index.js';
 import * as classService from '../../../src/modules/class/class.service.js';
 import { enroll } from '../../../src/modules/class/class-enrollment.service.js';
 import { DEMO_CLASS_WEEKS, DEMO_CLASSES } from './class-schedule.demo.js';
+import { buyCourseAtCounter } from './payments.demo.js';
 
 const VN_OFFSET_MS = 7 * TIME.MS_PER_HOUR;
 const vnDate = (ms) => new Date(ms + VN_OFFSET_MS).toISOString().slice(0, 10);
@@ -23,6 +24,7 @@ const classPayload = (definition, { subjects, rooms, users }) => {
     roomId: rooms[definition.room].id,
     coachId: users[definition.coach].id,
     capacity: definition.capacity,
+    price: definition.price,
     startsOn: vnDate(now + TIME.MS_PER_DAY),
     endsOn: vnDate(now + weeks),
     weeklySchedule: definition.slots.map(([dayOfWeek, startTime, endTime]) => ({
@@ -50,13 +52,15 @@ export const seedDemoClasses = async (catalog) => {
 };
 
 /**
- * Đăng ký lớp hộ hội viên qua đúng service đăng ký; lỗi nghiệp vụ (trùng giờ, hết chỗ...) chỉ
- * ghi log để seed vẫn chạy tiếp, giống thực tế có người đăng ký không thành.
+ * Đăng ký lớp hộ hội viên qua đúng service: lớp miễn phí đăng ký trực tiếp, lớp có học phí bán
+ * khóa tại quầy và thu tiền mặt. Lỗi nghiệp vụ (trùng giờ, hết chỗ...) chỉ ghi log để seed chạy
+ * tiếp, giống thực tế có người đăng ký không thành.
  */
 export const enrollMembers = async (gymClass, members, staff) => {
   for (const member of members) {
     try {
-      await enroll(gymClass.id, member.id, staff);
+      if (gymClass.price > 0) await buyCourseAtCounter(member, gymClass, staff);
+      else await enroll(gymClass.id, member.id, staff);
     } catch (err) {
       if (!(err instanceof ApiError)) throw err;
       logger.debug({ class: gymClass.name, member: member.email, reason: err.message }, 'Bỏ qua');

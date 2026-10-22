@@ -3,7 +3,6 @@ import { Enums, prisma } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
 import { extraEnrollmentReason, heldSeats } from './class-member-eligibility.service.js';
-import { membershipWarning } from './membership-warning.js';
 import { overlaps } from './class-schedule.service.js';
 
 /** BR-2.5: mốc >= N giờ được phép; ngoại lệ phải trước buổi xung đột. */
@@ -37,10 +36,15 @@ const isRegistrationOpen = (item, now) =>
   now >= item.registrationStartAt &&
   now < item.registrationEndAt;
 
-function enrollmentReason({ item, enrollment, member, membership, conflict, sessions }, now) {
-  if (enrollment?.status === Enums.EnrollmentStatus.BOOKED) return 'Bạn đã đăng ký lớp này';
+/** GY-20: học lớp không cần gói tự tập; lớp có học phí phải thanh toán khóa học mới có chỗ. */
+const ENROLLED_REASON = Object.freeze({
+  [Enums.EnrollmentStatus.BOOKED]: 'Bạn đã đăng ký lớp này',
+  [Enums.EnrollmentStatus.PENDING_PAYMENT]: 'Đang giữ chỗ, chờ thanh toán khóa học',
+});
+
+function enrollmentReason({ item, enrollment, member, conflict, sessions }, now) {
+  if (ENROLLED_REASON[enrollment?.status]) return ENROLLED_REASON[enrollment.status];
   if (member?.status !== Enums.UserStatus.ACTIVE) return 'Tài khoản hội viên đã bị khoá';
-  if (!membership) return 'Cần gói tập còn hiệu lực để đăng ký lớp';
   if (!isRegistrationOpen(item, now)) return 'Lớp ngoài thời gian mở đăng ký';
   if (!sessions.length) return 'Lớp không còn buổi chưa diễn ra';
   // Kiểm tra trùng lịch trước sức chứa: lớp đủ chỗ mà trùng giờ thì cũng không được vào chờ.
@@ -49,24 +53,18 @@ function enrollmentReason({ item, enrollment, member, membership, conflict, sess
   return null;
 }
 
-/** Đánh giá dùng chung cho DTO và phép ghi trong transaction. */
-export const getClassActions = async (db, item, memberId, now = new Date()) => {
-  const sessions = item.sessions.filter(
-    (s) => s.status === Enums.SessionStatus.SCHEDULED && s.startAt > now,
-  );
-  const [enrollment, member, membership, others] = await Promise.all([
+/** Đăng ký hiện có, hồ sơ hội viên và các lớp khác đang giữ chỗ của hội viên (để xét trùng lịch). */
+const loadMemberState = (db, item, memberId, now) =>
+  Promise.all([
     db.classEnrollment.findUnique({ where: { classId_memberId: { classId: item.id, memberId } } }),
     db.user.findUnique({ where: { id: memberId } }),
-    db.membership.findFirst({
-      where: {
-        userId: memberId,
-        status: Enums.MembershipStatus.ACTIVE,
-        startDate: { lte: now },
-        endDate: { gt: now },
-      },
-    }),
     db.classEnrollment.findMany({
-      where: { memberId, classId: { not: item.id }, status: Enums.EnrollmentStatus.BOOKED },
+      where: {
+        memberId,
+        // Đổi lớp: lớp đang rời đi không tính là trùng lịch với lớp mới.
+        classId: { notIn: [item.id, ...(item.ignoreClassIds ?? [])] },
+        status: { in: [Enums.EnrollmentStatus.BOOKED, Enums.EnrollmentStatus.PENDING_PAYMENT] },
+      },
       include: {
         gymClass: {
           include: {
@@ -76,6 +74,28 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
       },
     }),
   ]);
+
+/** Khóa đã thanh toán không hủy nhanh: phải qua "Hủy khóa học" để tính tiền hoàn (GY-32). */
+const courseActions = (item, enrollment, policy) => {
+  const paidCourse = Boolean(enrollment?.invoiceId) && item.price > 0;
+  return {
+    isPaidCourse: item.price > 0,
+    needsPayment: item.price > 0 && !enrollment?.invoiceId,
+    ...policy,
+    ...(paidCourse &&
+      policy.canCancel && {
+        canCancel: false,
+        cancelReason: 'Khóa học đã thanh toán, hãy dùng Hủy khóa học',
+      }),
+  };
+};
+
+/** Đánh giá dùng chung cho DTO và phép ghi trong transaction. */
+export const getClassActions = async (db, item, memberId, now = new Date()) => {
+  const sessions = item.sessions.filter(
+    (s) => s.status === Enums.SessionStatus.SCHEDULED && s.startAt > now,
+  );
+  const [enrollment, member, others] = await loadMemberState(db, item, memberId, now);
   const firstConflict = sessions.find((s) =>
     others.some((e) => e.gymClass.sessions.some((other) => overlaps(s, other))),
   );
@@ -93,20 +113,19 @@ export const getClassActions = async (db, item, memberId, now = new Date()) => {
         item: { ...item, _count: { enrollments: item._count.enrollments + held } },
         enrollment,
         member,
-        membership,
         conflict: firstConflict,
         sessions,
       },
       now,
     );
+  const policy = cancellationPolicy({ enrollment, sessions, hours, exceptionUntil }, now);
   return {
     bookingBlockedUntil: member?.bookingBlockedUntil ?? null,
-    ...membershipWarning(membership, sessions),
     enrollment,
     canEnroll: !enrollReason,
     canJoinWaitlist: enrollReason === CLASS_FULL_REASON,
     enrollReason,
-    ...cancellationPolicy({ enrollment, sessions, hours, exceptionUntil }, now),
+    ...courseActions(item, enrollment, policy),
   };
 };
 

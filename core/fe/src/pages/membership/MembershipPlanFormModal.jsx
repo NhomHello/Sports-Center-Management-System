@@ -27,13 +27,18 @@ const MembershipIdentityFields = ({ plan }) => (
   </>
 );
 
-const getInitialValues = (plan = {}) => ({
-  ...plan,
-  frameIds: (plan.frames ?? []).map((frame) => frame.id),
-  roomTypeIds: (plan.areas ?? []).map((area) => area.id),
-  benefitsText: (plan.benefits ?? []).join('\n'),
-  isActive: plan.isActive ?? true,
-});
+const ids = (items) => (items ?? []).map((item) => item.id);
+
+const planFormValues = (plan) =>
+  plan
+    ? {
+        ...plan,
+        benefitsText: (plan.benefits ?? []).join('\n'),
+        frameIds: ids(plan.frames),
+        roomTypeIds: ids(plan.areas),
+        isActive: plan.isActive ?? true,
+      }
+    : { benefitsText: '', frameIds: [], roomTypeIds: [], isActive: true };
 
 /** Modal tạo hoặc sửa thông tin gói tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
 export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading }) {
@@ -43,7 +48,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
   useEffect(() => {
     if (!open) return;
     form.resetFields();
-    form.setFieldsValue(getInitialValues(plan));
+    form.setFieldsValue(planFormValues(plan));
   }, [form, open, plan]);
 
   const handleFinish = ({ benefitsText, ...values }) => {

@@ -146,3 +146,7 @@
     justify-content: flex-start;
   }
 }
+
+.scms-panel-action {
+  align-self: flex-start;
+}

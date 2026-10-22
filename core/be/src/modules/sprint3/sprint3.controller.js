@@ -1,3 +1,4 @@
+import { previewSessionReschedule } from '../class/class-change-preview.service.js';
 import { sendSuccess, sendCreated } from '../../common/utils/api-response.js';
 import * as sessions from '../class/class-session.service.js';
 import * as waitlist from '../class/class-waitlist.service.js';
@@ -53,7 +54,12 @@ export const createMaintenance = async (req, res) =>
   sendCreated(res, await maintenance.create(req.validated.params.id, req.validated.body, req.user));
 /** Check-in tại quầy. */
 export const checkIn = async (req, res) =>
-  sendCreated(res, await attendance.checkIn(req.validated.body.memberId, req.user));
+  sendCreated(
+    res,
+    await attendance.checkIn(req.validated.body.memberId, req.user, {
+      roomTypeId: req.validated.body.roomTypeId,
+    }),
+  );
 /** Roster từng buổi. */
 export const roster = async (req, res) =>
   sendSuccess(res, { data: await attendance.roster(req.validated.params.id, context(req)) });
@@ -79,4 +85,10 @@ export const unblockMember = async (req, res) =>
   sendSuccess(res, {
     data: await unblock(req.validated.params.id, req.validated.body.reason, req.user),
     message: 'Đã gỡ chặn đăng ký lớp',
+  });
+
+/** Xem trước đổi giờ một buổi: kiểm tra khung giờ/phòng/HLV và học viên bị trùng. */
+export const reschedulePreview = async (req, res) =>
+  sendSuccess(res, {
+    data: await previewSessionReschedule(req.validated.params.id, req.validated.body),
   });

@@ -35,7 +35,10 @@ export function CoachChangeModal({ item, onClose }) {
         <Form.Item name="coachId" label="HLV thay thế" rules={[{ required: true }]}>
           <Select
             loading={coaches.isPending}
-            options={(coaches.data?.data || []).map((c) => ({ value: c.id, label: c.fullName }))}
+            options={(coaches.data?.data || [])
+              // Góp ý GV: chỉ HLV có chuyên môn bộ môn của lớp, trừ HLV đang phụ trách.
+              .filter((c) => c.subjectIds?.includes(item.subjectId) && c.id !== item.coachId)
+              .map((c) => ({ value: c.id, label: c.fullName }))}
           />
         </Form.Item>
         <Form.Item name="from" label="Từ ngày (để trống: tất cả buổi tương lai)">

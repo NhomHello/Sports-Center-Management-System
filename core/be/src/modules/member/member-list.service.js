@@ -4,7 +4,6 @@ import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { TIME } from '../../constants/index.js';
 import { getValue } from '../setting/setting.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
-import { isFrozen } from '../membership/membership-freeze.service.js';
 
 async function membershipFilter(filter) {
   const now = new Date();
@@ -17,11 +16,7 @@ async function membershipFilter(filter) {
     ACTIVE: { memberships: { some: active } },
     NO_PLAN: { memberships: { none: {} } },
     UNVERIFIED: { email: { not: null }, emailVerifiedAt: null },
-    FROZEN: {
-      memberships: {
-        some: { freezes: { some: { endedAt: null, startAt: { lte: now }, endAt: { gt: now } } } },
-      },
-    },
+    FROZEN: { memberships: { some: { status: Enums.MembershipStatus.FROZEN } } },
   };
   if (filter === 'EXPIRING') {
     const days = await getValue(SETTING_KEYS.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
@@ -50,10 +45,12 @@ export const list = async (query) => {
       where,
       include: {
         ...USER_WITH_ROLE,
+        // Kỳ có hạn muộn nhất (kể cả kỳ mua nối tiếp) cho biết hội viên còn gói tới ngày nào.
         memberships: {
+          where: { status: { not: Enums.MembershipStatus.CANCELLED } },
           take: 1,
           orderBy: { endDate: 'desc' },
-          include: { plan: true, freezes: true },
+          include: { plan: true },
         },
       },
       orderBy: { id: 'desc' },
@@ -61,13 +58,12 @@ export const list = async (query) => {
     }),
     prisma.user.count({ where }),
   ]);
-  const now = new Date();
   const items = users.map(({ memberships, ...user }) => {
     const current = memberships[0];
     return {
       ...toPublicUser(user),
       currentMembership: current
-        ? { ...current, isFrozen: current.freezes.some((f) => isFrozen(f, now)) }
+        ? { ...current, isFrozen: current.status === Enums.MembershipStatus.FROZEN }
         : null,
     };
   });

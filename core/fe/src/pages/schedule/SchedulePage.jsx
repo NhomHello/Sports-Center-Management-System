@@ -9,6 +9,8 @@ import { ClassFilters } from './ClassFilters';
 import { ScheduleCalendar } from './ScheduleCalendar';
 import { StaffBookingPanel } from './StaffBookingPanel';
 import { ResourceCatalogPanel } from './ResourceCatalogPanel';
+import { RoomTypePanel } from './RoomTypePanel';
+import { OperatingFramePanel } from './OperatingFramePanel';
 import './schedule.css';
 
 function catalogTabs(can) {
@@ -34,13 +36,18 @@ function catalogTabs(can) {
       },
     },
   ];
-  return resources
+  const tabs = resources
     .filter((r) => can(r.permissions.read))
     .map((r) => ({
       key: r.resource,
       label: r.label,
       children: <ResourceCatalogPanel resource={r.resource} permissions={r.permissions} />,
     }));
+  if (can(P.ROOM_READ))
+    tabs.push({ key: 'room-types', label: 'Loại phòng', children: <RoomTypePanel /> });
+  if (can(P.SETTING_READ, P.CLASS_CREATE))
+    tabs.push({ key: 'frames', label: 'Khung giờ', children: <OperatingFramePanel /> });
+  return tabs;
 }
 
 function buildTabs(can, canAll, onViewSchedule) {

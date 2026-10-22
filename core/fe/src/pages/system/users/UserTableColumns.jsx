@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@scms/shared';
 import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Button, Space } from 'antd';
+import { Button, Space, Tag } from 'antd';
 import { StatusTag } from '@/components/common/StatusTag';
 import { USER_STATUS, USER_STATUS_META } from '@/constants';
 import { formatDateTime } from '@/utils/format';
@@ -17,6 +17,7 @@ export const getUserColumns = ({
   roleOptions,
   onChangeRole,
   onToggleStatus,
+  onEditSubjects,
 }) => [
   { title: 'Họ tên', dataIndex: 'fullName', key: 'fullName', width: 220 },
   { title: 'Email', dataIndex: 'email', key: 'email' },
@@ -30,6 +31,21 @@ export const getUserColumns = ({
       ) : (
         user.role.name
       ),
+  },
+  {
+    title: 'Chuyên môn',
+    key: 'subjects',
+    render: (_v, user) =>
+      user.canTeach ? (
+        <Space wrap size={4}>
+          {user.subjects.length ? user.subjects.map((s) => <Tag key={s.id}>{s.name}</Tag>) : '—'}
+          {can(PERMISSIONS.USER_UPDATE) && (
+            <Button size="small" type="link" onClick={() => onEditSubjects(user)}>
+              Sửa
+            </Button>
+          )}
+        </Space>
+      ) : null,
   },
   {
     title: 'Trạng thái',

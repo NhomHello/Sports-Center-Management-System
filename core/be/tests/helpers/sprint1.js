@@ -54,6 +54,10 @@ export const cleanupSprintFixture = async (fixture) => {
   const whereUser = { userId: { in: fixture.userIds } };
   // Phiếu đối soát/hoàn tiền tham chiếu hoá đơn của fixture (webhook mở phiếu khi tiền lệch).
   const byInvoice = { invoice: whereUser };
+  // Sổ số dư và lịch sử hủy/đổi (góp ý GV) tham chiếu hoá đơn, hoàn tiền và kỳ gói.
+  await prisma.creditTransaction.deleteMany({ where: whereUser });
+  await prisma.purchaseChange.deleteMany({ where: whereUser });
+  await prisma.membershipFreeze.deleteMany({ where: { membership: whereUser } });
   await prisma.refund.deleteMany({ where: { OR: [byInvoice, { case: whereUser }] } });
   await prisma.reconciliationCase.deleteMany({ where: { OR: [whereUser, byInvoice] } });
   await prisma.notification.deleteMany({ where: whereUser });

@@ -12,35 +12,70 @@ export const DEMO_SUBJECTS = [
   { name: 'Zumba & Dance', description: 'Nhảy theo nhạc, đốt mỡ và vui vẻ.' },
 ];
 
-export const DEMO_ROOMS = [
-  { name: 'Studio Yoga', capacity: 20, description: 'Tầng 2, sàn gỗ, có thảm và gạch tập.' },
-  { name: 'Phòng Gym', capacity: 25, description: 'Tầng 1, khu máy và tạ tự do.' },
-  { name: 'Sàn Boxing', capacity: 12, description: 'Tầng 3, có bao cát và sàn đài.' },
-  { name: 'Phòng Pilates', capacity: 12, description: 'Tầng 2, có máy reformer.' },
-  { name: 'Phòng Dance', capacity: 30, description: 'Tầng 3, gương lớn và hệ thống âm thanh.' },
+/** Loại phòng = chức năng phòng: bộ môn dạy được trong phòng và có phải khu tự tập không. */
+export const DEMO_ROOM_TYPES = [
+  {
+    name: 'Studio',
+    description: 'Sàn gỗ, thảm tập: lớp nhẹ nhàng, giữ thăng bằng.',
+    subjects: ['Yoga', 'Pilates'],
+  },
+  {
+    name: 'Phòng máy',
+    description: 'Máy tập, tạ tự do; dùng cho lớp sức mạnh và hội viên tự tập.',
+    subjects: ['Gym & Fitness'],
+    isSelfTrainingArea: true,
+  },
+  { name: 'Sàn võ', description: 'Bao cát, sàn đài, găng.', subjects: ['Boxing'] },
+  { name: 'Phòng nhảy', description: 'Gương lớn, âm thanh.', subjects: ['Zumba & Dance'] },
 ];
 
-// Gói chỉ khác nhau về thời hạn và đơn giá mỗi ngày; quyền lợi như nhau (xem plans.mock.js).
-const BENEFITS = [
-  'Sử dụng toàn bộ thiết bị và phòng tập',
-  'Đăng ký lớp học',
-  'Theo dõi lịch sử trên hệ thống',
+export const DEMO_ROOMS = [
+  { name: 'Studio Yoga', capacity: 20, type: 'Studio', description: 'Tầng 2, sàn gỗ.' },
+  { name: 'Phòng Pilates', capacity: 12, type: 'Studio', description: 'Tầng 2, có máy reformer.' },
+  { name: 'Phòng Gym', capacity: 25, type: 'Phòng máy', description: 'Tầng 1, máy và tạ tự do.' },
+  { name: 'Sàn Boxing', capacity: 12, type: 'Sàn võ', description: 'Tầng 3, bao cát, sàn đài.' },
+  { name: 'Phòng Dance', capacity: 30, type: 'Phòng nhảy', description: 'Tầng 3, gương lớn.' },
 ];
-const plan = (fields) => ({ benefits: BENEFITS, ...fields });
+
+/** Chuyên môn HLV (bộ môn được phân công dạy). */
+export const DEMO_COACH_SUBJECTS = {
+  'coach.yoga': ['Yoga', 'Pilates'],
+  'coach.gym': ['Gym & Fitness'],
+  'coach.boxing': ['Boxing'],
+  'coach.pilates': ['Pilates', 'Yoga'],
+  'coach.dance': ['Zumba & Dance'],
+};
+
+// Gói tự tập (góp ý GV): bán theo thời hạn + khung giờ + khu vực; lớp học bán riêng theo khóa.
+// frames/areas theo tên khung giờ hoạt động / loại phòng khu tự tập; bỏ trống = không giới hạn.
+const BENEFITS = [
+  'Tự tập tại khu Phòng máy, check-in tại quầy',
+  'Không cần đặt chỗ trước',
+  'Bảo lưu tổng tối đa 60 ngày mỗi kỳ',
+];
+const plan = (fields) => ({ benefits: BENEFITS, areas: ['Phòng máy'], frames: [], ...fields });
 export const DEMO_PLANS = [
   plan({
     code: 'TRIAL_7',
     name: 'Trải nghiệm 7 ngày',
     durationDays: 7,
     price: 120000,
-    description: 'Gói dùng thử cho khách mới.',
+    description: 'Gói dùng thử cho khách mới, vào mọi khung giờ.',
+  }),
+  plan({
+    code: 'EARLY_30',
+    name: 'Tự tập sáng sớm 30 ngày',
+    durationDays: 30,
+    price: 290000,
+    frames: ['Sáng sớm'],
+    description: 'Chỉ vào khung Sáng sớm 05:00–09:00, giá mềm cho người tập trước giờ làm.',
   }),
   plan({
     code: 'STARTER_30',
     name: 'Khởi động 30 ngày',
     durationDays: 30,
     price: 360000,
-    description: 'Gói linh hoạt cho hội viên mới.',
+    description: 'Gói linh hoạt cho hội viên mới, mọi khung giờ.',
   }),
   plan({
     code: 'ACTIVE_90',

@@ -3,6 +3,8 @@
  * Chay: npm run db:seed   (tu dong chay trong `npm run dev` o thu muc goc)
  */
 import { getSettingValidationError, listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { hashPassword } from '../../src/common/utils/password.js';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
@@ -185,7 +187,7 @@ export async function seedBase({ mock = env.SEED_MOCK_DATA } = {}) {
 }
 
 // Chỉ tự chạy khi gọi trực tiếp (npm run db:seed), không chạy khi được import.
-if (process.argv[1]?.endsWith('seed/index.js') && !process.argv[1].includes('/demo/')) {
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   seedBase()
     .catch((err) => {
       logger.error({ err }, 'Seed that bai');

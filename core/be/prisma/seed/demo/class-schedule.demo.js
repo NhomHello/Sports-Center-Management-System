@@ -2,11 +2,15 @@
  * Lịch lớp demo theo tuần (dayOfWeek: 0 = Chủ nhật … 6 = Thứ Bảy); phòng, bộ môn, HLV tham chiếu
  * theo tên trong data.demo.js.
  */
-/** Lịch lớp hằng tuần; lớp chạy từ ngày mai đến hết DEMO_CLASS_WEEKS tuần. */
+/**
+ * Lịch lớp hằng tuần; lớp chạy từ ngày mai đến hết DEMO_CLASS_WEEKS tuần.
+ * price = học phí cả khóa (góp ý GV: bán lớp theo khóa); 0 = lớp miễn phí đăng ký trực tiếp.
+ */
 export const DEMO_CLASS_WEEKS = 6;
 export const DEMO_CLASSES = [
   {
     key: 'yogaMorning',
+    price: 1080000,
     name: 'Yoga buổi sáng',
     subject: 'Yoga',
     room: 'Studio Yoga',
@@ -20,6 +24,7 @@ export const DEMO_CLASSES = [
   },
   {
     key: 'yogaEvening',
+    price: 0,
     name: 'Yoga thư giãn buổi tối',
     subject: 'Yoga',
     room: 'Studio Yoga',
@@ -32,6 +37,7 @@ export const DEMO_CLASSES = [
   },
   {
     key: 'strength',
+    price: 900000,
     name: 'Sức mạnh cơ bản',
     subject: 'Gym & Fitness',
     room: 'Phòng Gym',
@@ -45,6 +51,7 @@ export const DEMO_CLASSES = [
   },
   {
     key: 'hiit',
+    price: 720000,
     name: 'HIIT đốt mỡ',
     subject: 'Gym & Fitness',
     room: 'Phòng Gym',
@@ -58,6 +65,7 @@ export const DEMO_CLASSES = [
   },
   {
     key: 'boxingBasic',
+    price: 960000,
     name: 'Boxing nhập môn',
     subject: 'Boxing',
     room: 'Sàn Boxing',
@@ -71,6 +79,7 @@ export const DEMO_CLASSES = [
   // Lớp nhóm nhỏ 2 người: luôn đầy để demo danh sách chờ (BR-2.16).
   {
     key: 'boxingSmall',
+    price: 0,
     name: 'Boxing nhóm nhỏ (2 người)',
     subject: 'Boxing',
     room: 'Sàn Boxing',
@@ -80,6 +89,7 @@ export const DEMO_CLASSES = [
   },
   {
     key: 'pilates',
+    price: 1200000,
     name: 'Pilates cải thiện tư thế',
     subject: 'Pilates',
     room: 'Phòng Pilates',
@@ -88,11 +98,12 @@ export const DEMO_CLASSES = [
     slots: [
       [2, '08:00', '09:00'],
       [4, '08:00', '09:00'],
-      [6, '08:30', '09:30'],
+      [6, '08:00', '09:00'],
     ],
   },
   {
     key: 'zumba',
+    price: 0,
     name: 'Zumba vui khỏe',
     subject: 'Zumba & Dance',
     room: 'Phòng Dance',

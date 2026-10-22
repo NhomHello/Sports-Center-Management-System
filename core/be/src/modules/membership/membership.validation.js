@@ -13,3 +13,7 @@ export const createOwnOrderSchema = {
     })
     .strict(),
 };
+
+export const membershipIdSchema = {
+  params: z.object({ id: z.coerce.number().int().positive() }),
+};

@@ -1,3 +1,4 @@
+import { setCoachSubjects } from './coach-subject.service.js';
 import { sendCreated, sendSuccess } from '../../common/utils/api-response.js';
 import * as userService from './user.service.js';
 
@@ -48,3 +49,10 @@ export const verifyEmail = async (req, res) => {
   const user = await userService.verifyEmailManually(req.validated.params.id, req.user);
   sendSuccess(res, { data: user, message: 'Đã xác minh email cho tài khoản' });
 };
+
+/** PUT /users/:id/subjects: khai báo chuyên môn (bộ môn dạy được) của HLV. */
+export const setSubjects = async (req, res) =>
+  sendSuccess(res, {
+    data: await setCoachSubjects(req.validated.params.id, req.validated.body.subjectIds, req.user),
+    message: 'Đã cập nhật chuyên môn huấn luyện viên',
+  });

@@ -5,12 +5,34 @@ import { SESSION_STATUS } from '@/constants/schedule';
 import { vietnamInput } from '@/utils/schedule';
 import { TeachingEventActions } from './TeachingEventActions';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
+import { ExcuseButton } from './ExcuseButton';
+
+function EventTags({ event }) {
+  const changed = event.status === SESSION_STATUS.CANCELLED || Boolean(event.rescheduledAt);
+  return (
+    <div className="scms-calendar-event__tags">
+      <ScheduleStatusTag status={event.status} endAt={event.endAt} />
+      {event.enrollmentStatus && <ScheduleStatusTag status={event.enrollmentStatus} />}
+      {changed && <Tag color="orange">Lịch đã thay đổi / hủy</Tag>}
+    </div>
+  );
+}
+
+function EventActions({ event, kind, onDetail, renderActions }) {
+  return (
+    <div className="scms-calendar-event__actions">
+      <Button onClick={() => onDetail(event)}>Chi tiết lớp</Button>
+      {kind !== 'teaching' && renderActions?.(event.gymClass)}
+      {kind === 'own' && event.enrollmentStatus === 'BOOKED' && (
+        <ExcuseButton key={`${event.id}-${event.attendanceStatus ?? ''}`} session={event} />
+      )}
+    </div>
+  );
+}
 
 /** Thời gian gọn trong cột ngày; mọi thao tác đăng ký vẫn áp dụng cho toàn lớp. */
 export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
   const hasEnded = event.status === SESSION_STATUS.SCHEDULED && new Date(event.endAt) < new Date();
-  // Chỉ gắn nhãn cho đúng buổi bị đổi giờ hoặc hủy, không lan sang mọi buổi của lớp.
-  const hasChanges = event.status === SESSION_STATUS.CANCELLED || Boolean(event.rescheduledAt);
   return (
     <Card
       size="small"
@@ -24,11 +46,7 @@ export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
         </span>
       </div>
       <strong className="scms-calendar-event__title">{event.className}</strong>
-      <div className="scms-calendar-event__tags">
-        <ScheduleStatusTag status={event.status} endAt={event.endAt} />
-        {event.enrollmentStatus && <ScheduleStatusTag status={event.enrollmentStatus} />}
-        {hasChanges && <Tag color="orange">Lịch đã thay đổi / hủy</Tag>}
-      </div>
+      <EventTags event={event} />
       <div className="scms-calendar-event__meta">
         <EnvironmentOutlined />
         <span title={event.room}>{event.room}</span>
@@ -47,10 +65,7 @@ export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
           <TeachingEventActions event={event} />
         </>
       )}
-      <div className="scms-calendar-event__actions">
-        <Button onClick={() => onDetail(event)}>Chi tiết lớp</Button>
-        {kind !== 'teaching' && renderActions?.(event.gymClass)}
-      </div>
+      <EventActions event={event} kind={kind} onDetail={onDetail} renderActions={renderActions} />
     </Card>
   );
 }

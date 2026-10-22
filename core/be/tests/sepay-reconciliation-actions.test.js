@@ -174,9 +174,10 @@ describe('Hết hạn chuyển bù, hoàn hoá đơn, phân quyền', () => {
     expect(res.status).toBe(201);
     const refunded = await prisma.invoice.findUniqueOrThrow({ where: { id: invoice.id } });
     expect(refunded.status).toBe(Enums.InvoiceStatus.REFUNDED);
-    const shrunk = await prisma.membership.findUniqueOrThrow({ where: { id: active.id } });
-    expect(active.endDate.getTime() - shrunk.endDate.getTime()).toBe(30 * DAY);
-    expect(shrunk.status).toBe(Enums.MembershipStatus.EXPIRED);
+    // GY-20: hoàn cả hóa đơn thì kỳ gói của hóa đơn đó bị hủy (không còn ngày nào để dùng).
+    const revoked = await prisma.membership.findUniqueOrThrow({ where: { id: active.id } });
+    expect(revoked.status).toBe(Enums.MembershipStatus.CANCELLED);
+    expect(revoked.activeUserId).toBeNull();
     const twice = await asManager(f, 'post', `/invoices/${invoice.id}/refund`, { reason: 'Lần 2' });
     expect(twice.status).toBe(409);
   });

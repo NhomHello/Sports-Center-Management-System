@@ -1,3 +1,4 @@
+import { compensateSessionCancelled } from '../cancellation/center-cancel.service.js';
 import { PERMISSIONS as P } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
@@ -10,6 +11,8 @@ import { queueClassEvent } from './class-event.service.js';
 import { refreshCancellationExceptions } from './class-exception.service.js';
 import { createForUsers } from '../notification/notification.service.js';
 import { assertSessionResources } from './session-resource.service.js';
+import { assertSessionWithinFrames } from '../operating-frame/operating-frame.service.js';
+import { assertCoachTeachesSubject, COACH_WITH_SUBJECTS } from './class-schedule.service.js';
 
 /** Buổi chưa diễn ra mới được thay đổi; buổi huỷ lặp không phát sinh thông báo. */
 export const loadFutureSession = async (db, id) => {
@@ -26,6 +29,7 @@ export const cancelSession = async (db, session, reason, actor) => {
     where: { id: session.id },
     data: { status: Enums.SessionStatus.CANCELLED },
   });
+  await compensateSessionCancelled(db, session, actor);
   await queueClassEvent(db, session.gymClass, Enums.NotificationKind.CLASS_CANCELLED, {
     sessionId: session.id,
     sessionStartAt: session.startAt.toISOString(),
@@ -58,6 +62,7 @@ export const update = (id, data, actor) =>
       roomId: session.roomId ?? session.gymClass.roomId,
       coachId: session.coachId ?? session.gymClass.coachId,
     };
+    await assertSessionWithinFrames(db, slot);
     await assertSessionResources(db, [slot], resources, { ids: [id] });
     const result = await db.classSession.update({
       where: { id },
@@ -113,9 +118,11 @@ export const changeCoach = (classId, data, actor) =>
         status: Enums.UserStatus.ACTIVE,
         role: { permissions: { some: { permission: { code: P.SCHEDULE_VIEW_TEACHING } } } },
       },
+      include: COACH_WITH_SUBJECTS,
     });
     if (!coach)
       throw ApiError.businessRule('HLV mới không hoạt động hoặc không có quyền giảng dạy');
+    assertCoachTeachesSubject(coach, item.subjectId);
     const from = data.from ? new Date(`${data.from}T00:00:00+07:00`) : new Date();
     const all = await db.classSession.findMany({
       where: { classId, status: Enums.SessionStatus.SCHEDULED, startAt: { gt: new Date() } },

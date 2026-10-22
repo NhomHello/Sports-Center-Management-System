@@ -82,6 +82,9 @@ nên dữ liệu sinh ra giống khi người dùng thao tác thật. Mã nguồ
 - `member1`–`member15` có sẵn các tình huống của `docs/kiem-thu/nghiem-thu/LoTrinh_Demo_Sprint2_Sprint3.md` (mục 1.2):
   giữ chỗ lớp đầy, danh sách chờ, chuyển thiếu/thừa/hai lần, báo đã chuyển, gói sắp hết hạn, bảo lưu, hết hạn,
   chưa xác minh email, bị chặn đăng ký, bị khoá.
+- `member16`–`member21`: tình huống góp ý giảng viên (Phần C của tài liệu demo): số dư sau hủy khóa, giữ chỗ khóa
+  chờ thanh toán, kỳ gói nối tiếp, gói "Tự tập sáng sớm" (check-in ngoài khung bị từ chối), đổi gói chờ thu chênh
+  lệch, báo nghỉ buổi. 5/8 lớp có học phí (bán theo khóa), 3 lớp miễn phí.
 - Lớp "Sức mạnh cơ bản" có một buổi đang diễn ra ngay lúc seed để HLV `coach.gym` thử điểm danh.
 - Hoá đơn online chờ thanh toán tự hết hạn sau `PAYMENT_ONLINE_TIMEOUT_MINUTES`; chạy lại `npm run db:demo` trước buổi demo.
 

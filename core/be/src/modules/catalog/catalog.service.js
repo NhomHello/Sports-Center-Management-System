@@ -7,6 +7,42 @@ import {
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS } from '../../constants/index.js';
 
+/** Phòng phải thuộc loại phòng đang hoạt động; đổi loại không được bỏ rơi bộ môn của lớp đang học. */
+/** Loại phòng kèm bộ môn để form lớp lọc phòng phù hợp bộ môn. */
+const ROOM_TYPE_SUMMARY = {
+  roomType: {
+    select: {
+      id: true,
+      name: true,
+      isSelfTrainingArea: true,
+      subjects: { select: { subjectId: true } },
+    },
+  },
+};
+
+async function ensureRoomType(db, roomId, data) {
+  if (data.roomTypeId === undefined) return;
+  const type = await db.roomType.findFirst({
+    where: { id: data.roomTypeId, isActive: true },
+    include: { subjects: true },
+  });
+  if (!type) throw ApiError.businessRule('Loại phòng không tồn tại hoặc đã ngừng hoạt động');
+  if (!roomId) return;
+  const orphan = await db.gymClass.findFirst({
+    where: {
+      roomId,
+      subjectId: { notIn: type.subjects.map((s) => s.subjectId) },
+      status: { not: Enums.ClassStatus.CANCELLED },
+      sessions: { some: { status: Enums.SessionStatus.SCHEDULED, endAt: { gt: new Date() } } },
+    },
+    select: { name: true },
+  });
+  if (orphan)
+    throw ApiError.businessRule(
+      `Lớp "${orphan.name}" đang học ở phòng này; loại phòng mới không dạy bộ môn đó`,
+    );
+}
+
 async function ensureResourceAvailable(db, resource, id, data) {
   const field = resource === 'subject' ? 'subjectId' : 'roomId';
   const related = await db.gymClass.findMany({
@@ -32,7 +68,12 @@ export const createCatalogService = (resource) => ({
       ...(query.search && { name: { contains: query.search } }),
     };
     const [data, total] = await prisma.$transaction([
-      prisma[resource].findMany({ where, ...toPrismaPage(query), orderBy: { id: 'desc' } }),
+      prisma[resource].findMany({
+        where,
+        ...toPrismaPage(query),
+        orderBy: { id: 'desc' },
+        ...(resource === 'room' && { include: ROOM_TYPE_SUMMARY }),
+      }),
       prisma[resource].count({ where }),
     ]);
     if (resource === 'room') {
@@ -53,6 +94,7 @@ export const createCatalogService = (resource) => ({
   },
   create(data, actor) {
     return withScheduleTransaction(async (db) => {
+      if (resource === 'room') await ensureRoomType(db, null, data);
       const item = await db[resource].create({ data });
       await writeScheduleAudit(db, actor, {
         action: AUDIT_ACTIONS.CREATE,
@@ -67,6 +109,7 @@ export const createCatalogService = (resource) => ({
     return withScheduleTransaction(async (db) => {
       if (!(await db[resource].findUnique({ where: { id } }))) throw ApiError.notFound();
       await ensureResourceAvailable(db, resource, id, data);
+      if (resource === 'room') await ensureRoomType(db, id, data);
       const item = await db[resource].update({ where: { id }, data });
       await writeScheduleAudit(db, actor, {
         action: AUDIT_ACTIONS.UPDATE,

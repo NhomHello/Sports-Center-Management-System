@@ -1,6 +1,8 @@
 import { CheckOutlined, SafetyCertificateOutlined, StarFilled } from '@ant-design/icons';
 import { Card, Col, Row, Tag, Typography } from 'antd';
 import { formatCurrency } from '@/utils/format';
+import { computeSavings, pricePerDay } from '@/utils/planPricing';
+import { PlanAccessTags } from './PlanAccessTags';
 import { PlanActions } from './PlanActions';
 import './membershipPlans.css';
 import { PlanAccessSummary } from './PlanAccessSummary';
@@ -24,7 +26,7 @@ export const PlanBenefits = ({ benefits }) => {
   );
 };
 
-export const PlanCard = ({ plan, featured, ...actions }) => (
+export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
   <Card
     variant="borderless"
     className={`scms-plan-card${featured ? ' scms-plan-card--featured' : ''}`}
@@ -42,15 +44,21 @@ export const PlanCard = ({ plan, featured, ...actions }) => (
       {plan.name}
     </Typography.Title>
     <Typography.Paragraph className="scms-plan-card__description">
-      {plan.description || 'Gói tự tập theo thời hạn, khung giờ và khu vực được cấp.'}
+      {plan.description || 'Gói tập dành cho hội viên của trung tâm.'}
     </Typography.Paragraph>
     <div className="scms-plan-card__pricing">
       <span className="scms-plan-card__price">{formatCurrency(plan.price)}</span>
       <span className="scms-plan-card__billing">/ {plan.durationDays} ngày</span>
     </div>
     <div className="scms-plan-card__note">
-      <span>Thanh toán một lần · một kỳ tự tập riêng</span>
+      <span>{formatCurrency(pricePerDay(plan))} / ngày · thanh toán một lần</span>
+      {savingsPercent > 0 && (
+        <Tag color="green" className="scms-plan-card__saving">
+          Tiết kiệm {savingsPercent}%
+        </Tag>
+      )}
     </div>
+    <PlanAccessTags plan={plan} />
     <div className="scms-plan-card__rule" />
     <Typography.Text className="scms-plan-card__benefits-title">Quyền sử dụng</Typography.Text>
     <PlanAccessSummary plan={plan} />
@@ -61,6 +69,7 @@ export const PlanCard = ({ plan, featured, ...actions }) => (
 
 export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
   const sortedPlans = [...plans].sort((left, right) => left.price - right.price);
+  const savings = computeSavings(sortedPlans);
   const featuredIndex = sortedPlans.length > 1 ? Math.floor(sortedPlans.length / 2) : -1;
   return (
     <section className="scms-pricing-surface" aria-label="Bảng giá gói tập">
@@ -70,6 +79,7 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
             <PlanCard
               plan={plan}
               featured={index === featuredIndex}
+              savingsPercent={savings.get(plan.id)}
               pendingInvoice={pendingInvoiceByPlanId?.get(plan.id)}
               {...actions}
             />
@@ -78,7 +88,8 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
       </Row>
       <div className="scms-pricing-assurance">
         <SafetyCertificateOutlined />
-        Kỳ tự tập có hiệu lực sau khi thanh toán thành công. Đăng ký khóa học là giao dịch riêng.
+        Gói tập dùng trong khung giờ và khu vực ghi trên gói, kích hoạt sau khi thanh toán thành
+        công. Lớp học bán riêng theo khóa ở mục Lịch tập.
       </div>
     </section>
   );

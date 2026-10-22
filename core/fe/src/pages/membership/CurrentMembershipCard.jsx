@@ -3,17 +3,20 @@ import { Card, Tag, Typography } from 'antd';
 import { formatDate } from '@/utils/format';
 import { PlanAccessSummary } from './PlanAccessSummary';
 import './membershipOverview.css';
+
 const STATUS_LABELS = {
   ACTIVE: 'Đang hoạt động',
   FROZEN: 'Đang bảo lưu',
   EXPIRED: 'Đã hết hạn',
   CANCELLED: 'Đã hủy',
 };
+
 const getPeriodAccess = (membership) => ({
   ...membership.plan,
   frames: membership.frames ?? membership.plan?.frames,
   areas: membership.areas ?? membership.plan?.areas,
 });
+
 function PeriodAccess({ membership, upcoming }) {
   const access = <PlanAccessSummary plan={getPeriodAccess(membership)} />;
   return upcoming ? (
@@ -25,6 +28,7 @@ function PeriodAccess({ membership, upcoming }) {
     access
   );
 }
+
 function MembershipPeriod({ membership, upcoming = false }) {
   const status = membership.isFrozen ? 'FROZEN' : membership.status;
   return (
@@ -52,7 +56,8 @@ function MembershipPeriod({ membership, upcoming = false }) {
     </section>
   );
 }
-/** Hiển thị riêng kỳ hiện tại và các kỳ đã mua nối tiếp. */
+
+/** Hiển thị riêng kỳ gói đang dùng và các kỳ mua nối tiếp. */
 export function CurrentMembershipCard({ membership, canPurchase }) {
   if (!canPurchase || !membership) return null;
   return (

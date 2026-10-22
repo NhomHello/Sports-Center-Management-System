@@ -1,5 +1,7 @@
-import { prisma } from '../../config/db.js';
+import { SETTING_KEYS as K } from '@scms/shared';
+import { Enums, prisma } from '../../config/db.js';
 import { CLASS_LIMITS, TIME } from '../../constants/index.js';
+import * as settings from '../setting/setting.service.js';
 import { enrichClassView } from '../class/class-booking-policy.service.js';
 import { CLASS_INCLUDE, toClassView } from '../class/class.mapper.js';
 import { managementScope } from '../class/class-read.service.js';
@@ -29,6 +31,7 @@ export const getWeek = async ({ weekStart, kind, context, roomId, coachId, subje
     include: CLASS_INCLUDE,
     orderBy: { id: 'asc' },
   });
+  const excuse = kind === 'own' ? await ownExcuseContext(memberId, start, end) : null;
   const result = [];
   for (const item of classes) {
     const dto = await enrichClassView(toClassView(item), memberId);
@@ -44,11 +47,40 @@ export const getWeek = async ({ weekStart, kind, context, roomId, coachId, subje
         coach: session.coachName ?? item.coach.fullName,
         gymClass: dto,
         enrollmentStatus: kind === 'own' ? dto.enrollment?.status : null,
+        ...(excuse && excuseFields(session, dto.enrollment, excuse)),
       })),
     );
   }
   return result.sort((a, b) => a.startAt - b.startAt);
 };
+
+/** Điểm danh của chính hội viên trong tuần + số giờ tối thiểu để báo nghỉ (GY-30). */
+async function ownExcuseContext(memberId, start, end) {
+  const [hours, rows] = await Promise.all([
+    settings.getValue(K.CLASS_CANCEL_MIN_HOURS_BEFORE),
+    prisma.attendance.findMany({
+      where: { memberId, session: { startAt: { gte: start, lt: end } } },
+      select: { sessionId: true, status: true },
+    }),
+  ]);
+  return {
+    hours,
+    status: new Map(rows.map((row) => [row.sessionId, row.status])),
+    now: new Date(),
+  };
+}
+
+/** Hạn báo nghỉ của đúng buổi (không dùng hạn hủy toàn lớp) và trạng thái điểm danh hiện có. */
+function excuseFields(session, enrollment, { hours, status, now }) {
+  const excuseDeadline = new Date(session.startAt.getTime() - hours * TIME.MS_PER_HOUR);
+  const attendanceStatus = status.get(session.id) ?? null;
+  const canExcuse =
+    enrollment?.status === Enums.EnrollmentStatus.BOOKED &&
+    session.status === Enums.SessionStatus.SCHEDULED &&
+    !attendanceStatus &&
+    now <= excuseDeadline;
+  return { excuseDeadline, attendanceStatus, canExcuse };
+}
 
 function matchesSession(session, filters, item) {
   if (session.startAt < filters.start || session.startAt >= filters.end) return false;

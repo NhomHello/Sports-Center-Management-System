@@ -1,3 +1,4 @@
+import { ApplyCreditButton } from './ApplyCreditButton';
 import { CheckCircleFilled, ClockCircleOutlined } from '@ant-design/icons';
 import { Alert, Descriptions, Image, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
@@ -91,7 +92,7 @@ export function OnlinePaymentPanel({ invoice }) {
         className="scms-online-paid"
         style={{ marginBottom: 16 }}
         icon={<CheckCircleFilled />}
-        title="Đã nhận thanh toán. Gói tập đã được kích hoạt."
+        title="Đã nhận thanh toán. Gói tập / khóa học đã có hiệu lực."
       />
     );
   }
@@ -112,14 +113,22 @@ export function OnlinePaymentPanel({ invoice }) {
       );
     // BE trả paymentInstruction rỗng khi chưa cấu hình tài khoản nhận tiền: báo rõ thay vì để trống.
     return (
-      <Alert
-        showIcon
-        type="warning"
-        style={{ marginBottom: 16 }}
-        title="Chưa thể hiển thị mã QR"
-        description="Trung tâm chưa cấu hình tài khoản nhận tiền online. Vui lòng liên hệ lễ tân để thanh toán tại quầy."
-      />
+      <>
+        <ApplyCreditButton invoice={invoice} />
+        <Alert
+          showIcon
+          type="warning"
+          style={{ marginBottom: 16 }}
+          message="Chưa thể hiển thị mã QR"
+          description="Trung tâm chưa cấu hình tài khoản nhận tiền online. Vui lòng liên hệ lễ tân để thanh toán tại quầy."
+        />
+      </>
     );
   }
-  return <PendingPanel instruction={invoice.paymentInstruction} currency={invoice.currency} />;
+  return (
+    <>
+      <ApplyCreditButton invoice={invoice} />
+      <PendingPanel instruction={invoice.paymentInstruction} currency={invoice.currency} />
+    </>
+  );
 }

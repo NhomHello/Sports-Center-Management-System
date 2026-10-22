@@ -1,21 +1,45 @@
-import { Alert, DatePicker, Form, Input, Modal } from 'antd';
+import { Alert, App, DatePicker, Form, Input, Modal } from 'antd';
+import { previewReschedule } from '@/services/schedule.service';
 import { DATE_FORMATS } from '@/constants';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import * as service from '@/services/sprint3.service';
 import { vietnamInput, vietnamTimestamp } from '@/utils/schedule';
 
+const rangeOf = (values) => ({
+  startAt: vietnamTimestamp(values.range[0]),
+  endAt: vietnamTimestamp(values.range[1]),
+});
+
+/** Xem trước (khung giờ, phòng, HLV, học viên bị trùng) rồi mới đổi giờ (góp ý GV). */
+async function confirmReschedule({ session, values, mutation, modal, message }) {
+  try {
+    const { data } = await previewReschedule(session.id, rangeOf(values));
+    modal.confirm({
+      title: 'Xác nhận đổi giờ buổi học',
+      content: `${data.enrolledCount} học viên sẽ nhận thông báo giờ mới.${
+        data.conflicts.length
+          ? ` ${data.conflicts.length} người bị trùng lịch: ${data.conflicts.map((c) => c.fullName).join(', ')} (được tự huỷ miễn phí).`
+          : ' Không ai bị trùng lịch.'
+      }`,
+      okText: 'Đổi giờ',
+      cancelText: 'Xem lại',
+      onOk: () => mutation.mutateAsync(values),
+    });
+  } catch (error) {
+    message.error(error.message);
+  }
+}
+
 /** Chỉ đổi một buổi; cảnh báo và xung đột được backend trả về, không tự hủy booking. */
 export function SessionActionModal({ session, mode, memberCount, onClose }) {
   const [form] = Form.useForm();
+  const { modal, message } = App.useApp();
   const cancel = mode === 'cancel';
   const mutation = useScheduleMutation(
     (values) =>
       cancel
         ? service.cancelSession(session.id, values)
-        : service.rescheduleSession(session.id, {
-            startAt: vietnamTimestamp(values.range[0]),
-            endAt: vietnamTimestamp(values.range[1]),
-          }),
+        : service.rescheduleSession(session.id, rangeOf(values)),
     (result) => {
       if (result.data?.conflicts?.length) return;
       onClose();
@@ -54,7 +78,11 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
       <Form
         form={form}
         layout="vertical"
-        onFinish={mutation.mutate}
+        onFinish={(values) =>
+          cancel
+            ? mutation.mutate(values)
+            : confirmReschedule({ session, values, mutation, modal, message })
+        }
         initialValues={{ range: [vietnamInput(session.startAt), vietnamInput(session.endAt)] }}
       >
         {cancel ? (

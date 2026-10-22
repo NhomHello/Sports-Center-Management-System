@@ -5,6 +5,7 @@ import {
   createCounterOrder,
   createOnlineOrder,
 } from '../../../src/modules/membership/membership-invoice.service.js';
+import { createCourseOrder } from '../../../src/modules/course-order/course-order.service.js';
 import { collectCash } from '../../../src/modules/payment/payment.service.js';
 import { processSepayWebhook } from '../../../src/modules/payment/sepay-webhook.service.js';
 
@@ -38,6 +39,20 @@ export const payOnline = async (member, plan) => {
 /** Lễ tân tạo hoá đơn tại quầy rồi thu tiền mặt. */
 export const payAtCounter = async (member, plan, staff) => {
   const invoice = await createCounterOrder({ memberId: member.id, planId: plan.id }, staff);
+  await collectCash(invoice.id, staff);
+  return invoice;
+};
+
+/** Hội viên tự đăng ký khóa học online: giữ chỗ chờ thanh toán (chưa chuyển tiền). */
+export const orderCourseOnline = (member, gymClass) =>
+  createCourseOrder({ classId: gymClass.id, memberId: member.id, channel: 'ONLINE' }, member);
+
+/** Lễ tân bán khóa học tại quầy và thu tiền mặt: đăng ký thành chính thức. */
+export const buyCourseAtCounter = async (member, gymClass, staff) => {
+  const invoice = await createCourseOrder(
+    { classId: gymClass.id, memberId: member.id, channel: 'COUNTER' },
+    staff,
+  );
   await collectCash(invoice.id, staff);
   return invoice;
 };

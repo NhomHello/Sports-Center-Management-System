@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { ERROR_CODES, SETTING_KEYS } from '@scms/shared';
 import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../../common/errors/api-error.js';
-import { prisma } from '../../config/db.js';
+import { Enums, prisma } from '../../config/db.js';
 import { env } from '../../config/env.js';
 import { EMAIL_VERIFICATION, TIME } from '../../constants/index.js';
 import * as settingService from '../setting/setting.service.js';
@@ -43,18 +43,33 @@ export const isInCooldown = async (userId, purpose) => {
 export const issueToken = async ({ userId, email, purpose, ttlSettingKey }) => {
   const ttlMinutes = await settingService.getValue(ttlSettingKey);
   const token = randomBytes(EMAIL_VERIFICATION.TOKEN_BYTES).toString('hex');
-  await prisma.$transaction([
-    prisma.emailVerificationToken.deleteMany({ where: { userId, purpose, usedAt: null } }),
-    prisma.emailVerificationToken.create({
-      data: {
-        userId,
-        email,
-        purpose,
-        tokenHash: hashToken(token),
-        expiresAt: new Date(Date.now() + ttlMinutes * TIME.MS_PER_MINUTE),
-      },
-    }),
-  ]);
+  // InnoDB có thể deadlock khi nhiều test/luồng ghi token đồng thời.
+  // Prisma P2034 là lỗi transaction có thể thử lại, không phải lỗi token.
+  const MAX_ATTEMPTS = 3;
+  const RETRY_DELAY_MS = 40;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      await prisma.$transaction(
+        [
+          prisma.emailVerificationToken.deleteMany({ where: { userId, purpose, usedAt: null } }),
+          prisma.emailVerificationToken.create({
+            data: {
+              userId,
+              email,
+              purpose,
+              tokenHash: hashToken(token),
+              expiresAt: new Date(Date.now() + ttlMinutes * TIME.MS_PER_MINUTE),
+            },
+          }),
+        ],
+        { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
+      );
+      break;
+    } catch (error) {
+      if (error.code !== 'P2034' || attempt === MAX_ATTEMPTS) throw error;
+      await new Promise((resolve) => setTimeout(resolve, attempt * RETRY_DELAY_MS));
+    }
+  }
   return { token, ttlMinutes };
 };
 

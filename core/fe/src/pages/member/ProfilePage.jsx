@@ -29,6 +29,7 @@ import {
 } from '@/utils/apiAvailability';
 import { normalizeOwnProfilePayload } from '@/utils/account';
 import { Link } from 'react-router';
+import { CreditPanel } from './CreditPanel';
 import { ProfileMemberships } from './ProfileMemberships';
 
 function ProfileSummary({ profile }) {
@@ -244,6 +245,7 @@ export default function ProfilePage() {
           <Space orientation="vertical" size={SPACING.LG} className="scms-full-width">
             {hasProfile && <ProfileForm form={form} profile={profile} mutation={mutation} />}
             {hasProfile && <ProfileMemberships profile={profile} />}
+            {hasProfile && <CreditPanel />}
           </Space>
         </Col>
       </Row>

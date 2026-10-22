@@ -23,6 +23,11 @@ export function ResourceCard({
             {item.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
           </Tag>
           {item.isUnderMaintenance && <Tag color="orange">Bảo trì</Tag>}
+          {item.capacity !== undefined && (
+            <Tag color={item.roomType ? 'blue' : 'red'}>
+              {item.roomType?.name ?? 'Chưa phân loại'}
+            </Tag>
+          )}
         </Space>
       }
     >

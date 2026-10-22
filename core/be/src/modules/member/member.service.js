@@ -1,6 +1,6 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
-import { prisma } from '../../config/db.js';
+import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 import * as userService from '../user/user.service.js';
@@ -77,7 +77,7 @@ const toMembershipView = (membership) => ({
  */
 const getMembershipSummary = async (memberId) => {
   const membership = await prisma.membership.findFirst({
-    where: { userId: memberId },
+    where: { userId: memberId, status: { not: Enums.MembershipStatus.CANCELLED } },
     include: { plan: true },
     orderBy: { endDate: 'desc' },
   });

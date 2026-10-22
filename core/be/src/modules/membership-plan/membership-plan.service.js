@@ -5,6 +5,45 @@ import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 
+export const ACCESS_INCLUDE = Object.freeze({
+  frames: { include: { frame: true }, orderBy: { frame: { startTime: 'asc' } } },
+  areas: { include: { roomType: true } },
+});
+
+/**
+ * Gói tự tập kèm khung giờ và khu vực dạng phẳng như hợp đồng API (GY-20).
+ * Gói không chọn khung giờ = vào mọi khung; không chọn khu vực = mọi khu tự tập.
+ */
+export const toPlanView = (plan) =>
+  plan && {
+    ...plan,
+    frames: (plan.frames ?? []).map(({ frame }) => ({
+      id: frame.id,
+      name: frame.name,
+      startTime: frame.startTime,
+      endTime: frame.endTime,
+    })),
+    areas: (plan.areas ?? []).map(({ roomType }) => ({ id: roomType.id, name: roomType.name })),
+  };
+
+/** Only active frames and self-training areas are eligible for an access plan. */
+const validateAccess = async (tx, frameIds, roomTypeIds) => {
+  if (frameIds !== undefined) {
+    const count = await tx.operatingFrame.count({
+      where: { id: { in: frameIds }, isActive: true },
+    });
+    if (count !== frameIds.length)
+      throw ApiError.businessRule('Khung giờ không tồn tại hoặc ngừng hoạt động');
+  }
+  if (roomTypeIds !== undefined) {
+    const count = await tx.roomType.count({
+      where: { id: { in: roomTypeIds }, isActive: true, isSelfTrainingArea: true },
+    });
+    if (count !== roomTypeIds.length)
+      throw ApiError.businessRule('Loại phòng không phải khu tự tập đang hoạt động');
+  }
+};
+
 /**
  * Lấy danh sách gói tập có phân trang.
  * @param {{ page: number, pageSize: number, isActive?: boolean }} query
@@ -25,12 +64,13 @@ export const list = async (query) => {
       where,
       ...pagination,
       orderBy: { id: 'desc' },
+      include: ACCESS_INCLUDE,
     }),
     prisma.membershipPlan.count({ where }),
   ]);
 
   return {
-    data,
+    data: data.map(toPlanView),
     meta: buildPageMeta({ page, pageSize, total }),
   };
 };
@@ -40,15 +80,18 @@ export const list = async (query) => {
  * @returns {Promise<object[]>}
  */
 export const listSelling = async () =>
-  prisma.membershipPlan.findMany({
-    where: {
-      status: MembershipPlanStatus.SELLING,
-      isActive: true,
-    },
-    orderBy: {
-      id: 'desc',
-    },
-  });
+  (
+    await prisma.membershipPlan.findMany({
+      where: {
+        status: MembershipPlanStatus.SELLING,
+        isActive: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+      include: ACCESS_INCLUDE,
+    })
+  ).map(toPlanView);
 
 /**
  * Lấy chi tiết gói tập.
@@ -58,13 +101,14 @@ export const listSelling = async () =>
 export const getById = async (id) => {
   const plan = await prisma.membershipPlan.findUnique({
     where: { id },
+    include: ACCESS_INCLUDE,
   });
 
   if (!plan) {
     throw ApiError.notFound('Không tìm thấy gói tập');
   }
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**
@@ -74,11 +118,23 @@ export const getById = async (id) => {
  * @returns {Promise<object>}
  */
 export const create = async (data, actor) => {
-  const plan = await prisma.membershipPlan.create({
-    data: {
-      ...data,
-      status: data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
-    },
+  const { frameIds, roomTypeIds, ...fields } = data;
+  const plan = await prisma.$transaction(async (tx) => {
+    await validateAccess(tx, frameIds, roomTypeIds);
+    return tx.membershipPlan.create({
+      data: {
+        ...fields,
+        status:
+          data.isActive === false ? MembershipPlanStatus.STOPPED : MembershipPlanStatus.SELLING,
+        ...(frameIds && {
+          frames: { create: frameIds.map((frameId) => ({ frameId })) },
+        }),
+        ...(roomTypeIds && {
+          areas: { create: roomTypeIds.map((roomTypeId) => ({ roomTypeId })) },
+        }),
+      },
+      include: ACCESS_INCLUDE,
+    });
   });
 
   recordAudit({
@@ -88,7 +144,7 @@ export const create = async (data, actor) => {
     entityId: plan.id,
   });
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**
@@ -101,14 +157,25 @@ export const create = async (data, actor) => {
 export const update = async (id, data, actor) => {
   const oldPlan = await getById(id);
 
-  const plan = await prisma.membershipPlan.update({
-    where: { id },
-    data: {
-      ...data,
-      ...(data.isActive !== undefined && {
-        status: data.isActive ? MembershipPlanStatus.SELLING : MembershipPlanStatus.STOPPED,
-      }),
-    },
+  const { frameIds, roomTypeIds, ...fields } = data;
+  const plan = await prisma.$transaction(async (tx) => {
+    await validateAccess(tx, frameIds, roomTypeIds);
+    return tx.membershipPlan.update({
+      where: { id },
+      data: {
+        ...fields,
+        ...(data.isActive !== undefined && {
+          status: data.isActive ? MembershipPlanStatus.SELLING : MembershipPlanStatus.STOPPED,
+        }),
+        ...(frameIds !== undefined && {
+          frames: { deleteMany: {}, create: frameIds.map((frameId) => ({ frameId })) },
+        }),
+        ...(roomTypeIds !== undefined && {
+          areas: { deleteMany: {}, create: roomTypeIds.map((roomTypeId) => ({ roomTypeId })) },
+        }),
+      },
+      include: ACCESS_INCLUDE,
+    });
   });
 
   recordAudit({
@@ -122,7 +189,7 @@ export const update = async (id, data, actor) => {
     },
   });
 
-  return plan;
+  return toPlanView(plan);
 };
 
 /**

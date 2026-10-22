@@ -1,3 +1,4 @@
+import { compensateClassCancelled } from '../cancellation/center-cancel.service.js';
 import { heldSeats } from './class-member-eligibility.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import {
@@ -79,6 +80,7 @@ export const cancel = (id, actor) =>
     if (!item) throw ApiError.notFound('Không tìm thấy lớp');
     if (item.status === Enums.ClassStatus.CANCELLED) return toClassView(item);
     await queueClassEvent(db, item, Enums.NotificationKind.CLASS_CANCELLED, { actorId: actor.id });
+    await compensateClassCancelled(db, item, actor);
     await db.classSession.updateMany({
       where: { classId: id, startAt: { gt: new Date() }, status: Enums.SessionStatus.SCHEDULED },
       data: { status: Enums.SessionStatus.CANCELLED },
