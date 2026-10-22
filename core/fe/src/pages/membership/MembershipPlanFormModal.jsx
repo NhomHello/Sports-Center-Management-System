@@ -35,7 +35,7 @@ const getInitialValues = (plan = {}) => ({
   isActive: plan.isActive ?? true,
 });
 
-/** Modal tạo hoặc sửa thông tin gói tự tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
+/** Modal tạo hoặc sửa thông tin gói tập. @param {{ open: boolean, plan?: object, onClose: () => void, onSubmit: (data: object) => void, loading: boolean }} props */
 export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading }) {
   const [form] = Form.useForm();
   const { message } = App.useApp();
@@ -52,7 +52,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
       .map((item) => item.trim())
       .filter(Boolean);
     if (benefits.length > 12) {
-      message.error('Gói tự tập chỉ được có tối đa 12 quyền lợi');
+      message.error('Gói tập chỉ được có tối đa 12 quyền lợi');
       return;
     }
     onSubmit({ ...values, benefits });
@@ -62,7 +62,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     <Modal
       open={open}
       centered
-      title={plan ? 'Chỉnh sửa gói tự tập' : 'Tạo gói tự tập mới'}
+      title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
       okText="Lưu"
       cancelText="Hủy"
       confirmLoading={loading}

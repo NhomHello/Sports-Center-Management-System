@@ -14,7 +14,7 @@ const InvoiceAlert = ({ invoice }) => (
     <Alert
       type="info"
       showIcon
-      message={
+      title={
         <Space orientation="vertical">
           <Typography.Text strong>
             Hóa đơn {invoice.code} - {invoice.amount?.toLocaleString('vi-VN')} đ

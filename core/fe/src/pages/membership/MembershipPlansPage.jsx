@@ -20,7 +20,7 @@ const PlansContent = ({ plansQuery, plans, mutations, onPurchase }) => {
       <Alert
         type="error"
         showIcon
-        title="Chưa tải được danh sách gói tự tập"
+        title="Chưa tải được danh sách gói tập"
         action={<Button onClick={() => plansQuery.refetch()}>Thử lại</Button>}
       />
     );
@@ -32,7 +32,7 @@ const PlansContent = ({ plansQuery, plans, mutations, onPurchase }) => {
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description={
             <Typography.Text type="secondary" style={{ fontSize: 15 }}>
-              Chưa có gói tự tập nào được mở bán.
+              Chưa có gói tập nào được mở bán.
             </Typography.Text>
           }
           style={{ padding: '60px 0' }}
@@ -54,7 +54,7 @@ const PlansContent = ({ plansQuery, plans, mutations, onPurchase }) => {
   );
 };
 
-/** Trang bảng giá gói tự tập: Tông màu chủ đạo ấn tượng, hiện đại */
+/** Trang bảng giá gói tập dành cho hội viên và quản lý. */
 export default function MembershipPlansPage() {
   const hooks = useMembershipPlans();
   const { user } = useAuth();
@@ -72,8 +72,8 @@ export default function MembershipPlansPage() {
         title="Gói tự tập"
         subtitle={
           hooks.canPurchase
-            ? 'Chọn gói phù hợp và xem ngày hiệu lực trước khi thanh toán.'
-            : 'Quản lý danh mục dịch vụ đang mở bán.'
+            ? 'Chọn kỳ tự tập phù hợp. Xem khung giờ, khu vực và ngày hiệu lực trước khi thanh toán.'
+            : 'Quản lý các kỳ tự tập, khung giờ và khu vực sử dụng.'
         }
         extra={
           <PermissionGate permission={PERMISSIONS.MEMBERSHIP_PLAN_CREATE}>
@@ -89,7 +89,7 @@ export default function MembershipPlansPage() {
           <Alert
             type="error"
             showIcon
-            title="Chưa tải được kỳ gói tự tập"
+            title="Chưa tải được kỳ gói tập"
             description={periodQuery.error.message}
             action={<Button onClick={() => periodQuery.refetch()}>Thử lại</Button>}
           />
@@ -97,9 +97,10 @@ export default function MembershipPlansPage() {
         <CurrentMembershipCard membership={currentMembership} canPurchase={hooks.canPurchase} />
         <FreezeControls membership={currentMembership} own />
         <div className="scms-membership-catalog-heading">
-          <Typography.Title level={3}>Chọn gói tự tập</Typography.Title>
+          <Typography.Title level={3}>Danh mục gói tự tập</Typography.Title>
           <Typography.Text type="secondary">
-            So sánh thời hạn, khung giờ và khu vực sử dụng của từng gói.
+            Mỗi lần mua là một kỳ riêng; kỳ mới nối sau kỳ đã mua khi còn hạn. Học phí khóa học được
+            thanh toán riêng.
           </Typography.Text>
         </div>
         <PlansContent

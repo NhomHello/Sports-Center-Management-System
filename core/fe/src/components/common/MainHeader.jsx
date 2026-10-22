@@ -1,31 +1,18 @@
 import {
-  BellOutlined,
-  LockOutlined,
-  LogoutOutlined,
   MenuFoldOutlined,
   MenuOutlined,
   MenuUnfoldOutlined,
   ThunderboltFilled,
-  UserOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, Tooltip, Typography } from 'antd';
+import { Button, Drawer, Flex, Layout, Menu, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { ReconciliationBadge } from './ReconciliationBadge';
 import { NotificationBell } from '@/components/common/NotificationBell';
 import { env } from '@/config/env';
 import { ROUTES } from '@/constants';
-
-const LOGOUT_KEY = 'logout';
-
-const getInitials = (name) =>
-  name
-    ?.trim()
-    .split(/\s+/)
-    .slice(-2)
-    .map((part) => part.charAt(0))
-    .join('')
-    .toUpperCase() || 'SH';
+import { AccountMenu } from './AccountMenu';
+import { ThemeSelector } from './ThemeSelector';
 
 const getCurrentArea = (items, selectedKey) =>
   items.flatMap((item) => item.children || [item]).find((item) => item.key === selectedKey)
@@ -91,7 +78,7 @@ export function MainSidebar({ groupedNavItems, selectedKey, user, onNavigate, co
         <span className="scms-sidebar__status-dot" />
         <span>
           <strong>Tài khoản đang sử dụng</strong>
-          <small>{user?.role?.name || 'Tài khoản Sports Center'}</small>
+          <small>{user?.role?.name || `Tài khoản ${env.APP_NAME}`}</small>
         </span>
       </div>
     </Layout.Sider>
@@ -112,16 +99,6 @@ export function MainHeader({
     item.children?.some((child) => child.key === selectedKey),
   )?.key;
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
-  const profileMenu = {
-    items: [
-      { key: ROUTES.PROFILE, icon: <UserOutlined />, label: 'Hồ sơ cá nhân' },
-      { key: ROUTES.CHANGE_PASSWORD, icon: <LockOutlined />, label: 'Đổi mật khẩu' },
-      { key: ROUTES.NOTIFICATIONS, icon: <BellOutlined />, label: 'Thông báo' },
-      { type: 'divider' },
-      { key: LOGOUT_KEY, icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
-    ],
-    onClick: ({ key }) => (key === LOGOUT_KEY ? onLogout() : onNavigate(key)),
-  };
   const handleMobileNavigate = ({ key }) => {
     onNavigate(key);
     setIsNavigationOpen(false);
@@ -148,16 +125,9 @@ export function MainHeader({
         </Flex>
         <Flex className="scms-header-actions" align="center" gap={8}>
           <ReconciliationBadge />
+          <ThemeSelector />
           <NotificationBell />
-          <Dropdown menu={profileMenu} trigger={['click']} placement="bottomRight">
-            <button className="scms-account" type="button" aria-label="Mở menu tài khoản">
-              <Avatar className="scms-account__avatar">{getInitials(user?.fullName)}</Avatar>
-              <span className="scms-account__copy">
-                <span className="scms-account__name">{user?.fullName || 'Tài khoản'}</span>
-                <span className="scms-account__role">{user?.role?.name}</span>
-              </span>
-            </button>
-          </Dropdown>
+          <AccountMenu user={user} onNavigate={onNavigate} onLogout={onLogout} />
         </Flex>
       </div>
       <Drawer

@@ -1,8 +1,10 @@
 import { PERMISSIONS as P } from '@scms/shared';
+import { MoreOutlined } from '@ant-design/icons';
 import { Button, Card, Dropdown, App, Tag } from 'antd';
 import { CLASS_STATUS, ENROLLMENT_STATUS } from '@/constants/schedule';
 import { CLASS_DISPLAY_STATUS, classDisplayStatus } from '@/utils/schedule';
-import { ClassCardSummary, ClassSeatSummary } from './ClassCardSummary';
+import { ClassCardSummary } from './ClassCardSummary';
+import { ClassSeatSummary } from './ClassSeatSummary';
 
 function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
   const { modal } = App.useApp();
@@ -25,9 +27,12 @@ function ClassManageMenu({ item, can, onEdit, onCancel, loading }) {
   if (!items.length) return null;
   return (
     <Dropdown menu={{ items }} trigger={['click']}>
-      <Button type="text" aria-label="Thao tác quản lý lớp" loading={loading}>
-        ⋯
-      </Button>
+      <Button
+        type="text"
+        aria-label="Thao tác quản lý lớp"
+        icon={<MoreOutlined aria-hidden />}
+        loading={loading}
+      />
     </Dropdown>
   );
 }

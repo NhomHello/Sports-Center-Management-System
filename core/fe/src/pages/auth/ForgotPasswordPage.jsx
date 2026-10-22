@@ -30,12 +30,7 @@ export function ForgotPasswordPage() {
   return (
     <Form form={form} layout="vertical" onFinish={mutation.mutate}>
       {mutation.isError && !mutation.error.toFormFields().length && (
-        <Alert
-          showIcon
-          type="error"
-          message={mutation.error.message}
-          style={{ marginBottom: 16 }}
-        />
+        <Alert showIcon type="error" title={mutation.error.message} style={{ marginBottom: 16 }} />
       )}
       <Form.Item
         name="email"

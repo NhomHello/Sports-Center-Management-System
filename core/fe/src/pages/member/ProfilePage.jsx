@@ -65,7 +65,7 @@ function PendingEmailAlert({ email }) {
       showIcon
       type="info"
       style={{ marginBottom: 16 }}
-      message={`Đang chờ xác nhận email mới: ${email}`}
+      title={`Đang chờ xác nhận email mới: ${email}`}
       description="Mở liên kết trong email gửi tới địa chỉ mới để hoàn tất. Trong lúc chờ, bạn vẫn đăng nhập bằng email hiện tại."
     />
   );
@@ -78,7 +78,7 @@ function ProfileForm({ form, profile, mutation }) {
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(mutation.error, 'cập nhật hồ sơ')}
+          title={getApiOperationErrorMessage(mutation.error, 'cập nhật hồ sơ')}
         />
       )}
       <PendingEmailAlert email={profile.pendingEmail} />
@@ -160,7 +160,7 @@ function ProfileContent({ query }) {
       <Alert
         showIcon
         type={notice.type}
-        message={notice.message}
+        title={notice.message}
         description={notice.description}
         action={notice.retryable && <Button onClick={() => query.refetch()}>Thử lại</Button>}
       />

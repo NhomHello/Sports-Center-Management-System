@@ -7,6 +7,7 @@ import {
 import { Typography } from 'antd';
 import { Outlet, useLocation } from 'react-router';
 import { env } from '@/config/env';
+import { ThemeSelector } from '@/components/common/ThemeSelector';
 import { ROUTES } from '@/constants';
 import '@/styles/authExperience.css';
 
@@ -77,7 +78,7 @@ const AUTH_HEADINGS = {
   },
   [ROUTES.REGISTER]: {
     title: 'Tạo tài khoản mới',
-    subtitle: 'Đăng ký để bắt đầu trải nghiệm Sports Center.',
+    subtitle: 'Đăng ký để bắt đầu trải nghiệm của bạn.',
   },
   [ROUTES.FORGOT_PASSWORD]: {
     title: 'Quên mật khẩu',
@@ -105,6 +106,9 @@ export function AuthLayout() {
     >
       <AuthBrandPanel />
       <main className="scms-auth-form-panel">
+        <div className="scms-auth-theme">
+          <ThemeSelector />
+        </div>
         <section className="scms-auth-form-wrap">
           <div className="scms-auth-mobile-brand">
             <span className="scms-brand__mark">
@@ -113,7 +117,9 @@ export function AuthLayout() {
             <Typography.Text strong>{env.APP_NAME}</Typography.Text>
           </div>
           <span className="scms-auth-form-eyebrow">
-            {isRegister ? 'THAM GIA SPORTS CENTER' : 'TÀI KHOẢN SPORTS CENTER'}
+            {isRegister
+              ? `THAM GIA ${env.APP_NAME.toUpperCase()}`
+              : `TÀI KHOẢN ${env.APP_NAME.toUpperCase()}`}
           </span>
           <Typography.Title className="scms-auth-title" level={1}>
             {title}

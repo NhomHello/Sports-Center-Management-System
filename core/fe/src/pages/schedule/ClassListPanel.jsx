@@ -9,6 +9,15 @@ import { ClassEmptyState } from './ClassEmptyState';
 import { ClassListToolbar } from './ClassListToolbar';
 import { useClassList } from './useClassList';
 
+function ClassResultCount({ query }) {
+  if (!query.isSuccess) return null;
+  return (
+    <p className="scms-class-results" role="status">
+      {query.data?.meta?.total ?? 0} lớp học phù hợp
+    </p>
+  );
+}
+
 function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }) {
   const filterCount = ['date', 'status', 'subjectId', 'coachId'].filter(
     (key) => table.params[key],
@@ -63,6 +72,7 @@ export function ClassListPanel({
   return (
     <div className="scms-schedule-stack scms-class-list-panel">
       <ListHeader {...{ search, setSearch, table, can, setEditing, renderFilters }} />
+      <ClassResultCount query={query} />
       <QueryState query={query}>
         {items.length ? (
           <div className="scms-class-grid">

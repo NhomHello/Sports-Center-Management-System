@@ -12,14 +12,11 @@ const MEMBER_COLUMNS = [
     width: 260,
     render: (fullName, member) => (
       <Space size="middle" className="scms-member-identity">
-        <Avatar
-          size={38}
-          style={{ backgroundColor: '#e6f4ff', color: '#1677ff', fontWeight: 700, fontSize: 16 }}
-        >
+        <Avatar size={38} className="scms-member-avatar" style={{ fontWeight: 700, fontSize: 16 }}>
           {fullName?.trim().slice(0, 1)?.toUpperCase() || 'H'}
         </Avatar>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography.Text strong style={{ color: '#1f1f1f', fontSize: 15 }}>
+          <Typography.Text strong className="scms-member-name" style={{ fontSize: 15 }}>
             {fullName}
           </Typography.Text>
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>

@@ -75,6 +75,7 @@ export default function RolesPage() {
         dataSource={rolesQuery.data?.data ?? []}
         loading={rolesQuery.isPending}
         pagination={false}
+        scroll={{ x: true }}
       />
       <RoleFormModal
         open={modal.open}

@@ -3,68 +3,13 @@
   display: none;
 }
 .scms-class-card .ant-card-extra > .ant-btn {
-  width: 28px;
-  height: 28px;
-  min-height: 28px;
+  width: 40px;
+  height: 40px;
   padding: 0;
-}
-.scms-class-card__details {
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  min-width: 0;
-}
-.scms-class-card__schedule:has(.scms-class-card__slot:only-child) {
-  min-height: 0;
-  align-self: start;
-}
-.scms-class-card__slot:only-child {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  align-content: center;
-}
-.scms-class-card__slot:only-child strong {
-  padding-left: 0;
-}
-.scms-class-card__slot-days {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-.scms-class-card__meta > span:last-child {
-  min-width: 0;
-  overflow-wrap: break-word;
-}
-.scms-class-card__schedule-icon,
-.scms-class-card__meta > .anticon {
-  display: flex;
-  flex: 0 0 16px;
-  align-items: center;
-  justify-content: center;
-  height: 20px;
-  line-height: 1;
-}
-.scms-class-card__meta > .anticon {
-  font-size: 14px;
-}
-.scms-class-card__capacity-line > span:first-child {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  line-height: 20px;
-}
-.scms-class-card__capacity-line .anticon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 20px;
-  font-size: 14px;
 }
 .scms-booking-actions__notices {
   display: grid;
-  align-content: start;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 .scms-booking-actions__notices:empty {
@@ -73,33 +18,47 @@
 .scms-class-card .scms-booking-actions--compact {
   display: contents;
 }
-.scms-class-card .scms-booking-actions__notices {
-  display: grid;
-  grid-row: 2;
-  min-height: 20px;
+.scms-booking-actions__buttons {
+  gap: 8px;
 }
 .scms-class-card .scms-booking-actions__buttons {
-  grid-row: 3;
-  align-self: end;
-  flex-wrap: nowrap;
+  display: flex;
+  flex-wrap: wrap;
   min-width: 0;
 }
-.scms-class-card .scms-booking-actions__buttons > .ant-btn {
-  flex-shrink: 0;
+.scms-class-card .scms-booking-actions__buttons > .ant-btn-text {
+  flex: 0 0 44px;
 }
-.scms-class-card__booking > .scms-class-card__detail {
-  grid-row: 3;
+.scms-class-card .scms-booking-actions__buttons > .ant-btn-dangerous {
+  flex: 1 1 130px;
 }
-.scms-class-card__booking .ant-btn:not(:disabled):hover,
-.scms-class-card__booking .ant-btn:not(:disabled):active {
-  transform: none;
+.scms-class-detail .ant-drawer-body {
+  padding: 24px;
 }
-@container (max-width: 360px) {
-  .scms-class-card .scms-booking-actions__buttons {
-    flex-wrap: wrap;
+.scms-class-detail .ant-drawer-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--scms-border);
+  background: var(--scms-surface);
+}
+.scms-class-detail .scms-schedule-stack {
+  display: grid;
+  gap: 24px;
+}
+.scms-class-detail .scms-schedule-stack > .ant-space-item {
+  min-width: 0;
+}
+.scms-class-detail .ant-typography {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .scms-class-detail .ant-drawer-body {
+    padding: 16px;
   }
-  .scms-class-card .scms-class-card__detail {
-    flex-basis: 100%;
-    order: 3;
+  .scms-class-detail .ant-drawer-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .scms-class-detail .ant-drawer-footer {
+    padding: 12px 16px;
   }
 }

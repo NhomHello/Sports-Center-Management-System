@@ -151,7 +151,7 @@ function InvoicePrintAction({
       <Alert
         type="warning"
         showIcon
-        message={
+        title={
           centerConfigMessage ||
           'Thiếu thông tin trung tâm trong cấu hình API; chưa thể in hóa đơn.'
         }
@@ -238,7 +238,7 @@ function ReceiptContent({
       <Alert
         showIcon
         type={notice.type}
-        message={notice.message}
+        title={notice.message}
         description={notice.description}
         action={notice.retryable && <Button onClick={() => query.refetch()}>Thử lại</Button>}
       />

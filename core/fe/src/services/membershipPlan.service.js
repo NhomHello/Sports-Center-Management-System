@@ -17,9 +17,9 @@ export const updateMembershipPlan = (id, payload) => http.put(`${BASE}/${id}`, p
 /** @param {number} id */
 export const deleteMembershipPlan = (id) => http.delete(`${BASE}/${id}`);
 
-/** Danh mục khung giờ cấu hình gói tự tập. */
+/** Danh mục khung giờ cấu hình gói tập. */
 export const listPlanFrames = () => http.get('/operating-frames');
-/** Danh mục loại phòng; form chỉ chọn khu tự tập. */
+/** Danh mục loại phòng; form chỉ chọn khu vực tự tập. */
 export const listPlanAreas = () => http.get('/room-types');
 /** Kỳ hiện tại và các kỳ đã mua nối tiếp theo hợp đồng GY-20. */
 export const getCurrentPlanPeriod = () => http.get('/memberships/me/current');

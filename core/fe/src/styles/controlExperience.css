@@ -65,7 +65,7 @@
 }
 
 .scms-search-input.ant-input-search > .ant-btn:not(:disabled) {
-  color: var(--scms-blue, #2563eb);
+  color: var(--scms-blue);
 }
 
 .scms-search-input .ant-input-clear-icon {
@@ -77,7 +77,7 @@
 }
 
 .scms-search-input:focus-within {
-  outline: 2px solid var(--scms-blue, #2563eb);
+  outline: 2px solid var(--scms-focus-ring);
   outline-offset: 2px;
 }
 

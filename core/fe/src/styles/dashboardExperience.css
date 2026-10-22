@@ -25,7 +25,7 @@
 .scms-dashboard-hero__greeting {
   display: block;
   margin-bottom: 4px;
-  color: #dbeafe;
+  color: var(--scms-brand-muted);
   font-size: 18px;
   font-weight: 500;
   letter-spacing: 0;
@@ -40,7 +40,7 @@
   line-height: 1.65;
 }
 .scms-dashboard-experience .scms-dashboard-hero__copy .scms-dashboard-hero__eyebrow {
-  color: #bfdbfe;
+  color: var(--scms-brand-muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -62,16 +62,16 @@
 .scms-dashboard-action:hover {
   color: white;
   border-color: white;
-  background: rgb(255 255 255 / 9%);
+  background: color-mix(in srgb, var(--scms-surface) 9%, transparent);
 }
 .scms-dashboard-action--primary {
-  background: linear-gradient(110deg, #2563eb, #4f46e5);
+  background: var(--scms-action);
   border-color: transparent;
   box-shadow: 0 8px 18px rgb(37 99 235 / 17%);
 }
 .scms-dashboard-action--primary:hover {
   border-color: transparent;
-  background: linear-gradient(110deg, #1d4ed8, #4338ca);
+  background: var(--scms-action);
 }
 .scms-dashboard-date {
   position: relative;
@@ -82,10 +82,10 @@
   padding: 20px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: var(--scms-card-radius, 16px);
-  background: rgb(255 255 255 / 7%);
+  background: color-mix(in srgb, var(--scms-surface) 7%, transparent);
 }
 .scms-dashboard-date > .anticon {
-  color: #bfdbfe;
+  color: var(--scms-brand-muted);
   font-size: 24px;
 }
 .scms-dashboard-date > span:last-child {
@@ -99,7 +99,7 @@
   font-weight: 650;
 }
 .scms-dashboard-date small {
-  color: #cbd5e1;
+  color: var(--scms-brand-muted);
   font-size: 11px;
 }
 .scms-dashboard-overview {

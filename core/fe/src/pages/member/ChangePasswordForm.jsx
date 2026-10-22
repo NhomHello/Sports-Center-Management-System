@@ -38,7 +38,7 @@ export function ChangePasswordForm() {
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(mutation.error, 'đổi mật khẩu')}
+          title={getApiOperationErrorMessage(mutation.error, 'đổi mật khẩu')}
         />
       )}
       <Form form={form} layout="vertical" onFinish={mutation.mutate} disabled={mutation.isPending}>

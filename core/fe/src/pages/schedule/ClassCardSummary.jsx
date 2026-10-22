@@ -1,10 +1,5 @@
-import {
-  CalendarOutlined,
-  EnvironmentOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { WEEKDAYS, WAITLIST_STATUS } from '@/constants/schedule';
+import { CalendarOutlined, EnvironmentOutlined, UserOutlined } from '@ant-design/icons';
+import { WEEKDAYS } from '@/constants/schedule';
 import { formatDate } from '@/utils/format';
 import { describeWeeklySchedule } from '@/utils/schedule';
 import { CourseOrderPrice } from './CourseOrderPrice';
@@ -26,13 +21,13 @@ export function ClassCardSummary({ item }) {
             const [days, time] = line.split(' · ');
             return (
               <div className="scms-class-card__slot" key={line} title={line}>
+                <strong>{time}</strong>
                 <div className="scms-class-card__slot-days">
                   <span className="scms-class-card__schedule-icon">
                     <CalendarOutlined aria-hidden="true" />
                   </span>
                   <span>{compactDays(days)}</span>
                 </div>
-                <strong>{time}</strong>
               </div>
             );
           })}
@@ -51,32 +46,6 @@ export function ClassCardSummary({ item }) {
           <span title={item.coach.fullName}>{item.coach.fullName}</span>
         </div>
         <CourseOrderPrice item={item} />
-      </div>
-    </div>
-  );
-}
-
-/** Thể hiện sĩ số bằng một dòng và thanh tiến độ, tránh lặp hai đoạn mô tả chỗ trống. */
-export function ClassSeatSummary({ item }) {
-  const offered = item.waitlist?.status === WAITLIST_STATUS.OFFERED;
-  const full = item.seatsRemaining <= 0;
-  const enrolled = item.enrolledCount ?? Math.max(0, item.capacity - item.seatsRemaining);
-  const percent = Math.min(100, Math.max(0, (enrolled / Math.max(1, item.capacity)) * 100));
-  return (
-    <div
-      className={`scms-class-card__capacity${full && !offered ? ' scms-class-card__capacity--full' : ''}`}
-    >
-      <div className="scms-class-card__capacity-line">
-        <span>
-          <TeamOutlined aria-hidden="true" />{' '}
-          {offered ? 'Đang giữ chỗ' : full ? 'Đã đủ chỗ' : `Còn ${item.seatsRemaining} chỗ`}
-        </span>
-        <span className="scms-class-card__capacity-count" title="Sĩ số đã đăng ký">
-          {enrolled}/{item.capacity}
-        </span>
-      </div>
-      <div className="scms-class-card__capacity-track" aria-hidden="true">
-        <span style={{ width: `${percent}%` }} />
       </div>
     </div>
   );

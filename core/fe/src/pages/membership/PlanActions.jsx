@@ -49,7 +49,7 @@ const ManageActions = ({ plan, onEdit, onDelete }) => {
   return (
     <div className="scms-plan-card__manage">
       {onEdit && (
-        <Tooltip title="Chỉnh sửa gói tự tập">
+        <Tooltip title="Chỉnh sửa gói tập">
           <Button
             icon={<EditOutlined />}
             aria-label={`Chỉnh sửa ${plan.name}`}
@@ -60,7 +60,7 @@ const ManageActions = ({ plan, onEdit, onDelete }) => {
         </Tooltip>
       )}
       {onDelete && (
-        <Tooltip title={plan.isActive ? 'Xóa hoặc ngừng bán' : 'Xóa gói tự tập'}>
+        <Tooltip title={plan.isActive ? 'Xóa hoặc ngừng bán' : 'Xóa gói tập'}>
           <Button
             danger
             icon={<DeleteOutlined />}

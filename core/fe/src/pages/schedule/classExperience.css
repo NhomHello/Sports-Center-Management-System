@@ -12,11 +12,12 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-.scms-class-search-filters > .scms-class-list-toolbar {
+.scms-schedule .scms-class-search-filters > .scms-class-list-toolbar {
   justify-content: flex-start;
-  padding: 0;
-  background: none;
-  border: 0;
+  padding: 16px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: 16px;
 }
 .scms-class-list-toolbar .scms-search-input {
   flex: 1 1 240px;

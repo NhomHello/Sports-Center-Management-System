@@ -70,7 +70,7 @@ export default function SettingsPage() {
         <Alert
           showIcon
           type={notice.type}
-          message={notice.message}
+          title={notice.message}
           description={notice.description}
           action={
             notice.retryable && (
@@ -128,7 +128,7 @@ export default function SettingsPage() {
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(saveMutation.error, 'lưu cấu hình')}
+          title={getApiOperationErrorMessage(saveMutation.error, 'lưu cấu hình')}
         />
       )}
       <Tabs

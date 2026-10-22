@@ -45,7 +45,7 @@
 .scms-auth-experience .scms-auth-quote > .ant-typography:last-child {
   display: block;
   max-width: 480px;
-  color: #cbd5e1;
+  color: var(--scms-brand-muted);
   font-size: 16px;
   line-height: 1.7;
 }
@@ -68,7 +68,7 @@
   height: 42px;
   flex: 0 0 42px;
   place-items: center;
-  color: #bfdbfe;
+  color: var(--scms-brand-muted);
   background: rgb(255 255 255 / 7%);
   border: 1px solid rgb(203 213 225 / 16%);
   border-radius: 12px;
@@ -79,14 +79,14 @@
   display: block;
 }
 .scms-auth-experience .scms-auth-benefit strong {
-  color: #f1f5f9;
+  color: var(--scms-brand-muted);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.5;
 }
 .scms-auth-experience .scms-auth-benefit > div > span {
   margin-top: 3px;
-  color: #b8c8e1;
+  color: var(--scms-brand-muted);
   font-size: 13px;
   line-height: 1.6;
 }

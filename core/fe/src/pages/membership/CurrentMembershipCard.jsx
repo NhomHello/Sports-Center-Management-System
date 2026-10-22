@@ -34,9 +34,9 @@ function MembershipPeriod({ membership, upcoming = false }) {
       <div className="scms-membership-period__heading">
         <div>
           <span className="scms-current-membership__eyebrow">
-            {upcoming ? 'Kỳ đã mua nối tiếp' : 'Gói tự tập của bạn'}
+            {upcoming ? 'Kỳ tiếp theo' : 'Gói tập hiện tại'}
           </span>
-          <Typography.Title level={4}>{membership.plan?.name || 'Gói tự tập'}</Typography.Title>
+          <Typography.Title level={4}>{membership.plan?.name || 'Gói tập'}</Typography.Title>
         </div>
         <Tag color={status === 'ACTIVE' ? 'green' : 'default'}>
           {upcoming ? 'Sắp có hiệu lực' : STATUS_LABELS[status] || status}

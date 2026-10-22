@@ -1,6 +1,6 @@
 .scms-membership-content {
   display: grid;
-  gap: 20px;
+  gap: 24px;
   min-width: 0;
 }
 .scms-membership-page .scms-current-membership.ant-card {
@@ -175,5 +175,76 @@
   .scms-pricing-assurance {
     align-items: flex-start;
     line-height: 1.65;
+  }
+}
+
+/* Thẻ bảo lưu luôn mở, dùng cùng nhịp khoảng cách với các khu vực khác. */
+.scms-freeze-card {
+  min-width: 0;
+}
+.scms-freeze-card .ant-card-head {
+  min-height: 60px;
+}
+.scms-freeze-card .ant-card-extra .ant-tag {
+  margin: 0;
+}
+.scms-freeze-content {
+  gap: 24px;
+}
+.scms-freeze-grid {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.scms-freeze-grid > * {
+  min-width: 0;
+}
+.scms-freeze-card .scms-freeze-form {
+  display: grid;
+  gap: 16px;
+}
+.scms-freeze-card .scms-freeze-form .ant-form-item {
+  max-width: none;
+  margin: 0;
+}
+.scms-freeze-card .scms-freeze-form > .ant-btn {
+  margin: 0;
+  justify-self: start;
+}
+.scms-freeze-card .scms-freeze-form .ant-picker {
+  width: 100%;
+}
+.scms-freeze-grid > section > .ant-alert {
+  margin-top: 16px;
+}
+.scms-freeze-history h5.ant-typography {
+  margin: 0 0 12px;
+}
+.scms-freeze-history .ant-empty {
+  margin: 8px 0;
+}
+.scms-freeze-history .ant-empty-image {
+  height: 42px;
+}
+.scms-freeze-history .ant-table-wrapper {
+  max-width: 100%;
+}
+.scms-membership-content .scms-pricing-surface {
+  padding-top: 16px;
+}
+.scms-membership-period__dates {
+  flex-wrap: wrap;
+}
+@media (min-width: 1200px) {
+  .scms-freeze-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .scms-freeze-card .ant-card-body {
+    padding: 20px 16px;
+  }
+  .scms-freeze-card .scms-freeze-form > .ant-btn {
+    width: 100%;
   }
 }

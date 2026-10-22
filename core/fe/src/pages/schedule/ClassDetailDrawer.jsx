@@ -30,9 +30,10 @@ export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, rend
   return (
     <Drawer
       open
+      className="scms-class-detail"
       title={item?.name || 'Chi tiết lớp'}
       onClose={onClose}
-      size="large"
+      size="min(960px, 100vw)"
       footer={renderFooter(item, renderActions)}
       extra={
         canChangeCoach(can, item) && (

@@ -49,13 +49,13 @@ describe('Hiển thị sản phẩm theo hợp đồng GY-20', () => {
     );
     for (const text of [
       'Đang bảo lưu',
-      'Kỳ đã mua nối tiếp',
+      'Kỳ tiếp theo',
       'Tự tập sáng',
       'Tự tập tối',
       '05:00',
       '09:00',
       'Phòng máy',
-      'Không cần đặt chỗ',
+      'Khóa học có đăng ký riêng',
     ])
       expect(html).toContain(text);
     expect(html).not.toContain('Đã hết hạn');
