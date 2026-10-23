@@ -81,12 +81,12 @@ describe('Điểm danh và luật vắng mặt', () => {
       ).status,
     ).toBe(422);
   });
-  it('quá hạn cần quản lý mở, buổi huỷ không thể điểm danh kể cả đã mở', async () => {
+  it('sau giờ kết thúc cần quản lý mở, buổi huỷ không thể điểm danh kể cả đã mở', async () => {
     await prisma.classSession.update({
       where: { id: past.id },
       data: {
-        startAt: new Date(Date.now() - 3 * DAY),
-        endAt: new Date(Date.now() - 2 * DAY),
+        startAt: new Date(Date.now() - 2 * HOUR),
+        endAt: new Date(Date.now() - HOUR),
       },
     });
     await prisma.classEnrollment.updateMany({

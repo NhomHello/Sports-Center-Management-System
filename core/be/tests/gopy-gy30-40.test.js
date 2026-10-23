@@ -53,7 +53,6 @@ describe('GY-30: báo nghỉ một buổi', () => {
         endAt: new Date(now + HOUR),
       },
     });
-
     const record = await f.call('put', `/classes/sessions/${session.id}/attendance`, {
       entries: [{ memberId: f.member.id, status: 'ABSENT' }],
     });

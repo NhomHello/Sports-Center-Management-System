@@ -10,7 +10,7 @@
 | Task | Kết quả / nơi review |
 | --- | --- |
 | S3-11, S3-13, S3-83 | Đổi giờ, huỷ từng buổi và đổi HLV từ ngày chọn trong chi tiết lớp; thông báo số hội viên ảnh hưởng, giữ lịch sử và hiển thị xung đột từ API. |
-| S3-49 | Điểm danh từng buổi, chưa mặc định vắng; chỉ ghi vắng sau buổi, mở hạn sửa có lý do theo permission. |
+| S3-49 | Điểm danh từng buổi, chưa mặc định vắng; HLV có thể ghi Có mặt/Vắng mặt trong giờ học, hết buổi tự khóa; quản lý mở lại có lý do theo permission. |
 | S3-50, S3-51 | `GET /attendance/me`: lọc ngày/lớp/trạng thái, phân trang, giới hạn chính chủ theo JWT; UI `/attendance` chỉ đọc. |
 | S3-23 | Tạo yêu cầu hoàn cho PAID, giải thích tác động ngày gói, xác nhận chuyển trả bằng mã tham chiếu; có bảng tiếp tục xử lý yêu cầu đang chờ. Theo contract Nhanh, hoàn invoice và chuyển trả thực tế là hai bước. |
 | S3-25, S3-27 | `/reports` theo permission `report.view`: doanh thu/hoàn/thực thu, payment, membership, lớp; chọn hội viên/gói theo tên nếu có quyền đọc danh mục; xuất CSV/XLSX/PDF với đúng bộ lọc đã áp dụng. |
