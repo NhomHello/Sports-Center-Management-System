@@ -1,70 +1,69 @@
 import { useQuery } from '@tanstack/react-query';
-import { DatePicker, InputNumber, Select, Space, Table } from 'antd';
+import { Card, Typography } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
-import { DATE_FORMATS } from '@/constants';
+import { useAuth } from '@/hooks/useAuth';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import { getOwnAttendance } from '@/services/sprint3.service';
-import { formatDateTime } from '@/utils/format';
+import { AttendanceFilters } from './AttendanceFilters';
+import { AttendanceEmpty, AttendanceHistoryTable } from './AttendanceHistoryTable';
 import { QueryState } from '../schedule/QueryState';
+import './attendanceHistory.css';
 
 /** Lịch sử chỉ đọc của người dùng hiện tại. */
 export default function AttendanceHistoryPage() {
+  const { user } = useAuth();
   const table = useTableQuery();
   const query = useQuery({
-    queryKey: ['attendance-own', table.params],
+    queryKey: ['attendance-own', user?.id, table.params],
     queryFn: () => getOwnAttendance(table.params),
   });
+  const rows = query.data?.data ?? [];
+  const total = query.data?.meta?.total;
+  const hasFilters = Object.values(table.filters).some(
+    (value) => value !== undefined && value !== null,
+  );
+  const resetFilters = () =>
+    table.setFilters({ from: undefined, to: undefined, classId: undefined, status: undefined });
+
   return (
     <>
-      <PageHeader title="Lịch sử điểm danh của tôi" />
-      <Space wrap>
-        <DatePicker.RangePicker
-          format={DATE_FORMATS.DATE}
-          onChange={(range) =>
-            table.setFilters({
-              from: range?.[0].format('YYYY-MM-DD'),
-              to: range?.[1].format('YYYY-MM-DD'),
-            })
-          }
-        />
-        <InputNumber
-          aria-label="Mã lớp"
-          placeholder="Mã lớp"
-          min={1}
-          precision={0}
-          onChange={(classId) => table.setFilters({ classId: classId || undefined })}
-        />
-        <Select
-          allowClear
-          placeholder="Trạng thái"
-          style={{ width: 160 }}
-          onChange={(status) => table.setFilters({ status })}
-          options={[
-            { value: 'PRESENT', label: 'Có mặt' },
-            { value: 'ABSENT', label: 'Vắng mặt' },
-          ]}
-        />
-      </Space>
-      <QueryState query={query}>
-        <Table
-          rowKey="id"
-          dataSource={query.data?.data}
-          loading={query.isFetching}
-          pagination={table.paginationProps(query.data?.meta)}
-          onChange={table.onTableChange}
-          scroll={{ x: 600 }}
-          columns={[
-            { title: 'Lớp', dataIndex: ['session', 'gymClass', 'name'] },
-            { title: 'Buổi học', render: (_, row) => formatDateTime(row.session.startAt) },
-            {
-              title: 'Trạng thái',
-              dataIndex: 'status',
-              render: (v) => (v === 'PRESENT' ? 'Có mặt' : 'Vắng mặt'),
-            },
-            { title: 'Người ghi', dataIndex: ['actor', 'fullName'] },
-          ]}
-        />
-      </QueryState>
+      <PageHeader
+        title="Lịch sử điểm danh"
+        subtitle="Tra cứu kết quả điểm danh theo buổi học. Thời gian hiển thị theo giờ Việt Nam."
+      />
+      <Card className="scms-attendance-history" variant="borderless">
+        <div className="scms-attendance-history__toolbar">
+          <AttendanceFilters
+            filters={table.filters}
+            onChange={table.setFilters}
+            onReset={resetFilters}
+            hasFilters={hasFilters}
+          />
+        </div>
+        <div className="scms-attendance-history__heading" aria-live="polite">
+          <Typography.Text strong>Kết quả điểm danh</Typography.Text>
+          {typeof total === 'number' && (
+            <Typography.Text className="scms-attendance-history__count">
+              {total} bản ghi
+            </Typography.Text>
+          )}
+        </div>
+        <QueryState query={query}>
+          {rows.length ? (
+            <AttendanceHistoryTable
+              className="scms-attendance-history__table"
+              rowKey="id"
+              dataSource={rows}
+              loading={query.isFetching}
+              pagination={table.paginationProps(query.data?.meta)}
+              onChange={table.onTableChange}
+              scroll={{ x: 760 }}
+            />
+          ) : (
+            <AttendanceEmpty filtered={hasFilters} onReset={resetFilters} />
+          )}
+        </QueryState>
+      </Card>
     </>
   );
 }

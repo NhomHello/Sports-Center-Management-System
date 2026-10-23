@@ -1,4 +1,5 @@
 import { PERMISSIONS as P } from '@scms/shared';
+import { useState } from 'react';
 import { Pagination } from 'antd';
 import { ClassCard } from './ClassCard';
 import { ClassDetailDrawer } from './ClassDetailDrawer';
@@ -8,7 +9,20 @@ import { ClassEmptyState } from './ClassEmptyState';
 import { ClassListToolbar } from './ClassListToolbar';
 import { useClassList } from './useClassList';
 
+function ClassResultCount({ query }) {
+  if (!query.isSuccess) return null;
+  return (
+    <p className="scms-class-results" role="status">
+      {query.data?.meta?.total ?? 0} lớp học phù hợp
+    </p>
+  );
+}
+
 function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }) {
+  const filterCount = ['date', 'status', 'subjectId', 'coachId'].filter(
+    (key) => table.params[key],
+  ).length;
+  const [filtersOpen, setFiltersOpen] = useState(filterCount > 0);
   return (
     <div className="scms-class-search-filters">
       <ClassListToolbar
@@ -16,8 +30,17 @@ function ListHeader({ search, setSearch, table, can, setEditing, renderFilters }
         onSearchChange={setSearch}
         onSearch={(value) => table.setFilters({ search: value.trim() || undefined })}
         onCreate={can(P.CLASS_CREATE) ? () => setEditing({}) : undefined}
+        filters={
+          renderFilters
+            ? {
+                open: filtersOpen,
+                count: filterCount,
+                toggle: () => setFiltersOpen((open) => !open),
+              }
+            : null
+        }
       />
-      {renderFilters?.(table)}
+      {filtersOpen && renderFilters?.(table)}
     </div>
   );
 }
@@ -49,6 +72,7 @@ export function ClassListPanel({
   return (
     <div className="scms-schedule-stack scms-class-list-panel">
       <ListHeader {...{ search, setSearch, table, can, setEditing, renderFilters }} />
+      <ClassResultCount query={query} />
       <QueryState query={query}>
         {items.length ? (
           <div className="scms-class-grid">
@@ -61,9 +85,8 @@ export function ClassListPanel({
                 onEdit={() => setEditing(item)}
                 onCancel={() => cancel.mutate(item.id)}
                 loading={cancel.isPending}
-              >
-                {renderActions?.(item)}
-              </ClassCard>
+                renderActions={renderActions}
+              />
             ))}
           </div>
         ) : (

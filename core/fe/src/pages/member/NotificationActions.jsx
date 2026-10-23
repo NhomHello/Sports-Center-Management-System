@@ -36,7 +36,7 @@ export function NotificationFeedback({ actions, isBusy }) {
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(mutation.error, 'đánh dấu đã đọc')}
+          title={getApiOperationErrorMessage(mutation.error, 'đánh dấu đã đọc')}
           action={
             shouldRetryApiQuery(0, mutation.error) && (
               <Button loading={isBusy} onClick={() => mutation.mutate(mutation.variables)}>
@@ -50,7 +50,7 @@ export function NotificationFeedback({ actions, isBusy }) {
         <Alert
           showIcon
           type="warning"
-          message={`${failedResults.length} thông báo chưa cập nhật được`}
+          title={`${failedResults.length} thông báo chưa cập nhật được`}
           description={getApiOperationErrorMessage(failedResults[0].error, 'đánh dấu đã đọc')}
           action={
             retryIds.length > 0 && (
@@ -62,7 +62,7 @@ export function NotificationFeedback({ actions, isBusy }) {
         />
       )}
       {bulkMutation.isSuccess && failedResults.length === 0 && (
-        <Alert type="success" showIcon message="Đã đánh dấu các thông báo được chọn." />
+        <Alert type="success" showIcon title="Đã đánh dấu các thông báo được chọn." />
       )}
     </>
   );

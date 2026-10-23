@@ -25,7 +25,7 @@ export function NotificationList({
       <Alert
         showIcon
         type={notice.type}
-        message={notice.message}
+        title={notice.message}
         description={notice.description}
         action={
           notice.retryable && (

@@ -1,6 +1,10 @@
 @import './calendarExperience.css';
 @import './classExperience.css';
 @import './desktopExperience.css';
+@import './classForm.css';
+@import './scheduleLayout.css';
+@import './classList.css';
+@import './classCardLayout.css';
 
 .scms-schedule,
 .scms-schedule-stack,

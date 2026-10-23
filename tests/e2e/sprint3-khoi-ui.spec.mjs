@@ -128,8 +128,18 @@ test('S3-49/51: điểm danh và lịch sử chính chủ; hội viên không tr
   await page.evaluate(() => localStorage.clear());
   await login(page, f.member, f.password);
   await page.goto('/attendance');
-  await expect(page.getByRole('cell', { name: item.name, exact: true })).toBeVisible();
+  await expect(page.getByRole('cell').filter({ hasText: item.name })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'Có mặt', exact: true })).toBeVisible();
+  for (const mode of ['Sáng', 'Tối']) {
+    await page.getByRole('button', { name: /Giao diện:/ }).click();
+    await page.getByRole('menuitemradio', { name: mode, exact: true }).click();
+    await expect(page.locator('.ant-dropdown:visible')).toHaveCount(0);
+    await page.screenshot({
+      path: `outputs/ui-khai-2026-10-22/refinement-demo/attendance-populated-${mode === 'Sáng' ? 'light' : 'dark'}.png`,
+      fullPage: true,
+      animations: 'disabled',
+    });
+  }
   await page.goto('/reports');
   await expect(page.getByText('Bạn không có quyền', { exact: false })).toBeVisible();
 });

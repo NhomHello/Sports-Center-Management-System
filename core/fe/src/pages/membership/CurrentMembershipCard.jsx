@@ -1,63 +1,76 @@
-import { CreditCardFilled } from '@ant-design/icons';
-import { Card, Flex, Space, Tag, Typography } from 'antd';
+import { CalendarOutlined, CreditCardOutlined } from '@ant-design/icons';
+import { Card, Tag, Typography } from 'antd';
 import { formatDate } from '@/utils/format';
-import { daysLeft } from '@/utils/membershipEffect';
-import { MembershipActions } from './MembershipActions';
-import { PlanAccessTags } from './PlanAccessTags';
+import { PlanAccessSummary } from './PlanAccessSummary';
+import './membershipOverview.css';
 
-const STATE = Object.freeze({
-  ACTIVE: { color: 'success', label: 'Đang hoạt động' },
-  FROZEN: { color: 'warning', label: 'Đang bảo lưu' },
-  EXPIRED: { color: 'error', label: 'Đã hết hạn' },
-  CANCELLED: { color: 'default', label: 'Đã hủy' },
+const STATUS_LABELS = {
+  ACTIVE: 'Đang hoạt động',
+  FROZEN: 'Đang bảo lưu',
+  EXPIRED: 'Đã hết hạn',
+  CANCELLED: 'Đã hủy',
+};
+
+const getPeriodAccess = (membership) => ({
+  ...membership.plan,
+  frames: membership.frames ?? membership.plan?.frames,
+  areas: membership.areas ?? membership.plan?.areas,
 });
 
-function NextPeriods({ periods }) {
-  if (!periods?.length) return null;
-  return (
-    <Typography.Text type="secondary">
-      Kỳ đã mua nối tiếp:{' '}
-      {periods
-        .map((p) => `${p.plan?.name ?? 'Gói'} ${formatDate(p.startDate)}–${formatDate(p.endDate)}`)
-        .join(' · ')}
-    </Typography.Text>
+function PeriodAccess({ membership, upcoming }) {
+  const access = <PlanAccessSummary plan={getPeriodAccess(membership)} />;
+  return upcoming ? (
+    <details className="scms-membership-period__details">
+      <summary>Xem khung giờ và khu vực</summary>
+      {access}
+    </details>
+  ) : (
+    access
   );
 }
 
-/** GY-20: kỳ gói đang dùng (gói tự tập: thời hạn, khung giờ, khu vực) và các kỳ mua nối tiếp. */
-export function CurrentMembershipCard({ membership, canPurchase, onChanged }) {
+function MembershipPeriod({ membership, upcoming = false }) {
+  const status = membership.isFrozen ? 'FROZEN' : membership.status;
+  return (
+    <section
+      className={`scms-membership-period${upcoming ? ' scms-membership-period--upcoming' : ''}`}
+    >
+      <div className="scms-membership-period__heading">
+        <div>
+          <span className="scms-current-membership__eyebrow">
+            {upcoming ? 'Kỳ tiếp theo' : 'Gói tập hiện tại'}
+          </span>
+          <Typography.Title level={4}>{membership.plan?.name || 'Gói tập'}</Typography.Title>
+        </div>
+        <Tag color={status === 'ACTIVE' ? 'green' : 'default'}>
+          {upcoming ? 'Sắp có hiệu lực' : STATUS_LABELS[status] || status}
+        </Tag>
+      </div>
+      <div className="scms-membership-period__dates">
+        <CalendarOutlined />
+        <span>
+          {formatDate(membership.startDate)} – {formatDate(membership.endDate)}
+        </span>
+      </div>
+      <PeriodAccess membership={membership} upcoming={upcoming} />
+    </section>
+  );
+}
+
+/** Hiển thị riêng kỳ gói đang dùng và các kỳ mua nối tiếp. */
+export function CurrentMembershipCard({ membership, canPurchase }) {
   if (!canPurchase || !membership) return null;
-  const live = membership.status === 'ACTIVE' || membership.status === 'FROZEN';
-  const state = STATE[membership.status] ?? STATE.EXPIRED;
   return (
     <Card variant="borderless" className="scms-current-membership">
-      <Flex align="center" justify="space-between" gap={24} wrap>
-        <Space size={16} align="center">
-          <span className="scms-current-membership__icon">
-            <CreditCardFilled />
-          </span>
-          <Space orientation="vertical" size={4}>
-            <Typography.Text className="scms-current-membership__eyebrow">
-              {membership.plan?.name ?? 'Gói tự tập của bạn'}
-            </Typography.Text>
-            <Typography.Title level={3} style={{ margin: 0 }}>
-              {live
-                ? `Còn hiệu lực đến ${formatDate(membership.endDate)}`
-                : `Đã kết thúc ngày ${formatDate(membership.endDate)}`}
-            </Typography.Title>
-            <Typography.Text>
-              Bắt đầu {formatDate(membership.startDate)}
-              {membership.status === 'ACTIVE' && ` · còn ${daysLeft(membership.endDate)} ngày`}
-            </Typography.Text>
-            <PlanAccessTags plan={membership} />
-            <NextPeriods periods={membership.nextPeriods} />
-          </Space>
-        </Space>
-        <Space orientation="vertical" align="end">
-          <Tag color={state.color}>{state.label}</Tag>
-          {live && <MembershipActions membership={membership} onSuccess={onChanged} />}
-        </Space>
-      </Flex>
+      <span className="scms-current-membership__icon">
+        <CreditCardOutlined />
+      </span>
+      <div className="scms-current-membership__periods">
+        <MembershipPeriod membership={membership} />
+        {(membership.nextPeriods ?? []).map((period) => (
+          <MembershipPeriod key={period.id} membership={period} upcoming />
+        ))}
+      </div>
     </Card>
   );
 }

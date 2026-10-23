@@ -56,12 +56,9 @@ export const run = (cmd, args, { cwd = ROOT, shell = IS_WINDOWS } = {}) => {
   }
 };
 
-/** Windows can shell de chay npm.cmd. */
+/** Gọi npm qua shell trên Windows để thực thi được npm.cmd. */
 export const npm = (args, cwd = ROOT) =>
-  run(resolveCommand('npm'), args, {
-    cwd,
-    shell: IS_WINDOWS,
-  });
+  run(resolveCommand('npm'), args, { cwd, shell: IS_WINDOWS });
 
 export const checkNodeVersion = () => {
   const major = Number(process.versions.node.split('.')[0]);

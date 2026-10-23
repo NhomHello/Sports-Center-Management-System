@@ -1,0 +1,121 @@
+.scms-attendance-history.ant-card {
+  overflow: hidden;
+  border: 1px solid var(--scms-border);
+  border-radius: 20px;
+  background: var(--scms-surface);
+}
+
+.scms-attendance-history > .ant-card-body {
+  padding: 0;
+}
+
+.scms-attendance-history__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--scms-border-soft);
+  background: var(--scms-surface-soft);
+}
+
+.scms-attendance-history__filters {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.scms-attendance-history__field {
+  display: flex;
+  flex: 0 1 150px;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--scms-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.scms-attendance-history__field--date {
+  flex-basis: 300px;
+}
+.scms-attendance-history__field--status {
+  flex-basis: 190px;
+}
+.scms-attendance-history__field > .ant-picker,
+.scms-attendance-history__field > .ant-select,
+.scms-attendance-history__field > .ant-input-number {
+  width: 100%;
+}
+.scms-attendance-history__heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 20px;
+}
+.scms-attendance-history__empty {
+  padding: 32px 24px 48px;
+  text-align: center;
+}
+.scms-attendance-history__class {
+  overflow-wrap: anywhere;
+}
+.scms-attendance-history__count {
+  color: var(--scms-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.scms-attendance-history__table .ant-table {
+  background: transparent;
+}
+
+.scms-attendance-history__table .ant-table-thead > tr > th {
+  padding: 15px 20px;
+  color: var(--scms-muted);
+  background: var(--scms-surface-soft);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.scms-attendance-history__table .ant-table-tbody > tr > td {
+  padding: 16px 20px;
+  border-bottom-color: var(--scms-border-soft);
+}
+
+.scms-attendance-history__class,
+.scms-attendance-history__session {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.scms-attendance-history__class .ant-typography-secondary,
+.scms-attendance-history__session .ant-typography-secondary {
+  font-size: 12px;
+}
+
+.scms-attendance-history .scms-query-state {
+  min-height: 210px;
+  padding: 36px 20px;
+}
+
+@media (max-width: 680px) {
+  .scms-attendance-history__toolbar {
+    align-items: stretch;
+  }
+
+  .scms-attendance-history__filters {
+    flex-basis: 100%;
+  }
+
+  .scms-attendance-history__field,
+  .scms-attendance-history__filters .ant-picker,
+  .scms-attendance-history__filters .ant-input-number,
+  .scms-attendance-history__filters .ant-select,
+  .scms-attendance-history__filters .ant-btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}

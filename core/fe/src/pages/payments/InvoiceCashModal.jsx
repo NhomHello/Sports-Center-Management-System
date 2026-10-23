@@ -51,12 +51,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
   if (query.isError) {
     const notice = getApiAvailabilityNotice(query.error, 'Chi tiết hóa đơn');
     return (
-      <Alert
-        showIcon
-        type={notice.type}
-        message={notice.message}
-        description={notice.description}
-      />
+      <Alert showIcon type={notice.type} title={notice.message} description={notice.description} />
     );
   }
   const invoice = query.data?.data;
@@ -67,7 +62,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(mutation.error, 'ghi nhận thu tiền')}
+          title={getApiOperationErrorMessage(mutation.error, 'ghi nhận thu tiền')}
         />
       )}
       <CashInvoiceSummary invoice={invoice} />
@@ -80,7 +75,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
         <Alert
           showIcon
           type="warning"
-          message="Hóa đơn hoặc quyền hiện tại không cho phép thu tiền mặt."
+          title="Hóa đơn hoặc quyền hiện tại không cho phép thu tiền mặt."
         />
       )}
     </>

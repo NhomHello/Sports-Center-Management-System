@@ -11,7 +11,7 @@ function InvoiceListContent({ query, isOwn, table, onCash, onDetail }) {
       <Alert
         showIcon
         type={notice.type}
-        message={notice.message}
+        title={notice.message}
         description={notice.description}
         action={notice.retryable && <Button onClick={() => query.refetch()}>Thử lại</Button>}
       />

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
 import { PlanAccessFields } from './PlanAccessFields';
+import { App, Form, Input, InputNumber, Modal, Switch } from 'antd';
 
 const MembershipIdentityFields = ({ plan }) => (
   <>
@@ -47,6 +47,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
 
   useEffect(() => {
     if (!open) return;
+    form.resetFields();
     form.setFieldsValue(planFormValues(plan));
   }, [form, open, plan]);
 
@@ -66,7 +67,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     <Modal
       open={open}
       centered
-      title={plan ? 'Chỉnh sửa gói tự tập' : 'Tạo gói tự tập mới'}
+      title={plan ? 'Chỉnh sửa gói tập' : 'Tạo gói tập mới'}
       okText="Lưu"
       cancelText="Hủy"
       confirmLoading={loading}
@@ -76,6 +77,7 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <MembershipIdentityFields plan={plan} />
+        <PlanAccessFields />
         <Form.Item
           name="durationDays"
           label="Thời hạn (ngày)"
@@ -97,14 +99,13 @@ export function MembershipPlanFormModal({ open, plan, onClose, onSubmit, loading
             placeholder="Ví dụ: 500.000"
           />
         </Form.Item>
-        <PlanAccessFields />
         <Form.Item name="description" label="Mô tả gói">
           <Input.TextArea placeholder="Giới thiệu nội dung và đối tượng phù hợp" />
         </Form.Item>
         <Form.Item name="benefitsText" label="Quyền lợi (mỗi dòng một quyền lợi)">
           <Input.TextArea
             rows={4}
-            placeholder="Ví dụ:&#10;Tập gym không giới hạn thời gian&#10;Tham gia mọi lớp Yoga"
+            placeholder="Ví dụ:&#10;Sử dụng thiết bị tại khu vực của gói"
           />
         </Form.Item>
         <Form.Item name="isActive" label="Đang mở bán" valuePropName="checked">

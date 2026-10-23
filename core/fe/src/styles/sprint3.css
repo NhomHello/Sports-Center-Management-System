@@ -3,7 +3,7 @@
   bottom: 0;
   padding: 12px;
   background: var(--ant-color-bg-container, white);
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--scms-border);
   z-index: 5;
   text-align: right;
 }

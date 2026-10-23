@@ -40,7 +40,7 @@ export function MembershipEffectSummary({ current, durationDays }) {
       type={effect.kind === MEMBERSHIP_EFFECT.EXTEND ? 'success' : 'info'}
       className="scms-membership-effect"
       style={{ margin: '16px 0' }}
-      message="Tác động lên gói tập"
+      title="Tác động lên gói tập"
       description={describeEffect(effect)}
     />
   );

@@ -52,11 +52,11 @@ function catalogTabs(can) {
 
 function buildTabs(can, canAll, onViewSchedule) {
   const canPersonal = (permission) => can(permission) && !can(P.CLASS_READ_ALL);
-  const actions = (item) => <ClassBookingActions item={item} />;
+  const actions = (item, options) => <ClassBookingActions item={item} {...options} />;
   const management = (
     <ClassListPanel
       scope="management"
-      renderActions={(item) => <ClassBookingActions item={item} rosterOnly />}
+      renderActions={(item, options) => <ClassBookingActions item={item} rosterOnly {...options} />}
       renderFilters={(table) => <ClassFilters table={table} />}
     />
   );

@@ -41,9 +41,10 @@ function MemberEnrollmentList({ memberId }) {
               item={item}
               can={() => false}
               onDetail={() => setDetailId(item.id)}
-            >
-              <ClassBookingActions item={item} memberId={memberId} />
-            </ClassCard>
+              renderActions={(current, options) => (
+                <ClassBookingActions item={current} memberId={memberId} {...options} />
+              )}
+            />
           ))}
         </div>
       </QueryState>
@@ -74,7 +75,9 @@ export function StaffBookingPanel() {
     enabled: Boolean(search),
   });
   const members = query.data?.data || [];
-  const actions = (item) => <ClassBookingActions item={item} memberId={memberId} />;
+  const actions = (item, options) => (
+    <ClassBookingActions item={item} memberId={memberId} {...options} />
+  );
   return (
     <div className="scms-staff-booking">
       <section className="scms-staff-member-search">

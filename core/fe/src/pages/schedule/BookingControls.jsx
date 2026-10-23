@@ -1,8 +1,10 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Popconfirm } from 'antd';
-import { MembershipExpiryNotice } from './MembershipExpiryNotice';
 import { formatDateTime } from '@/utils/format';
+import { WAITLIST_STATUS } from '@/constants/schedule';
 const deadline = (item) => formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline);
+const hasCompactCancellation = (item, compact) =>
+  compact && item.canCancel && !item.cancellationExceptionUntil;
 
 /** Xác nhận giữ chỗ toàn lớp. */
 export function BookingEnrollButton({ item, memberId, allowed, booked, mutation }) {
@@ -10,16 +12,22 @@ export function BookingEnrollButton({ item, memberId, allowed, booked, mutation 
   const label = memberId ? 'Đăng ký hộ' : 'Đăng ký lớp';
   return (
     <>
-      <MembershipExpiryNotice item={item} memberId={memberId} />
       <Popconfirm
         title={memberId ? 'Đăng ký toàn lớp cho hội viên đã chọn?' : 'Đăng ký toàn lớp?'}
+        description={
+          <div className="scms-booking-confirmation">
+            <p>Đăng ký áp dụng cho các buổi còn lại của lớp.</p>
+            <p>Hạn đăng ký: {formatDateTime(item.registrationEndAt)}</p>
+            <p>Hạn hủy buổi gần nhất: {deadline(item) || 'Theo quy định của lớp'}</p>
+          </div>
+        }
         onConfirm={() => mutation.mutate()}
         disabled={!item.canEnroll}
         okText="Đăng ký"
         cancelText="Hủy"
       >
         <Button type="primary" disabled={!item.canEnroll} loading={mutation.isPending}>
-          {label}
+          {item.waitlist?.status === WAITLIST_STATUS.OFFERED ? 'Xác nhận đăng ký' : label}
         </Button>
       </Popconfirm>
     </>
@@ -45,20 +53,24 @@ export function BookingCancelButton({ item, memberId, allowed, booked, mutation 
   );
 }
 
-/** Giải thích nút bị chặn hoặc ngoại lệ do đổi lịch. */
-export function BookingNotice({ item, booked, allowed }) {
+function EnrollmentBlockReason({ item }) {
+  return item.enrollReason ? (
+    <p className="scms-booking-note">
+      <InfoCircleOutlined />
+      <span>
+        {new Date(item.bookingBlockedUntil) > new Date()
+          ? `Tạm chặn do vắng nhiều buổi. Được đăng ký lại từ ${formatDateTime(item.bookingBlockedUntil)}`
+          : item.enrollReason}
+      </span>
+    </p>
+  ) : null;
+}
+
+/** Giải thích nút bị chặn; hạn hủy đã có trong chi tiết và bước xác nhận. */
+export function BookingNotice({ item, booked, allowed, compact = false, hideReason = false }) {
   if (!allowed) return null;
-  if (!booked)
-    return item.enrollReason ? (
-      <p className="scms-booking-note">
-        <InfoCircleOutlined />
-        <span>
-          {new Date(item.bookingBlockedUntil) > new Date()
-            ? `Tạm chặn do vắng nhiều buổi. Được đăng ký lại từ ${formatDateTime(item.bookingBlockedUntil)}`
-            : item.enrollReason}
-        </span>
-      </p>
-    ) : null;
+  if (!booked) return hideReason ? null : <EnrollmentBlockReason item={item} />;
+  if (hasCompactCancellation(item, compact)) return null;
   return (
     <>
       <p className="scms-booking-note">

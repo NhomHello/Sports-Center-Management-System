@@ -8,6 +8,7 @@ export const ENROLLMENT_STATUS = Object.freeze({
   CANCELLED: 'CANCELLED',
   PENDING_PAYMENT: 'PENDING_PAYMENT',
 });
+export const WAITLIST_STATUS = Object.freeze({ WAITING: 'WAITING', OFFERED: 'OFFERED' });
 export const SESSION_STATUS = Object.freeze({
   SCHEDULED: 'SCHEDULED',
   CANCELLED: 'CANCELLED',

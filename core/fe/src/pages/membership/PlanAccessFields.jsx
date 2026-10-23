@@ -1,35 +1,62 @@
 import { useQuery } from '@tanstack/react-query';
-import { Form, Select } from 'antd';
-import { listFrames, listRoomTypes } from '@/services/schedule.service';
+import { Alert, Button, Form, Select } from 'antd';
+import { listPlanFrames, listPlanAreas } from '@/services/membershipPlan.service';
 
-/** GY-21: chọn khung giờ và khu tự tập của gói; để trống = không giới hạn mục đó. */
+/** Chỉ chọn loại phòng được đánh dấu là khu tự tập. */
 export function PlanAccessFields() {
-  const frames = useQuery({ queryKey: ['operating-frames'], queryFn: listFrames });
-  const types = useQuery({ queryKey: ['room-types'], queryFn: listRoomTypes });
-  const frameOptions = (frames.data?.data ?? [])
-    .filter((frame) => frame.isActive)
-    .map((frame) => ({
-      value: frame.id,
-      label: `${frame.name} ${frame.startTime}–${frame.endTime}`,
-    }));
-  const areaOptions = (types.data?.data ?? [])
-    .filter((type) => type.isActive && type.isSelfTrainingArea)
-    .map((type) => ({ value: type.id, label: type.name }));
+  const frames = useQuery({ queryKey: ['plan-frames'], queryFn: listPlanFrames });
+  const areas = useQuery({ queryKey: ['plan-areas'], queryFn: listPlanAreas });
+  const failed = frames.isError || areas.isError;
   return (
     <>
+      {failed && (
+        <Alert
+          type="error"
+          showIcon
+          title="Chưa tải được khung giờ hoặc khu vực"
+          description={frames.error?.message || areas.error?.message}
+          action={
+            <Button
+              onClick={() => {
+                frames.refetch();
+                areas.refetch();
+              }}
+            >
+              Thử lại
+            </Button>
+          }
+        />
+      )}
       <Form.Item
         name="frameIds"
         label="Khung giờ được vào"
-        extra="Để trống nếu gói vào được mọi khung giờ hoạt động."
+        rules={[{ required: true, message: 'Chọn ít nhất một khung giờ' }]}
       >
-        <Select mode="multiple" allowClear options={frameOptions} loading={frames.isPending} />
+        <Select
+          mode="multiple"
+          loading={frames.isPending}
+          disabled={failed}
+          options={(frames.data?.data ?? [])
+            .filter((f) => f.isActive !== false)
+            .map((f) => ({
+              value: f.id,
+              label: `${f.name} ${f.startTime}–${f.endTime}`,
+            }))}
+        />
       </Form.Item>
       <Form.Item
         name="roomTypeIds"
-        label="Khu tự tập được vào"
-        extra="Chỉ hiện loại phòng đánh dấu là khu tự tập. Để trống = mọi khu tự tập."
+        label="Khu vực tự tập"
+        rules={[{ required: true, message: 'Chọn ít nhất một khu vực tự tập' }]}
       >
-        <Select mode="multiple" allowClear options={areaOptions} loading={types.isPending} />
+        <Select
+          mode="multiple"
+          loading={areas.isPending}
+          disabled={failed}
+          options={(areas.data?.data ?? [])
+            .filter((a) => a.isSelfTrainingArea && a.isActive !== false)
+            .map((a) => ({ value: a.id, label: a.name }))}
+        />
       </Form.Item>
     </>
   );

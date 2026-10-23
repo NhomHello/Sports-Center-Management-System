@@ -5,16 +5,15 @@ import { computeSavings, pricePerDay } from '@/utils/planPricing';
 import { PlanAccessTags } from './PlanAccessTags';
 import { PlanActions } from './PlanActions';
 import './membershipPlans.css';
+import { PlanAccessSummary } from './PlanAccessSummary';
 
 const getDisplayCode = (plan) =>
   /^[A-Z0-9_]{1,18}$/.test(plan.code ?? '')
     ? plan.code.replaceAll('_', ' ')
     : `GÓI #${String(plan.id).padStart(2, '0')}`;
 
-export const PlanBenefits = ({ benefits, description }) => {
-  const items = benefits?.length
-    ? benefits
-    : [description || 'Liên hệ trung tâm để biết quyền lợi'];
+export const PlanBenefits = ({ benefits }) => {
+  const items = benefits?.length ? benefits : ['Quyền lợi đang được cập nhật'];
   return (
     <ul className="scms-plan-card__benefits">
       {items.map((benefit) => (
@@ -34,7 +33,7 @@ export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
   >
     {featured && (
       <span className="scms-plan-card__ribbon">
-        <StarFilled /> Phổ biến nhất
+        <StarFilled /> Gói đề xuất
       </span>
     )}
     <div className="scms-plan-card__topline">
@@ -61,8 +60,9 @@ export const PlanCard = ({ plan, featured, savingsPercent, ...actions }) => (
     </div>
     <PlanAccessTags plan={plan} />
     <div className="scms-plan-card__rule" />
-    <Typography.Text className="scms-plan-card__benefits-title">Bao gồm</Typography.Text>
-    <PlanBenefits benefits={plan.benefits} description={plan.description} />
+    <Typography.Text className="scms-plan-card__benefits-title">Quyền sử dụng</Typography.Text>
+    <PlanAccessSummary plan={plan} />
+    <PlanBenefits benefits={plan.benefits} />
     <PlanActions plan={plan} featured={featured} {...actions} />
   </Card>
 );
@@ -88,8 +88,8 @@ export const PlanGrid = ({ plans, pendingInvoiceByPlanId, ...actions }) => {
       </Row>
       <div className="scms-pricing-assurance">
         <SafetyCertificateOutlined />
-        Gói tự tập dùng trong khung giờ và khu vực ghi trên gói, kích hoạt sau khi hóa đơn thanh
-        toán thành công. Lớp học bán riêng theo khóa ở mục Lịch tập.
+        Gói tập dùng trong khung giờ và khu vực ghi trên gói, kích hoạt sau khi thanh toán thành
+        công. Lớp học bán riêng theo khóa ở mục Lịch tập.
       </div>
     </section>
   );

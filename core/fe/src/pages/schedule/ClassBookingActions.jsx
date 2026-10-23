@@ -9,8 +9,27 @@ import { BookingEnrollButton, BookingCancelButton, BookingNotice } from './Booki
 import { CourseOrderControls } from './CourseOrderControls';
 import { WaitlistControls } from './WaitlistControls';
 import { ClassRosterModal } from './ClassRosterModal';
+import { ClassBookingNotices } from './ClassBookingNotices';
+import { shouldShowEnrollmentAction } from '@/utils/classBookingPresentation';
 
-/** Lớp có học phí: mua khóa / giữ chỗ / hủy-đổi khóa thay cho đăng ký miễn phí (GY-22). */
+function EnrollmentControl({ item, memberId, allowed, booked, mutation, compact }) {
+  if (!shouldShowEnrollmentAction({ item, memberId, allowed, booked })) return null;
+  return (
+    <BookingEnrollButton
+      item={item}
+      memberId={memberId}
+      allowed={allowed}
+      booked={booked}
+      mutation={mutation}
+      compact={compact}
+    />
+  );
+}
+
+function BookingRoster({ item, open, onClose }) {
+  return open ? <ClassRosterModal item={item} onClose={onClose} /> : null;
+}
+
 function CourseBookingActions({
   item,
   memberId,
@@ -19,16 +38,21 @@ function CourseBookingActions({
   rosterButton,
   booked,
   roster,
+  secondaryAction,
+  compact,
 }) {
   return (
-    <div className="scms-booking-actions">
+    <div className={`scms-booking-actions${compact ? ' scms-booking-actions--compact' : ''}`}>
       <CourseOrderControls
         item={item}
         memberId={memberId}
         allowed={enrollAllowed}
         cancel={cancel}
       />
-      <div className="scms-booking-actions__buttons">{rosterButton}</div>
+      <div className="scms-booking-actions__buttons">
+        {rosterButton}
+        {secondaryAction}
+      </div>
       <WaitlistControls item={item} allowed={enrollAllowed} memberId={memberId} booked={booked} />
       {!item.enrollment?.invoiceId && (
         <BookingNotice item={item} booked={false} allowed={enrollAllowed} />
@@ -48,7 +72,13 @@ const bookingPermissions = (can, memberId) =>
     : { enrollAllowed: can(P.CLASS_ENROLL_SELF), cancelAllowed: can(P.CLASS_CANCEL_SELF) };
 
 /** Chỉ dùng điều kiện server trả, không tính hạn hủy ở FE. */
-export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
+export function ClassBookingActions({
+  item,
+  memberId,
+  rosterOnly = false,
+  compact = false,
+  secondaryAction,
+}) {
   const { can } = usePermission();
   const [rosterOpen, setRosterOpen] = useState(false);
   const { enrollAllowed, cancelAllowed } = bookingPermissions(can, memberId);
@@ -58,31 +88,45 @@ export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
   const rosterButton = can(P.CLASS_VIEW_ROSTER, P.CLASS_READ_ALL) && (
     <Button onClick={() => setRosterOpen(true)}>Danh sách hội viên</Button>
   );
-  // Tab quản lý lớp dành cho vận hành: đăng ký của chính mình nằm ở tab "Lớp đang mở".
   if (rosterOnly) {
     return (
-      <div className="scms-booking-actions">
-        <div className="scms-booking-actions__buttons">{rosterButton}</div>
-        {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
+      <div className={`scms-booking-actions${compact ? ' scms-booking-actions--compact' : ''}`}>
+        <div className="scms-booking-actions__notices" />
+        <div className="scms-booking-actions__buttons">
+          {rosterButton}
+          {secondaryAction}
+        </div>
+        <BookingRoster item={item} open={rosterOpen} onClose={() => setRosterOpen(false)} />
       </div>
     );
   }
   if (item.price > 0)
     return (
       <CourseBookingActions
-        {...{ item, memberId, enrollAllowed, cancel, rosterButton, booked }}
+        {...{
+          item,
+          memberId,
+          enrollAllowed,
+          cancel,
+          rosterButton,
+          booked,
+          secondaryAction,
+          compact,
+        }}
         roster={rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
       />
     );
   return (
-    <div className="scms-booking-actions">
+    <div className={`scms-booking-actions${compact ? ' scms-booking-actions--compact' : ''}`}>
+      <ClassBookingNotices {...{ item, memberId, booked, enrollAllowed, cancelAllowed, compact }} />
       <div className="scms-booking-actions__buttons">
-        <BookingEnrollButton
+        <EnrollmentControl
           item={item}
           memberId={memberId}
           allowed={enrollAllowed}
           booked={booked}
           mutation={enroll}
+          compact={compact}
         />
         <BookingCancelButton
           item={item}
@@ -91,11 +135,17 @@ export function ClassBookingActions({ item, memberId, rosterOnly = false }) {
           booked={booked}
           mutation={cancel}
         />
+        <WaitlistControls
+          item={item}
+          allowed={enrollAllowed}
+          memberId={memberId}
+          booked={booked}
+          compact={compact}
+        />
         {rosterButton}
+        {secondaryAction}
       </div>
-      <WaitlistControls item={item} allowed={enrollAllowed} memberId={memberId} booked={booked} />
-      <BookingNotice item={item} booked={booked} allowed={enrollAllowed || cancelAllowed} />
-      {rosterOpen && <ClassRosterModal item={item} onClose={() => setRosterOpen(false)} />}
+      <BookingRoster item={item} open={rosterOpen} onClose={() => setRosterOpen(false)} />
     </div>
   );
 }

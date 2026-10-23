@@ -38,7 +38,7 @@ function PendingPanel({ instruction, currency }) {
         showIcon
         icon={<ClockCircleOutlined />}
         type={remaining > 0 ? 'info' : 'warning'}
-        message={
+        title={
           remaining > 0
             ? `Quét mã để chuyển khoản. Hóa đơn hết hạn sau ${formatCountdown(remaining)}`
             : 'Hóa đơn đã quá hạn thanh toán. Nếu bạn đã chuyển khoản, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra.'
@@ -92,7 +92,7 @@ export function OnlinePaymentPanel({ invoice }) {
         className="scms-online-paid"
         style={{ marginBottom: 16 }}
         icon={<CheckCircleFilled />}
-        message="Đã nhận thanh toán. Gói / khóa học đã có hiệu lực."
+        title="Đã nhận thanh toán. Gói tập / khóa học đã có hiệu lực."
       />
     );
   }
@@ -107,7 +107,7 @@ export function OnlinePaymentPanel({ invoice }) {
           showIcon
           type="warning"
           style={{ marginBottom: 16 }}
-          message="Hóa đơn đã quá hạn thanh toán"
+          title="Hóa đơn đã quá hạn thanh toán"
           description='Không chuyển khoản vào hóa đơn này nữa. Nếu bạn đã chuyển, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra; nếu chưa, hãy tạo hóa đơn mới từ trang Gói tập.'
         />
       );

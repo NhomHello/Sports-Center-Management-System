@@ -2,9 +2,11 @@
   min-width: 0;
 }
 .scms-dashboard-experience .scms-dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   min-height: 0;
   margin-bottom: 20px;
-  padding: clamp(26px, 3vw, 36px);
+  padding: clamp(24px, 3vw, 36px);
   border-radius: var(--scms-card-radius, 16px);
   box-shadow: var(--scms-panel-shadow);
 }
@@ -12,7 +14,7 @@
   min-width: 0;
 }
 .scms-dashboard-experience .scms-dashboard-hero__copy h1.ant-typography {
-  max-width: 660px;
+  max-width: 760px;
   margin: 9px 0 12px;
   color: white;
   font-size: clamp(26px, 2.8vw, 36px);
@@ -20,13 +22,25 @@
   letter-spacing: -0.025em;
   overflow-wrap: anywhere;
 }
+.scms-dashboard-hero__greeting {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--scms-brand-muted);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.scms-dashboard-hero__name {
+  display: block;
+  text-wrap: balance;
+}
 .scms-dashboard-experience .scms-dashboard-hero__copy .ant-typography {
   max-width: 580px;
   font-size: 14px;
   line-height: 1.65;
 }
 .scms-dashboard-experience .scms-dashboard-hero__copy .scms-dashboard-hero__eyebrow {
-  color: #bfdbfe;
+  color: var(--scms-brand-muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -48,16 +62,16 @@
 .scms-dashboard-action:hover {
   color: white;
   border-color: white;
-  background: rgb(255 255 255 / 9%);
+  background: color-mix(in srgb, var(--scms-surface) 9%, transparent);
 }
 .scms-dashboard-action--primary {
-  background: linear-gradient(110deg, #2563eb, #4f46e5);
+  background: var(--scms-action);
   border-color: transparent;
   box-shadow: 0 8px 18px rgb(37 99 235 / 17%);
 }
 .scms-dashboard-action--primary:hover {
   border-color: transparent;
-  background: linear-gradient(110deg, #1d4ed8, #4338ca);
+  background: var(--scms-action);
 }
 .scms-dashboard-date {
   position: relative;
@@ -68,10 +82,10 @@
   padding: 20px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: var(--scms-card-radius, 16px);
-  background: rgb(255 255 255 / 7%);
+  background: color-mix(in srgb, var(--scms-surface) 7%, transparent);
 }
 .scms-dashboard-date > .anticon {
-  color: #bfdbfe;
+  color: var(--scms-brand-muted);
   font-size: 24px;
 }
 .scms-dashboard-date > span:last-child {
@@ -85,7 +99,7 @@
   font-weight: 650;
 }
 .scms-dashboard-date small {
-  color: #cbd5e1;
+  color: var(--scms-brand-muted);
   font-size: 11px;
 }
 .scms-dashboard-overview {
@@ -196,6 +210,7 @@
 }
 @media (max-width: 760px) {
   .scms-dashboard-experience .scms-dashboard-hero {
+    grid-template-columns: minmax(0, 1fr);
     gap: 22px;
     padding: 24px;
   }
@@ -203,6 +218,7 @@
     font-size: 27px;
   }
   .scms-dashboard-date {
+    justify-self: start;
     align-self: flex-start;
     padding: 12px 16px;
   }

@@ -1,6 +1,6 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { Descriptions, Typography } from 'antd';
-import { formatDateTime } from '@/utils/format';
+import { formatDate, formatDateTime } from '@/utils/format';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
 
 /** Buổi được mở chỉ là ngữ cảnh xem; điều kiện và thao tác vẫn thuộc toàn lớp. */
@@ -29,6 +29,18 @@ export function ClassOverview({ item, selectedSession }) {
           { key: 'subject', label: 'Bộ môn', children: item.subject.name },
           { key: 'room', label: 'Phòng', children: item.room.name },
           { key: 'teacher', label: 'HLV', children: item.coach.fullName },
+          {
+            key: 'period',
+            label: 'Thời gian khóa học',
+            children: `${formatDate(item.startsOn)} – ${formatDate(item.endsOn)}`,
+          },
+          {
+            key: 'cancel-deadline',
+            label: 'Hạn hủy buổi gần nhất',
+            children:
+              formatDateTime(item.cancellationExceptionUntil || item.cancelDeadline) ||
+              'Theo quy định của lớp',
+          },
           {
             key: 'slots',
             label: 'Chỗ còn lại',

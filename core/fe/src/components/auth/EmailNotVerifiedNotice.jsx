@@ -19,7 +19,7 @@ export function EmailNotVerifiedNotice({ email, title, description }) {
       icon={<MailOutlined />}
       className="scms-email-unverified"
       style={{ marginBottom: 16 }}
-      message={title}
+      title={title}
       description={
         <Space orientation="vertical" size="small">
           <span>{description}</span>

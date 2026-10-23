@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Alert, App, Form, Modal, Row, Col, Typography } from 'antd';
+import { Alert, App, Form, Modal, Typography } from 'antd';
 import { QUERY_KEYS } from '@/constants';
 import { SCHEDULE_UI } from '@/constants/schedule';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
@@ -98,7 +98,8 @@ export function ClassFormModal({ item, onClose }) {
       cancelText="Hủy"
       confirmLoading={save.isPending}
       okButtonProps={{ disabled: options.isPending || options.isError }}
-      width={720}
+      width={960}
+      className="scms-class-form-modal"
     >
       {options.isError && <Alert type="error" title={options.error.message} />}
       <Form
@@ -108,16 +109,19 @@ export function ClassFormModal({ item, onClose }) {
         initialValues={classFormValues(item)}
         onFinish={item ? confirmUpdate : save.mutate}
       >
-        <Row gutter={24}>
-          <Col xs={24} md={12}>
+        <Typography.Paragraph type="secondary" className="scms-class-form-intro">
+          Thiết lập thông tin, thời gian đăng ký và lịch học hằng tuần của lớp.
+        </Typography.Paragraph>
+        <div className="scms-class-form-grid">
+          <section className="scms-class-form-section" aria-label="Thông tin lớp">
             <Typography.Title level={5}>Thông tin lớp</Typography.Title>
             <ClassIdentityFields {...EMPTY_OPTIONS} {...options.data} />
-          </Col>
-          <Col xs={24} md={12}>
+          </section>
+          <section className="scms-class-form-section" aria-label="Lịch học">
             <Typography.Title level={5}>Lịch học</Typography.Title>
             <ClassScheduleFields frames={options.data?.frames} />
-          </Col>
-        </Row>
+          </section>
+        </div>
       </Form>
     </Modal>
   );

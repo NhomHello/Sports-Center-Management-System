@@ -17,7 +17,7 @@ function QueryError({ query, resource }) {
   if (!query.isError) return null;
   const notice = getApiAvailabilityNotice(query.error, resource);
   return (
-    <Alert showIcon type={notice.type} message={notice.message} description={notice.description} />
+    <Alert showIcon type={notice.type} title={notice.message} description={notice.description} />
   );
 }
 
@@ -45,7 +45,7 @@ function CounterInvoiceContent({
         <Alert
           showIcon
           type="error"
-          message={getApiOperationErrorMessage(mutation.error, 'tạo hóa đơn')}
+          title={getApiOperationErrorMessage(mutation.error, 'tạo hóa đơn')}
         />
       )}
       <Form form={form} layout="vertical" onFinish={mutation.mutate} disabled={mutation.isPending}>

@@ -160,7 +160,7 @@
   padding: 12px 10px;
 }
 .scms-app-content .scms-calendar-event--past.ant-card {
-  border-inline-start-color: #94a3b8;
+  border-inline-start-color: var(--scms-blue-border);
 }
 .scms-calendar-event__time {
   display: flex;
