@@ -1,0 +1,7 @@
+.scms-app-content__inner.scms-dashboard-workspace {
+  container: dashboard / inline-size;
+}
+
+.scms-dashboard-workspace .scms-kpi-grid > .ant-card {
+  min-width: 0;
+}

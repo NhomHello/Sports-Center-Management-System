@@ -1,0 +1,38 @@
+/* Dùng chung cho các trang: khung bám chiều ngang, chiều cao theo nội dung khi zoom. */
+.scms-app-frame > .scms-app-content {
+  min-width: 0;
+  padding: 30px 6% 48px;
+}
+
+.scms-app-content .scms-app-content__inner {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.scms-app-content__inner > *,
+.scms-app-content__inner .ant-card,
+.scms-app-content__inner .ant-table-wrapper,
+.scms-app-content__inner .ant-form-item-control {
+  min-width: 0;
+}
+
+.scms-app-content__inner .ant-form-inline > .ant-form-item {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.scms-app-content .scms-password-page {
+  width: 100%;
+  max-width: none;
+}
+
+.scms-auth-experience .scms-auth-form-panel .scms-auth-form-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.scms-auth-shell.scms-auth-experience .scms-auth-form-panel {
+  padding-inline: 6%;
+}
