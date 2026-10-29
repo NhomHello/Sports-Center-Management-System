@@ -26,9 +26,13 @@ export function ReportFilters({ today, onApply }) {
   });
   return (
     <Card>
-      <Form form={form} layout="inline" className="scms-report-filter-form"
+      <Form
+        form={form}
+        layout="inline"
+        className="scms-report-filter-form"
         initialValues={{ range: [today.startOf('month'), today], groupBy: 'day', compare: true }}
-        onFinish={(values) => onApply(reportQuery(values))}>
+        onFinish={(values) => onApply(reportQuery(values))}
+      >
         <ReportTimeFields form={form} today={today} />
         {can(P.MEMBERSHIP_PLAN_READ) && (
           <Form.Item name="planId" label="Gói tập">

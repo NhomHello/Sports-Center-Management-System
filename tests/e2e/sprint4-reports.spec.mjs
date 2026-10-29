@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { env } from '../../core/be/src/config/env.js';
 const apiRoot = `http://127.0.0.1:${process.env.E2E_API_PORT || '3100'}${env.API_PREFIX}`;
-test('S4-23/25/27: nhóm kỳ, so sánh, cơ cấu và tab hội viên dùng bộ lọc đã áp dụng', async ({ page, request }, info) => {
+test('TC-S4-E2E-01: S4-23/25/27: nhóm kỳ, so sánh, cơ cấu và tab hội viên dùng bộ lọc đã áp dụng', async ({ page, request }, info) => {
   const errors = []; page.on('pageerror', (error) => errors.push(error.message));
   const session = await request.post(`${apiRoot}/auth/login`, { data: { email: env.SEED_ADMIN_EMAIL, password: env.SEED_ADMIN_PASSWORD } });
   expect(session.status()).toBe(200);

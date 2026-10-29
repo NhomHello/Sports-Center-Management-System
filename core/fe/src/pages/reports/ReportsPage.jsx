@@ -18,14 +18,20 @@ export default function ReportsPage() {
   const [filters, setFilters] = useState({
     from: today.startOf('month').format('YYYY-MM-DD'),
     to: today.format('YYYY-MM-DD'),
-    groupBy: 'day', compare: 'previous',
+    groupBy: 'day',
+    compare: 'previous',
   });
   const [format, setFormat] = useState('xlsx');
   const [tab, setTab] = useState('revenue');
-  const query = useQuery({ queryKey: ['reports', tab, filters], queryFn: () => tab === 'members' ? getMemberReport(filters) : getReport(filters) });
+  const query = useQuery({
+    queryKey: ['reports', tab, filters],
+    queryFn: () => (tab === 'members' ? getMemberReport(filters) : getReport(filters)),
+  });
   const download = useMutation({
-    mutationFn: async ({ params, activeTab }) => ({ blob: await (activeTab === 'members' ? downloadMemberReport(params) : exportReport(params)),
-      filename: `${activeTab}-${params.from}-${params.to}.${params.format}` }),
+    mutationFn: async ({ params, activeTab }) => ({
+      blob: await (activeTab === 'members' ? downloadMemberReport(params) : exportReport(params)),
+      filename: `${activeTab}-${params.from}-${params.to}.${params.format}`,
+    }),
     onSuccess: ({ blob, filename }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -44,12 +50,26 @@ export default function ReportsPage() {
         title="Báo cáo trung tâm"
         subtitle="Doanh thu theo ngày thanh toán, trừ tiền đã hoàn · Giờ Việt Nam"
       />
-      <Tabs activeKey={tab} onChange={setTab} items={[{ key: 'revenue', label: 'Doanh thu' }, { key: 'members', label: 'Hội viên & đăng ký' }]} />
+      <Tabs
+        activeKey={tab}
+        onChange={setTab}
+        items={[
+          { key: 'revenue', label: 'Doanh thu' },
+          { key: 'members', label: 'Hội viên & đăng ký' },
+        ]}
+      />
       <ReportFilters today={today} onApply={setFilters} />
       <QueryState query={query}>
         {report && (
-          <Results report={report} format={format} setFormat={setFormat}
-            download={{ isPending: download.isPending, mutate: () => download.mutate({ params: { ...filters, format }, activeTab: tab }) }} />
+          <Results
+            report={report}
+            format={format}
+            setFormat={setFormat}
+            download={{
+              isPending: download.isPending,
+              mutate: () => download.mutate({ params: { ...filters, format }, activeTab: tab }),
+            }}
+          />
         )}
       </QueryState>
     </>

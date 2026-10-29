@@ -11,10 +11,35 @@
 
 /** @type {PermissionModule[]} */
 export const PERMISSION_MODULES = [
-  { module: 'coach_profile', label: 'Hồ sơ HLV', actions: { read: 'Xem hồ sơ HLV công khai', update_own: 'Sửa hồ sơ HLV của mình' } },
-  { module: 'member_profile', label: 'Hồ sơ tập luyện', actions: { read_own: 'Xem hồ sơ tập luyện cá nhân', update_own: 'Sửa hồ sơ tập luyện cá nhân', view_assigned: 'Xem hồ sơ học viên được phân công' } },
-  { module: 'course_summary', label: 'Tổng kết khoá', actions: { read_own: 'Xem kết quả khoá của mình', manage_assigned: 'Lập/công bố tổng kết lớp phụ trách', view_all: 'Xem báo cáo tổng kết mọi lớp', reopen: 'Mở lại tổng kết đã công bố' } },
-  { module: 'course_rating', label: 'Đánh giá khoá', actions: { write_own: 'Đánh giá khoá đã học', moderate: 'Ẩn nhận xét không phù hợp' } },
+  {
+    module: 'coach_profile',
+    label: 'Hồ sơ HLV',
+    actions: { read: 'Xem hồ sơ HLV công khai', update_own: 'Sửa hồ sơ HLV của mình' },
+  },
+  {
+    module: 'member_profile',
+    label: 'Hồ sơ tập luyện',
+    actions: {
+      read_own: 'Xem hồ sơ tập luyện cá nhân',
+      update_own: 'Sửa hồ sơ tập luyện cá nhân',
+      view_assigned: 'Xem hồ sơ học viên được phân công',
+    },
+  },
+  {
+    module: 'course_summary',
+    label: 'Tổng kết khoá',
+    actions: {
+      read_own: 'Xem kết quả khoá của mình',
+      manage_assigned: 'Lập/công bố tổng kết lớp phụ trách',
+      view_all: 'Xem báo cáo tổng kết mọi lớp',
+      reopen: 'Mở lại tổng kết đã công bố',
+    },
+  },
+  {
+    module: 'course_rating',
+    label: 'Đánh giá khoá',
+    actions: { write_own: 'Đánh giá khoá đã học', moderate: 'Ẩn nhận xét không phù hợp' },
+  },
   // ---------- Hệ thống ----------
   { module: 'dashboard', label: 'Tổng quan', actions: { view: 'Xem trang tổng quan' } },
   {

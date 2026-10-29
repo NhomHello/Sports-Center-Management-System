@@ -21,7 +21,7 @@ beforeAll(async () => {
 afterAll(async () => cleanupSprintFixture(f));
 
 describe('S4-22/24/26/28 báo cáo thời gian', () => {
-  it('biên ngày Việt Nam, tuần thứ Hai, quý/năm và kỳ trước qua năm nhuận', () => {
+  it('TC-S4-REPORT-01: biên ngày Việt Nam, tuần thứ Hai, quý/năm và kỳ trước qua năm nhuận', () => {
     expect(periodKey(new Date('2026-12-31T17:00:00Z'), 'year')).toBe('2027');
     expect(periodKey('2027-01-01', 'week')).toBe('2026-12-28');
     expect(periodKey('2026-10-01', 'quarter')).toBe('2026-Q4');
@@ -30,7 +30,7 @@ describe('S4-22/24/26/28 báo cáo thời gian', () => {
       ['2026-10', '2026-10-14T17:00:00.000Z', '2026-10-31T17:00:00.000Z'], ['2026-11', '2026-10-31T17:00:00.000Z', '2026-11-02T17:00:00.000Z'],
     ]);
   });
-  it('CREDIT không tính lại, ADJUSTMENT riêng; mọi chiều cơ cấu bằng net', async () => {
+  it('TC-S4-REPORT-02: CREDIT không tính lại, ADJUSTMENT riêng; mọi chiều cơ cấu bằng net', async () => {
     const res = await get('dashboard', filters()); expect(res.status).toBe(200);
     const data = res.body.data; expect(data).toMatchObject({ revenue: 900, refunded: 100, net: 800 });
     expect(data.rows).toHaveLength(1); expect(data.rows[0].date).toBe('2026-10');
@@ -39,18 +39,18 @@ describe('S4-22/24/26/28 báo cáo thời gian', () => {
     expect(data.breakdown.byKind.find((r) => r.id === 'ADJUSTMENT').net).toBe(200);
     expect(data.breakdown.byPlan.find((r) => r.id === String(plan.id)).net).toBe(600);
   });
-  it('kỳ trước 0 trả null, lấp 0 các kỳ rỗng', async () => {
+  it('TC-S4-REPORT-03: kỳ trước 0 trả null, lấp 0 các kỳ rỗng', async () => {
     const res = await get('dashboard', { ...filters(), from: '2026-12-01', to: '2026-12-03', groupBy: 'day' });
     expect(res.status).toBe(200); expect(res.body.data.rows).toHaveLength(3);
     expect(res.body.data.comparison.percent.net).toBeNull();
   });
-  it('giới hạn theo nhóm từ DB và RBAC không phụ thuộc client', async () => {
+  it('TC-S4-REPORT-04: giới hạn theo nhóm từ DB và RBAC không phụ thuộc client', async () => {
     expect((await get('dashboard', { ...filters(), from: '2020-01-01', to: '2026-01-01', groupBy: 'year' })).status).toBe(400);
     expect((await get('dashboard', { ...filters(), from: '2026-01-01', to: '2026-05-01', groupBy: 'day' })).status).toBe(400);
     expect((await get('dashboard', filters(), f.memberToken)).status).toBe(403);
     expect((await get('dashboard', { ...filters(), groupBy: 'invalid' })).status).toBe(400);
   });
-  it('xuất giữ nhóm kỳ, so sánh và cơ cấu; tab hội viên dùng cùng bucket', async () => {
+  it('TC-S4-REPORT-05: xuất giữ nhóm kỳ, so sánh và cơ cấu; tab hội viên dùng cùng bucket', async () => {
     const csv = await get('export', { ...filters(), format: 'csv' }); expect(csv.status).toBe(200);
     expect(csv.text).toContain('"2026-10","900","100","800"'); expect(csv.text).toContain('Thuần kỳ trước'); expect(csv.text).toContain('byKind: Chênh lệch đổi');
     const members = await get('members', filters()); expect(members.status).toBe(200); expect(members.body.data.rows[0].date).toBe('2026-10');

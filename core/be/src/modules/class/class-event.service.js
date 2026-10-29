@@ -84,7 +84,7 @@ export const drainClassEvents = async () => {
     const events = await prisma.classEvent.findMany({
       where: { sentAt: null },
       select: { id: true },
-      orderBy: { id: 'asc' },
+      orderBy: [{ attempts: 'asc' }, { id: 'asc' }],
       take: CLASS_LIMITS.OUTBOX_BATCH_SIZE,
     });
     for (const event of events) await deliverEvent(event.id);

@@ -22,14 +22,24 @@ export const revenueSummaryRows = (report) => [
   ['Đăng ký', report.classes.enrollments],
 ];
 
-
 function comparisonRows(report) {
   if (!report.comparison) return [];
-  return [['Thu kỳ trước', report.comparison.previous.revenue], ['Hoàn kỳ trước', report.comparison.previous.refunded],
-    ['Thuần kỳ trước', report.comparison.previous.net], ...Object.entries(report.comparison.percent).map(([key, value]) => [`% thay đổi ${key}`, value ?? '—'])];
+  return [
+    ['Thu kỳ trước', report.comparison.previous.revenue],
+    ['Hoàn kỳ trước', report.comparison.previous.refunded],
+    ['Thuần kỳ trước', report.comparison.previous.net],
+    ...Object.entries(report.comparison.percent).map(([key, value]) => [
+      `% thay đổi ${key}`,
+      value ?? '—',
+    ]),
+  ];
 }
 function breakdownRows(report) {
-  return Object.entries(report.breakdown ?? {}).flatMap(([dimension, rows]) => rows.flatMap((row) => [
-    [`${dimension}: ${row.label} · thu`, row.revenue], [`${dimension}: ${row.label} · hoàn`, row.refunded], [`${dimension}: ${row.label} · thuần`, row.net],
-  ]));
+  return Object.entries(report.breakdown ?? {}).flatMap(([dimension, rows]) =>
+    rows.flatMap((row) => [
+      [`${dimension}: ${row.label} · thu`, row.revenue],
+      [`${dimension}: ${row.label} · hoàn`, row.refunded],
+      [`${dimension}: ${row.label} · thuần`, row.net],
+    ]),
+  );
 }

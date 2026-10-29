@@ -47,7 +47,7 @@ export const update = (id, data, actor) =>
     const old = await db.gymClass.findUnique({ where: { id }, include: CLASS_INCLUDE });
     if (!old) throw ApiError.notFound('Không tìm thấy lớp');
     if ([Enums.ClassStatus.CANCELLED, Enums.ClassStatus.COMPLETED].includes(old.status))
-      throw ApiError.businessRule('Lớp đã huỷ không thể sửa');
+      throw ApiError.businessRule('Lớp đã huỷ hoặc kết thúc không thể sửa');
     if (data.capacity < old._count.enrollments + (await heldSeats(db, id, new Date())))
       throw ApiError.businessRule('Sức chứa nhỏ hơn số người đã đăng ký');
     const sessions = buildSessions(data);
@@ -78,7 +78,8 @@ export const cancel = (id, actor) =>
   withScheduleTransaction(async (db) => {
     const item = await db.gymClass.findUnique({ where: { id }, include: CLASS_INCLUDE });
     if (!item) throw ApiError.notFound('Không tìm thấy lớp');
-    if (item.status === Enums.ClassStatus.COMPLETED) throw ApiError.conflict("Khoá đã kết thúc, không thể huỷ");
+    if (item.status === Enums.ClassStatus.COMPLETED)
+      throw ApiError.conflict('Khoá đã kết thúc, không thể huỷ');
     if (item.status === Enums.ClassStatus.CANCELLED) return toClassView(item);
     await queueClassEvent(db, item, Enums.NotificationKind.CLASS_CANCELLED, { actorId: actor.id });
     await compensateClassCancelled(db, item, actor);

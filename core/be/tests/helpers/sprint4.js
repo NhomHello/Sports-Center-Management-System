@@ -11,7 +11,7 @@ export const createCourseFixture = async () => {
   const f = await createClassFixture();
   f.started = new Date();
   await prisma.rolePermission.createMany({ skipDuplicates: true, data: await Promise.all([
-    P.COURSE_SUMMARY_MANAGE_ASSIGNED, P.COACH_PROFILE_READ,
+    P.COURSE_SUMMARY_MANAGE_ASSIGNED, P.COACH_PROFILE_READ, P.REPORT_VIEW,
   ].map(async (code) => ({ roleId: f.coach.roleId, permissionId: (await prisma.permission.findUnique({ where: { code } })).id }))) });
   f.item = await prisma.gymClass.create({ data: { name: `${f.prefix} Course`, subjectId: f.subject.id,
     roomId: f.room.id, coachId: f.coach.id, capacity: 5, startsOn: new Date(Date.now() - FIXTURE.startDays * DAY),

@@ -12,3 +12,11 @@
 .report-chart-label { fill: var(--ant-color-text-secondary, #666); font-size: 10px; }
 .scms-report-figure g:focus { outline: 2px solid var(--ant-color-primary, #1677ff); outline-offset: 2px; }
 .scms-report-figure figcaption { margin-top: 12px; color: var(--ant-color-text-secondary); }
+@media (max-width: 600px) {
+  .scms-report-filter-form { display: block; }
+  .scms-report-filter-form .ant-form-item { margin-inline-end: 0; }
+  .scms-report-filter-form .ant-form-item-row { display: block; }
+  .scms-report-filter-form .ant-form-item-label { text-align: start; padding-bottom: 4px; }
+  .scms-report-filter-form .ant-form-item-control { width: 100%; }
+  .scms-report-filter-form .ant-picker, .scms-report-filter-form .ant-select { width: 100% !important; max-width: 100%; min-width: 0; }
+}

@@ -12,12 +12,13 @@ export const drawCenterHeader = (doc, center) => {
 };
 
 /** Buffer PDF hoàn chỉnh; controller chỉ đặt content-type/attachment. */
-export const renderPdf = (draw, title) => new Promise((resolve, reject) => {
-  const doc = new PDFDocument({ size: 'A5', margin: PDF.margin, info: { Title: title } });
-  const parts = [];
-  doc.on('data', (part) => parts.push(part));
-  doc.on('end', () => resolve(Buffer.concat(parts)));
-  doc.on('error', reject);
-  draw(doc);
-  doc.end();
-});
+export const renderPdf = (draw, title) =>
+  new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ size: 'A5', margin: PDF.margin, info: { Title: title } });
+    const parts = [];
+    doc.on('data', (part) => parts.push(part));
+    doc.on('end', () => resolve(Buffer.concat(parts)));
+    doc.on('error', reject);
+    draw(doc);
+    doc.end();
+  });

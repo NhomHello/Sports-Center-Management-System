@@ -13,7 +13,8 @@ export const download = async (req, res) => {
 };
 
 /** Báo cáo hội viên dùng cùng nhóm thời gian với doanh thu. */
-export const members = async (req, res) => sendSuccess(res, { data: await memberReport(req.validated.query) });
+export const members = async (req, res) =>
+  sendSuccess(res, { data: await memberReport(req.validated.query) });
 /** Xuất cùng builder với tab hội viên. */
 export const downloadMembers = async (req, res) => {
   const file = await exportMembers(req.validated.query);
