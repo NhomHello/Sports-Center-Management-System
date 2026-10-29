@@ -1,3 +1,6 @@
+import { loadFinanceEvents } from './report-finance.service.js';
+import { buildBreakdown } from './report-breakdown.service.js';
+import { assertReportRange, periodKey, periodKeys, previousRange } from './report-periods.js';
 import { loadReportData } from './report-query.service.js';
 import { Enums, prisma } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
@@ -36,24 +39,35 @@ export const buildRevenue = (invoices, refunds) => {
   };
 };
 
-/** report.view cho toàn trung tâm; memberId/planId cùng phạm vi cho thu, hoàn, gói và lớp. */
-export const dashboard = (query) =>
-  prisma.$transaction(
+/** Quyền report.view được kiểm tra tại router; dữ liệu và export cùng builder này. */
+export const dashboard = async (query) => {
+  await assertReportRange(query);
+  return prisma.$transaction(
     async (db) => {
-      const [invoices, refunds, payment, memberships, sessions, enrollments] = await loadReportData(
-        db,
-        query,
-      );
-      const revenue = buildRevenue(invoices, refunds);
+      const [events, payment, memberships, sessions, enrollments] = await loadReportData(db, query);
+      const revenue = summarizeEvents(events, query);
+      const comparison = query.compare
+        ? compareRevenue(
+            revenue,
+            summarizeEvents(
+              await loadFinanceEvents(db, previousRange(query)),
+              previousRange(query),
+            ),
+          )
+        : null;
       return {
         filters: {
           from: query.from,
           to: query.to,
+          groupBy: query.groupBy ?? 'day',
+          compare: query.compare ?? null,
           planId: query.planId ?? null,
           memberId: query.memberId ?? null,
         },
         timeZone: TIME.VIETNAM_ZONE,
         ...revenue,
+        comparison,
+        breakdown: buildBreakdown(events),
         payment: { count: payment._count, receivedAmount: payment._sum.receivedAmount ?? 0 },
         membership: {
           total: memberships.length,
@@ -71,3 +85,41 @@ export const dashboard = (query) =>
     },
     { isolationLevel: Enums.TransactionIsolationLevel.RepeatableRead },
   );
+};
+
+function summarizeEvents(events, query) {
+  const rows = new Map(
+    periodKeys(query).map((date) => [
+      date,
+      { date, revenue: 0, refunded: 0, net: 0, paidCount: 0, refundCount: 0 },
+    ]),
+  );
+  for (const event of events) {
+    const row = rows.get(periodKey(event.date, query.groupBy));
+    row.revenue += event.revenue;
+    row.refunded += event.refunded;
+    if (event.isRefund) row.refundCount += 1;
+    else row.paidCount += 1;
+    row.net = row.revenue - row.refunded;
+  }
+  const data = [...rows.values()];
+  return {
+    rows: data,
+    revenue: sum(data, 'revenue'),
+    refunded: sum(data, 'refunded'),
+    net: sum(data, 'net'),
+    paidCount: sum(data, 'paidCount'),
+    refundCount: sum(data, 'refundCount'),
+  };
+}
+function compareRevenue(current, previous) {
+  const percent = (key) =>
+    previous[key] === 0
+      ? null
+      : ((current[key] - previous[key]) / Math.abs(previous[key])) * PERCENT;
+  return {
+    previous: { revenue: previous.revenue, refunded: previous.refunded, net: previous.net },
+    percent: { revenue: percent('revenue'), refunded: percent('refunded'), net: percent('net') },
+  };
+}
+const PERCENT = 100;

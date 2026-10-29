@@ -5,6 +5,7 @@
 
 import auditRoutes from './modules/audit/audit.routes.js';
 import attendanceHistoryRoutes from './modules/attendance/attendance-history.routes.js';
+import courseSummaryRoutes from './modules/course-summary/course-summary.routes.js';
 import sprint3Routes from './modules/sprint3/sprint3.routes.js';
 import attendanceExcuseRoutes from './modules/attendance/attendance-excuse.routes.js';
 import cancellationRoutes from './modules/cancellation/cancellation.routes.js';
@@ -43,6 +44,7 @@ const router = Router();
 router.use('/audit-logs', auditRoutes);
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
+router.use(courseSummaryRoutes);
 router.use('/reports', reportRoutes);
 router.use('/attendance', attendanceHistoryRoutes);
 router.use(sprint3Routes);

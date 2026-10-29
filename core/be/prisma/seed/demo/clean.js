@@ -13,6 +13,7 @@ import { logger } from '../../../src/config/logger.js';
 
 // Thứ tự con → cha để không vướng khoá ngoại; không tắt FOREIGN_KEY_CHECKS.
 const TABLES_IN_ORDER = [
+  'courseRating', 'courseSummaryItem', 'courseSummary', 'coachProfile', 'memberProfile',
   // Sổ số dư và lịch sử hủy/đổi tham chiếu hoá đơn, kỳ gói, đăng ký và khoản hoàn.
   'creditTransaction',
   'purchaseChange',
