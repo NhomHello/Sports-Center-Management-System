@@ -40,6 +40,8 @@ def validate(snapshot):
             assert len(pdf)==5
         assert all(page.get_text().strip() for page in pdf)
         result['outputs'][name]={'pdfPages':len(pdf)}
+    json_files=[str(p) for p in OUT.glob('*.json') if p.name!='verification.json']
+    subprocess.run(['npx','prettier','--write',*json_files],cwd=ROOT,check=True,capture_output=True)
     for path in OUT.rglob('*'):
         if path.is_file() and path.name!='verification.json':
             result['outputs'][str(path.relative_to(OUT))]=hashlib.sha256(path.read_bytes()).hexdigest()
