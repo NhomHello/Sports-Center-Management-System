@@ -1,0 +1,29 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Đăng ký lớp miễn phí và xử lý hộ"; labelloc=t;
+subgraph cluster_0 { label="Hội viên / lễ tân"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Chọn lớp; nhân viên chọn\nhội viên cần hỗ trợ", shape=box];
+e [label="Chọn vào danh sách chờ", shape=box];
+g [label="Xác nhận lời mời\nhoặc yêu cầu huỷ đăng ký", shape=box];
+}
+subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+b [label="Kiểm tra quyền + ACTIVE +\nthời gian + lịch + chặn đăng ký", shape=box];
+c [label="Chỉ thiếu chỗ?", shape=diamond];
+d [label="Transaction: kiểm tra lại\nsức chứa và ghi BOOKED", shape=box];
+h [label="Huỷ trước deadline / ngoại lệ;\nCANCELLED; nhả chỗ; audit", shape=box];
+}
+subgraph cluster_2 { label="Quản lý / job"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+f [label="Có chỗ: gửi lời mời OFFERED\ntrong hạn cấu hình", shape=box];
+}
+a -> b [label=""];
+b -> c [label="Đủ điều kiện khác"];
+c -> d [label="Không, còn chỗ"];
+c -> e [label="Có"];
+e -> f [label=""];
+f -> g [label=""];
+g -> d [label="Nhận chỗ, còn hạn"];
+d -> g [label="Muốn huỷ"];
+g -> h [label="Huỷ được phép"];
+}

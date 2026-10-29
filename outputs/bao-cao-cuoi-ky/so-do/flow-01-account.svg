@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="804" viewBox="0 0 840 804">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#527087"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="30" font-family="DejaVu Sans" font-size="20" font-weight="bold" fill="#163b58">Đăng ký và truy cập hệ thống</text>
+<rect x="15" y="50" width="270" height="739" fill="#f4f8fc" stroke="#bdccd7"/>
+<text x="150.0" y="80" text-anchor="middle" font-family="DejaVu Sans" font-size="16" font-weight="bold">Người dùng</text>
+<rect x="285" y="50" width="270" height="739" fill="#eaf4f3" stroke="#bdccd7"/>
+<text x="420.0" y="80" text-anchor="middle" font-family="DejaVu Sans" font-size="16" font-weight="bold">Hệ thống</text>
+<rect x="555" y="50" width="270" height="739" fill="#fff8ec" stroke="#bdccd7"/>
+<text x="690.0" y="80" text-anchor="middle" font-family="DejaVu Sans" font-size="16" font-weight="bold">Nhân viên có quyền</text>
+<path d="M150.0,169 V180 H420.0 V194" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<path d="M420.0,252 V263 H420.0 V277" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<path d="M420.0,335 V346 H150.0 V360" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="158.0" y="341" font-family="DejaVu Sans" font-size="11" fill="#375367">Chưa</text>
+<path d="M262.0,389 H542.0 V306 H532.0" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="537.0" y="347.5" font-family="DejaVu Sans" font-size="11" fill="#375367">Xác minh online</text>
+<path d="M150.0,418 V429 H690.0 V443" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="158.0" y="424" font-family="DejaVu Sans" font-size="11" fill="#375367">Tại quầy</text>
+<path d="M802.0,472 H812.0 V306 H532.0" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<path d="M420.0,335 V346 H540.0 V515 H420.0 V526" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="542.0" y="363" font-family="DejaVu Sans" font-size="11" fill="#375367">Có / không có email</text>
+<path d="M420.0,584 V595 H420.0 V609" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="428.0" y="590" font-family="DejaVu Sans" font-size="11" fill="#375367">Có</text>
+<path d="M420.0,584 V595 H540.0 V681 H420.0 V692" fill="none" stroke="#527087" stroke-width="1.7" marker-end="url(#arrow)"/>
+<text x="542.0" y="612" font-family="DejaVu Sans" font-size="11" fill="#375367">Không</text>
+<rect x="38.0" y="111" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="150.0" y="146.0" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Nhập email/SĐT, mật khẩu</text>
+<rect x="308.0" y="194" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="420.0" y="219.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Chuẩn hoá; kiểm tra duy nhất;</text>
+<text x="420.0" y="238.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">băm mật khẩu; role mặc định</text>
+<path d="M420.0,273 L534.0,306 L420.0,339 L306.0,306 Z" fill="#fff2ce" stroke="#a89254"/>
+<text x="420.0" y="302.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Tài khoản có email</text>
+<text x="420.0" y="321.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">đã xác minh?</text>
+<rect x="38.0" y="360" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="150.0" y="385.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Mở link xác minh còn hạn</text>
+<text x="150.0" y="404.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">hoặc yêu cầu hỗ trợ</text>
+<rect x="578.0" y="443" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="690.0" y="468.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Xác minh hộ theo quyền</text>
+<text x="690.0" y="487.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">và ghi audit</text>
+<path d="M420.0,522 L534.0,555 L420.0,588 L306.0,555 Z" fill="#fff2ce" stroke="#a89254"/>
+<text x="420.0" y="551.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Đúng mật khẩu, ACTIVE,</text>
+<text x="420.0" y="570.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">không bị chặn đăng nhập?</text>
+<rect x="308.0" y="609" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="420.0" y="634.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Cấp JWT; request nạp</text>
+<text x="420.0" y="653.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">quyền hiện hành từ DB</text>
+<rect x="308.0" y="692" width="224" height="58" rx="9" fill="white" stroke="#91aabd"/>
+<text x="420.0" y="717.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">Từ chối; thông báo phù hợp</text>
+<text x="420.0" y="736.5" text-anchor="middle" font-family="DejaVu Sans" font-size="14">không lộ mật khẩu</text>
+</svg>

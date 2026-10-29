@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Danh sách chờ"; labelloc=t;
+WAITING [label="WAITING"];
+OFFERED [label="OFFERED"];
+ACCEPTED [label="ACCEPTED"];
+EXPIRED [label="EXPIRED"];
+CANCELLED [label="CANCELLED"];
+WAITING -> OFFERED [label="Có chỗ, tới lượt"];
+OFFERED -> ACCEPTED [label="Hội viên xác nhận trong hạn"];
+OFFERED -> EXPIRED [label="Quá offeredUntil"];
+WAITING -> CANCELLED [label="Rời hàng chờ / huỷ lớp"];
+OFFERED -> CANCELLED [label="Rời hàng chờ / huỷ lớp"];
+}

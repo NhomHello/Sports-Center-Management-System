@@ -1,0 +1,13 @@
+{
+  "stats": {
+    "total": 70,
+    "expected": 65,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 5,
+    "ok": true
+  },
+  "metadata": {
+    "actualWorkers": 1
+  }
+}

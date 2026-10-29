@@ -3,7 +3,7 @@
 SWP391 FA26 · Đề tài 4 · GV: MinhTTH5 · Nhóm: Nhanh, Bảo, Khôi, Khải
 
 Hệ thống quản lý trung tâm thể thao: hội viên & gói tập (Flow 1), lớp học & lịch (Flow 2),
-thanh toán SePay & báo cáo (Flow 3). Phân quyền **RBAC động hoàn toàn** (role/permission quản lý trong DB qua UI).
+thanh toán SePay & báo cáo (Flow 3), hồ sơ HLV/hội viên, tổng kết và đánh giá khóa học (Sprint 4). Phân quyền **RBAC động hoàn toàn** (role/permission quản lý trong DB qua UI).
 
 ## Tech stack
 
@@ -43,7 +43,8 @@ còn thiếu rồi khởi động lại backend. Health kiểm tra API/DB; đăn
 core/shared   hằng số dùng chung BE + FE (permission registry, setting keys, error codes)
 core/be       Express API - MVC theo module (routes / controller / service / validation), Prisma
 core/fe       React + antd - pages / components / hooks / services / stores
-docs          QUY TẮC & hướng dẫn - ĐỌC TRƯỚC KHI CODE
+docs          hướng dẫn, yêu cầu, task sheet, bàn giao và kiểm thử
+outputs       bộ báo cáo cuối kỳ và bằng chứng xuất từ dự án
 scripts       npm run dev / setup
 ```
 
@@ -92,10 +93,16 @@ nên dữ liệu sinh ra giống khi người dùng thao tác thật. Mã nguồ
 
 ## Sprint 2
 
-Bản tích hợp local ở `sprint-2/integration`, nền Sprint 1 từ `origin/main`. Các nhánh thành viên là `sprint-2/be-bao`, `sprint-2/be-nhanh`, `sprint-2/fe-khai`, `sprint-2/fe-khoi`.
+Sprint 2 đã tích hợp vào `main`, trên nền Sprint 1. Các nhánh thành viên là `sprint-2/be-bao`, `sprint-2/be-nhanh`, `sprint-2/fe-khai`, `sprint-2/fe-khoi`.
 
 Trang **`/schedule`** gồm danh mục, quản lý lớp, đăng ký/huỷ toàn lớp, xử lý hộ, lịch cá nhân/lịch dạy và roster theo permission. Mobile dùng danh sách chọn màn hình để truy cập đủ các chức năng. Huỷ dùng hạn do backend trả về; đổi lịch giữ buổi cũ và gửi thông báo qua outbox.
 
 Khi `SEED_MOCK_DATA=true`, seed thêm 20 hội viên `member1`…`member20` với email đăng nhập `@scms.local`, 5 gói mẫu và hai lớp `DEMO · …` bắt đầu ngày kế tiếp (Gym 07:00, Yoga 18:00). Mỗi lớp mẫu được lấp đến sức chứa bằng các hội viên mẫu; lịch tạo qua service nên sẽ bỏ qua khung giờ xung đột. Email `@scms.local` chỉ dùng đăng nhập local, không phải hộp thư Gmail. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
 
-Chi tiết (Word/Excel trong `outputs/tai-lieu/`): bàn giao Sprint 2 (18 chức năng và bằng chứng), thiết kế API xếp lớp, test case `SWP391_TestCase.xlsx`. Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.
+Chi tiết: task sheet tại `docs/ke-hoach/`, đặc tả tại `docs/yeu-cau/`, bàn giao tại `docs/handover/`, test case tại `docs/kiem-thu/SWP391_TestCase.xlsx`; bộ nộp cuối kỳ ở `outputs/bao-cao-cuoi-ky/`. Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.
+
+## Bộ báo cáo cuối kỳ
+
+[Báo cáo Word/PDF, 5 slide PowerPoint/PDF, kịch bản demo 28 phút, task–commit–timeline và ERD](outputs/bao-cao-cuoi-ky/) được tổng hợp từ mã nguồn và tài liệu hiện hành. Xem [mục lục tài liệu](docs/README.md).
+
+Sprint 4: Bảo nhận toàn bộ phần trước đây giao Nhanh (nền dữ liệu, BE tổng kết/đánh giá, báo cáo BE/FE, seed, tài liệu/demo); Khôi hồ sơ full-stack; Khải FE tổng kết/đánh giá và kiểm thử. AI/kế hoạch tập luyện đã loại khỏi phạm vi. Ngày kế hoạch không thay thế ngày Git; tác giả lịch sử được giữ nguyên.

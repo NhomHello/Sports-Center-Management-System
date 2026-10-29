@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Kỳ gói tự tập"; labelloc=t;
+ACTIVE [label="ACTIVE"];
+FROZEN [label="FROZEN"];
+EXPIRED [label="EXPIRED"];
+CANCELLED [label="CANCELLED"];
+ACTIVE -> FROZEN [label="Đến ngày bảo lưu"];
+FROZEN -> ACTIVE [label="Kết thúc bảo lưu; cộng ngày thực dừng"];
+ACTIVE -> EXPIRED [label="Qua endDate"];
+ACTIVE -> CANCELLED [label="Huỷ / kết thúc kỳ theo nghiệp vụ"];
+}

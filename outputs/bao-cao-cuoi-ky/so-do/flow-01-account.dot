@@ -1,0 +1,29 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Đăng ký và truy cập hệ thống"; labelloc=t;
+subgraph cluster_0 { label="Người dùng"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Nhập email/SĐT, mật khẩu", shape=box];
+d [label="Mở link xác minh còn hạn\nhoặc yêu cầu hỗ trợ", shape=box];
+}
+subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+b [label="Chuẩn hoá; kiểm tra duy nhất;\nbăm mật khẩu; role mặc định", shape=box];
+c [label="Tài khoản có email\nđã xác minh?", shape=diamond];
+f [label="Đúng mật khẩu, ACTIVE,\nkhông bị chặn đăng nhập?", shape=diamond];
+g [label="Cấp JWT; request nạp\nquyền hiện hành từ DB", shape=box];
+h [label="Từ chối; thông báo phù hợp\nkhông lộ mật khẩu", shape=box];
+}
+subgraph cluster_2 { label="Nhân viên có quyền"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+e [label="Xác minh hộ theo quyền\nvà ghi audit", shape=box];
+}
+a -> b [label=""];
+b -> c [label=""];
+c -> d [label="Chưa"];
+d -> c [label="Xác minh online"];
+d -> e [label="Tại quầy"];
+e -> c [label=""];
+c -> f [label="Có / không có email"];
+f -> g [label="Có"];
+f -> h [label="Không"];
+}

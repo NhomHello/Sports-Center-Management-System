@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Hóa đơn"; labelloc=t;
+PENDING [label="PENDING"];
+PAID [label="PAID"];
+FAILED [label="FAILED"];
+REFUNDED [label="REFUNDED"];
+PENDING -> PAID [label="Đúng tiền / quản lý chấp nhận"];
+PENDING -> FAILED [label="Online hết hạn / huỷ hợp lệ"];
+FAILED -> PAID [label="Đối soát duyệt và đủ tiền"];
+PAID -> REFUNDED [label="Hoàn toàn bộ hóa đơn theo quyền"];
+}

@@ -1,0 +1,32 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Đối soát và hoàn tiền"; labelloc=t;
+subgraph cluster_0 { label="SePay / hội viên"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Webhook hoặc báo đã chuyển", shape=box];
+}
+subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+b [label="Xác thực; chống trùng;\nkhóa hóa đơn; tính tổng nhận", shape=box];
+c [label="Khớp mã và đúng tiền?", shape=diamond];
+d [label="PAID + quyền lợi\ntrong cùng transaction", shape=box];
+e [label="Mở phiếu: thiếu/thừa/sai mã/\nmuộn; chưa tự cấp quyền lợi", shape=box];
+h [label="Tạo Refund PENDING;\nchưa coi là đã chuyển trả", shape=box];
+j [label="Refund DONE; cập nhật phiếu,\nthông báo và audit", shape=box];
+}
+subgraph cluster_2 { label="Quản lý"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+f [label="Xem giao dịch, liên hệ;\nmap/chấp nhận/từ chối", shape=box];
+g [label="Cần hoàn tiền?", shape=diamond];
+i [label="Xác nhận chuyển trả\nvới mã tham chiếu", shape=box];
+}
+a -> b [label=""];
+b -> c [label=""];
+c -> d [label="Có"];
+c -> e [label="Không"];
+e -> f [label=""];
+f -> g [label=""];
+g -> h [label="Có"];
+h -> i [label=""];
+i -> j [label=""];
+g -> d [label="Chấp nhận/map, đủ điều kiện"];
+}

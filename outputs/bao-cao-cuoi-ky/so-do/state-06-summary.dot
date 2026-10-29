@@ -1,0 +1,10 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Tổng kết khóa học"; labelloc=t;
+DRAFT [label="DRAFT"];
+PUBLISHED [label="PUBLISHED"];
+DRAFT -> PUBLISHED [label="Đủ kết quả + xác nhận; revision tăng"];
+PUBLISHED -> DRAFT [label="Quản lý mở lại kèm lý do"];
+}

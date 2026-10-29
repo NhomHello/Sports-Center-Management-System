@@ -1,0 +1,19 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+browser [label="Trình duyệt\nReact 19 + Ant Design 6\nRouter / Query / Zustand"];
+api [label="Express 5 API\nJWT → permission → Zod\nController → Service"];
+db [label="MySQL 8\nPrisma 7 + transaction\nFK / unique / lock"];
+jobs [label="Worker cùng tiến trình Node\nExpiry / waitlist / summary\nOutbox và email retry"];
+sepay [label="SePay\nWebhook xác thực"];
+smtp [label="SMTP sandbox / server"];
+files [label="PDF / CSV / XLSX\nBuilder theo bộ lọc"];
+browser -> api [label="HTTP / JSON"];
+api -> db [label="Prisma"];
+sepay -> api [label="Webhook"];
+jobs -> db [label="Đọc / ghi; khoá"];
+jobs -> smtp [label="Gửi email; retry"];
+api -> files [label="Export"];
+api -> jobs [label="Khởi chạy worker"];
+}

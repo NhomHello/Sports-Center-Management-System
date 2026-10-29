@@ -1,0 +1,23 @@
+digraph G {
+graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Hồ sơ và tổng kết"; labelloc=t;
+User [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>User</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">users</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">status : UserStatus</TD></TR><TR><TD ALIGN="LEFT">roleId : Int [FK]</TD></TR></TABLE>>];
+CoachProfile [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CoachProfile</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">coach_profiles</FONT></TD></TR><TR><TD ALIGN="LEFT">userId : Int [PK]</TD></TR></TABLE>>];
+MemberProfile [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>MemberProfile</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">member_profiles</FONT></TD></TR><TR><TD ALIGN="LEFT">userId : Int [PK]</TD></TR></TABLE>>];
+GymClass [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>GymClass</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">gym_classes</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">name : String</TD></TR><TR><TD ALIGN="LEFT">subjectId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">roomId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">status : ClassStatus</TD></TR></TABLE>>];
+CourseSummary [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseSummary</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_summaries</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">classId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">status : CourseSummaryStatus</TD></TR></TABLE>>];
+CourseSummaryItem [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseSummaryItem</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_summary_items</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">summaryId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR></TABLE>>];
+CourseRating [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseRating</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_ratings</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">classId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int [FK]</TD></TR></TABLE>>];
+GymClass -> User [label="coachId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CoachProfile -> User [label="userId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
+MemberProfile -> User [label="userId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
+CourseSummary -> GymClass [label="classId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
+CourseSummary -> User [label="coachId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CourseSummaryItem -> CourseSummary [label="summaryId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CourseSummaryItem -> User [label="memberId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CourseRating -> GymClass [label="classId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CourseRating -> User [label="memberId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+CourseRating -> User [label="coachId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+}

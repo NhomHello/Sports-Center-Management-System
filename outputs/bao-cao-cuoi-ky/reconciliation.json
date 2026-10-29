@@ -1,0 +1,2044 @@
+[
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "A2",
+    "Chốt phạm vi 26/10/2026: KHÔNG làm AI và kế hoạch tập luyện · Nhanh: migration + báo cáo doanh thu full-stack · Bảo: BE tổng kết khoá, đánh giá, báo cáo hội viên · Khôi: hồ sơ HLV/hội viên full-stack · Khải: FE tổng kết khoá, đánh giá, E2E · cột \"#\" trong Ghi chú trỏ về dòng ở SWP391_UCP_Sprint_Role_Split · Cập nhật 29/10: Bảo nhận toàn bộ task của Nhanh, thực hiện trên sprint-4/be-bao.",
+    "Phạm vi hiện hành: không làm AI/kế hoạch tập luyện. Bảo phụ trách toàn bộ phần BE nền dữ liệu, tổng kết, đánh giá, báo cáo BE/FE và tài liệu/demo; Khôi làm hồ sơ full-stack; Khải làm FE tổng kết/đánh giá và E2E. Bắt đầu/Hạn là kế hoạch; ngày Git là bằng chứng thực hiện riêng."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "I4",
+    "Bắt đầu",
+    "Bắt đầu (dự kiến)"
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Task Sprint 4", "J4", "Hạn", "Hạn (dự kiến)"],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "G5",
+    "Chỉ Nhanh sửa schema.prisma và tạo migration; ai cần thêm cột nhắn Nhanh. Chạy thử trên DB tạm trước, test cũ phải pass.",
+    "Chỉ Bảo sửa schema.prisma và tạo migration; ai cần thêm cột nhắn Bảo. Chạy thử trên DB tạm trước, test cũ phải pass."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L5",
+    "Làm đầu tiên — mọi người rebase sau khi merge. Bảo, Khôi, Khải đọc và đồng ý contract trước 04/11. · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Nền dữ liệu đã tích hợp main; Bảo phụ trách schema, migration và hợp đồng API. Kiểm tra trên DB tạm và giữ test hồi quy đạt. Ngày trong cột kế hoạch không phải ngày commit thực tế."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L27",
+    "Tham số groupBy=day|week|month|quarter|year; hàm chia kỳ dùng chung cho #123 · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Tham số groupBy=day|week|month|quarter|year; hàm chia kỳ dùng chung cho #123 · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L28",
+    "Bộ chọn nhóm + khoảng nhanh, biểu đồ cột · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Bộ chọn nhóm + khoảng nhanh, biểu đồ cột · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L29",
+    "compare=previous, breakdown theo loại hoá đơn/kênh/gói/lớp/bộ môn · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "compare=previous, breakdown theo loại hoá đơn/kênh/gói/lớp/bộ môn · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L30",
+    "Thẻ KPI có % so với kỳ trước, biểu đồ cơ cấu, bảng top · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Thẻ KPI có % so với kỳ trước, biểu đồ cơ cấu, bảng top · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L32",
+    "Tab \"Hội viên & đăng ký\" trong Báo cáo · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Tab \"Hội viên & đăng ký\" trong Báo cáo · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L33",
+    "Sửa report-export.service.js · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "Sửa report-export.service.js · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L38",
+    "#126 · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026.",
+    "#126 · Bảo phụ trách theo phân công 29/10/2026."
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Task Sprint 4",
+    "L39",
+    "#126. Khoá code 16/11. · Chuyển từ Nhanh sang Bảo theo phân công 29/10/2026. · Đã chuẩn bị kịch bản và test tự động; chờ diễn tập trực tiếp cả nhóm sau tích hợp Khôi/Khải.",
+    "#126. Khoá code 16/11. · Bảo phụ trách theo phân công 29/10/2026. · Đã chuẩn bị kịch bản và test tự động; chờ diễn tập trực tiếp cả nhóm sau tích hợp Khôi/Khải."
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "A4", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "B4",
+    "BE · Leader (+ FE báo cáo)",
+    "BE + FE báo cáo + nền dữ liệu + tài liệu/demo"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "D4",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A4,'Task Sprint 4'!$K$5:$K$39,\"To Do\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A4,'Task Sprint 4'!$K$5:$K$39,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "E4",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A4,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A4,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "F4",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A4,'Task Sprint 4'!$K$5:$K$39,\"Review\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A4,'Task Sprint 4'!$K$5:$K$39,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "G4",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A4,'Task Sprint 4'!$K$5:$K$39,\"Done\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A4,'Task Sprint 4'!$K$5:$K$39,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "H4",
+    "=IF(C4=0,0,G4/C4)",
+    "=IFERROR(G4/C4,0)"
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "A5", "Bảo", "Khôi"],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "B5",
+    "BE",
+    "Full-stack hồ sơ + E2E hồ sơ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "D5",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A5,'Task Sprint 4'!$K$5:$K$39,\"To Do\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A5,'Task Sprint 4'!$K$5:$K$39,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "E5",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A5,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A5,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "F5",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A5,'Task Sprint 4'!$K$5:$K$39,\"Review\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A5,'Task Sprint 4'!$K$5:$K$39,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "G5",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A5,'Task Sprint 4'!$K$5:$K$39,\"Done\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A5,'Task Sprint 4'!$K$5:$K$39,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "H5",
+    "=IF(C5=0,0,G5/C5)",
+    "=IFERROR(G5/C5,0)"
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "A6", "Khôi", "Khải"],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "B6",
+    "Full-stack (hồ sơ)",
+    "FE tổng kết/đánh giá + kiểm thử"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "D6",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A6,'Task Sprint 4'!$K$5:$K$39,\"To Do\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A6,'Task Sprint 4'!$K$5:$K$39,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "E6",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A6,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A6,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "F6",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A6,'Task Sprint 4'!$K$5:$K$39,\"Review\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A6,'Task Sprint 4'!$K$5:$K$39,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "G6",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A6,'Task Sprint 4'!$K$5:$K$39,\"Done\")",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,A6,'Task Sprint 4'!$K$5:$K$39,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "H6",
+    "=IF(C6=0,0,G6/C6)",
+    "=IFERROR(G6/C6,0)"
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "A7", "Khải", null],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "B7", "FE", null],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "C7",
+    "=COUNTIF('Task Sprint 4'!$E$5:$E$39,A7)",
+    null
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "D7",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A7,'Task Sprint 4'!$K$5:$K$39,\"To Do\")",
+    null
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "E7",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A7,'Task Sprint 4'!$K$5:$K$39,\"In Progress\")",
+    null
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "F7",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A7,'Task Sprint 4'!$K$5:$K$39,\"Review\")",
+    null
+  ],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "G7",
+    "=COUNTIFS('Task Sprint 4'!$E$5:$E$39,$A7,'Task Sprint 4'!$K$5:$K$39,\"Done\")",
+    null
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "H7", "=IF(C7=0,0,G7/C7)", null],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "C8", "=SUM(C4:C7)", "=SUM(C4:C6)"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "D8", "=SUM(D4:D7)", "=SUM(D4:D6)"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "E8", "=SUM(E4:E7)", "=SUM(E4:E6)"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "F8", "=SUM(F4:F7)", "=SUM(F4:F6)"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Tổng hợp", "G8", "=SUM(G4:G7)", "=SUM(G4:G6)"],
+  [
+    "docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx",
+    "Tổng hợp",
+    "H8",
+    "=IF(C8=0,0,G8/C8)",
+    "=IFERROR(G8/C8,0)"
+  ],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D9", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D10", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D11", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D12", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D13", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D14", "Nhanh / Khôi", "Bảo / Khôi"],
+  ["docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx", "Không làm", "D15", "Nhanh / Khôi", "Bảo / Khôi"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E41",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Flow 1 – User & Membership\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F41",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G41",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H41",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 1 – User & Membership\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E42",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Flow 2 – Class Booking & Schedule\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F42",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G42",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H42",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 2 – Class Booking & Schedule\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E43",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Flow 3 – Payment & Report\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F43",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G43",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H43",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 3 – Payment & Report\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "B44",
+    "Training and attendance management",
+    "Điểm danh và tổng kết khóa học"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "D44",
+    "Sprint 3 (điểm danh #62–64) + Sprint 4",
+    "Ngoài phạm vi AI/kế hoạch; điểm danh đã có. Sprint 4 hiện hành: hồ sơ, tổng kết, đánh giá, báo cáo."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E44",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Flow 4 – Training & Attendance\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F44",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G44",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H44",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 4 – Training & Attendance\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "B45",
+    "AI workout recommendation; AI assistant",
+    "AI và kế hoạch tập luyện đã loại phạm vi"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "D45",
+    "Sprint 4",
+    "Ngoài phạm vi AI/kế hoạch; điểm danh đã có. Sprint 4 hiện hành: hồ sơ, tổng kết, đánh giá, báo cáo."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E45",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Flow 5, 6 – AI\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F45",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G45",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H45",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Flow 5, 6 – AI\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "E46",
+    "=COUNTIF('Phân chia UC'!$B$5:$B$113,\"Khác – Tài liệu & chất lượng\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "F46",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$113,\"Done\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "G46",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$113,\"Review\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Tổng quan đề tài",
+    "H46",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$113,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$113,\"To Do\")",
+    "=COUNTIFS('Phân chia UC'!$B$5:$B$130,\"Khác – Tài liệu & chất lượng\",'Phân chia UC'!$N$5:$N$130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "A2",
+    "Bảng chi tiết 109 function • Sprint 1–4 • cột Flow/Actor/ERD đã sửa lại theo đúng mã UC (bản trước bị lệch dòng) • mô tả và quy tắc theo SPRINT PLAN v3, BUSINESS RULES và đặc tả UC bổ sung 14/10/2026",
+    "126 hàng chức năng; #65–76 ngoài phạm vi; #110–126 là Sprint 4 hiện hành. Các sprint và lịch sử Git trước đó giữ nguyên."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "A3",
+    "Sprint 1–2 đã xong 100% và đã merge main. #77–87 là phần Nhanh làm trước Sprint 3 (13–14/10, PR #3). Sprint 3 được chia lại 14/10: Nhanh tập trung SePay đối soát (#88–96); kéo điểm danh #62–64 từ Sprint 4 xuống; thêm ngoại lệ làm sâu Flow 1 (#98–102) và Flow 2 (#103–108). Task sửa UI từ rà soát ảnh chụp nằm ở task sheet Sprint 3. * = bảng có trong project/đề xuất nhưng không có trên ảnh ERD conceptual.",
+    "Phân công Sprint 4: Bảo nhận toàn bộ phần trước đây giao Nhanh; Khôi hồ sơ full-stack, Khải FE tổng kết/đánh giá và E2E. Trạng thái Review không đồng nghĩa đã duyệt; ngày kế hoạch không thay ngày thực hiện."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K4",
+    "From–To",
+    "From–To (kế hoạch)"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N54", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N55", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N56", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N57", "To Do", "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N61",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N62",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N63",
+    "In Progress",
+    "Review"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N64", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N65", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N66", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N67", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N68", "To Do", "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M69",
+    "Coach chỉ tạo/sửa kế hoạch cho học viên được phân công; phải có ít nhất một bài tập. Bài tập xung đột giới hạn sức khoẻ phải cảnh báo theo BR-AI-07; kế hoạch AI chưa qua schema check và coach duyệt thì chưa được công bố theo BR-AI-02.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N69", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M70",
+    "Chỉ ghi kết quả cho học viên đã có mặt; lưu chỉ số thực tế, thời lượng và nhận xét. Cho sửa trong thời hạn điểm danh, quá hạn cần Manager mở quyền; không sửa xoá lịch sử mà không audit.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N70", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M71",
+    "Member chỉ xem kế hoạch, kết quả và nhận xét của chính mình sau khi coach công bố. Nội dung AI chưa qua kiểm tra cấu trúc và chưa được coach duyệt không hiển thị theo BR-AI-02.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N71", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M72",
+    "Chỉ đánh dấu bài trong kế hoạch của chính mình; lưu thời điểm và trạng thái hoàn thành. Không thay thế kết quả do coach ghi; thao tác lặp lại phải an toàn và không tạo bản ghi trùng.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N72", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M73",
+    "Chỉ gửi cho học viên đang đăng ký và trong phạm vi coach phụ trách; áp dụng giới hạn số lần gửi/ngày. Lỗi gửi vào retry queue, không tạo thông báo trùng; nội dung AI phải được duyệt trước khi gửi.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N73", "To Do", "Cancelled"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H74", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M74",
+    "BR-AI-03: chỉ gửi mã học viên và số liệu tập luyện, không gửi tên/SĐT/email. BR-AI-02: kiểm tra đúng schema và coach phải duyệt; BR-AI-05: không vượt ngân sách; BR-AI-04: model lỗi thì thử dự phòng đúng một lần; BR-AI-07: bài tập thuộc bộ môn trung tâm.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N74", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O74",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H75", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M75",
+    "Coach chỉnh sửa, duyệt hoặc từ chối bản nháp; chỉ bản APPROVED mới thành training plan và hiển thị cho học viên theo BR-AI-02. Bản từ chối vẫn giữ trạng thái/lý do để đánh giá model; chỉ coach phụ trách được thao tác.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N75", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O75",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H76", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M76",
+    "Nếu thiếu training result thì giải thích và không gọi AI. Khi đủ dữ liệu, áp dụng ẩn danh PII, kiểm tra schema/duyệt, giới hạn ngân sách và fallback như BR-AI-02/03/04/05; đây là chức năng optional nếu kịp.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N76", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O76",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H77", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M77",
+    "BR-AI-01: API key chỉ ở server, giao diện/log chỉ hiện bốn ký tự cuối, trình duyệt không gọi trực tiếp provider. Kiểm tra kết nối thành công mới bật; không tắt provider đang được tính năng dùng; mọi thay đổi ghi audit.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N77", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O77",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H78", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M78",
+    "Mỗi tính năng có đúng một model chính; provider/model phải đang bật và model chính không trùng model dự phòng. Prompt, model và tham số mới có hiệu lực từ lần gọi kế tiếp, không cần restart; ghi audit theo BR-AI-06.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N78", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O78",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H79", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M79",
+    "Áp giới hạn N câu/ngày từ cấu hình và chỉ truy cập dữ liệu của chính người hỏi. Không gửi PII ra provider theo BR-AI-03; lỗi AI phải có fallback, không lộ stack trace và không chờ vô hạn theo BR-AI-04; câu ngoài phạm vi hướng dẫn liên hệ lễ tân.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N79", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O79",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H80", "Nhanh", "Bảo"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M80",
+    "Mỗi lần gọi phải ghi AI_CALL_LOG gồm model, token, chi phí, thời gian và kết quả; không lưu secret/PII trong log. Khi vượt ngân sách tháng, tự tắt tính năng AI và cảnh báo Manager theo BR-AI-05; màn hình chỉ đọc và có bộ lọc theo thời gian.",
+    "Ngoài phạm vi Sprint 4 hiện hành từ 26/10/2026; không triển khai AI/kế hoạch tập luyện. Chức năng thay thế #110–126; task chi tiết tại SWP391_TaskSheet_Sprint4.xlsx."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N80", "To Do", "Cancelled"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O80",
+    "sprint-4/be-nhanh, sprint-4/fe-khoi",
+    "sprint-4/be-bao, sprint-4/fe-khoi"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N92",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N93",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N94",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N95",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N96",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N97",
+    "In Progress",
+    "Review"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "N99",
+    "In Progress",
+    "Review"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N101", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N102", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N103", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N104", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N105", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N107", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N108", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N109", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N110", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N111", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N112", "To Do", "Review"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A114", null, 110],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B114",
+    null,
+    "Flow 1 – User & Membership"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C114", null, "UC-UM-22"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D114",
+    null,
+    "Hồ sơ HLV – HLV tự cập nhật (màn S20 mở rộng): ảnh đại diện, giới thiệu ngắn, số năm kinh nghiệm, chứng chỉ, email/SĐT/Zalo liên hệ công khai và công tắc \"hiện thông tin liên hệ cho hội viên\". Chuyên môn (bộ môn) vẫn do quản lý khai báo ở UC-UM-21."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E114",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F114", null, 110],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G114", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H114", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I114", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J114", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K114",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L114",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M114",
+    null,
+    "S4-01; S4-02; BR-S4-01: email liên hệ công khai tách khỏi email đăng nhập, mặc định bằng email đăng nhập; tắt công tắc thì hội viên không thấy email/SĐT/Zalo. Giới thiệu ≤ COACH_BIO_MAX_LENGTH (mặc định 1000) ký tự; ảnh jpg/png ≤ 2 MB. Mọi thay đổi ghi audit log."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N114", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O114",
+    null,
+    "sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A115", null, 111],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B115",
+    null,
+    "Flow 1 – User & Membership"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C115", null, "UC-UM-23"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D115",
+    null,
+    "Danh sách HLV cho hội viên (màn S34 mới): hội viên xem các HLV đang hoạt động dạng thẻ (ảnh, tên, chuyên môn, số lớp đang mở, điểm đánh giá trung bình), lọc theo bộ môn, tìm theo tên."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E115",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F115", null, 111],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G115", null, "Simple"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H115", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I115", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J115", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K115",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L115",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M115",
+    null,
+    "S4-03; S4-05; BR-S4-02: chỉ hiện tài khoản có quyền dạy lớp, trạng thái ACTIVE và có ít nhất một chuyên môn. Không lộ thông tin nội bộ (role, ngày tạo, trạng thái khoá)."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N115", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O115",
+    null,
+    "sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A116", null, 112],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B116",
+    null,
+    "Flow 1 – User & Membership"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C116", null, "UC-UM-23"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D116",
+    null,
+    "Xem hồ sơ HLV (màn S35 mới): giới thiệu, kinh nghiệm, chứng chỉ, chuyên môn, các lớp HLV đang mở (bấm để đăng ký khoá học), điểm đánh giá và nhận xét gần đây, nút liên hệ (mở mail, gọi điện, Zalo). Mở được từ màn 9, S24 (tên HLV trên thẻ/chi tiết lớp) và màn S34."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E116",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F116", null, 112],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G116", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H116", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I116", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J116", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K116",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L116",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M116",
+    null,
+    "S4-04; S4-06; BR-S4-01: chỉ hiện liên hệ khi HLV bật công tắc. BR-S4-11: nhận xét đánh giá hiển thị ẩn danh (chỉ tên viết tắt). HLV đã nghỉ (LOCKED) → 404 với hội viên."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N116", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O116",
+    null,
+    "sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A117", null, 113],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B117",
+    null,
+    "Flow 1 – User & Membership"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C117", null, "UC-UM-24"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D117",
+    null,
+    "Hồ sơ tập luyện của hội viên (màn S20 mở rộng): ngày sinh, giới tính, chiều cao/cân nặng (tuỳ chọn), mục tiêu tập luyện, trình độ (mới bắt đầu / trung bình / nâng cao), ghi chú sức khoẻ – chấn thương, người liên hệ khẩn cấp và công tắc \"chia sẻ mục tiêu/sức khoẻ với HLV\"."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E117",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F117", null, 113],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G117", null, "Simple"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H117", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I117", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J117", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K117",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L117",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M117",
+    null,
+    "S4-07; S4-08; Đáp ứng yêu cầu đề tài \"Coach xem thông tin cơ bản và mục tiêu tập luyện của từng học viên\". BR-S4-04: ghi chú sức khoẻ chỉ HLV đang/đã dạy hội viên và quản lý/lễ tân xem được; tắt chia sẻ thì HLV chỉ thấy họ tên, liên hệ, chuyên cần. Lễ tân sửa hộ ở màn S22 có audit log."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N117", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O117",
+    null,
+    "sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A118", null, 114],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B118",
+    null,
+    "Flow 1 – User & Membership"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C118", null, "UC-UM-25"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D118",
+    null,
+    "HLV xem hồ sơ học viên (màn S36 mới, mở từ danh sách học viên màn 11 / S26 và màn điểm danh): thông tin cơ bản, liên hệ, mục tiêu, trình độ, sức khoẻ, chuyên cần trong các lớp của HLV đó và các tổng kết khoá đã học với HLV. Thêm màn \"Học viên của tôi\" liệt kê toàn bộ học viên các lớp HLV phụ trách."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E118",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F118", null, 114],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G118", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H118", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I118", null, "Khôi"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J118", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K118",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L118",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M118",
+    null,
+    "S4-09; S4-10; BR-S4-03: HLV chỉ xem được hội viên đang có đăng ký BOOKED trong lớp mình dạy, hoặc đã học lớp của mình và lớp kết thúc chưa quá COACH_MEMBER_VIEW_DAYS (mặc định 30) ngày; ngoài phạm vi → 403. HLV không thấy hoá đơn, số dư, gói tự tập. Kiểm tra bằng quyền MEMBER_PROFILE_VIEW_ASSIGNED, không so tên role."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N118", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O118",
+    null,
+    "sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A119", null, 115],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B119",
+    null,
+    "Flow 4 – Training & Attendance"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C119", null, "UC-TR-05"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D119",
+    null,
+    "Kết thúc khoá học (job hệ thống): hằng ngày tìm lớp OPEN/CLOSED có buổi cuối cùng đã diễn ra → chuyển lớp sang COMPLETED, tạo bản tổng kết nháp cho từng học viên đang BOOKED, gửi thông báo cho HLV; nhắc HLV trước hạn nộp và báo quản lý khi quá hạn."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E119",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F119", null, 115],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G119", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H119", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I119", null, "—"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J119", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K119",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L119",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M119",
+    null,
+    "S4-11; BR-S4-05: lớp chỉ COMPLETED khi mọi buổi không bị huỷ đã kết thúc; lớp bị huỷ (CANCELLED) không có tổng kết. BR-S4-07: hạn nộp = ngày kết thúc + COURSE_SUMMARY_DEADLINE_DAYS (7); nhắc HLV trước 2 ngày, quá hạn báo quản lý. Job idempotent: chạy lại không tạo trùng bản tổng kết."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N119", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O119",
+    null,
+    "sprint-4/be-bao"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A120", null, 116],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B120",
+    null,
+    "Flow 4 – Training & Attendance"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C120", null, "UC-TR-05"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D120",
+    null,
+    "HLV lập tổng kết khoá (màn S37 mới): bảng học viên với số buổi có mặt / vắng / xin nghỉ / chưa điểm danh và tỉ lệ chuyên cần do hệ thống tự tính; HLV chọn kết quả Đạt / Chưa đạt, mức tiến bộ 1–5, nhận xét, gợi ý khoá tiếp theo; lưu nháp được nhiều lần."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E120",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F120", null, 116],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G120", null, "Complex"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H120", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I120", null, "Khải"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J120", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K120",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L120",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M120",
+    null,
+    "S4-12; S4-13; BR-S4-06: chuyên cần = có mặt / (số buổi đã diễn ra − buổi xin nghỉ EXCUSED); buổi trung tâm huỷ không tính. Còn buổi chưa điểm danh thì cảnh báo trước khi công bố. BR-S4-08: hệ thống gợi ý \"Đạt\" khi chuyên cần ≥ COURSE_PASS_MIN_ATTENDANCE_PERCENT (70%); HLV chọn khác gợi ý thì bắt buộc nhận xét. Chỉ HLV phụ trách lớp được sửa."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N120", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O120",
+    null,
+    "sprint-4/be-bao; sprint-4/fe-khai"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A121", null, 117],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B121",
+    null,
+    "Flow 4 – Training & Attendance"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C121", null, "UC-TR-05"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D121",
+    null,
+    "Công bố / mở lại tổng kết: HLV bấm Công bố → khoá bản tổng kết, gửi thông báo in-app + email cho từng học viên. Sau khi công bố chỉ quản lý được mở lại (nhập lý do), HLV sửa và công bố lại thì hội viên nhận thông báo cập nhật."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E121",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F121", null, 117],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G121", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H121", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I121", null, "Khải"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J121", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K121",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L121",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M121",
+    null,
+    "S4-14; S4-15; BR-S4-09: chỉ công bố khi mọi học viên đã có kết quả. Công bố/mở lại ghi audit log (người, lúc, lý do). BR-S4-10: chỉ học viên còn BOOKED lúc lớp kết thúc có tổng kết; học viên đã huỷ/đổi lớp không có (học viên đổi sang lớp khác được tổng kết ở lớp mới)."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N121", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O121",
+    null,
+    "sprint-4/be-bao; sprint-4/fe-khai"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A122", null, 118],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B122",
+    null,
+    "Flow 4 – Training & Attendance"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C122", null, "UC-TR-06"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D122",
+    null,
+    "Hội viên xem kết quả khoá học (màn S38 mới, trong Hồ sơ → \"Khoá học đã hoàn thành\"): danh sách khoá đã kết thúc, chuyên cần, kết quả, mức tiến bộ, nhận xét của HLV, gợi ý khoá tiếp; tải \"Phiếu tổng kết khoá học\" PDF."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E122",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F122", null, 118],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G122", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H122", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I122", null, "Khải"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J122", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K122",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L122",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M122",
+    null,
+    "S4-16; S4-17; Chỉ thấy tổng kết đã công bố của chính mình. PDF dùng lại khung mẫu hoá đơn PDF (UC-PAY-07): logo, thông tin trung tâm, khoá, HLV, chuyên cần, kết quả, nhận xét, mã tra cứu."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N122", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O122",
+    null,
+    "sprint-4/be-bao; sprint-4/fe-khai"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A123", null, 119],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B123",
+    null,
+    "Flow 4 – Training & Attendance"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C123", null, "UC-TR-07"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D123",
+    null,
+    "Hội viên đánh giá khoá học và HLV: sau khi khoá kết thúc, hội viên chấm 1–5 sao cho khoá và cho HLV kèm nhận xét; sửa được trong thời hạn. Điểm trung bình hiện ở hồ sơ HLV (UC-UM-23) và báo cáo tổng kết khoá (UC-RPT-03)."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E123",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F123", null, 119],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G123", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H123", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I123", null, "Khải"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J123", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K123",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L123",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M123",
+    null,
+    "S4-18; S4-19; BR-S4-11: chỉ học viên có tổng kết ở lớp đó; mỗi học viên một đánh giá mỗi lớp; trong COURSE_RATING_WINDOW_DAYS (14) ngày kể từ khi lớp kết thúc. HLV thấy điểm và nhận xét ẩn danh; quản lý thấy tên người đánh giá và ẩn được nhận xét không phù hợp (audit log)."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N123", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O123",
+    null,
+    "sprint-4/be-bao; sprint-4/fe-khai"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A124", null, 120],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B124",
+    null,
+    "Flow 3 – Payment & Report"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C124", null, "UC-RPT-03"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D124",
+    null,
+    "Báo cáo tổng kết khoá cho quản lý (màn S39 mới, tab trong Báo cáo): danh sách khoá kết thúc trong khoảng thời gian; tỉ lệ hoàn thành, chuyên cần trung bình, % Đạt, điểm đánh giá trung bình; lọc theo bộ môn, HLV; đánh dấu khoá HLV chưa nộp tổng kết; xuất Excel."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E124",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F124", null, 120],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G124", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H124", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I124", null, "Khải"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J124", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K124",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L124",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M124",
+    null,
+    "S4-20; S4-21; Quyền COURSE_SUMMARY_VIEW_ALL (report.view không đủ). Khoảng thời gian tối đa theo REPORT_MAX_DAYS hiện có. Số liệu từ cùng một truy vấn cho màn hình và file xuất."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N124", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O124",
+    null,
+    "sprint-4/be-bao; sprint-4/fe-khai"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A125", null, 121],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B125",
+    null,
+    "Flow 3 – Payment & Report"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C125", null, "UC-RPT-02"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D125",
+    null,
+    "Doanh thu theo thời gian (màn 17 mở rộng): chọn nhóm theo ngày / tuần / tháng / quý / năm và khoảng nhanh (hôm nay, 7 ngày, tháng này, quý này, năm nay, tuỳ chọn); biểu đồ cột thu – hoàn – thuần theo từng kỳ, bảng số liệu bên dưới."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E125",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F125", null, 121],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G125", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H125", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I125", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J125", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K125",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L125",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M125",
+    null,
+    "S4-22; S4-23; BR-S4-12: ghi nhận doanh thu theo ngày thanh toán (paidAt), hoàn theo ngày hoàn (completedAt), múi giờ Việt Nam, tuần bắt đầu thứ Hai. Phần trả bằng số dư không tính lại (BR-GY-13). BR-S4-14: giới hạn khoảng theo nhóm đọc từ cấu hình: ngày ≤ 92 ngày, tuần ≤ 1 năm, tháng/quý/năm ≤ 5 năm."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N125", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O125",
+    null,
+    "sprint-4/be-bao"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A126", null, 122],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B126",
+    null,
+    "Flow 3 – Payment & Report"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C126", null, "UC-RPT-02"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D126",
+    null,
+    "So sánh kỳ trước và cơ cấu doanh thu: % tăng/giảm so với khoảng liền trước cùng độ dài; tách doanh thu theo loại (gói tự tập / khoá học / chênh lệch đổi), theo kênh (online / tại quầy); top gói tự tập, top lớp và theo bộ môn."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E126",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F126", null, 122],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G126", null, "Complex"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H126", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I126", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J126", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K126",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L126",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M126",
+    null,
+    "S4-24; S4-25; BR-S4-13: kỳ trước bằng 0 thì hiện \"—\" thay vì vô cực. BR-S4-15: tổng các phần cơ cấu phải bằng doanh thu thuần của kỳ (có test BE). Hoá đơn ADJUSTMENT tính vào nhóm \"chênh lệch\", không cộng vào gói/khoá gốc."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N126", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O126",
+    null,
+    "sprint-4/be-bao"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A127", null, 123],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B127",
+    null,
+    "Flow 3 – Payment & Report"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C127", null, "UC-RPT-04"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D127",
+    null,
+    "Báo cáo hội viên và đăng ký theo thời gian (màn 17, tab mới): theo cùng nhóm ngày/tuần/tháng/quý/năm — số hội viên mới, kỳ gói đang hiệu lực, đăng ký khoá học mới, số huỷ gói/huỷ khoá, tỉ lệ lấp đầy lớp."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E127",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F127", null, 123],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G127", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H127", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I127", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J127", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K127",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L127",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M127",
+    null,
+    "S4-26; S4-27; Đáp ứng yêu cầu đề tài \"báo cáo số lượng thành viên, tình trạng đăng ký lớp và doanh thu theo thời gian\". Dùng chung bộ lọc và hàm chia kỳ với UC-RPT-02 (không viết lại)."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N127", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O127",
+    null,
+    "sprint-4/be-bao"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A128", null, 124],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B128",
+    null,
+    "Flow 3 – Payment & Report"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C128", null, "UC-RPT-01"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D128",
+    null,
+    "Xuất báo cáo theo nhóm thời gian (sửa UC-RPT-01): PDF/CSV/Excel giữ đúng nhóm kỳ, phần so sánh kỳ trước và cơ cấu doanh thu như trên màn hình."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E128",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F128", null, 124],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G128", null, "Simple"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H128", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I128", null, "—"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J128", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K128",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L128",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M128",
+    null,
+    "S4-28; Cùng dữ liệu và công thức với dashboard (một hàm build dùng chung, như buildRevenue hiện tại)."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N128", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O128",
+    null,
+    "sprint-4/be-bao"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A129", null, 125],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B129",
+    null,
+    "Khác – Tài liệu & chất lượng"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C129", null, "Kiểm thử"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D129",
+    null,
+    "E2E Playwright tổng kết khoá, đánh giá, báo cáo doanh thu theo thời gian, xuất file."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E129",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F129", null, 125],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G129", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H129", null, "—"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I129", null, "—"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J129", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K129",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L129",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M129",
+    null,
+    "S4-29; S4-30; S4-31; Chạy trên npm run db:demo; E2E cũ phải pass."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N129", null, "Review"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O129",
+    null,
+    "sprint-4/fe-khai; sprint-4/fe-khoi"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "A130", null, 126],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "B130",
+    null,
+    "Khác – Tài liệu & chất lượng"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "C130", null, "Nền dữ liệu"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "D130",
+    null,
+    "Một migration cho Sprint 4 (tạo bằng --create-only, không DROP bảng legacy): bảng coach_profiles, member_profiles, course_summaries, course_summary_items, course_ratings; thêm COMPLETED vào ClassStatus; cấu hình COURSE_SUMMARY_DEADLINE_DAYS, COURSE_PASS_MIN_ATTENDANCE_PERCENT, COURSE_RATING_WINDOW_DAYS, COACH_MEMBER_VIEW_DAYS, COACH_BIO_MAX_LENGTH, REPORT_MAX_DAYS_BY_GROUP; quyền COACH_PROFILE_*, MEMBER_PROFILE_VIEW_ASSIGNED, COURSE_SUMMARY_*, COURSE_RATING_*. Viết hợp đồng API docs/huong-dan/api-sprint4.md."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "E130",
+    null,
+    "Theo permission nghiệp vụ"
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "F130", null, 126],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "G130", null, "Medium"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "H130", null, "Bảo"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "I130", null, "—"],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "J130", null, "Sprint 4"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "K130",
+    null,
+    "03/11 → 16/11 (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "L130",
+    null,
+    "Xem schema.prisma và ERD cuối kỳ"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "M130",
+    null,
+    "S4-00; S4-32; S4-33; S4-34; Chỉ Bảo sửa schema.prisma và tạo migration; ai cần thêm cột nhắn Bảo. Chạy thử trên DB tạm trước, test cũ phải pass."
+  ],
+  ["docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx", "Phân chia UC", "N130", null, "In Progress"],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Phân chia UC",
+    "O130",
+    null,
+    "sprint-4/be-bao"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "A2",
+    "Tổng hợp tự động từ tab Phân chia UC: 109 function. Kế hoạch gốc v3 (22/09/2026) có 76 function; #77–87 Nhanh làm trước Sprint 3; #88–109 bổ sung 14/10/2026 (SePay đối soát, ngoại lệ Flow 1, 2, kiểm thử, tài liệu).",
+    "Tổng hợp phạm vi hiện hành: loại các dòng Cancelled khỏi số chức năng đang thực hiện; task chi tiết và tiến độ Sprint 4 lấy từ task sheet Sprint 4."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "B4",
+    "From–To",
+    "From–To (kế hoạch)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "E5",
+    "=COUNTIF('Phân chia UC'!$J$5:$J$113,$A5)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "F5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$G$5:$G$113,F$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!G5:G130,\"Simple\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "G5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$G$5:$G$113,G$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!G5:G130,\"Medium\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "H5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$G$5:$G$113,H$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!G5:G130,\"Complex\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "J5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$N$5:$N$113,J$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!N5:N130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "K5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$N$5:$N$113,K$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!N5:N130,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "L5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$N$5:$N$113,L$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!N5:N130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "M5",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A5,'Phân chia UC'!$N$5:$N$113,M$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A5,'Phân chia UC'!N5:N130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "E6",
+    "=COUNTIF('Phân chia UC'!$J$5:$J$113,$A6)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "F6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$G$5:$G$113,F$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!G5:G130,\"Simple\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "G6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$G$5:$G$113,G$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!G5:G130,\"Medium\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "H6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$G$5:$G$113,H$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!G5:G130,\"Complex\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "J6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$N$5:$N$113,J$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!N5:N130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "K6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$N$5:$N$113,K$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!N5:N130,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "L6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$N$5:$N$113,L$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!N5:N130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "M6",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A6,'Phân chia UC'!$N$5:$N$113,M$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A6,'Phân chia UC'!N5:N130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "E7",
+    "=COUNTIF('Phân chia UC'!$J$5:$J$113,$A7)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "F7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$G$5:$G$113,F$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!G5:G130,\"Simple\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "G7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$G$5:$G$113,G$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!G5:G130,\"Medium\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "H7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$G$5:$G$113,H$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!G5:G130,\"Complex\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "J7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$N$5:$N$113,J$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!N5:N130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "K7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$N$5:$N$113,K$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!N5:N130,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "L7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$N$5:$N$113,L$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!N5:N130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "M7",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A7,'Phân chia UC'!$N$5:$N$113,M$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A7,'Phân chia UC'!N5:N130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "C8",
+    "Bảo / Nhanh",
+    "Bảo / Khôi (hồ sơ)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "D8",
+    "Khôi / Khải",
+    "Khôi / Khải / Bảo (báo cáo)"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "E8",
+    "=COUNTIF('Phân chia UC'!$J$5:$J$113,$A8)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "F8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$G$5:$G$113,F$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!G5:G130,\"Simple\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "G8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$G$5:$G$113,G$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!G5:G130,\"Medium\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "H8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$G$5:$G$113,H$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!G5:G130,\"Complex\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "I8",
+    "Training/kế hoạch tập #65–69 do Bảo; AI #70–76 do Nhanh; điểm danh #62–64 đã kéo lên Sprint 3.",
+    "Bảo: nền dữ liệu, BE tổng kết/đánh giá, báo cáo full-stack, tài liệu/seed/demo. Khôi: hồ sơ full-stack. Khải: FE tổng kết/đánh giá, test. AI/kế hoạch tập #65–76: Cancelled; phạm vi mới #110–126."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "J8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$N$5:$N$113,J$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!N5:N130,\"To Do\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "K8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$N$5:$N$113,K$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!N5:N130,\"In Progress\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "L8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$N$5:$N$113,L$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!N5:N130,\"Review\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "M8",
+    "=COUNTIFS('Phân chia UC'!$J$5:$J$113,$A8,'Phân chia UC'!$N$5:$N$113,M$4)",
+    "=COUNTIFS('Phân chia UC'!J5:J130,A8,'Phân chia UC'!N5:N130,\"Done\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "B15",
+    "=COUNTIF('Phân chia UC'!$H$5:$H$113,$A15)",
+    "=COUNTIFS('Phân chia UC'!H5:H130,\"*\"&A15&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "C15",
+    "=COUNTIF('Phân chia UC'!$I$5:$I$113,$A15)",
+    "=COUNTIFS('Phân chia UC'!I5:I130,\"*\"&A15&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "D15",
+    "Leader. BE Sprint 1–2; Sprint 3 tập trung SePay: webhook, hàng chờ đối soát, map giao dịch, thiếu/thừa, chuyển lặp, báo đã chuyển; AI Sprint 4",
+    "Leader. BE Sprint 1–2; Sprint 3 tập trung SePay: webhook, hàng chờ đối soát, map giao dịch, thiếu/thừa, chuyển lặp, báo đã chuyển; Sprint 4 đã chuyển toàn bộ phần phân công sang Bảo"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "B16",
+    "=COUNTIF('Phân chia UC'!$H$5:$H$113,$A16)",
+    "=COUNTIFS('Phân chia UC'!H5:H130,\"*\"&A16&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "C16",
+    "=COUNTIF('Phân chia UC'!$I$5:$I$113,$A16)",
+    "=COUNTIFS('Phân chia UC'!I5:I130,\"*\"&A16&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "D16",
+    "BE Sprint 1 (#13–21), Sprint 2 (#29–37); Sprint 3: job gia hạn, đổi/huỷ buổi, báo cáo, điểm danh, bảo lưu, danh sách chờ, đổi HLV, phòng bảo trì, chặn vắng mặt",
+    "BE Sprint 1 (#13–21), Sprint 2 (#29–37); Sprint 3: job gia hạn, đổi/huỷ buổi, báo cáo, điểm danh, bảo lưu, danh sách chờ, đổi HLV, phòng bảo trì, chặn vắng mặt; Sprint 4 phụ trách nền dữ liệu, tổng kết, đánh giá, báo cáo full-stack và demo.; Sprint 4 phụ trách nền dữ liệu, tổng kết, đánh giá, báo cáo full-stack và demo.; Sprint 4 phụ trách nền dữ liệu, tổng kết, đánh giá, báo cáo full-stack và demo."
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "B17",
+    "=COUNTIF('Phân chia UC'!$H$5:$H$113,$A17)",
+    "=COUNTIFS('Phân chia UC'!H5:H130,\"*\"&A17&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "C17",
+    "=COUNTIF('Phân chia UC'!$I$5:$I$113,$A17)",
+    "=COUNTIFS('Phân chia UC'!I5:I130,\"*\"&A17&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "B18",
+    "=COUNTIF('Phân chia UC'!$H$5:$H$113,$A18)",
+    "=COUNTIFS('Phân chia UC'!H5:H130,\"*\"&A18&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sprint Summary",
+    "C18",
+    "=COUNTIF('Phân chia UC'!$I$5:$I$113,$A18)",
+    "=COUNTIFS('Phân chia UC'!I5:I130,\"*\"&A18&\"*\",'Phân chia UC'!N5:N130,\"<>Cancelled\")"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sources & Notes",
+    "B14",
+    "BE Bảo / Nhanh | FE Khôi",
+    "Bảo + Khôi (BE hồ sơ) | FE Khôi / Khải / Bảo"
+  ],
+  [
+    "docs/ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx",
+    "Sources & Notes",
+    "C14",
+    "03/11 → 16/11; Training #65–69 do Bảo; AI #70–76 do Nhanh; FE Khôi/Khải.",
+    "Kế hoạch 03/11 → 16/11; phân công 29/10: Bảo nhận toàn bộ task trước đây của Nhanh. Task sheet Sprint 4 là nguồn phân công hiện hành; #65–76 Cancelled, #110–126 bổ sung."
+  ]
+]

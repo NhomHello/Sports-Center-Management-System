@@ -1,0 +1,31 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+person [label="Người dùng\nHội viên / HLV / nhân viên"];
+access [label="Vai trò và quyền"];
+member [label="Kỳ gói tự tập"];
+plan [label="Gói tự tập"];
+class [label="Khóa / lớp học"];
+session [label="Buổi học"];
+room [label="Phòng và khung giờ"];
+enroll [label="Đăng ký lớp"];
+invoice [label="Hóa đơn và thanh toán"];
+summary [label="Tổng kết và đánh giá"];
+profile [label="Hồ sơ và chia sẻ"];
+audit [label="Audit / thông báo"];
+person -> access [label="được phân quyền"];
+person -> member [label="mua kỳ"];
+member -> plan [label="thuộc gói"];
+person -> enroll [label="đăng ký"];
+enroll -> class [label="vào lớp"];
+class -> session [label="gồm buổi"];
+session -> room [label="sử dụng"];
+person -> class [label="HLV phụ trách"];
+invoice -> member [label="thanh toán"];
+invoice -> enroll [label="thanh toán khóa"];
+person -> invoice [label="sở hữu"];
+class -> summary [label="có tổng kết"];
+person -> profile [label="sở hữu"];
+summary -> audit [label="phát sinh sự kiện"];
+}

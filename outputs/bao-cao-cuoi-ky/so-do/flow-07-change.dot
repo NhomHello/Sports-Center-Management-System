@@ -1,0 +1,27 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Huỷ hoặc đổi gói và khóa học"; labelloc=t;
+subgraph cluster_0 { label="Hội viên / nhân viên"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Chọn huỷ / đổi và sản phẩm đích", shape=box];
+c [label="Đọc báo giá; chọn settlement\nvà xác nhận lý do", shape=box];
+}
+subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+b [label="Đồng bộ kỳ gói; tính preview\ngiá trị còn lại, phí, chênh lệch", shape=box];
+d [label="Đổi cần thu thêm?", shape=diamond];
+e [label="Giữ quyền lợi cũ; tạo\nADJUSTMENT PENDING", shape=box];
+g [label="Đổi/huỷ có audit; nhả chỗ;\nCREDIT hoặc Refund PENDING", shape=box];
+}
+subgraph cluster_2 { label="Thanh toán / quản lý"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+f [label="Thu đủ tiền; hoặc chuyển hoàn\nvà xác nhận tham chiếu", shape=box];
+}
+a -> b [label=""];
+b -> c [label=""];
+c -> d [label=""];
+d -> e [label="Có"];
+e -> f [label=""];
+f -> g [label="Thu đủ"];
+d -> g [label="Không"];
+g -> f [label="Nếu hoàn tiền ngoài"];
+}

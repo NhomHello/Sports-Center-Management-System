@@ -1,0 +1,27 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Tổng kết, công bố và đánh giá khóa"; labelloc=t;
+subgraph cluster_0 { label="Job / hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Mọi buổi không huỷ đã kết thúc;\nCOMPLETED + snapshot học viên", shape=box];
+b [label="Một tổng kết DRAFT/lớp;\ntính chuyên cần; nhắc/quá hạn", shape=box];
+d [label="Đủ kết quả; khác gợi ý có\nnhận xét; xác nhận missing?", shape=diamond];
+e [label="PUBLISHED + snapshot +\nrevision + outbox + audit", shape=box];
+}
+subgraph cluster_1 { label="HLV phụ trách"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+c [label="Nhập kết quả, tiến bộ,\nnhận xét; lưu nháp", shape=box];
+}
+subgraph cluster_2 { label="Hội viên / quản lý"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+f [label="Hội viên đọc kết quả của mình,\ntải PDF và đánh giá trong hạn", shape=box];
+g [label="Quản lý mở lại kèm lý do;\nkiểm duyệt nhận xét theo quyền", shape=box];
+}
+a -> b [label=""];
+b -> c [label=""];
+c -> d [label=""];
+d -> c [label="Chưa đủ"];
+d -> e [label="Đủ"];
+e -> f [label=""];
+f -> g [label="Cần điều chỉnh"];
+g -> c [label="Mở lại DRAFT"];
+}

@@ -1,49 +1,32 @@
 # Tài liệu dự án
 
-`docs/` chỉ chứa **quy luật code** (Markdown) và **tài liệu yêu cầu gốc** (Word). Kế hoạch, lộ trình, test case, báo cáo, thiết kế nằm ngoài `docs/`, trong `outputs/` (Excel và Word).
+Bộ tài liệu bám theo chức năng hiện có trên `main`. Quy tắc cũ được giữ trong phần lịch sử thay đổi; phạm vi hiện hành không gồm AI hoặc kế hoạch tập luyện.
 
-| Thư mục | Nội dung | Ai đọc |
-| --- | --- | --- |
-| [huong-dan/](huong-dan/) | Quy luật code và cách làm việc (Markdown) | Mọi người, trước khi code |
-| [yeu-cau/](yeu-cau/) | Use case, flow và statechart, business rules (Word) và sơ đồ flow (ảnh PNG, file draw.io) | Cả nhóm, khi cần đối chiếu |
-
-## Quy luật code (huong-dan/)
-
-| File | Nội dung |
+| Vị trí | Nội dung |
 | --- | --- |
-| [onboarding.md](huong-dan/onboarding.md) | Cài máy, chạy dự án lần đầu, tài khoản mẫu, lỗi hay gặp |
-| [quy-tac-code.md](huong-dan/quy-tac-code.md) | **Bắt buộc**: 200 dòng/file, đặt tên, comment, tái sử dụng, không hardcode |
-| [cau-truc-du-an.md](huong-dan/cau-truc-du-an.md) | Cấu trúc MVC, luồng request, checklist thêm module BE / trang FE |
-| [rbac-dong.md](huong-dan/rbac-dong.md) | Phân quyền động: thiết kế, thêm permission, dùng ở BE/FE |
-| [git-workflow.md](huong-dan/git-workflow.md) | Nhánh, commit message, PR, review, hook tự động |
-| [api-convention.md](huong-dan/api-convention.md) | Chuẩn URL, response, lỗi, phân trang |
-| [viet-test-case.md](huong-dan/viet-test-case.md) | Cách viết test case và test tự động |
+| [huong-dan/](huong-dan/) | Quy tắc code, cài đặt, API, phân quyền và demo |
+| [yeu-cau/](yeu-cau/) | Đặc tả UC, Business Rules và sơ đồ Word; Prisma là nguồn mô hình dữ liệu vật lý |
+| [ke-hoach/](ke-hoach/) | Task sheet Excel từng sprint và bảng phân chia UC |
+| [handover/](handover/) | Bàn giao theo nhánh và bằng chứng tại thời điểm bàn giao |
+| [kiem-thu/](kiem-thu/) | Test case Excel và bằng chứng kiểm thử |
+| [Bộ báo cáo cuối kỳ](../outputs/bao-cao-cuoi-ky/) | Báo cáo Word/PDF, 5 slide PowerPoint/PDF, kịch bản 28 phút, bảng task–commit–timeline và ERD |
 
-## Tài liệu khác (outputs/)
+## Bộ nộp cuối kỳ
 
-| Loại | Định dạng | Vị trí |
-| --- | --- | --- |
-| Kế hoạch, task, tiến độ từng sprint | Excel | `outputs/sprint*-*/SWP391_TaskSheet_Sprint<N>.xlsx` |
-| Test case | Excel | `outputs/tai-lieu/kiem-thu/SWP391_TestCase.xlsx` |
-| Thiết kế: ERD, xếp lớp, API; kịch bản demo | Word | `outputs/tai-lieu/thiet-ke/` |
-| Bàn giao sprint, UI/UX | Word | `outputs/tai-lieu/ban-giao/` |
-| Báo cáo nghiệm thu kèm ảnh | Word | `outputs/*-nghiem-thu/BAO_CAO_NGHIEM_THU.docx` |
+- [Báo cáo đồ án](../outputs/bao-cao-cuoi-ky/SWP391_BaoCaoDoAn_v1.docx): tính năng, swimlane, state chart, conceptual model, ERD và bảng Func | Rule.
+- [Slide thuyết trình](../outputs/bao-cao-cuoi-ky/SWP391_ThuyetTrinh_v1.pptx): 5 slide, có ghi chú người trình bày; tổng nói và demo 28 phút.
+- [Kịch bản và hướng dẫn](../outputs/bao-cao-cuoi-ky/SWP391_KichBanDemo_v1.docx): chuẩn bị máy, từng bước demo, kết quả mong đợi và phương án dự phòng.
+- [Bằng chứng task và Git](../outputs/bao-cao-cuoi-ky/SWP391_TaskTraceability_v1.xlsx): phân công, trạng thái nguồn, ngày kế hoạch, author/committer date và liên kết commit.
+- [ERD đầy đủ](../outputs/bao-cao-cuoi-ky/SWP391_ERD_DayDu_v1.pdf): toàn bộ model và FK thuộc phạm vi đang triển khai; ảnh SVG và nguồn sơ đồ ở `so-do/`.
 
-## Tinh thần chung
+## Phân công Sprint 4 hiện hành
 
-1. **Người mới đọc được**: file ngắn, tên rõ, comment "tại sao".
-2. **Không hardcode**: mọi thứ có thể đổi (URL, số ngày, quyền, vai trò) phải đổi được mà không sửa code.
-3. **Tái sử dụng**: copy lần thứ 2 là phải tách ra dùng chung.
-4. **Máy kiểm tra thay người**: ESLint, Prettier, commitlint chặn vi phạm ngay khi commit; reviewer chỉ lo logic.
-5. **Một nội dung, một chỗ**: không tạo bản sao tài liệu; sửa tại file gốc. Lộ trình và kế hoạch chỉ ghi ở Excel, không ghi thành Markdown.
+Bảo nhận toàn bộ task Sprint 4 trước đây giao Nhanh, gồm nền dữ liệu, migration, tổng kết/đánh giá BE, báo cáo BE/FE, seed và tài liệu/demo. Khôi làm hồ sơ HLV/hội viên full-stack và kiểm thử hồ sơ. Khải làm FE tổng kết/đánh giá, báo cáo tổng kết và kiểm thử.
 
-Quy ước đặt tên tài liệu nộp giảng viên: `SWP391_<Loại>_<Phiên bản>`.
+Nguồn phân công: [task sheet Sprint 4](ke-hoach/SWP391_TaskSheet_Sprint4.xlsx) và [bảng phân chia UC](ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx). Các mục AI/kế hoạch tập luyện cũ đã đánh dấu ngoài phạm vi; không tính là công việc còn phải làm của Sprint 4. Mục diễn tập trực tiếp vẫn cần cả nhóm thực hiện.
 
+Ngày Bắt đầu/Hạn là kế hoạch; ngày Git mô tả lịch sử thực hiện. Trạng thái Review không tự đổi thành Done chỉ vì đã merge. Phân công được cập nhật theo quyết định nhóm, còn author/commit lịch sử giữ nguyên để đối chiếu.
 
-## Sprint 4
+## Quy tắc duy trì
 
-- [Hợp đồng API](huong-dan/api-sprint4.md), [bàn giao Bảo nhận task Nhanh](handover/sprint-4-be-bao.md).
-- [Kịch bản demo cuối kỳ](huong-dan/demo-sprint4.md), [đặc tả UC/BR Word](yeu-cau/08_Sprint4_UseCases_BusinessRules.docx), [ERD bổ sung](yeu-cau/ERD/Sprint4-ERD.md).
-- Task sheet tại `ke-hoach/SWP391_TaskSheet_Sprint4.xlsx`; test case có sheet `TC-S4` trong `kiem-thu/SWP391_TestCase.xlsx`.
-
-- [Bàn giao Khải: tổng kết khóa, đánh giá và kiểm thử](handover/sprint-4-fe-khai.md).
+Sửa nội dung tại nguồn hiện hành thay vì tạo thêm kế hoạch cạnh tranh. Báo cáo cuối kỳ là bản tổng hợp từ mã nguồn và các nguồn trên; có generator trong `scripts/reporting/`. Không ghi mật khẩu, token hoặc `.env` vào bộ nộp. Tên tài liệu dùng `SWP391_<Loại>_<Phiên bản>`.

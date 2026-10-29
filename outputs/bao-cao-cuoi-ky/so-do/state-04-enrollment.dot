@@ -1,0 +1,14 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Đăng ký lớp"; labelloc=t;
+PENDING_PAYMENT [label="PENDING_PAYMENT"];
+BOOKED [label="BOOKED"];
+CANCELLED [label="CANCELLED"];
+PENDING_PAYMENT -> BOOKED [label="Hóa đơn khóa học PAID"];
+PENDING_PAYMENT -> CANCELLED [label="Hết hạn / bỏ giữ chỗ"];
+BOOKED -> CANCELLED [label="Huỷ hợp lệ / đổi / trung tâm huỷ"];
+CANCELLED -> BOOKED [label="Đăng ký lại lớp miễn phí, đủ điều kiện"];
+CANCELLED -> PENDING_PAYMENT [label="Mua lại khóa, đủ điều kiện"];
+}

@@ -1,0 +1,24 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Đối soát và lệnh hoàn"; labelloc=t;
+OPEN [label="OPEN"];
+WAITING_MEMBER [label="WAITING_MEMBER"];
+WAITING_TOPUP [label="WAITING_TOPUP"];
+REFUND_PENDING [label="REFUND_PENDING"];
+MATCHED [label="MATCHED"];
+REFUNDED [label="REFUNDED"];
+REJECTED [label="REJECTED"];
+IGNORED [label="IGNORED"];
+OPEN -> WAITING_MEMBER [label="Ghi liên hệ, chờ phản hồi"];
+OPEN -> WAITING_TOPUP [label="Xác định thiếu tiền"];
+WAITING_TOPUP -> MATCHED [label="Đủ chuyển bù"];
+OPEN -> MATCHED [label="Map/chấp nhận hợp lệ"];
+WAITING_MEMBER -> MATCHED [label="Chấp nhận/map hợp lệ"];
+OPEN -> REFUND_PENDING [label="Tạo lệnh hoàn"];
+WAITING_TOPUP -> REFUND_PENDING [label="Quá hạn chờ hoàn"];
+REFUND_PENDING -> REFUNDED [label="Lệnh hoàn DONE"];
+OPEN -> REJECTED [label="Bác yêu cầu"];
+OPEN -> IGNORED [label="Bỏ qua có lý do"];
+}

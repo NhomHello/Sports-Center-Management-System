@@ -1,0 +1,16 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Lớp và buổi học"; labelloc=t;
+OPEN [label="OPEN"];
+CLOSED [label="CLOSED"];
+COMPLETED [label="COMPLETED"];
+CANCELLED [label="CANCELLED"];
+OPEN -> CLOSED [label="Quản lý đóng đăng ký"];
+CLOSED -> OPEN [label="Quản lý mở lại theo điều kiện"];
+OPEN -> COMPLETED [label="Tất cả buổi thực học kết thúc"];
+CLOSED -> COMPLETED [label="Tất cả buổi thực học kết thúc"];
+OPEN -> CANCELLED [label="Quản lý huỷ"];
+CLOSED -> CANCELLED [label="Quản lý huỷ"];
+}
