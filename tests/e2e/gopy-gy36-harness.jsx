@@ -72,11 +72,7 @@ function Workspace() {
           <ApplyCreditButton invoice={bill} />
         </Card>
         <Card title="Bảo lưu">
-          <FreezeControls
-            membership={period}
-            own
-            policy={context.noPolicy ? undefined : { minDays: 7 }}
-          />
+          <FreezeControls membership={period} own />
         </Card>
       </Space>
     </main>

@@ -143,7 +143,7 @@ test('TC-F2-U02: lễ tân tìm hội viên rồi đăng ký và hủy hộ có 
   // Tab "Đã đăng ký" chỉ liệt kê đăng ký còn hiệu lực: lớp vừa hủy hộ không còn ở đây.
   await expect(card(page, primary.name).filter({ visible: true })).toHaveCount(0);
   await page.getByRole('tab', { name: 'Đăng ký lớp mới', exact: true }).click();
-  await expect(source.getByText(/Còn 2 chỗ trống/)).toBeVisible();
+  await expect(source.getByText('Còn 2 chỗ', { exact: true })).toBeVisible();
   const row = await prisma.classEnrollment.findUnique({
     where: {
       classId_memberId: {

@@ -11,6 +11,7 @@ const initialContext = () => ({
     status: 'ACTIVE',
     startDate: NOW,
     endDate: '2027-03-01T00:00:00.000Z',
+    freezeMinDays: 7,
     freezeDaysUsed: 20,
     freezeDaysLeft: 40,
     freezes: [],
@@ -48,6 +49,7 @@ const preview = {
 /** Dữ liệu theo hợp đồng, không khẳng định server thật đã có các API này. */
 export async function openFixture(page, options = {}) {
   const context = { ...initialContext(), ...options };
+  if (options.noPolicy) delete context.membership.freezeMinDays;
   if (options.expired)
     context.session = { ...context.session, excuseDeadline: '2026-10-20T00:00:00Z' };
   if (options.noDeadline) context.session = { ...context.session, excuseDeadline: undefined };
@@ -134,6 +136,7 @@ export async function openFixture(page, options = {}) {
       state.context.membership = {
         ...state.context.membership,
         status: 'ACTIVE',
+        isFrozen: false,
         freezeDaysUsed: 22,
         freezeDaysLeft: 38,
         freezes: state.context.membership.freezes.map((entry) => ({
@@ -148,6 +151,7 @@ export async function openFixture(page, options = {}) {
       state.context.membership = {
         ...state.context.membership,
         status: 'FROZEN',
+        isFrozen: true,
         freezes: [
           {
             id: 71,

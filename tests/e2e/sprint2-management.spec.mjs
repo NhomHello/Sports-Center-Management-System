@@ -74,6 +74,14 @@ test('TC-F2-V01: quản lý tạo và hủy toàn lớp từ form; sửa và ng�
     'Thứ',
     WEEKDAYS.find((d) => d.value === data.weeklySchedule[0].dayOfWeek).label,
   );
+  const frame = await prisma.operatingFrame.findFirstOrThrow({
+    where: { isActive: true, startTime: { lte: '21:00' }, endTime: { gte: '22:00' } },
+  });
+  await page.getByLabel('Khung giờ hoạt động', { exact: true }).click();
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .getByText(`${frame.name} (${frame.startTime}–${frame.endTime})`, { exact: true })
+    .click();
   const times = page.getByRole('dialog').locator('.ant-picker-range input');
   await times.nth(0).fill('21:00');
   await times.nth(0).press('Tab');
@@ -154,7 +162,7 @@ test('TC-F2-V03: gói tự tập hết hạn không chặn đăng ký lớp mi�
   });
   await login(page, f.member, f.password);
   const source = card(page, item.name);
-  await expect(source.getByText('Miễn phí', { exact: true })).toBeVisible();
+  await expect(source.getByText('Học phí: Miễn phí', { exact: true })).toBeVisible();
   await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeEnabled();
   await expect(source.getByText('Cần gói tập còn hiệu lực để đăng ký lớp')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Tạo lớp', exact: true })).toHaveCount(0);

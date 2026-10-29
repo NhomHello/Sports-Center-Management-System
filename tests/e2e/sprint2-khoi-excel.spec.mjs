@@ -89,7 +89,7 @@ test('TC-F2-X01: chỗ cuối bị người khác giữ, UI tải lại điều 
   await search.fill(lastSeat.name);
   await search.press('Enter');
   const source = card(page, lastSeat.name);
-  await expect(source.getByText(/Còn 1 chỗ trống/)).toBeVisible();
+  await expect(source.getByText('Còn 1 chỗ', { exact: true })).toBeVisible();
   const headers = await apiHeaders(request, f.other, f.password);
   const taken = await request.post(`${api}/classes/${lastSeat.id}/enrollments/me`, { headers });
   expect(taken.status()).toBe(201);
@@ -104,8 +104,11 @@ test('TC-F2-X01: chỗ cuối bị người khác giữ, UI tải lại điều 
     .getByRole('button', { name: 'Đăng ký', exact: true })
     .click();
   expect((await rejected).status()).toBe(422);
-  await expect(source.getByText('Đã đủ chỗ (1/1)', { exact: true })).toBeVisible();
-  await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toBeDisabled();
+  await expect(source.getByText('Hiện hết chỗ', { exact: true })).toBeVisible();
+  await expect(source.getByRole('button', { name: 'Đăng ký lớp', exact: true })).toHaveCount(0);
+  await expect(
+    source.getByRole('button', { name: 'Vào danh sách chờ', exact: true }),
+  ).toBeVisible();
   expect(await prisma.classEnrollment.count({ where: { classId: lastSeat.id } })).toBe(1);
 });
 

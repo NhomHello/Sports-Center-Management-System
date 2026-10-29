@@ -114,6 +114,13 @@ test('S3-49/51: điểm danh và lịch sử chính chủ; hội viên không tr
   const row = page.locator('.ant-drawer tbody tr').filter({ hasText: 'Đã hoàn thành' }).first();
   await row.getByRole('button', { name: 'Điểm danh' }).click();
   const attendance = dialog(page, 'Điểm danh buổi học');
+  await expect(
+    attendance.getByText('Buổi học đã kết thúc; cần quản lý mở quyền sửa.'),
+  ).toBeVisible();
+  await attendance
+    .getByPlaceholder('Lý do mở hạn sửa')
+    .fill('Ghi bổ sung theo quy định khóa điểm danh');
+  await attendance.getByRole('button', { name: 'Mở hạn sửa', exact: true }).click();
   await attendance.getByRole('combobox', { name: `Điểm danh ${f.member.fullName}` }).click();
   await page.getByTitle('Có mặt', { exact: true }).click();
   await attendance.getByRole('button', { name: 'Lưu điểm danh' }).click();
@@ -135,7 +142,7 @@ test('S3-49/51: điểm danh và lịch sử chính chủ; hội viên không tr
     await page.getByRole('menuitemradio', { name: mode, exact: true }).click();
     await expect(page.locator('.ant-dropdown:visible')).toHaveCount(0);
     await page.screenshot({
-      path: `outputs/ui-khai-2026-10-22/refinement-demo/attendance-populated-${mode === 'Sáng' ? 'light' : 'dark'}.png`,
+      path: info.outputPath(`attendance-populated-${mode === 'Sáng' ? 'light' : 'dark'}.png`),
       fullPage: true,
       animations: 'disabled',
     });

@@ -51,7 +51,7 @@ test.afterEach(async ({ page }, info) => {
 test('GY-22: hội viên đăng ký khóa học → giữ chỗ → mở hóa đơn khóa học', async ({ page }) => {
   await login(page, f.member, f.password);
   const source = card(page, course.name);
-  await expect(source.getByText(`Học phí ${money(PRICE)}`)).toBeVisible();
+  await expect(source.getByText(`Học phí: ${money(PRICE)}`)).toBeVisible();
   await source.getByRole('button', { name: /Đăng ký khóa học/ }).click();
   const created = page.waitForResponse(
     (r) => r.url().endsWith(`/classes/${course.id}/orders`) && r.request().method() === 'POST',

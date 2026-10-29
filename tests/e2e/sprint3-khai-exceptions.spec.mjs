@@ -80,13 +80,13 @@ test('TC-S3-K04: waitlist offer requires explicit enrollment', async ({ page }, 
   await login(page, f.other, f.password);
   const card = await searchClass(page, f);
   await card.getByRole('button', { name: 'Vào danh sách chờ' }).click();
-  await expect(card.getByText(/Bạn đang trong danh sách chờ/)).toBeVisible();
+  await expect(card.getByText('Sẽ thông báo khi có chỗ trống.', { exact: true })).toBeVisible();
   await call(f, 'delete', `/classes/${f.item.id}/enrollments/me`, {}, f.memberToken);
   await page.reload();
   await searchClass(page, f);
-  await expect(card.getByText(/Đã giữ chỗ đến/)).toBeVisible();
+  await expect(card.getByText(/Giữ đến/)).toBeVisible();
   await capture(page, info);
-  await card.getByRole('button', { name: 'Đăng ký lớp', exact: true }).click();
+  await card.getByRole('button', { name: 'Xác nhận đăng ký', exact: true }).click();
   await page
     .locator('.ant-popconfirm')
     .getByRole('button', { name: 'Đăng ký', exact: true })
