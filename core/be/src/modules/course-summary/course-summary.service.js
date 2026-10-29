@@ -38,14 +38,19 @@ export const getSummary = async (classId, context) => {
   const threshold = await getValue(K.COURSE_PASS_MIN_ATTENDANCE_PERCENT);
   return {
     ...summary,
-    items: summary.items.map((item) => ({
-      ...item,
-      attendance: attendance.get(item.id),
-      suggestedResult:
-        attendance.get(item.id).percent >= threshold
-          ? Enums.CourseResult.PASS
-          : Enums.CourseResult.NOT_PASSED,
-    })),
+    items: summary.items.map((item) => {
+      // Bản đã công bố phải khớp phiếu PDF và kết quả hội viên, kể cả khi điểm danh được sửa sau đó.
+      const counts =
+        summary.status === Enums.CourseSummaryStatus.PUBLISHED && item.attendanceSnapshot
+          ? item.attendanceSnapshot
+          : attendance.get(item.id);
+      return {
+        ...item,
+        attendance: counts,
+        suggestedResult:
+          counts.percent >= threshold ? Enums.CourseResult.PASS : Enums.CourseResult.NOT_PASSED,
+      };
+    }),
   };
 };
 
