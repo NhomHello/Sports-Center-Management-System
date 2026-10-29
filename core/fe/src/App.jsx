@@ -9,14 +9,21 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import { queryClient } from '@/config/queryClient';
 import { AppRouter } from '@/router/AppRouter';
-import { theme } from '@/theme/theme';
+import { env } from '@/config/env';
+import { createAppTheme } from '@/theme/theme';
+import { useThemePreference } from '@/theme/useThemePreference';
+import { useEffect } from 'react';
 
 dayjs.locale('vi');
 
 export default function App() {
+  const { resolvedMode } = useThemePreference();
+  useEffect(() => {
+    document.title = `${env.APP_NAME} · Quản lý trung tâm thể thao`;
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider locale={viVN} theme={theme}>
+      <ConfigProvider locale={viVN} theme={createAppTheme(resolvedMode)}>
         <AntdApp>
           <AppRouter />
         </AntdApp>

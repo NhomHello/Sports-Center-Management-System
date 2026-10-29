@@ -22,6 +22,7 @@ export const PERMISSION_MODULES = [
       update: 'Cập nhật tài khoản',
       delete: 'Xoá / khoá tài khoản',
       assign_role: 'Gán vai trò cho tài khoản',
+      verify_email: 'Xác minh email thủ công cho tài khoản',
     },
   },
   {
@@ -64,6 +65,8 @@ export const PERMISSION_MODULES = [
       purchase: 'Mua / gia hạn gói cho mình',
       manage: 'Đăng ký / gia hạn gói hộ hội viên',
       read_all: 'Xem gói của mọi hội viên',
+      freeze_self: 'Bảo lưu gói của mình',
+      freeze_all: 'Bảo lưu gói hộ hội viên',
     },
   },
 
@@ -83,6 +86,7 @@ export const PERMISSION_MODULES = [
     label: 'Lớp học',
     actions: {
       read: 'Xem danh sách lớp',
+      read_all: 'Xem mọi lớp trong phạm vi quản lý',
       create: 'Tạo lớp',
       update: 'Sửa lớp / lịch',
       delete: 'Huỷ lớp',
@@ -90,12 +94,23 @@ export const PERMISSION_MODULES = [
       cancel_self: 'Tự huỷ đăng ký',
       enroll_for_member: 'Đăng ký / huỷ lớp hộ hội viên',
       view_roster: 'Xem danh sách học viên của lớp',
+      unblock: 'Gỡ chặn đăng ký do vắng mặt',
     },
   },
   {
     module: 'schedule',
     label: 'Lịch',
     actions: { view_own: 'Xem lịch tập cá nhân', view_teaching: 'Xem lịch dạy' },
+  },
+
+  {
+    module: 'attendance',
+    label: 'Điểm danh',
+    actions: {
+      check_in: 'Check-in tại quầy',
+      record: 'Điểm danh buổi phụ trách',
+      manage: 'Điểm danh mọi buổi / mở hạn sửa',
+    },
   },
 
   // ---------- Flow 3: Payment & Report ----------
@@ -107,6 +122,8 @@ export const PERMISSION_MODULES = [
       record_cash: 'Ghi nhận thanh toán tại quầy',
       read_own: 'Xem giao dịch của mình',
       read_all: 'Xem mọi giao dịch',
+      reconcile: 'Đối soát giao dịch: map tiền, xử lý chuyển thiếu / thừa / lặp',
+      refund: 'Hoàn tiền và xác nhận đã chuyển trả',
     },
   },
   {
@@ -116,6 +133,7 @@ export const PERMISSION_MODULES = [
       read_own: 'Xem hoá đơn của mình',
       read_all: 'Xem mọi hoá đơn',
       export: 'In / xuất PDF',
+      export_own: 'In / xuất PDF hóa đơn của mình',
     },
   },
   { module: 'report', label: 'Báo cáo', actions: { view: 'Xem báo cáo doanh thu & thống kê' } },

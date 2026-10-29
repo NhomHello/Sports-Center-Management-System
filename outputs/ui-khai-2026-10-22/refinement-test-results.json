@@ -1,0 +1,219 @@
+{
+  "stats": {
+    "startTime": "2026-10-22T13:44:14.805Z",
+    "duration": 272274.70499999996,
+    "expected": 23,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "XEPLOP-UI-01: quản lý xem lớp, hội viên đăng ký, chặn trùng giờ, lễ tân đăng ký hộ",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 24881
+        }
+      ]
+    },
+    {
+      "title": "SEPAY-UI-01: hội viên mua online, thấy QR, webhook về thì tự chuyển Đã thanh toán",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 18041
+        }
+      ]
+    },
+    {
+      "title": "S3-68: thiếu tiền → QR chuyển bù → PAID → in PDF",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 17892
+        }
+      ]
+    },
+    {
+      "title": "S3-68: sai mã → quản lý map → hội viên thấy PAID",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 11977
+        }
+      ]
+    },
+    {
+      "title": "S3-68: chuyển thừa và chuyển hai lần → liên hệ → hoàn phần dư",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 15423
+        }
+      ]
+    },
+    {
+      "title": "S3-63/68: hội viên báo đã chuyển → phiếu duy nhất → quản lý duyệt",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 14518
+        }
+      ]
+    },
+    {
+      "title": "S3-23: quản lý tạo hoàn → xác nhận chuyển trả; báo cáo tải đủ định dạng",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 21176
+        }
+      ]
+    },
+    {
+      "title": "manager light: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 7333
+        }
+      ]
+    },
+    {
+      "title": "manager dark: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 7007
+        }
+      ]
+    },
+    {
+      "title": "reception light: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 5638
+        }
+      ]
+    },
+    {
+      "title": "reception dark: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 4526
+        }
+      ]
+    },
+    {
+      "title": "coach light: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 3228
+        }
+      ]
+    },
+    {
+      "title": "coach dark: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 3326
+        }
+      ]
+    },
+    {
+      "title": "member light: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 6168
+        }
+      ]
+    },
+    {
+      "title": "member dark: theme, class cards and accessible account menu",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 6912
+        }
+      ]
+    },
+    {
+      "title": "member light 320: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 10394
+        }
+      ]
+    },
+    {
+      "title": "member light 768: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 11198
+        }
+      ]
+    },
+    {
+      "title": "member light 1366: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 9425
+        }
+      ]
+    },
+    {
+      "title": "member light 1920: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 9860
+        }
+      ]
+    },
+    {
+      "title": "member dark 320: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 10631
+        }
+      ]
+    },
+    {
+      "title": "member dark 768: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 11318
+        }
+      ]
+    },
+    {
+      "title": "member dark 1366: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 8326
+        }
+      ]
+    },
+    {
+      "title": "member dark 1920: attendance filters reset, calendar popup and layout",
+      "results": [
+        {
+          "status": "passed",
+          "duration": 9971
+        }
+      ]
+    }
+  ]
+}

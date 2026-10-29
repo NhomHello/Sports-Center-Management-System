@@ -1,0 +1,152 @@
+.scms-class-list-panel {
+  display: grid;
+  gap: 16px;
+}
+.scms-class-search-filters {
+  display: grid;
+  gap: 14px;
+}
+.scms-class-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.scms-schedule .scms-class-search-filters > .scms-class-list-toolbar {
+  justify-content: flex-start;
+  padding: 16px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: 16px;
+}
+.scms-class-list-toolbar .scms-search-input {
+  flex: 1 1 240px;
+  width: auto;
+  max-width: 520px;
+}
+.scms-class-list-toolbar > .ant-btn-primary {
+  margin-left: auto;
+}
+.scms-class-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-items: end;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--scms-border);
+}
+.scms-filter-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.scms-filter-field > span {
+  color: var(--scms-muted);
+  font-size: 12px;
+}
+.scms-filter-field .ant-select,
+.scms-filter-field .ant-picker {
+  width: 100%;
+  min-width: 0;
+}
+.scms-booking-actions {
+  display: grid;
+  gap: 8px;
+}
+.scms-booking-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.scms-booking-actions__buttons > .scms-booking-note,
+.scms-booking-actions__buttons > .ant-alert {
+  flex-basis: 100%;
+  min-width: 0;
+  order: -1;
+}
+.scms-booking-actions__buttons > .ant-btn-text {
+  order: 2;
+}
+.scms-booking-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.scms-booking-note > .anticon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.scms-booking-note > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scms-booking-note--waitlist {
+  color: var(--scms-blue);
+}
+.scms-membership-expiry-notice {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.scms-booking-confirmation {
+  max-width: min(320px, calc(100vw - 64px));
+}
+.scms-booking-confirmation p {
+  margin: 0 0 6px;
+}
+.scms-class-pagination {
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+.scms-staff-booking {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 20px;
+}
+.scms-staff-member-search {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  padding: 20px;
+  background: var(--scms-surface);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-staff-member-search h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.scms-staff-member-search p {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.scms-staff-member-search > .scms-search-input {
+  width: min(100%, 640px);
+}
+.scms-staff-booking .ant-typography {
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .scms-class-list-toolbar .scms-search-input {
+    flex-basis: 100%;
+  }
+  .scms-class-list-toolbar > .ant-btn-primary {
+    margin-left: 0;
+  }
+  .scms-class-pagination {
+    justify-content: flex-start;
+  }
+}
+
+.scms-panel-action {
+  align-self: flex-start;
+}

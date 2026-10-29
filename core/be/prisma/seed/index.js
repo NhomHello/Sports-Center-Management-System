@@ -2,12 +2,15 @@
  * Seed idempotent: chay bao nhieu lan cung an toan (upsert), khong xoa du lieu.
  * Chay: npm run db:seed   (tu dong chay trong `npm run dev` o thu muc goc)
  */
-import { listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
+import { getSettingValidationError, listPermissions, SETTING_DEFINITIONS } from '@scms/shared';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { hashPassword } from '../../src/common/utils/password.js';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
+import { AUDIT_ACTIONS, ENTITIES } from '../../src/constants/index.js';
 import { logger } from '../../src/config/logger.js';
-import { seedMockUsers } from './mock/index.js';
+import { seedMockData } from './mock/index.js';
 import { SEED_ADMIN_ROLE_CODE, SEED_ROLES } from './roles.seed.js';
 
 /** Dong bo registry permission vao DB (them moi + cap nhat label). */
@@ -43,6 +46,52 @@ async function setRolePermissions(roleId, codes) {
 }
 
 /**
+ * Quyen mac dinh duoc them vao code SAU khi role da tao (vd. attendance.record cho HLV) se khong
+ * bao gio den duoc DB cu. Bo sung moi cap (role, quyen) con thieu DUNG MOT LAN va ghi audit
+ * `meta.seedBackfill`; lan seed sau bo qua cac quyen da bo sung, nen manager go quyen tren UI
+ * thi seed khong cap lai.
+ * @param {{ id: number }} role
+ * @param {string[]} defaults
+ */
+async function backfillRolePermissions(role, defaults) {
+  const [current, logs] = await Promise.all([
+    prisma.rolePermission.findMany({
+      where: { roleId: role.id },
+      select: { permission: { select: { code: true } } },
+    }),
+    prisma.auditLog.findMany({
+      where: { entity: ENTITIES.ROLE, entityId: String(role.id), action: AUDIT_ACTIONS.UPDATE },
+      select: { meta: true },
+    }),
+  ]);
+  const done = new Set([
+    ...current.map((row) => row.permission.code),
+    ...logs.flatMap((log) => log.meta?.seedBackfill ?? []),
+  ]);
+  const missing = defaults.filter((code) => !done.has(code));
+  if (missing.length === 0) return;
+  const perms = await prisma.permission.findMany({
+    where: { code: { in: missing } },
+    select: { id: true },
+  });
+  await prisma.$transaction([
+    prisma.rolePermission.createMany({
+      data: perms.map(({ id }) => ({ roleId: role.id, permissionId: id })),
+      skipDuplicates: true,
+    }),
+    prisma.auditLog.create({
+      data: {
+        action: AUDIT_ACTIONS.UPDATE,
+        entity: ENTITIES.ROLE,
+        entityId: String(role.id),
+        meta: { seedBackfill: missing },
+      },
+    }),
+  ]);
+  logger.info({ role: role.code, added: missing }, 'Bo sung quyen mac dinh moi cho role');
+}
+
+/**
  * @param {ReturnType<typeof listPermissions>} allPermissions
  */
 async function seedRoles(allPermissions) {
@@ -55,6 +104,8 @@ async function seedRoles(allPermissions) {
     // Role quan tri luon full quyen; role khac chi gan quyen khi vua tao moi
     if (isAdminRole || !existing) {
       await setRolePermissions(role.id, isAdminRole ? allCodes : permissions);
+    } else {
+      await backfillRolePermissions(role, permissions);
     }
   }
   logger.info({ count: SEED_ROLES.length }, 'Seed roles xong');
@@ -69,6 +120,12 @@ async function seedAdminUser() {
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: SEED_ADMIN_ROLE_CODE } });
   const existing = await prisma.user.findUnique({ where: { email: env.SEED_ADMIN_EMAIL } });
   if (existing) {
+    if (!existing.emailVerifiedAt) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { emailVerifiedAt: new Date() },
+      });
+    }
     logger.info({ email: env.SEED_ADMIN_EMAIL }, 'Admin da ton tai, bo qua');
     return;
   }
@@ -77,6 +134,7 @@ async function seedAdminUser() {
       email: env.SEED_ADMIN_EMAIL,
       passwordHash: await hashPassword(env.SEED_ADMIN_PASSWORD),
       fullName: env.SEED_ADMIN_NAME,
+      emailVerifiedAt: new Date(),
       roleId: adminRole.id,
     },
   });
@@ -86,26 +144,54 @@ async function seedAdminUser() {
 /** Tao setting con thieu voi gia tri mac dinh (khong ghi de gia tri manager da sua). */
 async function seedSettings() {
   for (const def of SETTING_DEFINITIONS) {
+    const {
+      defaultValue,
+      unit: _unit,
+      minValue: _min,
+      maxValue: _max,
+      integer: _integer,
+      required: _required,
+      format: _format,
+      minLength: _minLength,
+      maxLength: _maxLength,
+      ...record
+    } = def;
+    const existing = await prisma.systemSetting.findUnique({ where: { key: def.key } });
+    const repairValue = existing && getSettingValidationError(def, existing.value);
     await prisma.systemSetting.upsert({
       where: { key: def.key },
-      create: { ...def, value: def.defaultValue, defaultValue: undefined },
-      update: { label: def.label, description: def.description, group: def.group, type: def.type },
+      create: { ...record, value: defaultValue },
+      update: {
+        label: def.label,
+        description: def.description,
+        group: def.group,
+        type: def.type,
+        ...(repairValue && { value: defaultValue }),
+      },
     });
   }
   logger.info({ count: SETTING_DEFINITIONS.length }, 'Seed settings xong');
 }
 
-async function main() {
+/**
+ * Seed nền: quyền, vai trò, admin, cấu hình; dữ liệu mock tuỳ SEED_MOCK_DATA.
+ * Script demo (prisma/seed/demo) gọi với mock=false để không lẫn dữ liệu mẫu cũ.
+ * @param {{ mock?: boolean }} [options]
+ */
+export async function seedBase({ mock = env.SEED_MOCK_DATA } = {}) {
   const permissions = await seedPermissions();
   await seedRoles(permissions);
   await seedAdminUser();
   await seedSettings();
-  if (env.SEED_MOCK_DATA) await seedMockUsers();
+  if (mock) await seedMockData();
 }
 
-main()
-  .catch((err) => {
-    logger.error({ err }, 'Seed that bai');
-    process.exitCode = 1;
-  })
-  .finally(() => prisma.$disconnect());
+// Chỉ tự chạy khi gọi trực tiếp (npm run db:seed), không chạy khi được import.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  seedBase()
+    .catch((err) => {
+      logger.error({ err }, 'Seed that bai');
+      process.exitCode = 1;
+    })
+    .finally(() => prisma.$disconnect());
+}

@@ -15,6 +15,8 @@ const DEFAULT_AUTH_RATE_MAX = 20;
 const DEFAULT_PERMISSION_CACHE_TTL = 30;
 const DEFAULT_SETTING_CACHE_TTL = 60;
 const MIN_PASSWORD_LENGTH = 8;
+const DEFAULT_MAIL_PORT = 587;
+const MIN_SEPAY_KEY_LENGTH = 16;
 
 const csvToArray = (value) =>
   value
@@ -46,6 +48,27 @@ const schema = z.object({
 
   PERMISSION_CACHE_TTL_SECONDS: z.coerce.number().min(0).default(DEFAULT_PERMISSION_CACHE_TTL),
   SETTING_CACHE_TTL_SECONDS: z.coerce.number().min(0).default(DEFAULT_SETTING_CACHE_TTL),
+
+  // Mail SMTP (Mailtrap Sandbox khi dev, Brevo/Gmail SMTP khi demo). Bo trong MAIL_HOST => chi ghi log.
+  MAIL_HOST: z.string().optional(),
+  MAIL_PORT: z.coerce.number().int().positive().default(DEFAULT_MAIL_PORT),
+  MAIL_SECURE: z.stringbool().default(false),
+  MAIL_USER: z.string().optional(),
+  MAIL_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default('Sports Center <no-reply@scms.local>'),
+  /** URL goc cua FE de dung trong link trong email */
+  APP_BASE_URL: z.url().default('http://localhost:5173'),
+
+  // SePay (Test mode khi dev). Bo trong SEPAY_WEBHOOK_API_KEY => webhook tra 503, khong nhan tien online.
+  // Tai khoan nhan tien KHONG nam o day: cau hinh qua UI Cai dat (system_settings PAYMENT_*).
+  SEPAY_WEBHOOK_API_KEY: z.string().min(MIN_SEPAY_KEY_LENGTH).optional(),
+  SEPAY_QR_BASE_URL: z.url().default('https://qr.sepay.vn/img'),
+  // Token API SePay (my.sepay.vn > Cấu hình công ty > API Access) chỉ dùng cho nút "Đồng bộ từ SePay"; bỏ trống => tắt.
+  SEPAY_API_TOKEN: z
+    .string()
+    .optional()
+    .transform((value) => value || undefined),
+  SEPAY_API_BASE_URL: z.url().default('https://my.sepay.vn/userapi'),
 
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 

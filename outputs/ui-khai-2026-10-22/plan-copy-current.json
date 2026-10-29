@@ -1,0 +1,41 @@
+[
+  {
+    "code": "COMMIT_365",
+    "name": "Bứt phá 365 ngày",
+    "description": "Kỳ tự tập 365 ngày, dành cho kế hoạch rèn luyện dài hạn tại trung tâm.",
+    "benefits": [
+      "Tự tập trong thời hạn của kỳ đã thanh toán",
+      "Sử dụng khung giờ và khu vực được cấp cho gói",
+      "Mua tiếp khi còn hạn: kỳ mới nối sau kỳ đã mua",
+      "Khóa học được đăng ký và thanh toán riêng"
+    ],
+    "price": 2880000,
+    "durationDays": 365
+  },
+  {
+    "code": "ACTIVE_90",
+    "name": "Năng động 90 ngày",
+    "description": "Kỳ tự tập 90 ngày, dành cho lịch tập đều đặn và mục tiêu trung hạn.",
+    "benefits": [
+      "Tự tập trong thời hạn của kỳ đã thanh toán",
+      "Sử dụng khung giờ và khu vực được cấp cho gói",
+      "Theo dõi riêng ngày bắt đầu và kết thúc mỗi kỳ",
+      "Khóa học được đăng ký và thanh toán riêng"
+    ],
+    "price": 900000,
+    "durationDays": 90
+  },
+  {
+    "code": "STARTER_30",
+    "name": "Khởi động 30 ngày",
+    "description": "Kỳ tự tập 30 ngày, phù hợp để bắt đầu và xây dựng thói quen vận động.",
+    "benefits": [
+      "Tự tập trong thời hạn của kỳ đã thanh toán",
+      "Sử dụng khung giờ và khu vực được cấp cho gói",
+      "Mua tiếp khi còn hạn: kỳ mới nối sau kỳ đã mua",
+      "Khóa học được đăng ký và thanh toán riêng"
+    ],
+    "price": 360000,
+    "durationDays": 30
+  }
+]

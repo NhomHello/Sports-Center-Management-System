@@ -1,0 +1,18 @@
+@media (max-width: 900px) {
+  .scms-range-popup .ant-picker-panels {
+    flex-direction: column;
+  }
+  .scms-range-popup .ant-picker-panel-container {
+    max-width: calc(100vw - 24px);
+    max-height: 65vh;
+    overflow: auto;
+  }
+  .scms-range-popup .ant-picker-date-panel {
+    width: 280px;
+    max-width: calc(100vw - 24px);
+  }
+  .scms-range-popup .ant-picker-content {
+    width: 100%;
+    table-layout: fixed;
+  }
+}

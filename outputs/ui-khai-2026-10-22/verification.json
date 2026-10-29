@@ -1,0 +1,70 @@
+{
+  "branch": "feature/khai-ui-theme-classes",
+  "base": {
+    "branch": "khai",
+    "commit": "31b4324"
+  },
+  "scope": "FE and related test coverage only; backend production code and API contracts unchanged.",
+  "isolatedDatabase": {
+    "name": "scms_ui_khai_20261022_1792664362551",
+    "createdBy": "node tests/e2e/run-ui-khai.mjs",
+    "developmentDatabaseReset": false
+  },
+  "checks": [
+    {
+      "command": "npm test -w @scms/fe",
+      "status": "passed",
+      "result": "22 test files, 137 tests passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "result": "Shared, backend, and frontend ESLint checks passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "result": "Vite production build passed; existing large-chunk warning remains"
+    },
+    {
+      "command": "npx prettier --check core/fe/index.html core/fe/public/theme-init.js core/fe/src/theme core/fe/src/components/common/ThemeSelector.jsx core/fe/src/pages/schedule/ClassSeatSummary.jsx core/fe/src/utils/classCapacity.js tests/e2e/helpers/theme.mjs tests/e2e/helpers/contrast.mjs tests/e2e/helpers/liveApi.mjs tests/e2e/run-ui-khai.mjs tests/e2e/ui-khai.config.mjs tests/e2e/ui-khai-*.spec.mjs",
+      "status": "passed",
+      "result": "All checked files use Prettier code style"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "result": "No whitespace errors"
+    },
+    {
+      "command": "node tests/e2e/run-ui-khai.mjs --reuse --project=desktop",
+      "status": "passed",
+      "result": "30 desktop tests passed in 5.7 minutes"
+    },
+    {
+      "command": "npm test -w @scms/be -- --run tests/sprint3-khai.test.js tests/sepay-reconciliation.test.js tests/sepay-reconciliation-actions.test.js",
+      "status": "passed",
+      "result": "3 test files, 19 tests passed"
+    },
+    {
+      "command": "npm test",
+      "status": "failed",
+      "result": "Backend reported 35 passed test files and one timeout in tests/rate-limit.test.js; frontend then passed 22 test files and 137 tests"
+    },
+    {
+      "command": "npx vitest run --exclude tests/rate-limit.test.js",
+      "status": "failed",
+      "result": "34 test files and 180 tests passed; tests/email-gate-reset.test.js hit a Prisma write-conflict/deadlock and returned 401 instead of 200"
+    },
+    {
+      "command": "npx vitest run tests/email-gate-reset.test.js",
+      "status": "failed",
+      "result": "The same Prisma write-conflict/deadlock reproduced; 7 of 8 tests passed"
+    }
+  ],
+  "knownLimitations": [
+    "The full backend suite has unrelated test-environment failures in rate-limit and email-gate-reset; changed FE and focused reconciliation helper coverage pass.",
+    "Ant Design logs a non-failing deprecation warning recommending Listy for the existing List component.",
+    "Vite reports an existing large JavaScript chunk warning during production build."
+  ]
+}

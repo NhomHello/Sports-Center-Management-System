@@ -1,11 +1,23 @@
+import { ERROR_CODES } from '@scms/shared';
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { authenticate } from '../../common/middlewares/auth.middleware.js';
 import { validate } from '../../common/middlewares/validate.middleware.js';
 import { env } from '../../config/env.js';
 import { TIME } from '../../constants/index.js';
+import { sendSuccess } from '../../common/utils/api-response.js';
+import { findUsableToken } from './email-token.service.js';
+import { Enums } from '../../config/db.js';
 import * as controller from './auth.controller.js';
-import { loginSchema, registerSchema } from './auth.validation.js';
+import {
+  loginSchema,
+  registerSchema,
+  changePasswordSchema,
+  requestEmailVerificationSchema,
+  confirmEmailVerificationSchema,
+  requestPasswordResetSchema,
+  confirmPasswordResetSchema,
+} from './auth.validation.js';
 
 const router = Router();
 
@@ -15,10 +27,58 @@ const authLimiter = rateLimit({
   limit: env.AUTH_RATE_LIMIT_MAX,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  message: {
+    success: false,
+    code: ERROR_CODES.RATE_LIMITED,
+    message: `Bạn đã thử quá nhiều lần. Vui lòng thử lại sau ${env.RATE_LIMIT_WINDOW_MINUTES} phút.`,
+  },
 });
 
 router.post('/login', authLimiter, validate(loginSchema), controller.login);
 router.post('/register', authLimiter, validate(registerSchema), controller.register);
 router.get('/me', authenticate, controller.me);
+router.post(
+  '/password-changes',
+  authenticate,
+  authLimiter,
+  validate(changePasswordSchema),
+  controller.changePassword,
+);
+
+router.post(
+  '/email-verifications',
+  authLimiter,
+  validate(requestEmailVerificationSchema),
+  controller.requestEmailVerification,
+);
+router.post(
+  '/email-verifications/confirm',
+  authLimiter,
+  validate(confirmEmailVerificationSchema),
+  controller.confirmEmailVerification,
+);
+
+router.post(
+  '/password-resets',
+  authLimiter,
+  validate(requestPasswordResetSchema),
+  controller.requestPasswordReset,
+);
+router.post(
+  '/password-resets/confirm',
+  authLimiter,
+  validate(confirmPasswordResetSchema),
+  controller.confirmPasswordReset,
+);
+router.post(
+  '/password-resets/validate',
+  authLimiter,
+  validate(confirmEmailVerificationSchema),
+  async (req, res) => {
+    await findUsableToken(req.validated.body.token, [Enums.EmailTokenPurpose.RESET_PASSWORD]);
+    sendSuccess(res, { data: { valid: true } });
+  },
+);
+router.get('/support-contacts', controller.getSupportContacts);
 
 export default router;

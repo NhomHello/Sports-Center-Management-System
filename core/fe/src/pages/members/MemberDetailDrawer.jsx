@@ -1,0 +1,174 @@
+import { EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { PERMISSIONS } from '@scms/shared';
+import {
+  App,
+  Button,
+  Descriptions,
+  Drawer,
+  Form,
+  Input,
+  Popconfirm,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
+import { usePermission } from '@/hooks/usePermission';
+import { StatusTag } from '@/components/common/StatusTag';
+import * as memberService from '@/services/member.service';
+import { CreditPanel } from '@/pages/member/CreditPanel';
+import { MembershipTab } from './MemberMembershipTab';
+import { BookingBlockPanel } from './BookingBlockPanel';
+import { MemberInfoView } from './MemberInfoView';
+import { useVerifyMemberEmail } from './useVerifyMemberEmail';
+
+const MemberInfoForm = ({ form, onSubmit }) => (
+  <Form form={form} layout="vertical" onFinish={onSubmit}>
+    <Form.Item
+      name="fullName"
+      label="Họ và tên"
+      rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+    >
+      <Input placeholder="Nhập họ tên" />
+    </Form.Item>
+    <Form.Item
+      name="email"
+      label="Email"
+      rules={[{ type: 'email', message: 'Email không hợp lệ' }]}
+    >
+      <Input placeholder="Nhập email" />
+    </Form.Item>
+    <Form.Item
+      name="phone"
+      label="Số điện thoại"
+      rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+    >
+      <Input placeholder="Nhập số điện thoại" />
+    </Form.Item>
+  </Form>
+);
+
+const MemberEditActions = ({ isEditing, setIsEditing, form, updateMutation }) => (
+  <Space>
+    {isEditing ? (
+      <>
+        <Button onClick={() => setIsEditing(false)}>Hủy</Button>
+        <Button
+          type="primary"
+          icon={<SaveOutlined />}
+          onClick={() => form.submit()}
+          loading={updateMutation.isPending}
+        >
+          Lưu
+        </Button>
+      </>
+    ) : (
+      <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+        Sửa hồ sơ
+      </Button>
+    )}
+  </Space>
+);
+
+function MemberDetailTabs({ member, can, isEditing, form, updateMutation, verifyMutation }) {
+  return (
+    <Tabs
+      defaultActiveKey="info"
+      items={[
+        {
+          key: 'info',
+          label: 'Thông tin cơ bản',
+          children: isEditing ? (
+            <MemberInfoForm form={form} onSubmit={updateMutation.mutate} />
+          ) : (
+            <MemberInfoView
+              member={member}
+              canVerify={can(PERMISSIONS.USER_VERIFY_EMAIL)}
+              onVerify={verifyMutation.mutate}
+              verifying={verifyMutation.isPending}
+            />
+          ),
+        },
+        {
+          key: 'membership',
+          label: 'Gói tập',
+          children: (
+            <MembershipTab member={member} canFreeze={can(PERMISSIONS.MEMBERSHIP_FREEZE_ALL)} />
+          ),
+        },
+        can(PERMISSIONS.PAYMENT_READ_ALL) && {
+          key: 'credit',
+          label: 'Số dư',
+          children: <CreditPanel memberId={member.id} />,
+        },
+      ].filter(Boolean)}
+    />
+  );
+}
+
+/** Chi tiết và cập nhật hồ sơ hội viên theo permission. */
+export function MemberDetailDrawer({ member, open, onClose, onUpdated }) {
+  const { can } = usePermission();
+  const [form] = Form.useForm();
+  const [isEditing, setIsEditing] = useState(false);
+  const { message } = App.useApp();
+  const queryClient = useQueryClient();
+
+  const canUpdate = can(PERMISSIONS.MEMBER_UPDATE);
+
+  useEffect(() => {
+    if (member && open && isEditing) {
+      form.setFieldsValue({
+        fullName: member.fullName,
+        email: member.email,
+        phone: member.phone,
+      });
+    }
+  }, [member, open, isEditing, form]);
+
+  const updateMutation = useMutation({
+    mutationFn: (values) => memberService.updateMember(member.id, values),
+    onSuccess: ({ data }) => {
+      message.success('Cập nhật hồ sơ thành công');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MEMBERS });
+      onUpdated?.({ ...member, ...data });
+      setIsEditing(false);
+    },
+    onError: (error) => message.error(error.message || 'Có lỗi xảy ra'),
+  });
+
+  const verifyMutation = useVerifyMemberEmail({ member, onUpdated });
+
+  const handleClose = () => {
+    setIsEditing(false);
+    onClose();
+  };
+
+  const extraButtons = canUpdate && (
+    <MemberEditActions
+      isEditing={isEditing}
+      setIsEditing={setIsEditing}
+      form={form}
+      updateMutation={updateMutation}
+    />
+  );
+
+  if (!member) return null;
+
+  return (
+    <Drawer
+      title="Chi tiết hội viên"
+      size={640}
+      open={open}
+      onClose={handleClose}
+      extra={extraButtons}
+      destroyOnHidden
+    >
+      <BookingBlockPanel member={member} onUpdated={onUpdated} />
+      <MemberDetailTabs {...{ member, can, isEditing, form, updateMutation, verifyMutation }} />
+    </Drawer>
+  );
+}
