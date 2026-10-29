@@ -4,6 +4,7 @@ import { PERMISSIONS } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
 import { freezeMembership, resumeMembership } from '@/services/sprint3.service';
 import { QUERY_KEYS } from '@/constants';
+import { getFreezeLimits } from '@/utils/membershipFreeze';
 import { FreezeRequest } from './FreezeRequest';
 import { FreezeHistory } from './FreezeHistory';
 import './membershipOverview.css';
@@ -37,6 +38,7 @@ export function FreezeControls({ membership, own = false }) {
   const { form, mutation } = useFreezeMutation(membership);
   if (!can(own ? PERMISSIONS.MEMBERSHIP_FREEZE_SELF : PERMISSIONS.MEMBERSHIP_FREEZE_ALL))
     return null;
+  const limits = getFreezeLimits(membership);
   const freezes = membership?.freezes ?? [];
   const current = freezes.find((freeze) => !freeze.endedAt);
   return (
@@ -57,9 +59,10 @@ export function FreezeControls({ membership, own = false }) {
             title="Lưu ý trước khi bảo lưu"
             description="Hủy các đăng ký trùng khoảng bảo lưu trước khi gửi. Giới hạn ngày và số lượt do trung tâm cấu hình. Kết thúc sớm chỉ cộng số ngày thực dừng."
           />
+          <FreezeBudget limits={limits} />
           <div className="scms-freeze-grid">
             <section aria-label="Yêu cầu bảo lưu">
-              <FreezeRequest form={form} mutation={mutation} current={current} />
+              <FreezeRequest form={form} mutation={mutation} current={current} limits={limits} />
               {mutation.isError && <Alert type="error" showIcon title={mutation.error.message} />}
             </section>
             <FreezeHistory freezes={freezes} />
@@ -72,5 +75,15 @@ export function FreezeControls({ membership, own = false }) {
         />
       )}
     </Card>
+  );
+}
+
+function FreezeBudget({ limits }) {
+  return limits ? (
+    <p>
+      Đã bảo lưu {limits.used} / {limits.total} ngày
+    </p>
+  ) : (
+    <Alert type="warning" showIcon title="Chưa tải đủ giới hạn bảo lưu. Vui lòng tải lại hồ sơ." />
   );
 }
