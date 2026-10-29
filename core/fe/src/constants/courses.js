@@ -10,5 +10,5 @@ export const RESULT_LABELS = Object.freeze({ PASS: 'Đạt', NOT_PASSED: 'Chưa 
 export const COURSE_LIMITS = Object.freeze({
   MAX_PROGRESS: 5,
   TEXT_LENGTH: 2000,
-  REASON_LENGTH: 500,
+  REASON_LENGTH: 1000,
 });

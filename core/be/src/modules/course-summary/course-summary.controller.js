@@ -1,3 +1,4 @@
+import { ownRating, ratedCoaches } from './course-rating-read.service.js';
 import { listSummaries } from './course-list.service.js';
 import { sendSuccess, sendCreated } from '../../common/utils/api-response.js';
 import * as summaries from './course-summary.service.js';
@@ -78,3 +79,10 @@ export const list = async (req, res) => {
   const { items, meta } = await listSummaries(req.validated.query, context(req));
   sendSuccess(res, { data: items, meta });
 };
+
+/** Đánh giá chính chủ và hạn sửa do server tính. */
+export const getOwnRating = async (req, res) =>
+  sendSuccess(res, { data: await ownRating(req.validated.params.id, req.user.id) });
+/** Danh mục HLV đã nhận đánh giá trong phạm vi kiểm duyệt. */
+export const getRatedCoaches = async (_req, res) =>
+  sendSuccess(res, { data: await ratedCoaches() });

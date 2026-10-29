@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { PERMISSIONS } from '@scms/shared';
+import { usePermission } from '@/hooks/usePermission';
+import { CourseRatingModal } from './CourseRatingModal';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { App, Button, Empty, Space, Table, Tag } from 'antd';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,6 +15,8 @@ import { CourseResultDetails } from './CourseResultDetails';
 /** S38: chỉ lấy dữ liệu chính chủ đã công bố, PDF dùng cùng snapshot với màn hình. */
 export function CourseResultsPanel() {
   const { user } = useAuth();
+  const { can } = usePermission();
+  const [ratingItem, setRatingItem] = useState(null);
   const { message } = App.useApp();
   const table = useTableQuery();
   const query = useQuery({
@@ -44,6 +50,11 @@ export function CourseResultsPanel() {
       ),
     },
   ];
+  if (can(PERMISSIONS.COURSE_RATING_WRITE_OWN))
+    columns.push({
+      title: 'Đánh giá',
+      render: (_, row) => <Button onClick={() => setRatingItem(row)}>Đánh giá khóa học</Button>,
+    });
   return (
     <Space vertical className="scms-full-width">
       <QueryState query={query}>
@@ -62,6 +73,7 @@ export function CourseResultsPanel() {
           }}
         />
       </QueryState>
+      {ratingItem && <CourseRatingModal item={ratingItem} onClose={() => setRatingItem(null)} />}
     </Space>
   );
 }

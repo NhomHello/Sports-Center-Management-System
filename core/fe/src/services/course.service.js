@@ -15,3 +15,15 @@ export const listOwnResults = (params) => http.get('/me/course-results', { param
 /** PDF tạo từ snapshot đã công bố, kiểm tra ownership ở backend. */
 export const downloadCourseResult = (id) =>
   http.get(`/me/course-results/${id}/pdf`, { responseType: 'blob' });
+
+/** Đánh giá chính chủ và cửa sổ thời gian còn được sửa. */
+export const getOwnRating = (id) => http.get(`/classes/${id}/ratings/me`);
+/** Tạo hoặc sửa đánh giá trong thời hạn do API quyết định. */
+export const saveRating = (id, data, updating) =>
+  http[updating ? 'put' : 'post'](`/classes/${id}/ratings`, data);
+/** Nhận xét đã được API ẩn danh hoặc trả danh tính theo quyền kiểm duyệt. */
+export const listCoachRatings = (id, params) => http.get(`/coaches/${id}/ratings`, { params });
+/** Ghi quyết định ẩn/hiện, giữ nguyên điểm số. */
+export const moderateRating = (id, data) => http.patch(`/course-ratings/${id}/moderation`, data);
+/** HLV đã có đánh giá để người có quyền kiểm duyệt lựa chọn. */
+export const listRatedCoaches = () => http.get('/course-ratings/coaches');

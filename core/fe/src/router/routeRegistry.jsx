@@ -20,6 +20,7 @@ import { PERMISSIONS } from '@scms/shared';
 import { lazy } from 'react';
 import { ROUTES } from '@/constants';
 
+const CourseRatingsPage = lazy(() => import('@/pages/courses/CourseRatingsPage'));
 const CourseSummariesPage = lazy(() => import('@/pages/courses/CourseSummariesPage'));
 const CourseSummaryPage = lazy(() => import('@/pages/courses/CourseSummaryPage'));
 const ReconciliationPage = lazy(() => import('@/pages/reconciliation/ReconciliationPage'));
@@ -50,6 +51,12 @@ const CoachesPage = lazy(() => import('@/pages/profiles/CoachesPage'));
 const CoachDetailPage = lazy(() => import('@/pages/profiles/CoachDetailPage'));
 const StudentsPage = lazy(() => import('@/pages/profiles/StudentsPage'));
 export const routeRegistry = [
+  {
+    path: ROUTES.COURSE_RATINGS,
+    element: <CourseRatingsPage />,
+    permission: [PERMISSIONS.COURSE_SUMMARY_MANAGE_ASSIGNED, PERMISSIONS.COURSE_RATING_MODERATE],
+    menu: { label: 'Đánh giá khóa học', icon: <SafetyOutlined />, group: GROUP_SCHEDULE },
+  },
   {
     path: ROUTES.COURSE_SUMMARIES,
     element: <CourseSummariesPage />,
