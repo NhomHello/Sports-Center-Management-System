@@ -37,3 +37,22 @@ Hạn đánh giá tính từ thời điểm lớp kết thúc (buổi cuối kh�
 `breakdown` có `byKind`, `byChannel`, `byPlan`, `byClass`, `bySubject`; từng chiều tổng net bằng net toàn báo cáo. Nhóm `ADJUSTMENT` giữ riêng chênh lệch, không cộng vào doanh thu sản phẩm gốc. Phần trả bằng CREDIT không tính lại. Hoàn tiền thực tế theo completedAt, tối đa phần tiền ngoài số dư đã được tính doanh thu của invoice. Không tính khoản hoàn chuyển thừa/sai mã vào doanh thu bán gói.
 
 `GET /reports/members` và `/reports/members/export` dùng cùng groupBy/ngày/giới hạn; quyền `report.view`. Trả số hội viên mới, kỳ gói hiệu lực giao với từng kỳ, đăng ký khoá mới, huỷ gói/huỷ đăng ký và tỉ lệ lấp đầy lớp. Xuất dùng cùng builder với màn hình.
+
+## Hồ sơ HLV / hội viên (Khôi)
+
+Nhóm endpoint hồ sơ dùng JWT và kiểm tra permission trên từng đường dẫn, không áp dụng middleware JWT lên các endpoint công khai khác (ví dụ webhook SePay).
+
+| Method | URL | Contract |
+| --- | --- | --- |
+| GET/PUT | `/me/coach-profile` | `coach_profile.update_own`. PUT chỉ nhận `bio, experienceYears, certifications: string[], publicEmail, publicPhone, zalo, showContact`. GET thêm giới hạn `bioMaxLength`, `avatarMaxBytes`, `hasAvatar`, `avatarUpdatedAt`. |
+| PUT | `/me/coach-profile/avatar` | Body binary với Content-Type `image/png` hoặc `image/jpeg`, tối đa 2 MB; kiểm tra chữ ký ảnh, ghi audit cùng thay đổi. |
+| GET | `/me/coach-profile/avatar`, `/coaches/:id/avatar` | Ảnh binary cần JWT; endpoint công khai hồ sơ dùng quyền `coach_profile.read` và cùng điều kiện HLV đang hoạt động. |
+| GET | `/coaches`, `/coaches/subjects` | `coach_profile.read`. Danh sách hỗ trợ `q, subjectId, page, pageSize`. Chỉ HLV ACTIVE có quyền giảng dạy và chuyên môn hoạt động. Bộ lọc có cả HLV chưa có lớp. |
+| GET | `/coaches/:id` | Giới thiệu, chuyên môn, lớp OPEN, trung bình đánh giá và nhận xét tên viết tắt. Khi tắt chia sẻ, không trả `contact` hay các trường liên hệ thô. Không trả role/email đăng nhập/ngày tạo. |
+| GET/PUT | `/me/member-profile` | `member_profile.read_own` / `member_profile.update_own`. `birthDate` là `YYYY-MM-DD` hoặc null; kiểm tra tương lai theo ngày lịch Việt Nam. |
+| GET/PUT | `/members/:id/profile` | Nhân viên có `member.read` / `member.update` đọc/sửa hộ; thay đổi có audit. |
+| GET | `/coach/members`, `/coach/members/:id` | `member_profile.view_assigned`; danh sách hỗ trợ `q, page, pageSize`; ngoài phân công trả 403. |
+
+Hồ sơ tập luyện nhận `birthDate, gender (MALE/FEMALE/OTHER/UNDISCLOSED), heightCm, weightKg, goals, level (BEGINNER/INTERMEDIATE/ADVANCED), healthNotes, emergencyName, emergencyPhone, shareWithCoach`. Các trường ngày sinh/giới tính/số đo/liên hệ khẩn cấp có thể để null. Email/điện thoại/Zalo công khai là thông tin tự nguyện, Zalo dùng số điện thoại. Email công khai mặc định từ email đăng nhập khi tạo hồ sơ và sau đó độc lập với thông tin đăng nhập.
+
+Scope HLV xét buổi thực sự được phân công, thời điểm đăng ký/huỷ và hạn sau buổi cuối không huỷ, đọc `COACH_MEMBER_VIEW_DAYS`. Chỉ trả chuyên cần trong các buổi của HLV đó và tổng kết đã công bố của chính HLV đó. Khi `shareWithCoach=false`, response không có `trainingProfile`; không trả invoice, membership hoặc số dư. Audit hồ sơ lưu tên trường đã thay đổi, không sao chép ghi chú sức khoẻ hoặc blob ảnh vào nhật ký.
