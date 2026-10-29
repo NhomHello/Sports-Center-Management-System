@@ -112,6 +112,7 @@
 }
 .scms-staff-member-search {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   gap: 12px;
   padding: 20px;
@@ -132,8 +133,14 @@
 .scms-staff-member-search > .scms-search-input {
   width: min(100%, 640px);
 }
+.scms-staff-member-search > .ant-space,
+.scms-staff-member-search .ant-space-item {
+  min-width: 0;
+  max-width: 100%;
+}
 .scms-staff-booking .ant-typography {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 480px) {
   .scms-class-list-toolbar .scms-search-input {

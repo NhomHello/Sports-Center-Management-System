@@ -226,15 +226,25 @@ test('UI-F2: lịch tuần 7 cột, lọc phòng và chuyển từ lịch trốn
   await page.goto('/schedule?tab=week');
   await expect(page.getByRole('tab', { name: 'Lịch dạy', exact: true })).toHaveCount(0);
   await page.getByRole('combobox', { name: 'Phòng', exact: true }).click();
+  const dropdown = page.locator('.ant-select-dropdown:visible');
+  const room = dropdown.getByTitle(f.room.name, { exact: true });
+  await dropdown.hover();
+  // Ant Design chỉ render các lựa chọn gần vùng đang hiển thị.
+  await expect
+    .poll(
+      async () => {
+        if (!(await room.isVisible())) await page.mouse.wheel(0, 180);
+        return room.isVisible();
+      },
+      { timeout: 10000, intervals: [100] },
+    )
+    .toBe(true);
   const request = page.waitForResponse(
     (r) =>
       r.url().includes('/schedule/week') &&
       new URL(r.url()).searchParams.get('roomId') === String(f.room.id),
   );
-  await page
-    .locator('.ant-select-dropdown:visible')
-    .getByTitle(f.room.name, { exact: true })
-    .click();
+  await room.click();
   expect((await request).status()).toBe(200);
   await chooseDate(page, item.sessions[0].startAt.slice(0, 10));
   await page.getByRole('switch', { name: 'Hiện lịch đã hủy' }).check();

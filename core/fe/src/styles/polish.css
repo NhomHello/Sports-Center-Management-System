@@ -577,45 +577,53 @@ a {
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }
-.scms-notification-panel .ant-list-item {
+.scms-notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.scms-notification-meta {
+  flex: 1;
+}
+.scms-notification-actions {
+  flex-shrink: 0;
+}
+.scms-notification-panel .scms-notification-item {
   align-items: flex-start;
   gap: 8px;
   padding: 13px 4px;
 }
-.scms-notification-panel .ant-list-item-meta {
+.scms-notification-panel .scms-notification-meta {
   min-width: 0;
 }
-.scms-notification-list .ant-list-item {
+.scms-notification-list .scms-notification-item {
   gap: 16px;
   padding: 18px 12px;
   border: 1px solid transparent;
   border-radius: 14px;
 }
-.scms-notification-list .ant-list-item-meta {
+.scms-notification-list .scms-notification-meta {
   min-width: 0;
 }
-.scms-notification-list .ant-list-item-meta-title {
+.scms-notification-list .scms-notification-title {
   margin-bottom: 6px;
   color: var(--scms-text);
 }
-.scms-notification-list .ant-list-item-meta-description {
+.scms-notification-list .scms-notification-description {
   overflow-wrap: anywhere;
 }
-.scms-notification-list .ant-list-item-meta-description .ant-typography {
+.scms-notification-list .scms-notification-description .ant-typography {
   margin-bottom: 5px;
 }
 .scms-notification-list__item--unread {
   background: var(--scms-surface-soft) !important;
   border-color: var(--scms-border-soft) !important;
 }
-.scms-notification-list--compact .ant-list-item {
+.scms-notification-list--compact .scms-notification-item {
   padding: 11px 4px;
 }
-.scms-notification-list--compact .ant-list-item-action {
+.scms-notification-list--compact .scms-notification-actions {
   margin-inline-start: 8px;
-}
-.scms-notification-list--compact .ant-list-item-action li {
-  padding-inline: 0;
 }
 .scms-notification-message {
   margin: 0 !important;
@@ -820,16 +828,16 @@ a {
     min-height: 235px;
     padding: 9px;
   }
-  .scms-notification-list .ant-list-item {
+  .scms-notification-list .scms-notification-item {
     align-items: flex-start;
     flex-direction: column;
     padding: 14px 8px;
   }
-  .scms-notification-list .ant-list-item-meta {
+  .scms-notification-list .scms-notification-meta {
     align-self: stretch;
     width: 100%;
   }
-  .scms-notification-list .ant-list-item-action {
+  .scms-notification-list .scms-notification-actions {
     align-self: flex-end;
     margin: 0;
   }

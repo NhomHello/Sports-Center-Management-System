@@ -57,7 +57,7 @@ export function ChangePurchaseModal({ kind, query, mutation, onSubmit, onClose, 
       okButtonProps={{ disabled: !ready }}
       onOk={() => form.submit()}
       closable={!mutation.isPending}
-      maskClosable={!mutation.isPending}
+      mask={{ closable: !mutation.isPending }}
       onCancel={() => {
         if (!mutation.isPending) onClose();
       }}

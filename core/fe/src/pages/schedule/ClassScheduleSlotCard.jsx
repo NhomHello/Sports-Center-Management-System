@@ -124,6 +124,7 @@ export function ClassScheduleSlotCard({ field, index, frames, onRemove }) {
           format={TIME_FORMAT}
           order={false}
           disabled={!selectedFrame}
+          allowEmpty={!selectedFrame ? [true, true] : [false, false]}
           placeholder={['Bắt đầu', 'Kết thúc']}
           style={{ width: '100%' }}
         />

@@ -7,6 +7,7 @@ import { formatDate } from '@/utils/format';
 
 /** Giữ nguyên payload và validation server; chỉ tách form khỏi lịch sử. */
 export function FreezeRequest({ form, mutation, current, limits }) {
+  const disabled = mutation.isPending || !limits;
   if (current)
     return (
       <div className="scms-freeze-current">
@@ -30,7 +31,7 @@ export function FreezeRequest({ form, mutation, current, limits }) {
       form={form}
       className="scms-freeze-form"
       layout="vertical"
-      disabled={mutation.isPending || !limits}
+      disabled={disabled}
       onFinish={mutation.mutate}
     >
       <Form.Item
@@ -47,7 +48,11 @@ export function FreezeRequest({ form, mutation, current, limits }) {
           },
         ]}
       >
-        <ResponsiveRangePicker format={DATE_FORMATS.DATE} className="scms-full-width" />
+        <ResponsiveRangePicker
+          format={DATE_FORMATS.DATE}
+          className="scms-full-width"
+          allowEmpty={[disabled, disabled]}
+        />
       </Form.Item>
       <Button
         htmlType="submit"

@@ -1,6 +1,6 @@
 import './profiles.css';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Card, Descriptions, List, Rate, Space, Tag, Typography } from 'antd';
+import { Button, Card, Descriptions, Empty, Listy, Rate, Space, Tag, Typography } from 'antd';
 import { Link, useParams } from 'react-router';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PROFILE_KEYS } from '@/constants/profile';
@@ -55,33 +55,31 @@ function CoachInformation({ coach }) {
         <CoachContact contact={coach.contact} />
       </Card>
       <Card title="Lớp đang mở">
-        <List
-          dataSource={coach.classes}
-          locale={{ emptyText: 'Chưa có lớp đang mở' }}
-          renderItem={(item) => (
-            <List.Item>
-              <Link to={`${ROUTES.SCHEDULE}?tab=open&class=${item.id}`}>
-                {item.name} · {item.subject.name}
-              </Link>
-            </List.Item>
+        {!coach.classes.length && <Empty description="Chưa có lớp đang mở" />}
+        <Listy
+          rowKey="id"
+          items={coach.classes}
+          itemRender={(item) => (
+            <Link to={`${ROUTES.SCHEDULE}?tab=open&class=${item.id}`}>
+              {item.name} · {item.subject.name}
+            </Link>
           )}
         />
       </Card>
       <Card title={`Đánh giá HLV · ${coach.ratingCount} lượt`}>
         <Rate allowHalf disabled value={coach.averageRating || 0} />
-        <List
-          dataSource={coach.ratings}
-          locale={{ emptyText: 'Chưa có đánh giá' }}
-          renderItem={(rating) => (
-            <List.Item>
-              <Space vertical>
-                <strong>{rating.memberName}</strong>
-                <Rate disabled value={rating.coachStars} />
-                <span>
-                  {rating.hidden ? 'Nhận xét đã được ẩn' : rating.comment || 'Không có nhận xét'}
-                </span>
-              </Space>
-            </List.Item>
+        {!coach.ratings.length && <Empty description="Chưa có đánh giá" />}
+        <Listy
+          rowKey="id"
+          items={coach.ratings}
+          itemRender={(rating) => (
+            <Space vertical>
+              <strong>{rating.memberName}</strong>
+              <Rate disabled value={rating.coachStars} />
+              <span>
+                {rating.hidden ? 'Nhận xét đã được ẩn' : rating.comment || 'Không có nhận xét'}
+              </span>
+            </Space>
           )}
         />
       </Card>
