@@ -134,6 +134,10 @@ a {
   white-space: nowrap;
 }
 .scms-account__role {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--scms-blue);
   font-size: 11px;
 }

@@ -241,3 +241,14 @@
     transform: none;
   }
 }
+
+.scms-plan-card .ant-space,
+.scms-plan-card .ant-space-item {
+  min-width: 0;
+  max-width: 100%;
+}
+.scms-plan-card .ant-tag {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
