@@ -1,64 +1,50 @@
-# Sprint 4 – BE – Bảo
+# Sprint 4 – Bảo (nhận cả task Nhanh)
 
-- Nhánh: `sprint-4/be-bao`
-- Thời gian: 03/11 → 16/11
-- Nguồn code: nhánh `khoi` (Khôi đã làm trước cho Flow 1–4)
+Nhánh `sprint-4/be-bao`, author `ptbao29 <phamthaibao29072004@gmail.com>`. Đã pull main trước khi làm.
+Nguồn phân công là `docs/ke-hoach/SWP391_TaskSheet_Sprint4.xlsx`, chốt không làm AI/kế hoạch tập luyện.
+Bảo nhận 17 task của Bảo và Nhanh theo phân công 29/10; phần hồ sơ vẫn thuộc Khôi, FE tổng kết/đánh giá thuộc Khải.
 
-## Function phụ trách
+| Nhóm | Task | Bàn giao |
+| --- | --- | --- |
+| Nền dữ liệu | S4-00 | 5 bảng mới, enum COMPLETED, quyền/cấu hình, API contract; dùng lại bản nền Khôi có ghi đồng tác giả, sửa MySQL TEXT defaults |
+| Tổng kết | S4-11/12/14 | Job kết thúc khoá, nhắc/quá hạn chống trùng; chuyên cần server tính; nháp/công bố/mở lại; outbox email retry |
+| Kết quả & đánh giá | S4-16/18 | Kết quả cá nhân, PDF chung khung hoá đơn; đánh giá trong hạn, ẩn danh/moderation có audit |
+| Báo cáo khoá | S4-20 | Quyền riêng course_summary.view_all, màn hình/API và Excel cùng builder |
+| Doanh thu | S4-22/24/28 | 5 nhóm thời gian, kỳ trước, cơ cấu 5 chiều, CREDIT không tính lại, xuất CSV/XLSX/PDF cùng dữ liệu |
+| Hội viên | S4-26 | Chung bucket thời gian, kỳ gói, huỷ/đăng ký, lấp đầy lớp |
+| FE báo cáo | S4-23/25/27 | Khoảng nhanh, nhóm kỳ, so sánh, biểu đồ tương tác, bảng cơ cấu/top, tab hội viên, tải file đúng bộ lọc |
+| Tài liệu | S4-32 | Đặc tả UC/BR Word, ERD bổ sung, API contract |
+| Demo | S4-33/34 | Seed bổ sung idempotent, doanh thu 12 tháng và 3 tình huống tổng kết; kịch bản demo, phần chạy nhóm trực tiếp chưa diễn tập |
 
-| # | US | Function | Trạng thái trên nhánh khoi | Ghi chú |
-|---|---|---|---|---|
-| 62 | UC-AT-01 | Check-in tại quầy | ✅ Khôi đã làm (BE+FE) | module check-in + CheckInPanel |
-| 63 | UC-AT-02 | Điểm danh buổi học | ✅ Khôi đã làm (BE+FE) | module attendance (điểm danh theo buổi) |
-| 64 | UC-AT-03 | Lịch sử điểm danh của tôi | ✅ Khôi đã làm (BE+FE) | GET /attendance/me + TrainingHistoryPanels |
-| 65 | UC-TR-01 | Tạo / sửa kế hoạch tập luyện | ✅ Khôi đã làm (BE+FE) | module training-plan + TrainingPlanModal |
-| 66 | UC-TR-02 | Ghi kết quả buổi tập | ✅ Khôi đã làm (BE+FE) | module training-result + TrainingResultModal |
-| 67 | UC-TR-03 | Xem kế hoạch và nhận xét | ✅ Khôi đã làm (BE+FE) | GET /training-plans/me, /training-results/me + TrainingPlanCard |
-| 68 | UC-TR-03 | Đánh dấu hoàn thành bài tập | ✅ Khôi đã làm (BE+FE) | POST /training-plans/exercises/:id/completions |
-| 69 | UC-TR-04 | Gửi bài tập / thông báo cho học viên | 🟡 Khôi làm một phần | Công bố kế hoạch tập có gửi thông báo cho học viên; chưa có gửi tự do, giới hạn lượt/ngày, retry queue. |
+## Chạy và nối API
 
-## Cách làm
+1. `npm run db:deploy -w @scms/be`
+2. `npm run db:generate`
+3. `npm run db:seed`
+4. Tuỳ chọn dữ liệu giả: `npm run db:seed:sprint4` (không reset DB).
 
-1. Chuyển sang nhánh: `git fetch` rồi `git switch sprint-4/be-bao`.
-2. File **lấy toàn bộ**: `git checkout origin/khoi -- <đường dẫn>`.
-3. File **lấy một phần**: xem bằng `git show origin/khoi:<đường dẫn>` và chỉ chép phần ghi ở cột "Phần cần lấy". File dùng chung (schema, routes, permissions…) nhiều người cùng sửa, nên merge theo thứ tự sprint để tránh conflict.
-4. Đọc hiểu, đối chiếu Business Rule trong file Excel, sửa chỗ còn thiếu, chạy `npm run lint` và `npm test`.
-5. Commit bằng tài khoản của mình. Commit nào dùng lại code của Khôi thì thêm dòng cuối: `Co-authored-by: kitter <longhuy0078@gmail.com>`.
-6. Mở PR vào `main`, nhờ một thành viên khác review rồi mới merge.
+Hợp đồng chi tiết: `docs/huong-dan/api-sprint4.md`. Khôi/Khải dùng đúng schema và contract này trước khi tích hợp;
+không chạy lại bản migration cũ chưa sửa TEXT defaults. Quyền mới được seed theo cơ chế backfill quyền mới hiện có.
 
-## File lấy toàn bộ từ nhánh khoi
+Các job chạy trong vòng đời server. Email không cấu hình SMTP vẫn giữ outbox chờ gửi, in-app không bị rollback.
+Email chưa gửi tăng attempt và được xếp lịch công bằng, không chặn thông báo lớp mới. Email có bảo vệ nhiều worker và receipt từng người; nếu SMTP đã nhận nhưng kết nối/commit chết trước khi ghi receipt,
+email có thể được gửi lại (at-least-once). Mỗi sự kiện chỉ có một in-app cho mỗi người nhờ dedupeKey.
 
-| File | Ghi chú |
-|---|---|
-| `core/be/src/modules/attendance/attendance.controller.js` |  |
-| `core/be/src/modules/attendance/attendance.routes.js` |  |
-| `core/be/src/modules/attendance/attendance.service.js` |  |
-| `core/be/src/modules/attendance/attendance.validation.js` |  |
-| `core/be/src/modules/check-in/check-in.controller.js` |  |
-| `core/be/src/modules/check-in/check-in.routes.js` |  |
-| `core/be/src/modules/check-in/check-in.service.js` |  |
-| `core/be/src/modules/check-in/check-in.validation.js` |  |
-| `core/be/src/modules/training/training-plan.controller.js` |  |
-| `core/be/src/modules/training/training-plan.routes.js` |  |
-| `core/be/src/modules/training/training-plan.service.js` |  |
-| `core/be/src/modules/training/training-result.controller.js` |  |
-| `core/be/src/modules/training/training-result.routes.js` |  |
-| `core/be/src/modules/training/training-result.service.js` |  |
-| `core/be/src/modules/training/training-scope.js` |  |
-| `core/be/src/modules/training/training.validation.js` |  |
-| `docs/test-cases/TC-F4-training-attendance.md` |  |
+## Giải thích số liệu
 
-## File lấy một phần
+- Ngày Việt Nam, tuần thứ Hai. Kỳ trước có cùng số ngày liền trước khoảng chọn. Mẫu số 0 trả null, UI hiện “—”.
+- Doanh thu tiền ngoài số dư ở paidAt; hoàn ở completedAt. Mỗi chiều cơ cấu có bucket “khác” khi không thuộc sản phẩm đó để tổng bằng net. Chênh lệch ADJUSTMENT giữ nhóm riêng.
+- Membership báo cáo theo phần khoảng hiệu lực giao với bucket; bucket bị bảo lưu phủ toàn phần không tính kỳ hiệu lực.
+- Đăng ký mới/huỷ dùng `enrolledAt/cancelledAt` của bản ghi đăng ký lớp hiện tại. Đăng ký lại đã ghi đè ngày cũ không được khôi phục thành sự kiện riêng từ dữ liệu hiện có. Lấp đầy tính hội viên có khoảng đăng ký giao bucket / sức chứa các lớp có buổi trong bucket, không cộng PENDING_PAYMENT.
+- Tổng kết theo số buổi thực học từ ngày đăng ký, trừ EXCUSED ở mẫu số; mẫu số 0 trả 0. Chưa điểm danh cần xác nhận trước khi công bố.
+- Nhận xét bị ẩn không hiển thị công khai; sao vẫn tính trung bình. Hạn đánh giá lấy buổi cuối không huỷ, không lấy ngày công bố.
 
-| File | Phần cần lấy |
-|---|---|
-| `core/be/prisma/migrations/20260924150000_add_flows_2_4/migration.sql` | Bảng check-in, attendance, training |
-| `core/be/prisma/schema.prisma` | Model Flow 4 |
-| `core/be/prisma/seed/roles.seed.js` | Quyền attendance/check-in/training |
-| `core/shared/src/permissions.js` | ATTENDANCE_*, CHECK_IN_*, TRAINING_* |
-| `core/be/src/routes.js` | Đăng ký /attendance, /check-ins, /training-* |
-| `core/be/tests/flows.test.js` | Test check-in / điểm danh / training |
+## Kiểm tra
 
-## Việc còn thiếu (phải tự làm thêm)
-
-- #69 UC-TR-04 – Gửi bài tập / thông báo cho học viên: Công bố kế hoạch tập có gửi thông báo cho học viên; chưa có gửi tự do, giới hạn lượt/ngày, retry queue.
+- Kết quả cuối: 224 BE + 158 FE test đạt; 2 E2E desktop/mobile, lint và build đạt. Ảnh và số liệu ở `outputs/sprint4-bao/`.
+- Baseline trước thay đổi: 206 BE + 156 FE test đạt.
+- Thêm test cho job/idempotence, scope HLV, công bố đồng thời, SMTP retry, kết quả cá nhân/PDF, rating/moderation,
+  công thức chuyên cần, báo cáo/biên thời gian/CREDIT/cơ cấu/giới hạn và bộ lọc FE.
+- E2E báo cáo desktop và mobile 320px: chọn năm, nhóm tháng, cơ cấu top lớp, chuyển tab hội viên, tải Excel.
+- Migration replay từ DB trống đủ 16 migration; không DROP bảng. Seed chạy lại giữ 36 hoá đơn, 37 payment, 4 hoàn và 3 tổng kết.
+- Excel dùng Review cho phần đã làm, để nhóm nối UI và review trước Done. S4-34 vẫn cần buổi diễn tập trực tiếp của nhóm.

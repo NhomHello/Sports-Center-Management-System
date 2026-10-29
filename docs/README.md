@@ -38,3 +38,10 @@
 5. **Một nội dung, một chỗ**: không tạo bản sao tài liệu; sửa tại file gốc. Lộ trình và kế hoạch chỉ ghi ở Excel, không ghi thành Markdown.
 
 Quy ước đặt tên tài liệu nộp giảng viên: `SWP391_<Loại>_<Phiên bản>`.
+
+
+## Sprint 4
+
+- [Hợp đồng API](huong-dan/api-sprint4.md), [bàn giao Bảo nhận task Nhanh](handover/sprint-4-be-bao.md).
+- [Kịch bản demo cuối kỳ](huong-dan/demo-sprint4.md), [đặc tả UC/BR Word](yeu-cau/08_Sprint4_UseCases_BusinessRules.docx), [ERD bổ sung](yeu-cau/ERD/Sprint4-ERD.md).
+- Task sheet tại `ke-hoach/SWP391_TaskSheet_Sprint4.xlsx`; test case có sheet `TC-S4` trong `kiem-thu/SWP391_TestCase.xlsx`.

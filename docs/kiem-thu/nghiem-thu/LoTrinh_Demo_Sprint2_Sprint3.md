@@ -207,3 +207,12 @@ diện và webhook SePay. Toàn bộ request đi qua ngrok đến BE từ cùng 
 | 5 | | | | | | |
 
 Sau buổi demo: thư ký điền bảng trên trong ngày, leader tạo task tương ứng trong task sheet Sprint 4.
+
+
+## Bổ sung demo Sprint 4 (29/10/2026)
+
+Lộ trình cuối kỳ bổ sung hồ sơ HLV/hội viên, tổng kết khoá, đánh giá và báo cáo theo thời gian.
+Dùng [kịch bản Sprint 4](../../huong-dan/demo-sprint4.md) cho trình tự 15 phút, tài khoản giả, cách seed
+và điều kiện SMTP. Không làm các function AI/kế hoạch tập luyện đã huỷ.
+Bảo nhận task Nhanh và triển khai trên `sprint-4/be-bao`; Khôi phụ trách hồ sơ, Khải phụ trách UI tổng kết.
+Đã chạy test API và E2E báo cáo; buổi diễn tập trực tiếp cả nhóm thực hiện sau tích hợp các nhánh.

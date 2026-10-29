@@ -123,3 +123,13 @@ thêm quyền qua màn phân quyền theo nhu cầu. `attendance.record` chỉ c
 system settings, chi tiết ở `docs/handover/sprint-3-be-bao.md`.
 
 Sprint 3 Khải: `invoice.export_own` cho phép tải PDF A5 của hóa đơn PAID chính chủ. `invoice.export` cho phạm vi toàn bộ. Quyền `invoice.read_own` tiếp tục hỗ trợ xuất chính chủ theo API biên lai hiện có. Seed cấp quyền mới cho role hội viên khi tạo mới, role đang có giữ cấu hình quản lý.
+
+
+### Sprint 4 – tổng kết và đánh giá
+
+Registry thêm `coach_profile.read/update_own`, `member_profile.read_own/update_own/view_assigned`,
+`course_summary.read_own/manage_assigned/view_all/reopen`, `course_rating.write_own/moderate`.
+`report.view` cho doanh thu/hội viên, **không thay thế** `course_summary.view_all` của báo cáo tổng kết.
+Quyền sửa/công bố còn kiểm tra đúng HLV tác giả và trạng thái nháp. Kết quả cá nhân luôn lấy user ID từ token;
+moderation không cấp quyền sửa kết quả học viên. Seed backfill quyền mới theo cơ chế hiện có của dự án.
+Chi tiết cấu hình/course-summary và API: [api-sprint4.md](api-sprint4.md).
