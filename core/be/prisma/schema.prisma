@@ -239,6 +239,13 @@ enum CreditReason {
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 
 model User {
+  coachProfile CoachProfile?
+  memberProfile MemberProfile?
+  authoredCourseSummaries CourseSummary[] @relation("SummaryAuthor")
+  courseSummaryItems CourseSummaryItem[]
+  courseRatings CourseRating[] @relation("RatingMember")
+  receivedCourseRatings CourseRating[] @relation("RatingCoach")
+
 
   id                      Int                      @id @default(autoincrement())
 
@@ -949,6 +956,7 @@ model Notification {
 }
 
 enum ClassStatus {
+  COMPLETED
 
   OPEN
 
@@ -1131,6 +1139,9 @@ model OperatingFrame {
 }
 
 model GymClass {
+  courseSummary CourseSummary?
+  courseRatings CourseRating[]
+
 
   id                  Int               @id @default(autoincrement())
 
@@ -1904,4 +1915,109 @@ enum training_plans_status {
 
   COMPLETED
 
+}
+
+/// Hồ sơ công khai HLV tách thông tin đăng nhập; ảnh chỉ JPG/PNG tối đa theo giới hạn upload.
+model CoachProfile {
+  userId Int @id @map("user_id")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio String @default("") @db.Text
+  experienceYears Int @default(0) @map("experience_years")
+  certifications Json?
+  publicEmail String? @map("public_email") @db.VarChar(191)
+  publicPhone String? @map("public_phone") @db.VarChar(20)
+  zalo String? @db.VarChar(20)
+  showContact Boolean @default(false) @map("show_contact")
+  avatarData Bytes? @map("avatar_data") @db.MediumBlob
+  avatarMime String? @map("avatar_mime") @db.VarChar(30)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("coach_profiles")
+}
+
+/// Mục tiêu/sức khoẻ chỉ hiển thị cho HLV khi có đồng ý chia sẻ, nhân viên xem theo quyền.
+model MemberProfile {
+  userId Int @id @map("user_id")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  birthDate DateTime? @map("birth_date") @db.Date
+  gender String? @db.VarChar(20)
+  heightCm Float? @map("height_cm")
+  weightKg Float? @map("weight_kg")
+  goals String @default("") @db.Text
+  level String @default("BEGINNER") @db.VarChar(20)
+  healthNotes String @default("") @map("health_notes") @db.Text
+  emergencyName String? @map("emergency_name") @db.VarChar(100)
+  emergencyPhone String? @map("emergency_phone") @db.VarChar(20)
+  shareWithCoach Boolean @default(false) @map("share_with_coach")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("member_profiles")
+}
+
+enum CourseSummaryStatus {
+ DRAFT
+ PUBLISHED
+}
+enum CourseResult {
+ PASS
+ NOT_PASSED
+}
+
+/// S4-00: hợp đồng nền để Bảo triển khai job/lưu nháp/công bố; một tổng kết cho mỗi lớp.
+model CourseSummary {
+  id Int @id @default(autoincrement())
+  classId Int @unique @map("class_id")
+  gymClass GymClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  coachId Int @map("coach_id")
+  coach User @relation("SummaryAuthor", fields: [coachId], references: [id], onDelete: Restrict)
+  status CourseSummaryStatus @default(DRAFT)
+  deadlineAt DateTime @map("deadline_at")
+  publishedAt DateTime? @map("published_at")
+  revision Int @default(0)
+  reopenedReason String? @map("reopened_reason") @db.VarChar(1000)
+  items CourseSummaryItem[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([status, deadlineAt])
+  @@map("course_summaries")
+}
+
+model CourseSummaryItem {
+  id Int @id @default(autoincrement())
+  summaryId Int @map("summary_id")
+  summary CourseSummary @relation(fields: [summaryId], references: [id], onDelete: Restrict)
+  memberId Int @map("member_id")
+  member User @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  result CourseResult?
+  progress Int?
+  comment String @default("") @db.Text
+  nextCourse String @default("") @map("next_course") @db.Text
+  attendanceSnapshot Json? @map("attendance_snapshot")
+  lookupCode String @unique @default(uuid()) @map("lookup_code") @db.VarChar(40)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@unique([summaryId, memberId])
+  @@index([memberId])
+  @@map("course_summary_items")
+}
+
+model CourseRating {
+  id Int @id @default(autoincrement())
+  classId Int @map("class_id")
+  gymClass GymClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  memberId Int @map("member_id")
+  member User @relation("RatingMember", fields: [memberId], references: [id], onDelete: Restrict)
+  coachId Int @map("coach_id")
+  coach User @relation("RatingCoach", fields: [coachId], references: [id], onDelete: Restrict)
+  courseStars Int @map("course_stars")
+  coachStars Int @map("coach_stars")
+  comment String @default("") @db.Text
+  hiddenAt DateTime? @map("hidden_at")
+  hiddenById Int? @map("hidden_by_id")
+  hiddenReason String? @map("hidden_reason") @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@unique([classId, memberId])
+  @@index([coachId, hiddenAt, createdAt])
+  @@map("course_ratings")
 }
