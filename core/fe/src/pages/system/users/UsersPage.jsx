@@ -5,7 +5,7 @@ import { App, Button, Table } from 'antd';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PermissionGate } from '@/components/common/PermissionGate';
-import { QUERY_KEYS, USER_STATUS } from '@/constants';
+import { QUERY_KEYS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { useTableQuery } from '@/hooks/useTableQuery';
@@ -13,12 +13,9 @@ import * as roleService from '@/services/role.service';
 import * as userService from '@/services/user.service';
 import { UserFilters } from './UserFilters';
 import { UserFormModal } from './UserFormModal';
+import { useUserLock } from './useUserLock';
 import { getUserColumns } from './UserTableColumns';
-
-const NEXT_STATUS = {
-  [USER_STATUS.ACTIVE]: USER_STATUS.INACTIVE,
-  [USER_STATUS.INACTIVE]: USER_STATUS.ACTIVE,
-};
+import { CoachSubjectsModal } from './CoachSubjectsModal';
 
 /** Trang quan ly tai khoan: mau chuan cho bang phan trang phia server + filter. */
 export default function UsersPage() {
@@ -28,6 +25,7 @@ export default function UsersPage() {
   const { user: currentUser } = useAuth();
   const table = useTableQuery();
   const [createOpen, setCreateOpen] = useState(false);
+  const [coach, setCoach] = useState(null);
 
   const usersQuery = useQuery({
     queryKey: [...QUERY_KEYS.USERS, table.params],
@@ -50,11 +48,7 @@ export default function UsersPage() {
     onSuccess: onMutated,
     onError,
   });
-  const { mutate: toggleStatus } = useMutation({
-    mutationFn: (user) => userService.updateUserStatus(user.id, NEXT_STATUS[user.status]),
-    onSuccess: onMutated,
-    onError,
-  });
+  const toggleStatus = useUserLock();
 
   const columns = useMemo(
     () =>
@@ -64,6 +58,7 @@ export default function UsersPage() {
         roleOptions,
         onChangeRole: (user, roleId) => changeRole({ user, roleId }),
         onToggleStatus: toggleStatus,
+        onEditSubjects: setCoach,
       }),
     [can, currentUser?.id, roleOptions, changeRole, toggleStatus],
   );
@@ -82,6 +77,7 @@ export default function UsersPage() {
       />
       <UserFilters roleOptions={roleOptions} onChange={table.setFilters} />
       <Table
+        className="scms-user-table"
         rowKey="id"
         columns={columns}
         dataSource={usersQuery.data?.data ?? []}
@@ -91,6 +87,7 @@ export default function UsersPage() {
         scroll={{ x: true }}
       />
       <UserFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      {coach && <CoachSubjectsModal coach={coach} onClose={() => setCoach(null)} />}
     </>
   );
 }

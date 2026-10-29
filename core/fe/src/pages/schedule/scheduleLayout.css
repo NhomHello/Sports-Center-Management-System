@@ -1,0 +1,47 @@
+.scms-teaching-event-actions {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+.scms-teaching-event-actions > .ant-btn {
+  width: 100%;
+  height: auto;
+  min-height: 34px;
+  padding: 7px;
+  font-size: 12px;
+  white-space: normal;
+  line-height: 1.45;
+  box-shadow: none;
+}
+.scms-calendar-event__enrolled {
+  margin: 10px 0 0;
+  color: var(--scms-muted);
+  font-size: 12px;
+}
+.scms-calendar--compact .scms-calendar-event.ant-card > .ant-card-body {
+  padding: 10px 8px;
+}
+.scms-calendar--compact .scms-calendar-event__time {
+  gap: 4px;
+  font-size: 11px;
+}
+.scms-calendar--compact .scms-calendar-event__title {
+  font-size: 13px;
+  overflow-wrap: break-word;
+}
+.scms-calendar--compact .scms-schedule-day {
+  padding: 10px 7px;
+}
+.scms-calendar--compact .scms-schedule-day__empty {
+  gap: 4px;
+  text-align: center;
+  line-height: 1.5;
+}
+@container (min-width: 900px) {
+  .scms-calendar--compact .scms-week-grid .scms-schedule-day {
+    min-height: 260px;
+  }
+  .scms-calendar--compact .scms-schedule-day__header {
+    flex-wrap: wrap;
+  }
+}

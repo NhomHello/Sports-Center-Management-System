@@ -48,10 +48,11 @@ export function RoleFormModal({ open, role, onClose }) {
   return (
     <Modal
       open={open}
+      centered
       title={isEdit ? `Sửa vai trò: ${role.name}` : 'Tạo vai trò mới'}
       width={MODAL_WIDTH}
       okText="Lưu"
-      cancelText="Huỷ"
+      cancelText="Hủy"
       confirmLoading={saveMutation.isPending}
       onOk={form.submit}
       onCancel={onClose}

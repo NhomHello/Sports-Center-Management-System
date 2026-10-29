@@ -1,0 +1,94 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.scms-member-table .ant-table-thead > tr > th {
+  background: var(--scms-canvas) !important;
+  color: var(--scms-muted);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 14px 18px;
+}
+.scms-member-table .ant-table-tbody > tr > td {
+  padding: 18px;
+  border-bottom: 1px solid var(--scms-border);
+}
+.scms-member-table .ant-table-tbody > tr:hover > td {
+  background: var(--scms-surface);
+}
+
+.scms-member-table td {
+  white-space: nowrap;
+}
+.scms-members-directory .scms-data-card__toolbar {
+  padding: 22px 24px 16px;
+}
+.scms-members-directory__heading h4.ant-typography {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.scms-members-directory__count {
+  padding: 2px 9px;
+  color: var(--scms-blue);
+  background: var(--scms-soft-blue);
+  border-radius: 6px;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.scms-members-directory__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px 20px;
+}
+.scms-members-directory__filters .scms-search-input {
+  flex: 1 1 280px;
+  width: auto;
+  min-width: 0;
+}
+.scms-members-directory__filters .scms-member-filter {
+  flex: 0 1 230px;
+  width: 230px;
+  margin: 0;
+}
+.scms-member-identity .ant-space-item:last-child {
+  min-width: 0;
+}
+.scms-member-identity .ant-typography {
+  max-width: 188px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scms-member-actions .ant-btn {
+  height: 36px;
+  padding-inline: 10px;
+  font-size: 12px;
+  box-shadow: none;
+}
+.scms-members-directory .ant-pagination {
+  padding: 4px 20px;
+}
+@media (max-width: 600px) {
+  .scms-members-directory .scms-data-card__toolbar {
+    padding: 18px 16px 14px;
+  }
+  .scms-members-directory__filters {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 16px 16px;
+  }
+  .scms-members-directory__filters .scms-search-input,
+  .scms-members-directory__filters .scms-member-filter {
+    flex: none;
+    width: 100%;
+  }
+}

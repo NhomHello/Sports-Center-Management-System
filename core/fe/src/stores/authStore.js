@@ -15,7 +15,8 @@ export const useAuthStore = create(
       isProfileLoaded: false,
 
       /** @param {{ accessToken: string, user: object }} session */
-      setSession: ({ accessToken, user }) => set({ accessToken, user }),
+      setSession: ({ accessToken, user }) =>
+        set({ accessToken, user, permissions: [], isProfileLoaded: false }),
 
       /** @param {{ user: object, permissions: string[] }} profile */
       setProfile: ({ user, permissions }) => set({ user, permissions, isProfileLoaded: true }),

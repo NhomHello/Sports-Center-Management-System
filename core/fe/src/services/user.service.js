@@ -15,4 +15,8 @@ export const createUser = (payload) => http.post(BASE, payload);
 export const updateUserRole = (id, roleId) => http.patch(`${BASE}/${id}/role`, { roleId });
 
 /** @param {number} id @param {string} status */
-export const updateUserStatus = (id, status) => http.patch(`${BASE}/${id}/status`, { status });
+export const updateUserStatus = (id, status, cancelFutureBookings = false) =>
+  http.patch(`${BASE}/${id}/status`, { status, cancelFutureBookings });
+
+/** Xác minh email thủ công khi hội viên không nhận được thư. @param {number} id */
+export const verifyUserEmail = (id) => http.post(`${BASE}/${id}/email-verification`);

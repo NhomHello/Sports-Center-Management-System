@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { QUERY_KEYS } from '@/constants';
+import { HTTP_STATUS, QUERY_KEYS } from '@/constants';
 import * as authService from '@/services/auth.service';
 import { useAuthStore } from '@/stores/authStore';
+
+const TOKEN_REJECTED = [HTTP_STATUS.UNAUTHORIZED, HTTP_STATUS.FORBIDDEN];
 
 /**
  * Nap profile (user + permissions) tu /auth/me khi da co token va ghi vao store.
@@ -28,13 +30,17 @@ export const useAuthProfile = () => {
     if (query.data?.data) setProfile(query.data.data);
   }, [query.data, setProfile]);
 
-  // Khong lay duoc profile (token hong, server loi) => dang xuat de ve trang login
+  // Chi dang xuat khi token bi tu choi (401/403). Loi tam thoi (429, 5xx, mat mang) giu phien
+  // va cho thu lai, tranh day hoi vien ve trang login chi vi may chu dang ban.
+  const rejected = query.isError && TOKEN_REJECTED.includes(query.error?.status);
   useEffect(() => {
-    if (query.isError) logout();
-  }, [query.isError, logout]);
+    if (rejected) logout();
+  }, [rejected, logout]);
 
   return {
     isAuthenticated: Boolean(accessToken),
     isLoading: Boolean(accessToken) && !isProfileLoaded && !query.isError,
+    error: query.isError && !rejected ? query.error : null,
+    retry: query.refetch,
   };
 };

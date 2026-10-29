@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/authStore';
 
 /**
@@ -6,10 +8,15 @@ import { useAuthStore } from '@/stores/authStore';
  * Viec nap profile tu /auth/me nam o useAuthProfile (ProtectedRoute).
  */
 export const useAuth = () => {
+  const queryClient = useQueryClient();
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore((state) => state.user);
   const permissions = useAuthStore((state) => state.permissions);
-  const logout = useAuthStore((state) => state.logout);
+  const clearSession = useAuthStore((state) => state.logout);
+  const logout = useCallback(() => {
+    queryClient.clear();
+    clearSession();
+  }, [clearSession, queryClient]);
 
   return { isAuthenticated: Boolean(accessToken), user, permissions, logout };
 };

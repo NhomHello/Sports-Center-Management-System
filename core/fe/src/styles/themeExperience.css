@@ -1,0 +1,134 @@
+* {
+  scrollbar-color: var(--scms-scrollbar) transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scms-scrollbar);
+}
+html {
+  background: var(--scms-canvas);
+}
+body {
+  color: var(--scms-text);
+  background: var(--scms-canvas);
+}
+.scms-app-shell {
+  background: var(--scms-canvas);
+}
+:where(a, button, input, [role='button']):focus-visible {
+  outline: 2px solid var(--scms-focus-ring);
+  outline-offset: 3px;
+}
+.scms-theme-selector.ant-btn {
+  display: inline-flex;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--scms-text);
+  background: var(--scms-surface);
+  border-color: var(--scms-border);
+}
+.scms-theme-selector.ant-btn:hover {
+  color: var(--scms-blue);
+  background: var(--scms-hover);
+  border-color: var(--scms-blue-border);
+}
+.scms-main-header__inner > .ant-flex:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.scms-main-header__inner {
+  gap: 16px;
+}
+.scms-header-actions {
+  flex-shrink: 0;
+}
+.scms-auth-form-panel {
+  position: relative;
+  background: var(--scms-surface);
+}
+.scms-auth-theme {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 3;
+}
+.scms-auth-mobile-brand .ant-typography {
+  color: var(--scms-text);
+}
+.scms-member-avatar {
+  background: var(--scms-soft-blue);
+  color: var(--scms-blue);
+}
+.scms-member-name {
+  color: var(--scms-text);
+}
+:root[data-theme] .ant-tag.ant-tag-purple:not(.ant-tag-disabled) {
+  color: var(--scms-purple);
+  background: var(--scms-purple-soft);
+  border-color: var(--scms-purple);
+}
+.ant-btn-primary.ant-btn-dangerous:not(:disabled) {
+  color: var(--scms-on-accent);
+  background: var(--scms-danger-action);
+}
+.scms-purchase-buttons {
+  max-width: 100%;
+}
+@media (max-width: 480px) {
+  .scms-header-context {
+    display: none;
+  }
+  .scms-main-header__inner {
+    gap: 8px;
+  }
+  .scms-header-actions {
+    gap: 6px !important;
+  }
+  .scms-auth-theme {
+    top: 16px;
+    right: 16px;
+  }
+  .scms-auth-form-panel {
+    padding-top: 76px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Nhãn trạng thái phải đọc được ở cả hai palette, kể cả màu định sẵn của antd. */
+:root[data-theme] .ant-tag.ant-tag-green:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-success:not(.ant-tag-disabled) {
+  color: var(--scms-success);
+  background: var(--scms-success-soft);
+  border-color: var(--scms-success);
+}
+:root[data-theme] .ant-tag.ant-tag-blue:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-processing:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-cyan:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-geekblue:not(.ant-tag-disabled) {
+  color: var(--scms-blue) !important;
+  background: var(--scms-soft-blue) !important;
+  border-color: var(--scms-blue-border) !important;
+}
+:root[data-theme] .ant-tag.ant-tag-warning:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-orange:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-gold:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-yellow:not(.ant-tag-disabled) {
+  color: var(--scms-warning);
+  background: var(--scms-warning-soft);
+  border-color: var(--scms-warning);
+}
+:root[data-theme] .ant-tag.ant-tag-error:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-red:not(.ant-tag-disabled),
+:root[data-theme] .ant-tag.ant-tag-volcano:not(.ant-tag-disabled) {
+  color: var(--scms-danger);
+  background: var(--scms-danger-soft);
+  border-color: var(--scms-danger);
+}

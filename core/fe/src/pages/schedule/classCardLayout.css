@@ -1,0 +1,64 @@
+.scms-class-card::before,
+.scms-class-card::after {
+  display: none;
+}
+.scms-class-card .ant-card-extra > .ant-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+.scms-booking-actions__notices {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.scms-booking-actions__notices:empty {
+  display: none;
+}
+.scms-class-card .scms-booking-actions--compact {
+  display: contents;
+}
+.scms-booking-actions__buttons {
+  gap: 8px;
+}
+.scms-class-card .scms-booking-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.scms-class-card .scms-booking-actions__buttons > .ant-btn-text {
+  flex: 0 0 44px;
+}
+.scms-class-card .scms-booking-actions__buttons > .ant-btn-dangerous {
+  flex: 1 1 130px;
+}
+.scms-class-detail .ant-drawer-body {
+  padding: 24px;
+}
+.scms-class-detail .ant-drawer-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--scms-border);
+  background: var(--scms-surface);
+}
+.scms-class-detail .scms-schedule-stack {
+  display: grid;
+  gap: 24px;
+}
+.scms-class-detail .scms-schedule-stack > .ant-space-item {
+  min-width: 0;
+}
+.scms-class-detail .ant-typography {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .scms-class-detail .ant-drawer-body {
+    padding: 16px;
+  }
+  .scms-class-detail .ant-drawer-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .scms-class-detail .ant-drawer-footer {
+    padding: 12px 16px;
+  }
+}

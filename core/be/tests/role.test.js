@@ -13,7 +13,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await prisma.role.deleteMany({ where: { code: { startsWith: TEST_PREFIX } } });
+  await prisma.role.deleteMany({ where: { code: ROLE_CODE } });
   await prisma.$disconnect();
 });
 

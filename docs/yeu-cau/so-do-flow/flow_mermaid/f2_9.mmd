@@ -1,0 +1,31 @@
+flowchart TB
+  subgraph MEM["MEMBER"]
+    S0(( )) --> U1["Opens a full class,<br/>clicks 'Join waiting list'"]
+    U2["Gets notification:<br/>'a seat is held for you until hh:mm'"]
+    D4{"Confirms in time?"}
+    U3["Booked; sees the class<br/>in 'My schedule'"]
+  end
+  subgraph SYS["SYSTEM"]
+    D1{"Allowed to<br/>book?"}
+    X1["Reject with reason<br/>(BR-2.1 / 2.3 / 2.17)"]
+    A1["Add to waiting list<br/>ordered by join time"]
+    A2["A booked member cancels<br/>(or manager raises capacity)"]
+    A3["In one transaction: hold the seat for<br/>the first person for CLASS_WAITLIST_HOLD_HOURS"]
+    A4["Release hold, move to next person"]
+    D5{"Anyone left on the list?"}
+    A5["Seat becomes open for everyone"]
+  end
+  subgraph ATT["COACH / ATTENDANCE"]
+    C1["Coach marks attendance (#63)"]
+    D6{"Too many<br/>no-shows?"}
+    C2["Block new bookings for<br/>CLASS_NO_SHOW_BLOCK_DAYS;<br/>staff may unblock with a reason"]
+  end
+  U1 --> D1
+  D1 -- "No: no active plan, frozen,<br/>blocked or time clash" --> X1 --> E1(((" ")))
+  D1 -- "Yes" --> A1 --> A2 --> A3 --> U2 --> D4
+  D4 -- "Yes" --> U3 --> C1 --> D6
+  D4 -- "No" --> A4 --> D5
+  D5 -- "Yes" --> A3
+  D5 -- "No" --> A5 --> E2(((" ")))
+  D6 -- "Yes: ≥ NO_SHOW_LIMIT<br/>in WINDOW_DAYS" --> C2 --> E3(((" ")))
+  D6 -- "No" --> E3

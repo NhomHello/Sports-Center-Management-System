@@ -1,0 +1,233 @@
+{
+  "date": "2026-10-21",
+  "unitFrontend": {
+    "passed": 117,
+    "newTests": 13
+  },
+  "uiContract": {
+    "passed": 15,
+    "failed": 0,
+    "api": "mock"
+  },
+  "liveE2E": {
+    "status": "Blocked",
+    "cases": 7,
+    "reason": "GY-00 và BE GĐ3–4 chưa triển khai"
+  },
+  "checks": {
+    "lint": "Pass",
+    "frontendBuild": "Pass"
+  },
+  "cases": [
+    {
+      "id": "TC-UI-GY31-01",
+      "task": "GY-31",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY31-02",
+      "task": "GY-31",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-01-PLAN",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-01-COURSE",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-02-PLAN",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-02-COURSE",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-03",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY41-01",
+      "task": "GY-41",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-04",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-05",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-P01",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-P02",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-P03",
+      "task": "GY-34",
+      "type": "Unit / hợp đồng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY31-03",
+      "task": "GY-31",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY31-04",
+      "task": "GY-31",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-06",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-07",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-08",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-09",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY41-02",
+      "task": "GY-41",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY41-03",
+      "task": "GY-41",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-10",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY31-05",
+      "task": "GY-31",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-11",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-12",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY34-13",
+      "task": "GY-34",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY41-04",
+      "task": "GY-41",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-UI-GY41-05",
+      "task": "GY-41",
+      "type": "UI desktop / API mô phỏng",
+      "status": "Pass"
+    },
+    {
+      "id": "TC-LIVE-GY31-01",
+      "task": "GY-31",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY34-01",
+      "task": "GY-34",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY34-02",
+      "task": "GY-34",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY41-01",
+      "task": "GY-41",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY41-02",
+      "task": "GY-41",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY34-03",
+      "task": "GY-34",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    },
+    {
+      "id": "TC-LIVE-GY34-04",
+      "task": "GY-34",
+      "type": "E2E / API và DB thật",
+      "status": "Blocked"
+    }
+  ]
+}

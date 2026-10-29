@@ -1,3 +1,4 @@
+import { Button, Result } from 'antd';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { PageLoading } from '@/components/common/PageLoading';
 import { ROUTES } from '@/constants';
@@ -9,10 +10,19 @@ import { useAuthProfile } from '@/hooks/useAuthProfile';
  * ben trong luon thay danh sach quyen day du.
  */
 export function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuthProfile();
+  const { isAuthenticated, isLoading, error, retry } = useAuthProfile();
   const location = useLocation();
 
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
   if (isLoading) return <PageLoading fullscreen />;
+  if (error)
+    return (
+      <Result
+        status="warning"
+        title="Chưa tải được thông tin tài khoản"
+        subTitle={error.message}
+        extra={<Button onClick={() => retry()}>Thử lại</Button>}
+      />
+    );
   return <Outlet />;
 }

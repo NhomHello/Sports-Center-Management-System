@@ -18,6 +18,18 @@ export const SEED_MOCK_USERS = [
   },
   { email: 'coach.gym@scms.local', fullName: 'Lê Văn Gym', phone: '0901000003', roleCode: 'COACH' },
   {
+    email: 'coach.abcd@scms.local',
+    fullName: 'Trần Minh Huấn Luyện',
+    phone: '0901000021',
+    roleCode: 'COACH',
+  },
+  {
+    email: 'coach.zxcv@scms.local',
+    fullName: 'Nguyễn Gia Huấn Luyện',
+    phone: '0901000022',
+    roleCode: 'COACH',
+  },
+  {
     email: 'member1@scms.local',
     fullName: 'Phạm Hội Viên 1',
     phone: '0901000011',
@@ -47,4 +59,13 @@ export const SEED_MOCK_USERS = [
     phone: '0901000015',
     roleCode: 'MEMBER',
   },
+  ...Array.from({ length: 15 }, (_, index) => {
+    const memberNumber = index + 6;
+    return {
+      email: `member${memberNumber}@scms.local`,
+      fullName: `Hội Viên Demo ${memberNumber}`,
+      phone: `09030000${String(memberNumber).padStart(2, '0')}`,
+      roleCode: 'MEMBER',
+    };
+  }),
 ];

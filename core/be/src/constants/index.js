@@ -12,6 +12,9 @@ export const PAGINATION = Object.freeze({
 export const TIME = Object.freeze({
   MS_PER_SECOND: 1000,
   MS_PER_MINUTE: 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
+  VIETNAM_ZONE: 'Asia/Ho_Chi_Minh',
 });
 
 export const AUTH = Object.freeze({
@@ -19,16 +22,30 @@ export const AUTH = Object.freeze({
   SCHEME: 'Bearer',
 });
 
+export const EMAIL_VERIFICATION = Object.freeze({
+  /** 32 byte ngau nhien => token hex 64 ky tu */
+  TOKEN_BYTES: 32,
+  VERIFY_PATH: '/verify-email',
+});
+
+export const PASSWORD_RESET = Object.freeze({
+  RESET_PATH: '/reset-password',
+});
+
 export const VALIDATION = Object.freeze({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 72,
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
+  DESCRIPTION_MAX_LENGTH: 500,
   SEARCH_MAX_LENGTH: 100,
+  INVOICE_SEQUENCE_WIDTH: 6,
   /** So dien thoai VN: 0xxxxxxxxx hoac +84xxxxxxxxx */
   PHONE_REGEX: /^(0|\+84)\d{9}$/,
   /** Ma role: IN_HOA_SNAKE, 3-50 ky tu */
   ROLE_CODE_REGEX: /^[A-Z][A-Z0-9_]{2,49}$/,
+  NOTIFICATION_IDS_MAX: 100,
+  PAYMENT_REFERENCE_MAX_LENGTH: 100,
 });
 
 export const AUDIT_ACTIONS = Object.freeze({
@@ -39,12 +56,20 @@ export const AUDIT_ACTIONS = Object.freeze({
   DELETE: 'DELETE',
   ASSIGN_ROLE: 'ASSIGN_ROLE',
   CHANGE_STATUS: 'CHANGE_STATUS',
+  PAYMENT: 'PAYMENT',
 });
 
 export const ENTITIES = Object.freeze({
   USER: 'User',
   ROLE: 'Role',
   SETTING: 'SystemSetting',
+  INVOICE: 'Invoice',
+  NOTIFICATION: 'Notification',
+  MEMBERSHIP: 'Membership',
+  PAYMENT: 'Payment',
+  MEMBERSHIP_PLAN: 'MembershipPlan',
+  RECONCILIATION_CASE: 'ReconciliationCase',
+  REFUND: 'Refund',
 });
 
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
@@ -54,4 +79,42 @@ export const PRISMA_ERROR = Object.freeze({
   FOREIGN_KEY_VIOLATION: 'P2003',
 });
 
+/** Gia tri co dinh cua giao thuc webhook SePay (khong phai so nghiep vu). */
+export const SEPAY = Object.freeze({
+  AUTH_SCHEME: 'Apikey',
+  TRANSFER_IN: 'in',
+  /** Đường dẫn webhook dưới API_PREFIX; routes.js gắn /payments/sepay + /webhook. */
+  WEBHOOK_PATH: '/payments/sepay/webhook',
+});
+
+/** Giới hạn kỹ thuật của job/đồng bộ thanh toán (không phải số nghiệp vụ). */
+export const PAYMENT_LIMITS = Object.freeze({
+  EXPIRY_INTERVAL_MS: 60 * 1000,
+  EXPIRY_BATCH_SIZE: 100,
+  SYNC_PAGE_LIMIT: 5000,
+  SYNC_TIMEOUT_MS: 15000,
+  NOTE_MAX_LENGTH: 500,
+  REASON_MAX_LENGTH: 255,
+});
+
 export const HEALTH_PATH = '/health';
+
+export const CLASS_LIMITS = Object.freeze({
+  MAX_SCHEDULE_DAYS: 366,
+  DAYS_PER_WEEK: 7,
+  LAST_WEEKDAY: 6,
+  TX_TIMEOUT_MS: 30000,
+  TX_MAX_WAIT_MS: 30000,
+  OUTBOX_INTERVAL_MS: 5000,
+  OUTBOX_BATCH_SIZE: 50,
+  ERROR_LENGTH: 500,
+  NAME_LENGTH: 120,
+  DESCRIPTION_LENGTH: 1000,
+});
+
+export const SPRINT3 = Object.freeze({
+  JOB_INTERVAL_MS: 60000,
+  REPORT_MAX_DAYS: 366,
+  PDF_MARGIN: 40,
+  PDF_FONT_SIZE: 10,
+});

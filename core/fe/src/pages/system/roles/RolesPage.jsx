@@ -26,7 +26,7 @@ export default function RolesPage() {
   const deleteMutation = useMutation({
     mutationFn: (role) => roleService.deleteRole(role.id),
     onSuccess: () => {
-      message.success('Đã xoá vai trò');
+      message.success('Đã xóa vai trò');
       refresh();
     },
     onError,
@@ -75,6 +75,7 @@ export default function RolesPage() {
         dataSource={rolesQuery.data?.data ?? []}
         loading={rolesQuery.isPending}
         pagination={false}
+        scroll={{ x: true }}
       />
       <RoleFormModal
         open={modal.open}

@@ -28,5 +28,8 @@ export const hasAllPermissions = (granted, required) => {
 /** @param {string | string[] | undefined} required */
 const normalize = (required) => {
   if (!required) return [];
-  return Array.isArray(required) ? required : [required];
+  // usePermission().can(undefined) dùng rest args nên nhận [undefined], không phải undefined.
+  return Array.isArray(required)
+    ? required.filter((code) => code !== undefined && code !== null)
+    : [required];
 };

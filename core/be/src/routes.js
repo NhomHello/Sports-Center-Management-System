@@ -2,22 +2,75 @@
  * Gom tat ca route cua cac module. Them module moi => them 1 dong o day.
  * Prefix chung (/api/v1) lay tu env.API_PREFIX trong app.js.
  */
+
+import auditRoutes from './modules/audit/audit.routes.js';
+import attendanceHistoryRoutes from './modules/attendance/attendance-history.routes.js';
+import sprint3Routes from './modules/sprint3/sprint3.routes.js';
+import attendanceExcuseRoutes from './modules/attendance/attendance-excuse.routes.js';
+import cancellationRoutes from './modules/cancellation/cancellation.routes.js';
+import courseOrderRoutes from './modules/course-order/course-order.routes.js';
+import creditRoutes from './modules/credit/credit.routes.js';
+import purchaseChangeRoutes from './modules/purchase-change/purchase-change.routes.js';
+import reportRoutes from './modules/report/report.routes.js';
 import { Router } from 'express';
 import { HEALTH_PATH } from './constants/index.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import healthRoutes from './modules/health/health.routes.js';
+import memberRoutes from './modules/member/member.routes.js';
+import notificationRoutes from './modules/notification/notification.routes.js';
+import invoiceRoutes from './modules/payment/invoice.routes.js';
+import sepayRoutes from './modules/payment/sepay.routes.js';
+import operatingFrameRoutes from './modules/operating-frame/operating-frame.routes.js';
+import roomTypeRoutes from './modules/room-type/room-type.routes.js';
+import paymentRoutes from './modules/payment/payment.routes.js';
+import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
+import membershipRoutes from './modules/membership/membership.routes.js';
 import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import settingRoutes from './modules/setting/setting.routes.js';
 import userRoutes from './modules/user/user.routes.js';
+import subjectRoutes from './modules/subject/subject.routes.js';
+import roomRoutes from './modules/room/room.routes.js';
+import classRoutes from './modules/class/class.routes.js';
+import scheduleRoutes from './modules/schedule/schedule.routes.js';
+import {
+  reconciliationRoutes,
+  refundRoutes,
+} from './modules/reconciliation/reconciliation.routes.js';
 
 const router = Router();
 
+router.use('/audit-logs', auditRoutes);
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
+router.use('/reports', reportRoutes);
+router.use('/attendance', attendanceHistoryRoutes);
+router.use(sprint3Routes);
+// Góp ý GV GĐ2–4: đường dẫn đầy đủ, đứng trước các router theo tiền tố (/members, /invoices…).
+router.use(attendanceExcuseRoutes);
+router.use(courseOrderRoutes);
+router.use(cancellationRoutes);
+router.use(purchaseChangeRoutes);
+router.use(creditRoutes);
+router.use('/members', memberRoutes);
+router.use('/notifications', notificationRoutes);
+// Phải đứng trước /payments vì paymentRoutes bắt buộc JWT cho mọi đường dẫn con.
+router.use('/payments/sepay', sepayRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/invoices', invoiceRoutes);
+router.use('/reconciliations', reconciliationRoutes);
+router.use('/refunds', refundRoutes);
 router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
+router.use('/memberships', membershipRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
+router.use('/membership-plans', membershipPlanRoutes);
+router.use('/subjects', subjectRoutes);
+router.use('/rooms', roomRoutes);
+router.use('/room-types', roomTypeRoutes);
+router.use('/operating-frames', operatingFrameRoutes);
+router.use('/classes', classRoutes);
+router.use('/schedule', scheduleRoutes);
 
 export default router;
