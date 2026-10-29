@@ -1,41 +1,54 @@
-import { Card, Col, Row, Statistic, Typography } from 'antd';
-import { PageHeader } from '@/components/common/PageHeader';
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { Card, Typography } from 'antd';
+import { Link } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
-import { SPACING } from '@/theme/theme';
+import { routeRegistry } from '@/router/routeRegistry';
+import { DashboardWidgets } from './DashboardWidgets';
+import { DashboardHero } from './DashboardHero';
+import { DashboardOverview } from './DashboardOverview';
+import { buildDashboardShortcuts } from './dashboardData';
+import { useDashboardOverview } from './useDashboardOverview';
+import '@/styles/dashboardExperience.css';
 
-const COL_SPAN = { xs: 24, sm: 12, lg: 8 };
-
-/**
- * Trang tong quan. Hien tai la placeholder: team Flow 3 thay bang so lieu bao cao that
- * (doanh thu, member moi, goi sap het han, ty le lap day lop) theo quyen REPORT_VIEW.
- */
+/** Tổng quan công việc và lịch thực tế theo quyền của tài khoản đang đăng nhập. */
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { permissions } = usePermission();
+  const { can } = usePermission();
+  const shortcuts = buildDashboardShortcuts(routeRegistry, can);
+  const overview = useDashboardOverview(can);
 
   return (
-    <>
-      <PageHeader title="Tổng quan" subtitle={`Xin chào, ${user?.fullName ?? ''}`} />
-      <Row gutter={[SPACING.MD, SPACING.MD]}>
-        <Col {...COL_SPAN}>
-          <Card>
-            <Statistic title="Vai trò" value={user?.role?.name ?? '-'} />
+    <div className="scms-dashboard-experience">
+      <DashboardHero user={user} primary={shortcuts[0]} today={overview.today} />
+      <DashboardWidgets />
+      <DashboardOverview overview={overview} />
+      <div className="scms-section-heading">
+        <span>
+          <Typography.Title level={3}>Truy cập nhanh</Typography.Title>
+          <Typography.Text type="secondary">
+            Chọn công việc bạn muốn tiếp tục hôm nay.
+          </Typography.Text>
+        </span>
+      </div>
+      <div className="scms-dashboard-shortcuts">
+        {shortcuts.map((item) => (
+          <Card key={item.path} className="scms-shortcut-card">
+            <Link className="scms-shortcut-card__link" to={item.path}>
+              <span className="scms-shortcut-card__icon">{item.icon}</span>
+              <span className="scms-shortcut-card__copy">
+                <Typography.Text className="scms-shortcut-card__title">
+                  {item.title}
+                </Typography.Text>
+                <Typography.Text className="scms-shortcut-card__description">
+                  {item.description}
+                </Typography.Text>
+              </span>
+              <ArrowRightOutlined className="scms-shortcut-card__arrow" />
+            </Link>
           </Card>
-        </Col>
-        <Col {...COL_SPAN}>
-          <Card>
-            <Statistic title="Số quyền được cấp" value={permissions.length} />
-          </Card>
-        </Col>
-        <Col {...COL_SPAN}>
-          <Card>
-            <Typography.Text type="secondary">
-              Khu vực này dành cho báo cáo (Flow 3). Xem docs/02-cau-truc-du-an.md để thêm trang.
-            </Typography.Text>
-          </Card>
-        </Col>
-      </Row>
-    </>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-22",
+  "branch": "feature/khai-ui-theme-classes",
+  "codeCommit": "20a1e38",
+  "base": "31b4324114ab58065bda1cf32c528389e8245182",
+  "checks": {
+    "lint": "passed: shared, be, fe",
+    "unit": "143 passed, 23 files",
+    "build": "passed; existing shared chunk warning",
+    "prettier": "passed for changed frontend and related E2E files",
+    "diffCheck": "passed",
+    "playwright": {
+      "startTime": "2026-10-22T13:44:14.805Z",
+      "duration": 272274.70499999996,
+      "expected": 23,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "attendanceWorkflow": "passed S3-49/51; real API on isolated DB"
+  },
+  "isolatedDatabase": "scms_ui_khai_20261022_1792664362551",
+  "applicationDatabaseReset": false,
+  "cleanup": {
+    "prefix": "TEST_S1_c3e297971b7346d68e9c820ec6289dcd",
+    "deleted": {
+      "gym_classes": 9,
+      "membership_plans": 1,
+      "class_enrollments": 6,
+      "class_events": 2,
+      "class_sessions": 36,
+      "memberships": 2
+    },
+    "financialRowsDeleted": 0,
+    "retained": "Caramel Popcorn and its referenced resources; fixture users; audit history"
+  },
+  "publicPlanCopy": "plan-copy-current.json",
+  "protectedRefs": {
+    "main": "5e794ca39169b4689bedb28a9b687343521e164d",
+    "khai": "31b4324114ab58065bda1cf32c528389e8245182",
+    "oldTheme": "c77e989d1a7e612439e2e17e2ea2c87de21e9d64",
+    "stash": "7514d2dbde2100dc8c2ff473dc2807dd65ed0a58"
+  },
+  "backendAndScriptUserChanges": "unchanged from user baseline; excluded from UI commit",
+  "remotePush": false
+}

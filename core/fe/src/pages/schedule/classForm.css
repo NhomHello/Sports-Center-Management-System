@@ -1,0 +1,91 @@
+.scms-class-form-modal .ant-modal-body {
+  overflow-x: hidden;
+}
+.scms-class-form-intro {
+  margin: 4px 0 24px;
+  font-size: 13px;
+}
+.scms-class-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 28px;
+}
+.scms-class-form-section {
+  min-width: 0;
+}
+.scms-class-form-section + .scms-class-form-section {
+  padding-left: 28px;
+  border-left: 1px solid var(--scms-border);
+}
+.scms-class-form-section h5.ant-typography {
+  margin: 0 0 18px;
+  font-size: 15px;
+}
+.scms-class-form-section .ant-form-item {
+  margin-bottom: 18px;
+}
+.scms-class-form-section .ant-picker,
+.scms-class-form-section .ant-input-number,
+.scms-class-form-section .ant-select {
+  width: 100%;
+  min-width: 0;
+}
+.scms-class-form-section .ant-picker-input > input {
+  font-size: 13px;
+}
+.scms-class-date-fields,
+.scms-class-capacity-status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 12px;
+  margin-bottom: 8px;
+}
+.scms-class-weekly-row {
+  display: grid;
+  grid-template-columns: minmax(86px, 0.8fr) minmax(0, 1.8fr) 32px;
+  align-items: start;
+  gap: 8px;
+}
+.scms-class-weekly-row > .ant-btn {
+  width: 32px;
+  margin-top: 30px;
+  padding: 0;
+}
+.scms-class-form-modal .ant-modal-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--scms-border);
+}
+@media (max-width: 760px) {
+  .scms-class-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .scms-class-form-section + .scms-class-form-section {
+    padding: 24px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--scms-border);
+  }
+}
+@media (max-width: 420px) {
+  .scms-class-date-fields,
+  .scms-class-capacity-status {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-class-weekly-row {
+    grid-template-columns: minmax(0, 1fr) 32px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--scms-canvas);
+    border-radius: var(--scms-control-radius);
+  }
+  .scms-class-weekly-row > .ant-form-item:nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-bottom: 0;
+  }
+  .scms-class-weekly-row > .ant-btn {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

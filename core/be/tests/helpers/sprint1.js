@@ -1,0 +1,101 @@
+import { randomUUID } from 'node:crypto';
+import { prisma } from '../../src/config/db.js';
+import { hashPassword } from '../../src/common/utils/password.js';
+
+async function attachApiTokens(fixture) {
+  const { loginAs, loginAsAdmin } = await import('./api.js');
+
+  return {
+    ...fixture,
+    memberToken: await loginAs(fixture.member.email, fixture.password),
+    otherToken: await loginAs(fixture.other.email, fixture.password),
+    adminToken: await loginAsAdmin(),
+  };
+}
+
+/** Fixture riêng từng suite; không thay đổi tài khoản hoặc quyền đã seed. */
+export const createSprintFixture = async ({ withApi = true } = {}) => {
+  const prefix = `TEST_S1_${randomUUID().replaceAll('-', '')}`;
+  const password = 'Sprint1@Test123';
+  const role = await prisma.role.findFirstOrThrow({
+    where: { isDefault: true },
+  });
+  const passwordHash = await hashPassword(password);
+
+  // Giữ prefix trong tên và email để test tìm đúng dữ liệu của fixture.
+  const member = await prisma.user.create({
+    data: {
+      emailVerifiedAt: new Date(),
+      email: `${prefix}_1@scms.test`,
+      fullName: `${prefix} Member`,
+      roleId: role.id,
+      passwordHash,
+    },
+  });
+
+  const other = await prisma.user.create({
+    data: {
+      emailVerifiedAt: new Date(),
+      email: `${prefix}_2@scms.test`,
+      fullName: `${prefix} Other`,
+      roleId: role.id,
+      passwordHash,
+    },
+  });
+
+  const fixture = {
+    prefix,
+    password,
+    member,
+    other,
+    userIds: [member.id, other.id],
+    roleIds: [],
+    auditIds: [],
+  };
+
+  return withApi ? attachApiTokens(fixture) : fixture;
+};
+
+/** Chỉ dọn bản ghi của fixture; giữ dữ liệu nghiệp vụ ngoài fixture. */
+export const cleanupSprintFixture = async (fixture) => {
+  if (!fixture) return;
+
+  const whereUser = { userId: { in: fixture.userIds } };
+  const byInvoice = { invoice: whereUser };
+
+  // Xóa các bản ghi phụ thuộc trước để tránh vi phạm khóa ngoại.
+  await prisma.creditTransaction.deleteMany({ where: whereUser });
+  await prisma.purchaseChange.deleteMany({ where: whereUser });
+  await prisma.membershipFreeze.deleteMany({
+    where: { membership: whereUser },
+  });
+  await prisma.refund.deleteMany({
+    where: { OR: [byInvoice, { case: whereUser }] },
+  });
+  await prisma.reconciliationCase.deleteMany({
+    where: { OR: [whereUser, byInvoice] },
+  });
+  await prisma.notification.deleteMany({ where: whereUser });
+  await prisma.payment.deleteMany({
+    where: { invoice: whereUser },
+  });
+  await prisma.invoice.deleteMany({ where: whereUser });
+  await prisma.membership.deleteMany({ where: whereUser });
+  await prisma.auditLog.deleteMany({
+    where: {
+      OR: [{ userId: { in: fixture.userIds } }, { id: { in: fixture.auditIds } }],
+    },
+  });
+  await prisma.user.deleteMany({
+    where: { id: { in: fixture.userIds } },
+  });
+  await prisma.membershipPlan.deleteMany({
+    where: { code: { startsWith: fixture.prefix } },
+  });
+  await prisma.systemSetting.deleteMany({
+    where: { key: { startsWith: fixture.prefix } },
+  });
+  await prisma.role.deleteMany({
+    where: { id: { in: fixture.roleIds } },
+  });
+};

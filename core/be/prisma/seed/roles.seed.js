@@ -3,8 +3,9 @@
  * Sau khi seed, Center Manager tu tao/sua/xoa role va quyen tren UI - code khong can doi.
  *
  * - permissions: 'ALL' => luon duoc cap toan bo permission moi lan seed (role quan tri)
- * - permissions: [...]  => chi ap dung khi role duoc TAO MOI; role da co thi giu nguyen
- *                          quyen manager da chinh tren UI
+ * - permissions: [...]  => gan day du khi role duoc TAO MOI; role da co thi giu nguyen
+ *                          quyen manager da chinh tren UI, chi bo sung MOT LAN cac quyen
+ *                          moi them vao danh sach (xem backfillRolePermissions)
  */
 import { PERMISSIONS as P } from '@scms/shared';
 
@@ -30,9 +31,13 @@ export const SEED_ROLES = [
       P.MEMBER_READ,
       P.MEMBER_CREATE,
       P.MEMBER_UPDATE,
+      P.USER_VERIFY_EMAIL,
       P.MEMBERSHIP_PLAN_READ,
       P.MEMBERSHIP_MANAGE,
       P.MEMBERSHIP_READ_ALL,
+      P.MEMBERSHIP_FREEZE_ALL,
+      P.ATTENDANCE_CHECK_IN,
+      P.CLASS_UNBLOCK,
       P.SUBJECT_READ,
       P.ROOM_READ,
       P.CLASS_READ,
@@ -49,7 +54,13 @@ export const SEED_ROLES = [
     description: 'Xem lịch dạy và danh sách học viên',
     isSystem: true,
     isDefault: false,
-    permissions: [P.DASHBOARD_VIEW, P.SCHEDULE_VIEW_TEACHING, P.CLASS_READ, P.CLASS_VIEW_ROSTER],
+    permissions: [
+      P.ATTENDANCE_RECORD,
+      P.DASHBOARD_VIEW,
+      P.SCHEDULE_VIEW_TEACHING,
+      P.CLASS_READ,
+      P.CLASS_VIEW_ROSTER,
+    ],
   },
   {
     code: 'MEMBER',
@@ -61,6 +72,7 @@ export const SEED_ROLES = [
       P.DASHBOARD_VIEW,
       P.MEMBERSHIP_PLAN_READ,
       P.MEMBERSHIP_READ_OWN,
+      P.MEMBERSHIP_FREEZE_SELF,
       P.MEMBERSHIP_PURCHASE,
       P.CLASS_READ,
       P.CLASS_ENROLL_SELF,
@@ -69,6 +81,7 @@ export const SEED_ROLES = [
       P.PAYMENT_CHECKOUT,
       P.PAYMENT_READ_OWN,
       P.INVOICE_READ_OWN,
+      P.INVOICE_EXPORT_OWN,
     ],
   },
 ];

@@ -1,0 +1,40 @@
+flowchart TB
+  subgraph SYS["SEPAY WEBHOOK / SYSTEM"]
+    S0(( )) --> A1["Verify API key, save raw log,<br/>skip repeated SePay id"]
+    A1 --> D1{"Auto-matched?"}
+    C1["Open review case with reason:<br/>NO_MATCH · UNDERPAID · OVERPAID<br/>LATE · DUPLICATE_TRANSFER"]
+    P1["One transaction: invoice PAID,<br/>plan activated / extended (BR-1.3/1.4)"]
+    P2["Notify member;<br/>invoice PDF can be downloaded"]
+  end
+  subgraph MGR["CENTER MANAGER / RECEPTIONIST (permission payment.reconcile)"]
+    M1["Open review queue<br/>(red badge for DUPLICATE_TRANSFER)"]
+    D2{"Case reason?"}
+    M2["Find member by name / phone,<br/>pick PENDING / FAILED invoice<br/>or create one, map the transfer"]
+    D3{"Total received<br/>vs invoice amount?"}
+    M4["Confirm PAID, call / Zalo member,<br/>log the contact (BR-PAY-19)"]
+    M7["Contact member and log it;<br/>plan is NOT extended automatically"]
+    D5{"Member's choice?"}
+    M5["Refund the extra / duplicate amount,<br/>close case with bank reference"]
+    M6["Map the extra amount to a<br/>new renewal invoice"]
+    M8["Top-up deadline passed:<br/>refund the received amount"]
+  end
+  subgraph MEM["MEMBER"]
+    U1["Sees 'received X, missing Y'<br/>and a top-up QR"]
+    D7{"Pays the rest<br/>before deadline?"}
+  end
+  D1 -- "Yes: code found, PENDING,<br/>amount equal" --> P1
+  D1 -- "No" --> C1
+  C1 --> M1 --> D2
+  D2 -- "NO_MATCH / LATE" --> M2 --> D3
+  D2 -- "UNDERPAID / OVERPAID" --> D3
+  D2 -- "DUPLICATE_TRANSFER" --> M7 --> D5
+  D3 -- "Equal" --> P1
+  D3 -- "Less" --> U1 --> D7
+  D7 -- "Yes" --> P1
+  D7 -- "No" --> M8
+  D3 -- "More" --> M4 --> D5
+  D5 -- "Refund" --> M5
+  D5 -- "Use for renewal" --> M6 --> P1
+  P1 --> P2 --> E0(((" ")))
+  M5 --> E0
+  M8 --> E0

@@ -1,0 +1,233 @@
+.scms-class-list-panel,
+.scms-staff-booking {
+  container-type: inline-size;
+}
+.scms-class-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 24px;
+}
+.scms-app-content .scms-class-grid .scms-class-card.ant-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--scms-border);
+  border-radius: 16px;
+  background: var(--scms-surface);
+  box-shadow: var(--scms-panel-shadow);
+  transition: border-color 0.2s;
+}
+.scms-app-content .scms-class-grid .scms-class-card.ant-card:hover {
+  border-color: var(--scms-blue-border);
+}
+.scms-class-grid .scms-class-card > .ant-card-head {
+  min-height: 0;
+  padding: 20px 20px 0;
+  border: 0;
+}
+.scms-class-card .ant-card-head-wrapper {
+  align-items: flex-start;
+  gap: 8px;
+}
+.scms-class-card .ant-card-head-title {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.scms-class-card__topline .ant-tag {
+  margin: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.scms-class-card__identity h3 {
+  margin: 12px 0 0;
+  color: var(--scms-text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.scms-class-grid .scms-class-card > .ant-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px 20px 20px;
+  min-width: 0;
+}
+.scms-class-card__summary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.scms-class-card__schedule {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--scms-surface-soft);
+  border: 1px solid var(--scms-border-soft);
+  border-radius: 10px;
+}
+.scms-class-card__schedule-lines {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.scms-class-card__slot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 14px;
+  line-height: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.scms-class-card__slot strong {
+  color: var(--scms-text);
+  font-weight: 650;
+  white-space: nowrap;
+}
+.scms-class-card__slot-days {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--scms-muted);
+}
+.scms-class-card__schedule-icon {
+  display: inline-flex;
+  color: var(--scms-blue);
+}
+.scms-class-card__range {
+  color: var(--scms-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__details {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.scms-class-card__meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--scms-muted);
+  font-size: 14px;
+  line-height: 22px;
+}
+.scms-class-card__meta > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__meta > .anticon {
+  flex: 0 0 16px;
+  margin-top: 4px;
+}
+.scms-class-card__summary .ant-typography {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.scms-class-card__booking {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--scms-border-soft);
+}
+.scms-class-card__capacity-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.scms-class-card__capacity-count {
+  color: var(--scms-muted);
+  font-weight: 400;
+}
+.scms-class-card__capacity-track {
+  display: flex;
+  height: 6px;
+  overflow: hidden;
+  background: var(--scms-border);
+  border-radius: 8px;
+}
+.scms-class-card__capacity-track > span {
+  display: block;
+  height: 100%;
+  background: var(--scms-action);
+}
+.scms-class-card__capacity-track > .scms-class-card__held,
+.scms-class-card__capacity-legend .scms-class-card__held {
+  background: var(--scms-capacity-held);
+}
+.scms-class-card__capacity-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 10px;
+  color: var(--scms-muted);
+  font-size: 13px;
+}
+.scms-class-card__capacity-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.scms-class-card__capacity-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--scms-action);
+}
+.scms-class-card__booking .ant-btn {
+  min-width: 0;
+  min-height: 44px;
+  height: auto;
+  white-space: normal;
+  padding: 9px 12px;
+  line-height: 1.5;
+  box-shadow: none;
+  transform: none;
+}
+.scms-class-card__booking .ant-btn-primary {
+  flex: 1 1 140px;
+}
+.scms-class-card__detail {
+  flex: 1 1 84px;
+}
+.scms-class-results {
+  margin: 0;
+  color: var(--scms-muted);
+  font-size: 13px;
+}
+@container (max-width: 1023px) {
+  .scms-class-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (max-width: 639px) {
+  .scms-class-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scms-app-content .scms-class-grid .scms-class-card.ant-card {
+    transition: none;
+  }
+}

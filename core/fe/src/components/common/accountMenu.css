@@ -1,0 +1,68 @@
+.scms-main-header .scms-account {
+  min-height: 44px;
+  gap: 10px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 12px;
+}
+.scms-main-header .scms-account__copy {
+  align-items: flex-start;
+  max-width: 160px;
+  text-align: left;
+  line-height: 1.4;
+}
+.scms-main-header .scms-account__avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.scms-account__chevron {
+  color: var(--scms-muted);
+  font-size: 10px;
+}
+.scms-account-menu {
+  width: min(288px, calc(100vw - 24px));
+  padding: 6px;
+  border: 1px solid var(--scms-border);
+  border-radius: 14px;
+  background: var(--scms-surface);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
+}
+.scms-account-menu__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid var(--scms-border-soft);
+  color: var(--scms-text);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.scms-account-menu__identity > span {
+  color: var(--scms-muted);
+  font-size: 12px;
+}
+.scms-account-menu__identity .scms-account-menu__role {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: var(--scms-blue);
+  background: var(--scms-soft-blue);
+}
+.scms-account-menu .ant-dropdown-menu {
+  box-shadow: none;
+  background: transparent;
+}
+.scms-account-menu .ant-dropdown-menu-item {
+  min-height: 40px;
+}
+@media (max-width: 680px) {
+  .scms-main-header .scms-account {
+    width: 44px;
+    padding: 5px;
+    justify-content: center;
+  }
+  .scms-account__chevron,
+  .scms-main-header .scms-account__copy {
+    display: none;
+  }
+}

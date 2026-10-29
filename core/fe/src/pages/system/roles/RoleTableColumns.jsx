@@ -40,13 +40,13 @@ export const getRoleColumns = ({ can, onEdit, onDelete, onSetDefault }) => [
         )}
         {can(PERMISSIONS.ROLE_DELETE) && !role.isSystem && (
           <Popconfirm
-            title="Xoá vai trò này?"
-            okText="Xoá"
-            cancelText="Huỷ"
+            title="Xóa vai trò này?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => onDelete(role)}
           >
             <Button size="small" danger icon={<DeleteOutlined />}>
-              Xoá
+              Xóa
             </Button>
           </Popconfirm>
         )}
