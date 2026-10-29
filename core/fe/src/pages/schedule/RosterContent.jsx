@@ -1,9 +1,10 @@
+import { StudentProfileButton } from '@/pages/profiles/StudentProfileButton';
 import { Button, Select, Space, Table, Typography } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { formatDateTime } from '@/utils/format';
 import { ScheduleStatusTag } from './ScheduleStatusTag';
 const columns = [
-  { title: 'Hội viên', dataIndex: ['member', 'fullName'] },
+  { title: 'Hội viên', render: (_, row) => <StudentProfileButton member={row.member} /> },
   { title: 'Email', dataIndex: ['member', 'email'] },
   { title: 'Điện thoại', dataIndex: ['member', 'phone'] },
   { title: 'Đăng ký', dataIndex: 'enrolledAt', render: formatDateTime },

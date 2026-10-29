@@ -8,8 +8,16 @@ import { login } from './helpers/ui.mjs';
 let f;
 let admin;
 let planId;
+let frame;
+let area;
 test.beforeAll(async () => {
   f = await createSprintFixture({ withApi: false });
+  frame = await prisma.operatingFrame.create({
+    data: { name: `${f.prefix}_frame`, startTime: '00:00', endTime: '23:59' },
+  });
+  area = await prisma.roomType.create({
+    data: { name: `${f.prefix}_area`, isSelfTrainingArea: true },
+  });
   admin = await prisma.user.findUniqueOrThrow({ where: { email: env.SEED_ADMIN_EMAIL } });
 });
 test.afterAll(async () => {
@@ -22,6 +30,8 @@ test.afterAll(async () => {
     },
   });
   await cleanupSprintFixture(f);
+  if (frame) await prisma.operatingFrame.delete({ where: { id: frame.id } });
+  if (area) await prisma.roomType.delete({ where: { id: area.id } });
   await prisma.$disconnect();
 });
 
@@ -59,6 +69,15 @@ test('TC-UI-S1-01: hồi quy danh sách/sửa hội viên và form tạo gói', 
   await page
     .getByLabel('Quyền lợi (mỗi dòng một quyền lợi)', { exact: true })
     .fill('Tập luyện\nLớp nhóm');
+  await page.getByLabel('Khung giờ được vào', { exact: true }).click();
+  await page
+    .locator('.ant-select-dropdown:visible')
+    .getByTitle(`${frame.name} ${frame.startTime}–${frame.endTime}`, { exact: true })
+    .click();
+  await page.keyboard.press('Escape');
+  await page.getByLabel('Khu vực tự tập', { exact: true }).click();
+  await page.locator('.ant-select-dropdown:visible').getByTitle(area.name, { exact: true }).click();
+  await page.keyboard.press('Escape');
   const created = page.waitForResponse(
     (r) => /\/membership-plans$/.test(r.url()) && r.request().method() === 'POST',
   );

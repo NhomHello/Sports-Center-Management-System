@@ -1,3 +1,4 @@
+import { CoachProfileLink } from '@/pages/profiles/CoachProfileLink';
 import { CalendarOutlined, EnvironmentOutlined, UserOutlined } from '@ant-design/icons';
 import { WEEKDAYS } from '@/constants/schedule';
 import { formatDate } from '@/utils/format';
@@ -43,7 +44,9 @@ export function ClassCardSummary({ item }) {
         </div>
         <div className="scms-class-card__meta">
           <UserOutlined aria-hidden="true" />
-          <span title={item.coach.fullName}>{item.coach.fullName}</span>
+          <span title={item.coach.fullName}>
+            <CoachProfileLink coach={item.coach} />
+          </span>
         </div>
         <CourseOrderPrice item={item} />
       </div>

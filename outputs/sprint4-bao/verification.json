@@ -1,0 +1,21 @@
+{
+  "branch": "sprint-4/be-bao",
+  "author": "ptbao29 <phamthaibao29072004@gmail.com>",
+  "backendTests": 224,
+  "frontendTests": 158,
+  "e2eProjectsPassed": ["desktop", "mobile-320"],
+  "lint": "pass",
+  "build": "pass",
+  "migrationReplayCount": 16,
+  "seedRepeatStable": {
+    "invoices": 36,
+    "payments": 37,
+    "refunds": 4,
+    "summaries": 3
+  },
+  "status": {
+    "review": 16,
+    "inProgress": ["S4-34"]
+  },
+  "remaining": "Group rehearsal after Khoi/Khai UI integration; prepared demo script available."
+}

@@ -34,6 +34,8 @@ const {
   PurchaseChangeKind,
   PurchaseChangeStatus,
   CreditReason,
+  CourseSummaryStatus,
+  CourseResult,
   Prisma,
 } = prismaPkg;
 
@@ -68,6 +70,8 @@ export const prisma = new PrismaClient({
 
 /** Enum sinh tu schema.prisma - dung Enums.UserStatus.ACTIVE thay vi chuoi 'ACTIVE'. */
 export const Enums = Object.freeze({
+  CourseSummaryStatus,
+  CourseResult,
   UserStatus,
   SettingType,
   MembershipPlanStatus,

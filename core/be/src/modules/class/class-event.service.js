@@ -1,3 +1,5 @@
+import { deliverCourseEmail } from '../course-summary/course-email.service.js';
+import { COURSE_EVENTS } from '../course-summary/course.constants.js';
 import { Enums, prisma } from '../../config/db.js';
 import { logger } from '../../config/logger.js';
 import { CLASS_LIMITS } from '../../constants/index.js';
@@ -43,7 +45,7 @@ export const queueClassEvent = async (db, item, kind, changes) => {
 
 async function deliverEvent(id) {
   try {
-    await prisma.$transaction(async (db) => {
+    const needsEmail = await prisma.$transaction(async (db) => {
       await db.$queryRaw`SELECT id FROM class_events WHERE id = ${id} FOR UPDATE`;
       const event = await db.classEvent.findUnique({ where: { id } });
       if (event.sentAt) return;
@@ -55,11 +57,13 @@ async function deliverEvent(id) {
         eventKey: `class-event:${event.id}`,
         db,
       });
+      if (event.changes.type === COURSE_EVENTS.PUBLISHED) return true;
       await db.classEvent.update({
         where: { id },
         data: { sentAt: new Date(), attempts: { increment: 1 }, lastError: null },
       });
     });
+    if (needsEmail) await deliverCourseEmail(id);
   } catch (err) {
     await prisma.classEvent.update({
       where: { id },
@@ -80,7 +84,7 @@ export const drainClassEvents = async () => {
     const events = await prisma.classEvent.findMany({
       where: { sentAt: null },
       select: { id: true },
-      orderBy: { id: 'asc' },
+      orderBy: [{ attempts: 'asc' }, { id: 'asc' }],
       take: CLASS_LIMITS.OUTBOX_BATCH_SIZE,
     });
     for (const event of events) await deliverEvent(event.id);

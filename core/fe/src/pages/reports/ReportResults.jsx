@@ -1,4 +1,8 @@
-import { Alert, Button, Card, Select, Space, Statistic, Table } from 'antd';
+import { ReportDownload } from './ReportDownload';
+import { ReportChart } from './ReportChart';
+import { ReportBreakdown } from './ReportBreakdown';
+import { ReportComparison } from './ReportComparison';
+import { Alert, Card, Space, Statistic, Table } from 'antd';
 import { formatCurrency } from '@/utils/format';
 /** Một nhóm chỉ số cùng chủ đề; lưới đều cột để các con số không dồn sát nhau. */
 function StatGroup({ title, items }) {
@@ -55,24 +59,17 @@ export function ReportResults({ report, format, setFormat, download }) {
           ]}
         />
       </div>
-      <Space>
-        <Select
-          aria-label="Định dạng báo cáo"
-          value={format}
-          onChange={setFormat}
-          options={['csv', 'xlsx', 'pdf'].map((v) => ({ value: v, label: v.toUpperCase() }))}
-        />
-        <Button loading={download.isPending} onClick={() => download.mutate()}>
-          Xuất báo cáo
-        </Button>
-      </Space>
+      <ReportDownload format={format} setFormat={setFormat} download={download} />
+      <ReportComparison comparison={report.comparison} />
+      <ReportChart rows={report.rows} />
+      <ReportBreakdown breakdown={report.breakdown} />
       <Table
         rowKey="date"
         dataSource={report.rows}
         scroll={{ x: 600 }}
         pagination={{ hideOnSinglePage: true }}
         columns={[
-          { title: 'Ngày', dataIndex: 'date' },
+          { title: 'Kỳ', dataIndex: 'date' },
           ...[
             ['revenue', 'Doanh thu'],
             ['refunded', 'Hoàn tiền'],

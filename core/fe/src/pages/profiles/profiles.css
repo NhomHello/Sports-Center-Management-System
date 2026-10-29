@@ -1,0 +1,15 @@
+.scms-profile-page {
+  min-width: 0;
+}
+.scms-profile-page .ant-space-item {
+  min-width: 0;
+  max-width: 100%;
+}
+.scms-profile-page .ant-tag {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.scms-profile-page .ant-card a {
+  overflow-wrap: anywhere;
+}

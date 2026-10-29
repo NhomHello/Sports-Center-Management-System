@@ -20,3 +20,6 @@ export const env = Object.freeze({
   REQUEST_TIMEOUT_MS: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || DEFAULT_REQUEST_TIMEOUT_MS,
   IS_DEV: import.meta.env.DEV,
 });
+
+/** Đường dẫn liên hệ công khai, tách khỏi thông tin đăng nhập. */
+export const PUBLIC_CONTACT_LINKS = Object.freeze({ ZALO_BASE: 'https://zalo.me/' });

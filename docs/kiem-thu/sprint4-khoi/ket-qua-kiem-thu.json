@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-29",
+  "branch": "sprint-4/fe-khoi",
+  "testedCommit": "aa1be59c19c86e63076614fc61a70b38d496cc8d",
+  "dependency": {
+    "branch": "sprint-4/be-bao",
+    "commit": "90ee6b5"
+  },
+  "database": "scms_sprint4_khoi",
+  "tasks": [
+    "S4-01",
+    "S4-02",
+    "S4-03",
+    "S4-04",
+    "S4-05",
+    "S4-06",
+    "S4-07",
+    "S4-08",
+    "S4-09",
+    "S4-10",
+    "S4-30"
+  ],
+  "testCaseContribution": "S4-31: TC-S4-KHOI-01..11",
+  "results": {
+    "lint": "pass",
+    "build": "pass",
+    "backend": {
+      "files": 50,
+      "passed": 232
+    },
+    "frontend": {
+      "files": 27,
+      "passed": 158
+    },
+    "e2e": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "profileCases": 8,
+      "viewports": ["1366x900", "320x780"]
+    }
+  },
+  "commands": [
+    "npm run lint",
+    "npm run build",
+    "npm test",
+    "E2E_API_PORT=3200 E2E_FE_PORT=5280 npx playwright test tests/e2e/sprint4-profiles.spec.mjs tests/e2e/sprint4-reports.spec.mjs tests/e2e/local-login.spec.mjs tests/e2e/sprint1-regression.spec.mjs"
+  ],
+  "artifacts": [
+    "playwright-report/index.html",
+    "test-results/**/coach-own-profile.png",
+    "test-results/**/coach-public-profile.png",
+    "test-results/**/member-training-profile.png",
+    "test-results/**/student-private.png",
+    "test-results/**/student-shared.png",
+    "test-results/**/staff-member-profile.png"
+  ]
+}

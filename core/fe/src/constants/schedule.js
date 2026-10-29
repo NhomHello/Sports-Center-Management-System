@@ -1,6 +1,7 @@
 export const CLASS_STATUS = Object.freeze({
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
+  COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
 });
 export const ENROLLMENT_STATUS = Object.freeze({

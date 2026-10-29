@@ -19,7 +19,8 @@
     "db:demo": "npm run db:clean -- --yes && npm run db:seed:demo",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "db:seed:sprint4": "node --env-file-if-exists=.env prisma/seed/sprint4/index.js"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.10.0",

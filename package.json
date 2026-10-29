@@ -37,7 +37,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:seed:sprint4": "npm run db:seed:sprint4 -w @scms/be"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
