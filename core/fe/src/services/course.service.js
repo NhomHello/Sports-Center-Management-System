@@ -10,3 +10,8 @@ export const saveSummaryItem = (classId, itemId, data) =>
 export const publishSummary = (id, data) => http.post(`/classes/${id}/summary/publish`, data);
 /** Mở lại chỉ dành cho quyền riêng, bắt buộc ghi lý do. */
 export const reopenSummary = (id, data) => http.post(`/classes/${id}/summary/reopen`, data);
+/** Chỉ kết quả đã công bố của tài khoản hiện tại. */
+export const listOwnResults = (params) => http.get('/me/course-results', { params });
+/** PDF tạo từ snapshot đã công bố, kiểm tra ownership ở backend. */
+export const downloadCourseResult = (id) =>
+  http.get(`/me/course-results/${id}/pdf`, { responseType: 'blob' });
