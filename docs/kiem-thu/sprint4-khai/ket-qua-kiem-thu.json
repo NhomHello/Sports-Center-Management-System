@@ -1,0 +1,57 @@
+{
+  "verifiedAt": "2026-10-29T10:09:34.202Z",
+  "branch": "sprint-4/fe-khai",
+  "author": "khainguyense190020 <joppyminecraft2005@gmail.com>",
+  "baseline": {
+    "main": "28a0209",
+    "khoi": "c1a3ce4"
+  },
+  "database": "scms_sprint4_khai",
+  "ports": {
+    "api": 3300,
+    "frontend": 5380
+  },
+  "tasks": ["S4-13", "S4-15", "S4-17", "S4-19", "S4-21", "S4-29", "S4-31"],
+  "status": "Review",
+  "checks": {
+    "lint": "pass",
+    "build": "pass",
+    "backend": {
+      "passed": 238,
+      "files": 51
+    },
+    "frontend": {
+      "passed": 160,
+      "files": 28
+    },
+    "e2e": {
+      "project": "desktop",
+      "verifiedPassed": 86,
+      "fullRun": {
+        "passed": 65,
+        "failed": 19,
+        "notRun": 2
+      },
+      "reruns": [
+        {
+          "passed": 16,
+          "failed": 3,
+          "notRun": 2
+        },
+        {
+          "passed": 5,
+          "failed": 0
+        }
+      ],
+      "newCourseScenarios": 7
+    },
+    "newApiScenarios": 6,
+    "newCaseRows": 15
+  },
+  "notes": [
+    "Existing Bao and Khoi test case rows preserved.",
+    "Original database and tracked acceptance screenshots preserved.",
+    "No new schema migration; additive APIs use the shared Sprint 4 schema.",
+    "Human review is pending; no merge into main."
+  ]
+}

@@ -45,3 +45,5 @@ Quy ước đặt tên tài liệu nộp giảng viên: `SWP391_<Loại>_<Phiên
 - [Hợp đồng API](huong-dan/api-sprint4.md), [bàn giao Bảo nhận task Nhanh](handover/sprint-4-be-bao.md).
 - [Kịch bản demo cuối kỳ](huong-dan/demo-sprint4.md), [đặc tả UC/BR Word](yeu-cau/08_Sprint4_UseCases_BusinessRules.docx), [ERD bổ sung](yeu-cau/ERD/Sprint4-ERD.md).
 - Task sheet tại `ke-hoach/SWP391_TaskSheet_Sprint4.xlsx`; test case có sheet `TC-S4` trong `kiem-thu/SWP391_TestCase.xlsx`.
+
+- [Bàn giao Khải: tổng kết khóa, đánh giá và kiểm thử](handover/sprint-4-fe-khai.md).

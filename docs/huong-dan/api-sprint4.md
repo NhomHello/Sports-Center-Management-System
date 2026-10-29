@@ -56,3 +56,11 @@ Nhóm endpoint hồ sơ dùng JWT và kiểm tra permission trên từng đườ
 Hồ sơ tập luyện nhận `birthDate, gender (MALE/FEMALE/OTHER/UNDISCLOSED), heightCm, weightKg, goals, level (BEGINNER/INTERMEDIATE/ADVANCED), healthNotes, emergencyName, emergencyPhone, shareWithCoach`. Các trường ngày sinh/giới tính/số đo/liên hệ khẩn cấp có thể để null. Email/điện thoại/Zalo công khai là thông tin tự nguyện, Zalo dùng số điện thoại. Email công khai mặc định từ email đăng nhập khi tạo hồ sơ và sau đó độc lập với thông tin đăng nhập.
 
 Scope HLV xét buổi thực sự được phân công, thời điểm đăng ký/huỷ và hạn sau buổi cuối không huỷ, đọc `COACH_MEMBER_VIEW_DAYS`. Chỉ trả chuyên cần trong các buổi của HLV đó và tổng kết đã công bố của chính HLV đó. Khi `shareWithCoach=false`, response không có `trainingProfile`; không trả invoice, membership hoặc số dư. Audit hồ sơ lưu tên trường đã thay đổi, không sao chép ghi chú sức khoẻ hoặc blob ảnh vào nhật ký.
+
+## Giao diện tổng kết và đánh giá (Khải)
+
+- `GET /course-summaries?q=&status=&page=&pageSize=`: `course_summary.manage_assigned` lọc theo tác giả của bản tổng kết; `course_summary.view_all` mở phạm vi toàn bộ. Khuôn response phân trang chung, trường công khai của lớp/HLV và số item.
+- `GET /classes/:id/ratings/me`: `course_rating.write_own`, chỉ hội viên có item tổng kết của lớp. Trả `{ rating, canRate, deadlineAt, reason }`, deadline tính từ buổi cuối không hủy và cấu hình hiện tại; đánh giá cũ vẫn đọc được khi hết hạn. POST/PUT tiếp tục kiểm tra hạn trong transaction.
+- `GET /course-ratings/coaches`: `course_rating.moderate`, danh sách ID/tên HLV đã nhận đánh giá để mở giao diện kiểm duyệt.
+- `GET /reports/course-summaries/filters`: `course_summary.view_all`, trả bộ môn/HLV của tổng kết; không yêu cầu `report.view` hoặc quyền danh mục.
+- GET tổng kết ở trạng thái PUBLISHED trả `attendance` từ snapshot đã công bố, đồng nhất với kết quả hội viên/PDF/báo cáo. Mở lại DRAFT dùng điểm danh thực tế để HLV điều chỉnh và công bố bản mới.
