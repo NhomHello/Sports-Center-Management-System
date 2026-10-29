@@ -30,6 +30,7 @@ import {
 import { normalizeOwnProfilePayload } from '@/utils/account';
 import { Link } from 'react-router';
 import { CreditPanel } from './CreditPanel';
+import { ProfileExtensions } from '@/pages/profiles/ProfileExtensions';
 import { ProfileMemberships } from './ProfileMemberships';
 
 function ProfileSummary({ profile }) {
@@ -237,6 +238,7 @@ export default function ProfilePage() {
           </Link>
         }
       />
+      <ProfileExtensions />
       <Row gutter={[SPACING.LG, SPACING.LG]}>
         <Col xs={24} lg={8}>
           <ProfileContent query={profileQuery} />

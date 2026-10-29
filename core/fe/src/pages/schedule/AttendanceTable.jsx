@@ -1,3 +1,4 @@
+import { StudentProfileButton } from '@/pages/profiles/StudentProfileButton';
 import { Form, Select, Table } from 'antd';
 const EXCUSED = 'EXCUSED';
 // "Xin nghỉ" do hội viên báo trước hạn (GY-30): giữ hiển thị, ghi vắng không ghi đè được ở server.
@@ -14,7 +15,7 @@ export function AttendanceTable({ data }) {
       dataSource={data.items}
       pagination={false}
       columns={[
-        { title: 'Hội viên', render: (_, row) => row.member.fullName },
+        { title: 'Hội viên', render: (_, row) => <StudentProfileButton member={row.member} /> },
         {
           title: 'Điểm danh',
           render: (_, row) => (

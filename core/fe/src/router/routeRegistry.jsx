@@ -44,7 +44,27 @@ const GROUP_MEMBER = 'Hội viên & gói tập';
 const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
 const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
 // Thứ tự mảng = thứ tự menu: việc hằng ngày trước, quản trị và tài khoản cá nhân sau cùng.
+const CoachesPage = lazy(() => import('@/pages/profiles/CoachesPage'));
+const CoachDetailPage = lazy(() => import('@/pages/profiles/CoachDetailPage'));
+const StudentsPage = lazy(() => import('@/pages/profiles/StudentsPage'));
 export const routeRegistry = [
+  {
+    path: ROUTES.COACHES,
+    element: <CoachesPage />,
+    permission: PERMISSIONS.COACH_PROFILE_READ,
+    menu: { label: 'Huấn luyện viên', icon: <TeamOutlined />, group: GROUP_SCHEDULE },
+  },
+  {
+    path: ROUTES.COACH_DETAIL,
+    element: <CoachDetailPage />,
+    permission: PERMISSIONS.COACH_PROFILE_READ,
+  },
+  {
+    path: ROUTES.COACH_MEMBERS,
+    element: <StudentsPage />,
+    permission: PERMISSIONS.MEMBER_PROFILE_VIEW_ASSIGNED,
+    menu: { label: 'Học viên của tôi', icon: <TeamOutlined />, group: GROUP_SCHEDULE },
+  },
   {
     path: ROUTES.DASHBOARD,
     element: <DashboardPage />,

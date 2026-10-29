@@ -1,3 +1,4 @@
+import { useClassDetailLink } from './useClassDetailLink';
 import { PERMISSIONS as P } from '@scms/shared';
 import { useState } from 'react';
 import { Pagination } from 'antd';
@@ -69,6 +70,7 @@ export function ClassListPanel({
     search,
     setSearch,
   } = useClassList({ scope, memberId });
+  const { displayedId, closeDetail } = useClassDetailLink(detailId, setDetailId);
   return (
     <div className="scms-schedule-stack scms-class-list-panel">
       <ListHeader {...{ search, setSearch, table, can, setEditing, renderFilters }} />
@@ -105,11 +107,11 @@ export function ClassListPanel({
           onChange={(current, pageSize) => table.onTableChange({ current, pageSize })}
         />
       )}
-      {detailId && (
+      {displayedId && (
         <ClassDetailDrawer
-          id={detailId}
+          id={displayedId}
           memberId={memberId}
-          onClose={() => setDetailId(null)}
+          onClose={closeDetail}
           renderActions={renderActions}
         />
       )}

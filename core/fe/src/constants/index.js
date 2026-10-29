@@ -27,6 +27,9 @@ export const ROUTES = Object.freeze({
   MEMBERSHIP_PLANS: '/membership-plans',
   MEMBERS: '/members',
   SCHEDULE: '/schedule',
+  COACHES: '/coaches',
+  COACH_DETAIL: '/coaches/:id',
+  COACH_MEMBERS: '/coach/members',
   REPORTS: '/reports',
   ATTENDANCE: '/attendance',
 });

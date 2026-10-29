@@ -1,3 +1,4 @@
+import { CoachProfileLink } from '@/pages/profiles/CoachProfileLink';
 import { CalendarOutlined } from '@ant-design/icons';
 import { Descriptions, Typography } from 'antd';
 import { formatDate, formatDateTime } from '@/utils/format';
@@ -28,7 +29,7 @@ export function ClassOverview({ item, selectedSession }) {
         items={[
           { key: 'subject', label: 'Bộ môn', children: item.subject.name },
           { key: 'room', label: 'Phòng', children: item.room.name },
-          { key: 'teacher', label: 'HLV', children: item.coach.fullName },
+          { key: 'teacher', label: 'HLV', children: <CoachProfileLink coach={item.coach} /> },
           {
             key: 'period',
             label: 'Thời gian khóa học',
