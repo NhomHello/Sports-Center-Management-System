@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { SPRINT3 } from '../../constants/index.js';
 import { dashboard } from './report.service.js';
 
-const HEADERS = ['Ngày', 'Doanh thu', 'Hoàn tiền', 'Thực thu', 'Hoá đơn đã trả', 'Lượt hoàn'];
+const HEADERS = ['Kỳ', 'Doanh thu', 'Hoàn tiền', 'Thực thu', 'Hoá đơn đã trả', 'Lượt hoàn'];
 const font = fileURLToPath(new URL('../../../assets/fonts/DejaVuSans.ttf', import.meta.url));
 const values = (row) => [
   row.date,
@@ -14,7 +14,6 @@ const values = (row) => [
   row.paidCount,
   row.refundCount,
 ];
-const MONEY = true;
 // Cột tiền trong bảng theo ngày: Doanh thu, Hoàn tiền, Thực thu (khớp HEADERS).
 const MONEY_COLUMNS = new Set(
   ['Doanh thu', 'Hoàn tiền', 'Thực thu'].map((title) => HEADERS.indexOf(title)),
@@ -22,31 +21,14 @@ const MONEY_COLUMNS = new Set(
 const vnd = new Intl.NumberFormat('vi-VN');
 /** PDF để đọc: tiền có dấu chấm nghìn và "đ"; CSV/Excel giữ số thô để tính toán tiếp. */
 const readable = ([label, value, money]) => [label, money ? `${vnd.format(value)} đ` : value];
-const summaryRows = (report) => [
-  ['Khoảng ngày', `${report.filters.from} – ${report.filters.to}`],
-  ['Múi giờ', report.timeZone],
-  ['Gói lọc', report.filters.planId ?? 'Tất cả'],
-  ['Hội viên lọc', report.filters.memberId ?? 'Tất cả'],
-  ['Doanh thu', report.revenue, MONEY],
-  ['Hoàn tiền', report.refunded, MONEY],
-  ['Thực thu', report.net, MONEY],
-  ['Số giao dịch', report.payment.count],
-  ['Tiền thực nhận', report.payment.receivedAmount, MONEY],
-  ['Gói tập trong kỳ', report.membership.total],
-  ['Gói đang hoạt động', report.membership.active],
-  ['Gói đã hết hạn', report.membership.expired],
-  ['Số lớp', report.classes.total],
-  ['Số buổi', report.classes.sessions],
-  ['Buổi huỷ', report.classes.cancelledSessions],
-  ['Đăng ký', report.classes.enrollments],
-];
+import { revenueSummaryRows as summaryRows } from './report-export-rows.js';
 const escapeCsv = (value) => `"${String(value).replaceAll('"', '""')}"`;
 
 async function xlsx(report) {
   const workbook = new ExcelJS.Workbook();
   const summary = workbook.addWorksheet('Tổng hợp');
   summary.addRows(summaryRows(report).map(([label, value]) => [label, value]));
-  const sheet = workbook.addWorksheet('Doanh thu theo ngày');
+  const sheet = workbook.addWorksheet('Doanh thu theo kỳ');
   sheet.addRow(HEADERS);
   sheet.addRows(report.rows.map(values));
   return Buffer.from(await workbook.xlsx.writeBuffer());
