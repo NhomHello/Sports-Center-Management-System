@@ -15,6 +15,7 @@ import { env } from '@/config/env';
 export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const isDashboard = location.pathname === ROUTES.DASHBOARD;
   const { user, logout } = useAuth();
   const { can } = usePermission();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -53,7 +54,7 @@ export function MainLayout() {
         />
         <Layout.Content className="scms-app-content">
           <main
-            className={`scms-app-content__inner ${location.pathname === ROUTES.SCHEDULE ? 'scms-schedule-workspace' : ''}`}
+            className={`scms-app-content__inner ${isDashboard ? 'scms-dashboard-workspace' : ''} ${location.pathname === ROUTES.SCHEDULE ? 'scms-schedule-workspace' : ''}`}
           >
             <EmailVerificationBanner user={user} />
             <Suspense fallback={<PageLoading />}>

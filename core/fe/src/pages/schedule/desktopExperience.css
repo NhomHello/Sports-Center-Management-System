@@ -80,9 +80,6 @@
   font-size: 13px;
 }
 @media (min-width: 992px) {
-  .scms-app-content__inner.scms-schedule-workspace {
-    max-width: 1600px;
-  }
   .scms-schedule .scms-page-header {
     margin-bottom: 22px !important;
   }
