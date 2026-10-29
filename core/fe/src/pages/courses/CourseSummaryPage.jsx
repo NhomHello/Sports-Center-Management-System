@@ -9,6 +9,7 @@ import { COURSE_KEYS, SUMMARY_LABELS, SUMMARY_STATUS } from '@/constants/courses
 import { getSummary } from '@/services/course.service';
 import { formatDateTime } from '@/utils/format';
 import { QueryState } from '@/pages/schedule/QueryState';
+import { SummaryActions } from './SummaryActions';
 import { SummaryStudents } from './SummaryStudents';
 
 /** S37: quản lý chỉ đọc; chỉ HLV tác giả được sửa bản nháp. */
@@ -48,6 +49,7 @@ export default function CourseSummaryPage() {
                 { key: 'revision', label: 'Lần công bố', children: summary.revision },
               ]}
             />
+            <SummaryActions summary={summary} canEdit={canEdit} />
             <SummaryStudents summary={summary} canEdit={canEdit} />
           </Space>
         )}

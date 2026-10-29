@@ -6,3 +6,7 @@ export const getSummary = (id) => http.get(`/classes/${id}/summary`);
 /** Chỉ lưu kết quả, không gửi các cột chuyên cần để tránh thay đổi số liệu gốc. */
 export const saveSummaryItem = (classId, itemId, data) =>
   http.put(`/classes/${classId}/summary/items/${itemId}`, data);
+/** Công bố snapshot, server kiểm tra đủ kết quả và xác nhận thiếu điểm danh. */
+export const publishSummary = (id, data) => http.post(`/classes/${id}/summary/publish`, data);
+/** Mở lại chỉ dành cho quyền riêng, bắt buộc ghi lý do. */
+export const reopenSummary = (id, data) => http.post(`/classes/${id}/summary/reopen`, data);

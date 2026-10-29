@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PERMISSIONS as P } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
+import { CourseSummaryLink } from '@/pages/courses/CourseSummaryLink';
 import { CoachChangeModal } from './CoachChangeModal';
 import { useLiveScheduleQuery } from '@/hooks/useLiveScheduleQuery';
 import { Button, Drawer, Space, Timeline, Typography } from 'antd';
@@ -36,9 +37,12 @@ export function ClassDetailDrawer({ id, memberId, selectedSession, onClose, rend
       size="min(960px, 100vw)"
       footer={renderFooter(item, renderActions)}
       extra={
-        canChangeCoach(can, item) && (
-          <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
-        )
+        <Space>
+          <CourseSummaryLink item={item} />
+          {canChangeCoach(can, item) && (
+            <Button onClick={() => setCoachOpen(true)}>Đổi HLV phụ trách</Button>
+          )}
+        </Space>
       }
     >
       <QueryState query={query}>
