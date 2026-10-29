@@ -3,6 +3,7 @@
  */
 import { startMembershipReminderJob } from './modules/notification/notification.job.js';
 import { startWaitlistWorker } from './modules/class/class-waitlist.service.js';
+import { startCourseCompletionWorker } from './modules/course-summary/course-completion.job.js';
 import { app } from './app.js';
 import { prisma } from './config/db.js';
 import { env } from './config/env.js';
@@ -10,6 +11,7 @@ import { logger } from './config/logger.js';
 import { startClassEventWorker } from './modules/class/class-event.service.js';
 import { startInvoiceExpiryWorker } from './modules/payment/invoice-expiry.job.js';
 
+const stopCourseCompletion = startCourseCompletionWorker();
 const stopWaitlist = startWaitlistWorker();
 const stopMembershipJob = startMembershipReminderJob();
 const stopClassEventWorker = startClassEventWorker();
@@ -25,6 +27,7 @@ const server = app.listen(env.PORT, () => {
  */
 const shutdown = async (signal) => {
   logger.info({ signal }, 'Dang tat server...');
+  stopCourseCompletion();
   stopWaitlist();
   stopMembershipJob();
   stopClassEventWorker();

@@ -3,6 +3,7 @@ const number = (key, value, label, maxValue) => ({ key, defaultValue: String(val
   description: label, type: T.NUMBER, group: G.CLASS, minValue: 1, maxValue, integer: true });
 /** BR-S4-01..15: mặc định chỉ dùng để seed, nghiệp vụ đọc giá trị đã lưu trong DB. */
 export const SPRINT4_SETTINGS = [
+  number('COURSE_SUMMARY_REMINDER_DAYS', 2, 'Nhắc tổng kết trước hạn (ngày)', 365),
   number('COURSE_SUMMARY_DEADLINE_DAYS', 7, 'Hạn nộp tổng kết khoá (ngày)', 365),
   number('COURSE_PASS_MIN_ATTENDANCE_PERCENT', 70, 'Chuyên cần gợi ý đạt (%)', 100),
   number('COURSE_RATING_WINDOW_DAYS', 14, 'Thời hạn đánh giá khoá (ngày)', 365),
