@@ -1,4 +1,5 @@
-import { Button, Select, Space } from 'antd';
+import { DownloadButton } from '@/components/common/DownloadButton';
+import { Select, Space } from 'antd';
 /** File xuất luôn dùng bộ lọc đã áp dụng của tab hiện tại. */
 export function ReportDownload({ format, setFormat, download }) {
   return (
@@ -9,9 +10,9 @@ export function ReportDownload({ format, setFormat, download }) {
         onChange={setFormat}
         options={['csv', 'xlsx', 'pdf'].map((value) => ({ value, label: value.toUpperCase() }))}
       />
-      <Button loading={download.isPending} onClick={() => download.mutate()}>
+      <DownloadButton pending={download.isPending} onClick={() => download.mutate()}>
         Xuất báo cáo
-      </Button>
+      </DownloadButton>
     </Space>
   );
 }

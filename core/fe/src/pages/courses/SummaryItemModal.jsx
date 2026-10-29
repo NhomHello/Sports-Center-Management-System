@@ -68,7 +68,7 @@ export function SummaryItemModal({ item, classId, onClose }) {
           label="Mức tiến bộ"
           rules={[{ required: true, message: 'Chọn mức tiến bộ' }]}
         >
-          <Rate count={COURSE_LIMITS.MAX_PROGRESS} />
+          <Rate allowClear={false} count={COURSE_LIMITS.MAX_PROGRESS} />
         </Form.Item>
         <Form.Item
           name="comment"

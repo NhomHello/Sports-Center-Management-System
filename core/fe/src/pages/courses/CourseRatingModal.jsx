@@ -26,14 +26,14 @@ function RatingFields({ data, form, mutation }) {
         label="Điểm khóa học"
         rules={[{ required: true, message: 'Chọn điểm khóa học' }]}
       >
-        <Rate count={COURSE_LIMITS.MAX_PROGRESS} />
+        <Rate allowClear={false} count={COURSE_LIMITS.MAX_PROGRESS} />
       </Form.Item>
       <Form.Item
         name="coachStars"
         label="Điểm HLV"
         rules={[{ required: true, message: 'Chọn điểm HLV' }]}
       >
-        <Rate count={COURSE_LIMITS.MAX_PROGRESS} />
+        <Rate allowClear={false} count={COURSE_LIMITS.MAX_PROGRESS} />
       </Form.Item>
       <Form.Item name="comment" label="Nhận xét khóa học">
         <Input.TextArea maxLength={COURSE_LIMITS.TEXT_LENGTH} rows={3} />

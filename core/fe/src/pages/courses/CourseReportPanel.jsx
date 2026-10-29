@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { App, Button, Card, Space } from 'antd';
+import { DownloadButton } from '@/components/common/DownloadButton';
+import { App, Card, Space } from 'antd';
 import { COURSE_KEYS } from '@/constants/courses';
 import { useAuth } from '@/hooks/useAuth';
 import { getCourseReport, downloadCourseReport } from '@/services/course.service';
@@ -41,9 +42,12 @@ export function CourseReportPanel() {
               Tổng khóa: {report.total} · Đã nộp: {report.published} · Tỉ lệ hoàn thành:{' '}
               {report.completionPercent.toLocaleString('vi-VN', { maximumFractionDigits: 2 })}%
             </Card>
-            <Button onClick={() => mutation.mutate({ ...filters })} loading={mutation.isPending}>
+            <DownloadButton
+              onClick={() => mutation.mutate({ ...filters })}
+              pending={mutation.isPending}
+            >
               Xuất Excel tổng kết
-            </Button>
+            </DownloadButton>
             <CourseReportTable report={report} />
           </>
         )}

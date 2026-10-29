@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PERMISSIONS } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
+import { DownloadButton } from '@/components/common/DownloadButton';
 import { CourseRatingModal } from './CourseRatingModal';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { App, Button, Empty, Space, Table, Tag } from 'antd';

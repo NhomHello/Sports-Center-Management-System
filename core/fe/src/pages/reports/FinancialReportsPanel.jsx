@@ -8,6 +8,7 @@ import { vietnamInput } from '@/utils/schedule';
 import { ReportFilters } from './ReportFilters';
 import { getReport, exportReport } from '@/services/sprint3.service';
 import { ReportResults } from './ReportResults';
+import { downloadFile } from '@/utils/downloadFile';
 import { QueryState } from '../schedule/QueryState';
 
 /** Dashboard và tệp xuất dùng cùng bộ lọc đã áp dụng, không tính lại tiền ở client. */
@@ -31,14 +32,7 @@ export function FinancialReportsPanel() {
       blob: await (activeTab === 'members' ? downloadMemberReport(params) : exportReport(params)),
       filename: `${activeTab}-${params.from}-${params.to}.${params.format}`,
     }),
-    onSuccess: ({ blob, filename }) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    },
+    onSuccess: ({ blob, filename }) => downloadFile(blob, filename),
     onError: (e) => message.error(e.message),
   });
   const report = query.data?.data;

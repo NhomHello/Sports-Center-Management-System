@@ -19,7 +19,7 @@ export default function CourseRatingsPage() {
     queryFn: listRatedCoaches,
     enabled: moderation,
   });
-  const coachId = moderation ? selected : user.id;
+  const coachId = moderation ? selected : user?.id;
   return (
     <>
       <PageHeader
