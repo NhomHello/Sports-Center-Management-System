@@ -1,3 +1,4 @@
+import { listSummaries } from './course-list.service.js';
 import { sendSuccess, sendCreated } from '../../common/utils/api-response.js';
 import * as summaries from './course-summary.service.js';
 import * as results from './course-result.service.js';
@@ -71,3 +72,9 @@ export const exportExcel = async (req, res) =>
     .type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     .attachment('course-summaries.xlsx')
     .send(await courseReportExcel(req.validated.query));
+
+/** Danh sách tổng kết trong phạm vi quyền của người gọi. */
+export const list = async (req, res) => {
+  const { items, meta } = await listSummaries(req.validated.query, context(req));
+  sendSuccess(res, { data: items, meta });
+};

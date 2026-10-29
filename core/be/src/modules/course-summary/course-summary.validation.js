@@ -58,3 +58,10 @@ export const courseReportSchema = {
       'Khoảng báo cáo không hợp lệ hoặc quá dài',
     ),
 };
+
+export const summaryListSchema = {
+  query: paginationQuerySchema.extend({
+    q: z.string().trim().max(L.TEXT_LENGTH).optional(),
+    status: z.nativeEnum(Enums.CourseSummaryStatus).optional(),
+  }),
+};

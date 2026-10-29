@@ -7,6 +7,13 @@ import * as c from './course-summary.controller.js';
 import * as v from './course-summary.validation.js';
 const r = Router();
 r.get(
+  '/course-summaries',
+  authenticate,
+  authorize(P.COURSE_SUMMARY_MANAGE_ASSIGNED, P.COURSE_SUMMARY_VIEW_ALL),
+  validate(v.summaryListSchema),
+  c.list,
+);
+r.get(
   '/classes/:id/summary',
   authenticate,
   authorize(P.COURSE_SUMMARY_MANAGE_ASSIGNED, P.COURSE_SUMMARY_VIEW_ALL),

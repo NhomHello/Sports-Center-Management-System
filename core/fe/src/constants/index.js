@@ -8,6 +8,8 @@ export const STORAGE_KEYS = Object.freeze({
 
 /** Duong dan route - dung ROUTES.X thay vi go chuoi '/system/roles' */
 export const ROUTES = Object.freeze({
+  COURSE_SUMMARIES: '/course-summaries',
+  COURSE_SUMMARY: '/classes/:id/summary',
   DASHBOARD: '/',
   LOGIN: '/login',
   REGISTER: '/register',
