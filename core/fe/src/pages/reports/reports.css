@@ -1,0 +1,14 @@
+.scms-report-filter-form { gap: 12px 8px; align-items: center; }
+.scms-report-filter-form .ant-form-item { margin-bottom: 8px; }
+.scms-report-figure { margin: 0; }
+.scms-report-chart-scroll { overflow-x: auto; max-width: 100%; padding-bottom: 6px; }
+.scms-report-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 12px; }
+.scms-report-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.scms-report-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.report-series-income { fill: var(--ant-color-primary, #1677ff); background: var(--ant-color-primary, #1677ff); }
+.report-series-refund { fill: var(--ant-color-warning, #faad14); background: var(--ant-color-warning, #faad14); }
+.report-series-net { fill: var(--ant-color-success, #52c41a); background: var(--ant-color-success, #52c41a); }
+.report-zero-line { stroke: var(--ant-color-border, #d9d9d9); stroke-width: 1; }
+.report-chart-label { fill: var(--ant-color-text-secondary, #666); font-size: 10px; }
+.scms-report-figure g:focus { outline: 2px solid var(--ant-color-primary, #1677ff); outline-offset: 2px; }
+.scms-report-figure figcaption { margin-top: 12px; color: var(--ant-color-text-secondary); }
