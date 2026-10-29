@@ -46,7 +46,10 @@ function useSlotFrame(form, field, frames) {
     return frames.find((frame) => containsRange(frame, range))?.id;
   });
 
-  const selectedFrame = frames.find((frame) => frame.id === selectedId);
+  // Danh mục tải bất đồng bộ: khôi phục khung phù hợp cho lớp cũ khi danh mục vừa về.
+  const selectedFrame =
+    frames.find((frame) => frame.id === selectedId) ??
+    frames.find((frame) => containsRange(frame, form.getFieldValue(rangePath)));
 
   const changeFrame = (id) => {
     setSelectedId(id);
@@ -87,6 +90,7 @@ export function ClassScheduleSlotCard({ field, index, frames, onRemove }) {
 
       <Form.Item label="Khung giờ hoạt động" required>
         <Select
+          aria-label="Khung giờ hoạt động"
           value={selectedFrame?.id}
           onChange={changeFrame}
           placeholder="Chọn khung giờ"
