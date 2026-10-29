@@ -1,3 +1,4 @@
+import './profiles.css';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Descriptions, List, Rate, Space, Tag, Typography } from 'antd';
 import { Link, useParams } from 'react-router';
@@ -96,11 +97,11 @@ export default function CoachDetailPage() {
     retry: false,
   });
   return (
-    <>
+    <div className="scms-profile-page">
       <PageHeader title={query.data?.data.fullName || 'Hồ sơ huấn luyện viên'} />
       <QueryState query={query}>
         {query.data && <CoachInformation coach={query.data.data} />}
       </QueryState>
-    </>
+    </div>
   );
 }

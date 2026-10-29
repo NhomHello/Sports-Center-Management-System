@@ -1,3 +1,4 @@
+import './profiles.css';
 import { useQuery } from '@tanstack/react-query';
 import { Card, Col, Input, Pagination, Rate, Row, Select, Space, Typography } from 'antd';
 import { Link } from 'react-router';
@@ -18,7 +19,7 @@ export default function CoachesPage() {
   });
   const subjects = useQuery({ queryKey: ['profile-subjects'], queryFn: getCoachSubjects });
   return (
-    <>
+    <div className="scms-profile-page">
       <PageHeader
         title="Huấn luyện viên"
         subtitle="Tìm HLV phù hợp với bộ môn và mục tiêu tập luyện"
@@ -67,6 +68,6 @@ export default function CoachesPage() {
         {...table.paginationProps(query.data?.meta)}
         onChange={(current, pageSize) => table.onTableChange({ current, pageSize })}
       />
-    </>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+import { vietnamDate } from '../../common/utils/vietnam-date.js';
 import { z } from 'zod';
 import { paginationQuerySchema } from '../../common/utils/pagination.js';
 import { PROFILE_LIMITS as L, PROFILE_LEVELS, PROFILE_GENDERS } from '../../constants/sprint4.js';
@@ -39,7 +40,7 @@ export const memberBody = z
   .object({
     birthDate: z.iso
       .date()
-      .refine((s) => new Date(s) <= new Date(), 'Ngày sinh không được ở tương lai')
+      .refine((s) => s <= vietnamDate(), 'Ngày sinh không được ở tương lai')
       .nullable(),
     gender: z.enum(PROFILE_GENDERS).nullable(),
     heightCm: z.number().min(L.HEIGHT_MIN).max(L.HEIGHT_MAX).nullable(),
