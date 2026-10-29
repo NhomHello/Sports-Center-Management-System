@@ -27,3 +27,11 @@ export const listCoachRatings = (id, params) => http.get(`/coaches/${id}/ratings
 export const moderateRating = (id, data) => http.patch(`/course-ratings/${id}/moderation`, data);
 /** HLV đã có đánh giá để người có quyền kiểm duyệt lựa chọn. */
 export const listRatedCoaches = () => http.get('/course-ratings/coaches');
+
+/** Báo cáo và Excel dùng cùng bộ lọc đã áp dụng. */
+export const getCourseReport = (params) => http.get('/reports/course-summaries', { params });
+/** Danh mục lọc theo quyền báo cáo khóa. */
+export const getCourseReportFilters = () => http.get('/reports/course-summaries/filters');
+/** Tải Excel do cùng builder phía server tạo. */
+export const downloadCourseReport = (params) =>
+  http.get('/reports/course-summaries/export', { params, responseType: 'blob' });

@@ -1,77 +1,32 @@
-import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { App, Tabs } from 'antd';
-import { getMemberReport, downloadMemberReport } from '@/services/report.service';
-import { MemberReportResults } from './MemberReportResults';
-import './reports.css';
-import { vietnamInput } from '@/utils/schedule';
+import { PERMISSIONS } from '@scms/shared';
+import { Tabs } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
-import { ReportFilters } from './ReportFilters';
-import { getReport, exportReport } from '@/services/sprint3.service';
-import { ReportResults } from './ReportResults';
-import { QueryState } from '../schedule/QueryState';
+import { usePermission } from '@/hooks/usePermission';
+import { FinancialReportsPanel } from './FinancialReportsPanel';
+import { CourseReportPanel } from '@/pages/courses/CourseReportPanel';
 
-/** Dashboard và tệp xuất dùng cùng bộ lọc đã áp dụng, không tính lại tiền ở client. */
+/** Quyền báo cáo tài chính và tổng kết khóa độc lập; không gọi API tab không được cấp. */
 export default function ReportsPage() {
-  const { message } = App.useApp();
-  const today = vietnamInput(new Date());
-  const [filters, setFilters] = useState({
-    from: today.startOf('month').format('YYYY-MM-DD'),
-    to: today.format('YYYY-MM-DD'),
-    groupBy: 'day',
-    compare: 'previous',
-  });
-  const [format, setFormat] = useState('xlsx');
-  const [tab, setTab] = useState('revenue');
-  const query = useQuery({
-    queryKey: ['reports', tab, filters],
-    queryFn: () => (tab === 'members' ? getMemberReport(filters) : getReport(filters)),
-  });
-  const download = useMutation({
-    mutationFn: async ({ params, activeTab }) => ({
-      blob: await (activeTab === 'members' ? downloadMemberReport(params) : exportReport(params)),
-      filename: `${activeTab}-${params.from}-${params.to}.${params.format}`,
-    }),
-    onSuccess: ({ blob, filename }) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
+  const { can } = usePermission();
+  const items = [
+    can(PERMISSIONS.REPORT_VIEW) && {
+      key: 'finance',
+      label: 'Tài chính & hội viên',
+      children: <FinancialReportsPanel />,
     },
-    onError: (e) => message.error(e.message),
-  });
-  const report = query.data?.data;
-  const Results = tab === 'members' ? MemberReportResults : ReportResults;
+    can(PERMISSIONS.COURSE_SUMMARY_VIEW_ALL) && {
+      key: 'courses',
+      label: 'Tổng kết khóa',
+      children: <CourseReportPanel />,
+    },
+  ].filter(Boolean);
   return (
     <>
       <PageHeader
         title="Báo cáo trung tâm"
-        subtitle="Doanh thu theo ngày thanh toán, trừ tiền đã hoàn · Giờ Việt Nam"
+        subtitle="Báo cáo theo quyền truy cập và bộ lọc đã áp dụng · Giờ Việt Nam"
       />
-      <Tabs
-        activeKey={tab}
-        onChange={setTab}
-        items={[
-          { key: 'revenue', label: 'Doanh thu' },
-          { key: 'members', label: 'Hội viên & đăng ký' },
-        ]}
-      />
-      <ReportFilters today={today} onApply={setFilters} />
-      <QueryState query={query}>
-        {report && (
-          <Results
-            report={report}
-            format={format}
-            setFormat={setFormat}
-            download={{
-              isPending: download.isPending,
-              mutate: () => download.mutate({ params: { ...filters, format }, activeTab: tab }),
-            }}
-          />
-        )}
-      </QueryState>
+      {items.length > 1 ? <Tabs items={items} destroyOnHidden /> : items[0]?.children}
     </>
   );
 }

@@ -30,3 +30,18 @@ export const listSummaries = async (query, context) => {
   ]);
   return { items, meta: buildPageMeta({ ...query, total }) };
 };
+
+/** Lựa chọn bộ lọc báo cáo khóa theo quyền riêng, không đòi quyền danh mục hoặc report.view. */
+export const reportFilters = async () => {
+  const rows = await prisma.courseSummary.findMany({
+    select: {
+      coach: { select: { id: true, fullName: true } },
+      gymClass: { select: { subject: { select: { id: true, name: true } } } },
+    },
+  });
+  const unique = (items) => [...new Map(items.map((item) => [item.id, item])).values()];
+  return {
+    coaches: unique(rows.map((row) => row.coach)),
+    subjects: unique(rows.map((row) => row.gymClass.subject)),
+  };
+};

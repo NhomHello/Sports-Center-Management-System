@@ -1,5 +1,5 @@
 import { ownRating, ratedCoaches } from './course-rating-read.service.js';
-import { listSummaries } from './course-list.service.js';
+import { listSummaries, reportFilters } from './course-list.service.js';
 import { sendSuccess, sendCreated } from '../../common/utils/api-response.js';
 import * as summaries from './course-summary.service.js';
 import * as results from './course-result.service.js';
@@ -86,3 +86,7 @@ export const getOwnRating = async (req, res) =>
 /** Danh mục HLV đã nhận đánh giá trong phạm vi kiểm duyệt. */
 export const getRatedCoaches = async (_req, res) =>
   sendSuccess(res, { data: await ratedCoaches() });
+
+/** Bộ lọc báo cáo khóa theo course_summary.view_all. */
+export const getReportFilters = async (_req, res) =>
+  sendSuccess(res, { data: await reportFilters() });

@@ -135,7 +135,7 @@ export const routeRegistry = [
   {
     path: ROUTES.REPORTS,
     element: <ReportsPage />,
-    permission: PERMISSIONS.REPORT_VIEW,
+    permission: [PERMISSIONS.REPORT_VIEW, PERMISSIONS.COURSE_SUMMARY_VIEW_ALL],
     menu: { label: 'Báo cáo', icon: <DashboardOutlined />, group: GROUP_FINANCE },
   },
   {

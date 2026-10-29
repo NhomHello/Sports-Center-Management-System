@@ -7,6 +7,12 @@ import * as c from './course-summary.controller.js';
 import * as v from './course-summary.validation.js';
 const r = Router();
 r.get(
+  '/reports/course-summaries/filters',
+  authenticate,
+  authorize(P.COURSE_SUMMARY_VIEW_ALL),
+  c.getReportFilters,
+);
+r.get(
   '/classes/:id/ratings/me',
   authenticate,
   authorize(P.COURSE_RATING_WRITE_OWN),
