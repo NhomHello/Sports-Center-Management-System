@@ -5,7 +5,7 @@ import { PERMISSIONS as P } from '@scms/shared';
 import { QUERY_KEYS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
-import { excuseSession } from '@/services/purchase.service';
+import { cancelExcuseSession, excuseSession } from '@/services/purchase.service';
 import { formatDateTime } from '@/utils/format';
 
 const CLOCK_TICK_MS = 1000;
@@ -44,10 +44,52 @@ function ExcuseConfirmation({ open, close, mutation, deadline }) {
   );
 }
 
+function CancelExcuseConfirmation({ open, close, mutation }) {
+  return (
+    <Modal
+      open={open}
+      title="Hủy báo nghỉ"
+      okText="Xác nhận hủy"
+      cancelText="Đóng"
+      confirmLoading={mutation.isPending}
+      onOk={() => mutation.mutate()}
+      onCancel={() => {
+        if (!mutation.isPending) close();
+      }}
+    >
+      <Typography.Paragraph>
+        Buổi học sẽ trở về trạng thái Chưa điểm danh. Bạn có thể hủy đến khi buổi học bắt đầu.
+      </Typography.Paragraph>
+      {mutation.isError && <Alert showIcon type="error" title={mutation.error.message} />}
+    </Modal>
+  );
+}
+
+function ExcusedStatus({ canCancel, open, onOpen, onClose, mutation }) {
+  return (
+    <>
+      <Tag color="blue">Xin nghỉ</Tag>
+      {canCancel && (
+        <>
+          <Button type="link" danger onClick={onOpen}>
+            Hủy báo nghỉ
+          </Button>
+          <CancelExcuseConfirmation
+            open={open}
+            close={onClose}
+            mutation={mutation}
+          />
+        </>
+      )}
+    </>
+  );
+}
+
 /** GY-31: deadline do BE/caller cung cấp, không dùng hạn hủy toàn lớp cho từng buổi. */
 export function ExcuseButton({ session, memberId, onSuccess }) {
   const [open, setOpen] = useState(false);
-  const [excused, setExcused] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [excusedOverride, setExcusedOverride] = useState(null);
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS);
@@ -59,22 +101,48 @@ export function ExcuseButton({ session, memberId, onSuccess }) {
   const client = useQueryClient();
   const actingForOther = Boolean(memberId && memberId !== user?.id);
   const allowed = can(actingForOther ? P.CLASS_ENROLL_FOR_MEMBER : P.CLASS_CANCEL_SELF);
+  const targetMemberId = actingForOther ? memberId : undefined;
+  const refreshSchedule = async () => {
+    await Promise.all(
+      [QUERY_KEYS.SCHEDULE, QUERY_KEYS.NOTIFICATIONS].map((queryKey) =>
+        client.invalidateQueries({ queryKey }),
+      ),
+    );
+    onSuccess?.();
+  };
   const mutation = useMutation({
-    mutationFn: () => excuseSession(session.id, actingForOther ? memberId : undefined),
+    mutationFn: () => excuseSession(session.id, targetMemberId),
     onSuccess: async () => {
-      setExcused(true);
+      setExcusedOverride(true);
       setOpen(false);
       message.success('Đã báo nghỉ buổi học');
-      await Promise.all(
-        [QUERY_KEYS.SCHEDULE, QUERY_KEYS.NOTIFICATIONS].map((queryKey) =>
-          client.invalidateQueries({ queryKey }),
-        ),
-      );
-      onSuccess?.();
+      await refreshSchedule();
+    },
+  });
+  const cancelMutation = useMutation({
+    mutationFn: () => cancelExcuseSession(session.id, targetMemberId),
+    onSuccess: async () => {
+      setExcusedOverride(false);
+      setCancelOpen(false);
+      message.success('Đã hủy báo nghỉ buổi học');
+      await refreshSchedule();
     },
   });
   if (!allowed) return null;
-  if (excused || isExcused(session)) return <Tag color="blue">Xin nghỉ</Tag>;
+  const isExcusedNow = excusedOverride ?? isExcused(session);
+  if (isExcusedNow)
+    return (
+      <ExcusedStatus
+        canCancel={session.canCancelExcuse}
+        open={cancelOpen}
+        onOpen={() => {
+          cancelMutation.reset();
+          setCancelOpen(true);
+        }}
+        onClose={() => setCancelOpen(false)}
+        mutation={cancelMutation}
+      />
+    );
   const notice = excuseNotice(session, now);
   if (notice !== null)
     return notice ? <Typography.Text type="secondary">{notice}</Typography.Text> : null;

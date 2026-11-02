@@ -79,7 +79,12 @@ function excuseFields(session, enrollment, { hours, status, now }) {
     session.status === Enums.SessionStatus.SCHEDULED &&
     !attendanceStatus &&
     now <= excuseDeadline;
-  return { excuseDeadline, attendanceStatus, canExcuse };
+  const canCancelExcuse =
+    enrollment?.status === Enums.EnrollmentStatus.BOOKED &&
+    session.status === Enums.SessionStatus.SCHEDULED &&
+    attendanceStatus === Enums.AttendanceStatus.EXCUSED &&
+    now < session.startAt;
+  return { excuseDeadline, attendanceStatus, canExcuse, canCancelExcuse };
 }
 
 function matchesSession(session, filters, item) {

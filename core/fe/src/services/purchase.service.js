@@ -9,6 +9,9 @@ const purchasePath = (kind, id) => {
 /** GY-31: báo nghỉ, không hủy đăng ký khóa hoặc phát sinh tiền. */
 export const excuseSession = (id, memberId) =>
   http.post(`/classes/sessions/${id}/excuse`, memberId ? { memberId } : {});
+/** Hủy báo nghỉ trước khi buổi học bắt đầu. */
+export const cancelExcuseSession = (id, memberId) =>
+  http.delete(`/classes/sessions/${id}/excuse`, { data: memberId ? { memberId } : {} });
 /** GY-34: mọi số tiền được lấy từ preview của backend. */
 export const previewCancellation = (kind, id) =>
   http.get(`${purchasePath(kind, id)}/cancel-preview`);

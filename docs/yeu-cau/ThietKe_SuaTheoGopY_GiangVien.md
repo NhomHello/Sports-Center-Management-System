@@ -86,7 +86,7 @@ ai bị trùng lịch với lớp khác) để quản lý xác nhận; sau khi l
 
 | Trường hợp | Ai làm | Điều kiện | Tiền |
 |---|---|---|---|
-| **Báo nghỉ một buổi** | Hội viên (hoặc lễ tân hộ) | Trước buổi ≥ `CLASS_CANCEL_MIN_HOURS_BEFORE` giờ (12) | Không hoàn; buổi ghi "Xin nghỉ", không tính vắng (BR-2.17) |
+| **Báo nghỉ một buổi** | Hội viên (hoặc lễ tân hộ) | Trước buổi ≥ `CLASS_CANCEL_MIN_HOURS_BEFORE` giờ (12); hủy báo nghỉ được đến khi buổi bắt đầu | Không hoàn; buổi ghi "Xin nghỉ", không tính vắng (BR-2.17); hủy thì trở về "Chưa điểm danh" và ghi audit |
 | **Hủy khóa học** | Hội viên gửi yêu cầu / lễ tân tại quầy | Khóa chưa kết thúc | `học phí đã trả × buổi chưa diễn ra / tổng buổi đã mua − phí hủy` |
 | **Hủy gói tự tập** | Hội viên / lễ tân | Gói chưa hết hạn, không đang bảo lưu | `giá đã trả × ngày chưa dùng / tổng ngày − phí hủy` |
 | Hủy **trước ngày bắt đầu** | như trên | | Hoàn 100%, không phí |

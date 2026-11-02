@@ -75,3 +75,37 @@ export const excuseSession = (sessionId, { memberId }, context) =>
     });
     return item;
   });
+
+/**
+ * Hủy báo nghỉ trước khi buổi học bắt đầu; audit giữ lại lịch sử sau khi xóa trạng thái hiện tại.
+ * @param {number} sessionId
+ * @param {{ memberId?: number }} input
+ * @param {{ user: { id: number }, permissions: Set<string> }} context
+ */
+export const cancelExcuseSession = (sessionId, { memberId }, context) =>
+  withScheduleTransaction(async (db) => {
+    const member = targetMember(memberId, context);
+    const session = await db.classSession.findUnique({
+      where: { id: sessionId },
+      include: { gymClass: true },
+    });
+    if (!session) throw ApiError.notFound('Không tìm thấy buổi học');
+    if (
+      session.status !== Enums.SessionStatus.SCHEDULED ||
+      session.gymClass.status === Enums.ClassStatus.CANCELLED ||
+      session.startAt <= new Date()
+    )
+      throw ApiError.businessRule('Chỉ có thể hủy báo nghỉ trước khi buổi học bắt đầu');
+    const existing = await db.attendance.findUnique({
+      where: { sessionId_memberId: { sessionId, memberId: member } },
+    });
+    if (existing?.status !== Enums.AttendanceStatus.EXCUSED)
+      throw ApiError.businessRule('Buổi học chưa được báo nghỉ');
+    await db.attendance.delete({ where: { id: existing.id } });
+    await writeScheduleAudit(db, context.user, {
+      action: AUDIT_ACTIONS.UPDATE,
+      entity: 'Attendance',
+      entityId: existing.id,
+      meta: { before: existing.status, after: null, reason: 'CANCEL_EXCUSE' },
+    });
+  });

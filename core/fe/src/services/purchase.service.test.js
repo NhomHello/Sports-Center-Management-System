@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http } from './http';
 import * as purchase from './purchase.service';
 
-vi.mock('./http', () => ({ http: { get: vi.fn(), post: vi.fn() } }));
+vi.mock('./http', () => ({ http: { delete: vi.fn(), get: vi.fn(), post: vi.fn() } }));
 beforeEach(() => vi.clearAllMocks());
 
 describe('Hợp đồng GY-31/34/41', () => {
@@ -13,6 +13,12 @@ describe('Hợp đồng GY-31/34/41', () => {
   it('TC-UI-GY31-02: báo nghỉ hộ gửi đúng hội viên', () => {
     purchase.excuseSession(7, 15);
     expect(http.post).toHaveBeenCalledWith('/classes/sessions/7/excuse', { memberId: 15 });
+  });
+  it('TC-UI-GY31-03: hủy báo nghỉ gửi đúng hội viên', () => {
+    purchase.cancelExcuseSession(7, 15);
+    expect(http.delete).toHaveBeenCalledWith('/classes/sessions/7/excuse', {
+      data: { memberId: 15 },
+    });
   });
   it.each(['membership', 'enrollment'])(
     'TC-UI-GY34-01: preview và hủy %s đúng tài nguyên',

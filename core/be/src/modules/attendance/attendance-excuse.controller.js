@@ -1,5 +1,5 @@
 import { sendSuccess } from '../../common/utils/api-response.js';
-import { excuseSession } from './attendance-excuse.service.js';
+import { cancelExcuseSession, excuseSession } from './attendance-excuse.service.js';
 
 /** POST /classes/sessions/:id/excuse — báo nghỉ một buổi. */
 export const excuse = async (req, res) =>
@@ -9,4 +9,14 @@ export const excuse = async (req, res) =>
       permissions: req.permissions,
     }),
     message: 'Đã báo nghỉ buổi học',
+  });
+
+/** DELETE /classes/sessions/:id/excuse — hủy báo nghỉ trước khi buổi học bắt đầu. */
+export const cancelExcuse = async (req, res) =>
+  sendSuccess(res, {
+    data: await cancelExcuseSession(req.validated.params.id, req.validated.body, {
+      user: req.user,
+      permissions: req.permissions,
+    }),
+    message: 'Đã hủy báo nghỉ buổi học',
   });

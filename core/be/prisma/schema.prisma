@@ -1434,7 +1434,7 @@ enum AttendanceStatus {
 
 }
 
-/// Một kết quả cho mỗi hội viên/buổi, sửa có audit thay vì xoá lịch sử.
+/// Kết quả hiện tại cho hội viên/buổi; thay đổi và hủy phải được giữ trong audit log.
 
 model Attendance {
 
