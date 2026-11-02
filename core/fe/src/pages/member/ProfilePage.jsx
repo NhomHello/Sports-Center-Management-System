@@ -16,10 +16,12 @@ import {
   Typography,
 } from 'antd';
 import { useEffect } from 'react';
+import { PERMISSIONS } from '@scms/shared';
 import { PageHeader } from '@/components/common/PageHeader';
 import { StatusTag } from '@/components/common/StatusTag';
 import { QUERY_KEYS, ROUTES, USER_STATUS_META, VALIDATION } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermission } from '@/hooks/usePermission';
 import * as memberService from '@/services/member.service';
 import { SPACING } from '@/theme/theme';
 import {
@@ -176,11 +178,29 @@ function ProfileContent({ query }) {
   );
 }
 
+function ProfileDetails({ form, query, mutation, hasPersonalProfile }) {
+  const profile = query.data?.data;
+  if (!profile || query.isError) return null;
+  return (
+    <Space orientation="vertical" size={SPACING.LG} className="scms-full-width">
+      <ProfileForm form={form} profile={profile} mutation={mutation} />
+      {hasPersonalProfile && (
+        <>
+          <ProfileMemberships profile={profile} />
+          <CreditPanel />
+        </>
+      )}
+    </Space>
+  );
+}
+
 /** Xem và cập nhật hồ sơ, trạng thái tài khoản, membership của người đang đăng nhập. */
 export default function ProfilePage() {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { can } = usePermission();
+  const hasPersonalProfile = !can(PERMISSIONS.CLASS_READ_ALL);
   const [form] = Form.useForm();
   const queryKey = [...QUERY_KEYS.MEMBERS, 'me', user?.id];
   const profileQuery = useQuery({
@@ -225,30 +245,33 @@ export default function ProfilePage() {
     if (profile) form.setFieldsValue(profile);
   }, [form, profile]);
 
-  const hasProfile = Boolean(profile) && !profileQuery.isError;
-
   return (
     <>
       <PageHeader
         title="Hồ sơ cá nhân"
-        subtitle="Thông tin tài khoản và gói tập hiện tại"
+        subtitle={
+          hasPersonalProfile
+            ? 'Thông tin tài khoản và gói tập hiện tại'
+            : 'Thông tin tài khoản cá nhân'
+        }
         extra={
           <Link to={ROUTES.CHANGE_PASSWORD}>
             <Button type="primary">Đổi mật khẩu</Button>
           </Link>
         }
       />
-      <ProfileExtensions />
+      {hasPersonalProfile && <ProfileExtensions />}
       <Row gutter={[SPACING.LG, SPACING.LG]}>
         <Col xs={24} lg={8}>
           <ProfileContent query={profileQuery} />
         </Col>
         <Col xs={24} lg={16}>
-          <Space orientation="vertical" size={SPACING.LG} className="scms-full-width">
-            {hasProfile && <ProfileForm form={form} profile={profile} mutation={mutation} />}
-            {hasProfile && <ProfileMemberships profile={profile} />}
-            {hasProfile && <CreditPanel />}
-          </Space>
+          <ProfileDetails
+            form={form}
+            query={profileQuery}
+            mutation={mutation}
+            hasPersonalProfile={hasPersonalProfile}
+          />
         </Col>
       </Row>
     </>

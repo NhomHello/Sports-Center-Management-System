@@ -19,6 +19,13 @@ export function ScheduleCalendar({ kind }) {
   const screens = Grid.useBreakpoint();
   const compact = calendar.mode === 'week' && screens.lg;
   const actions = (item) => <ClassBookingActions item={item} />;
+  const days = calendar.days.map((day) => {
+    const date = day.format(SCHEDULE_UI.DATE_PATTERN);
+    const events = calendar.events.filter(
+      (event) => vietnamInput(event.startAt).format(SCHEDULE_UI.DATE_PATTERN) === date,
+    );
+    return { day, date, events };
+  });
   return (
     <div className={`scms-schedule-calendar-view ${compact ? 'scms-calendar--compact' : ''}`}>
       <ScheduleToolbar calendar={calendar} kind={kind} />
@@ -40,22 +47,22 @@ export function ScheduleCalendar({ kind }) {
           aria-label="Lịch các buổi học"
           tabIndex={0}
         >
-          <div className={calendar.mode === 'week' ? 'scms-week-grid' : 'scms-day-grid'}>
-            {calendar.days.map((day) => {
-              const date = day.format(SCHEDULE_UI.DATE_PATTERN);
-              return (
-                <ScheduleDay
-                  key={date}
-                  kind={kind}
-                  day={day}
-                  events={calendar.events.filter(
-                    (e) => vietnamInput(e.startAt).format(SCHEDULE_UI.DATE_PATTERN) === date,
-                  )}
-                  onDetail={setSelectedSession}
-                  renderActions={compact ? undefined : actions}
-                />
-              );
-            })}
+          <div
+            className={calendar.mode === 'week' ? 'scms-week-grid' : 'scms-day-grid'}
+            style={{
+              '--scms-calendar-rows': Math.max(1, ...days.map(({ events }) => events.length)) + 1,
+            }}
+          >
+            {days.map(({ day, date, events }) => (
+              <ScheduleDay
+                key={date}
+                kind={kind}
+                day={day}
+                events={events}
+                onDetail={setSelectedSession}
+                renderActions={compact ? undefined : actions}
+              />
+            ))}
           </div>
         </div>
       </QueryState>

@@ -13,9 +13,13 @@ import { PermissionRoute } from './PermissionRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { routeRegistry } from './routeRegistry';
 
-const protectedChildren = routeRegistry.map(({ path, element, permission }) => ({
+const protectedChildren = routeRegistry.map(({ path, element, permission, excludePermission }) => ({
   path,
-  element: <PermissionRoute permission={permission}>{element}</PermissionRoute>,
+  element: (
+    <PermissionRoute permission={permission} excludePermission={excludePermission}>
+      {element}
+    </PermissionRoute>
+  ),
 }));
 
 const router = createBrowserRouter([

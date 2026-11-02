@@ -24,7 +24,7 @@ export function InvoiceFilters({ filters, onChange, loading, staff = false }) {
   const applySearch = () => onChange({ search: search.trim() || undefined });
 
   return (
-    <div className="scms-invoice-filters">
+    <div className="scms-invoice-filters" data-staff={staff}>
       <SearchInput
         showButton={false}
         aria-label="Tìm hóa đơn"

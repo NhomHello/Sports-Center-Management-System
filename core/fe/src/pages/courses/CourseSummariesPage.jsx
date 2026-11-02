@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Input, Select, Space, Table, Tag } from 'antd';
 import { Link } from 'react-router';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -38,6 +39,11 @@ export default function CourseSummariesPage() {
       <PageHeader
         title="Tổng kết khóa học"
         subtitle="Theo dõi và hoàn thành tổng kết các lớp trong phạm vi được cấp."
+        extra={
+          <Link to={ROUTES.SCHEDULE}>
+            <Button icon={<ArrowLeftOutlined />}>Quay lại lịch tập</Button>
+          </Link>
+        }
       />
       <Space wrap>
         <Input.Search

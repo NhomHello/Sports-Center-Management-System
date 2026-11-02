@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Alert, App, Button, Card, Select, Space } from 'antd';
+import { Alert, App, Button, Card, Flex, Select } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
 import { listMembers } from '@/services/member.service';
 import { listRoomTypes } from '@/services/schedule.service';
 import { checkIn } from '@/services/sprint3.service';
 import { formatDateTime } from '@/utils/format';
+import { SPACING } from '@/theme/theme';
 
 const memberOptions = (members) =>
   members.map((member) => ({
@@ -21,7 +22,7 @@ const areaOptions = (areas) =>
 
 function CheckInFields({ query, areas, setSearch, setMemberId, areaId, setAreaId }) {
   return (
-    <Space wrap>
+    <>
       <Select
         aria-label="Hội viên check-in"
         placeholder="Tìm theo tên hoặc số điện thoại"
@@ -31,17 +32,18 @@ function CheckInFields({ query, areas, setSearch, setMemberId, areaId, setAreaId
         onChange={setMemberId}
         loading={query.isFetching}
         options={memberOptions(query.data?.data ?? [])}
+        style={{ maxWidth: '100%' }}
       />
       <Select
         aria-label="Khu tự tập"
         placeholder="Khu vực (tuỳ chọn)"
         allowClear
-        style={{ minWidth: 180 }}
+        style={{ minWidth: 180, maxWidth: '100%' }}
         value={areaId}
         onChange={(id) => setAreaId(id ?? null)}
         options={areaOptions(areas.data?.data ?? [])}
       />
-    </Space>
+    </>
   );
 }
 
@@ -90,30 +92,31 @@ export function CheckInPanel() {
   if (!enabled) return null;
   return (
     <Card title="Check-in tại quầy">
-      <CheckInFields
-        query={query}
-        areas={areas}
-        setSearch={setSearch}
-        memberId={memberId}
-        setMemberId={(id) => {
-          setMemberId(id);
-          mutation.reset();
-        }}
-        areaId={areaId}
-        setAreaId={(id) => {
-          setAreaId(id);
-          mutation.reset();
-        }}
-      />
-      <Button
-        type="primary"
-        disabled={!memberId}
-        loading={mutation.isPending}
-        onClick={() => mutation.mutate()}
-        style={{ marginTop: 12 }}
-      >
-        Xác nhận đến trung tâm
-      </Button>
+      <Flex wrap align="center" gap={SPACING.SM}>
+        <CheckInFields
+          query={query}
+          areas={areas}
+          setSearch={setSearch}
+          memberId={memberId}
+          setMemberId={(id) => {
+            setMemberId(id);
+            mutation.reset();
+          }}
+          areaId={areaId}
+          setAreaId={(id) => {
+            setAreaId(id);
+            mutation.reset();
+          }}
+        />
+        <Button
+          type="primary"
+          disabled={!memberId}
+          loading={mutation.isPending}
+          onClick={() => mutation.mutate()}
+        >
+          Xác nhận đến trung tâm
+        </Button>
+      </Flex>
       <CheckInFeedback mutation={mutation} query={query} />
     </Card>
   );

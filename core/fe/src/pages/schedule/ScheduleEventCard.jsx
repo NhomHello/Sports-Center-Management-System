@@ -21,6 +21,7 @@ function EventTags({ event }) {
 function EventActions({ event, kind, onDetail, renderActions }) {
   return (
     <div className="scms-calendar-event__actions">
+      {kind === 'teaching' && <TeachingEventActions event={event} />}
       <Button onClick={() => onDetail(event)}>Chi tiết lớp</Button>
       {kind !== 'teaching' && renderActions?.(event.gymClass)}
       {kind === 'own' && event.enrollmentStatus === 'BOOKED' && (
@@ -58,12 +59,9 @@ export function ScheduleEventCard({ event, onDetail, renderActions, kind }) {
         </div>
       )}
       {kind === 'teaching' && (
-        <>
-          <p className="scms-calendar-event__enrolled">
-            Đã đăng ký {event.gymClass.enrolledCount}/{event.gymClass.capacity}
-          </p>
-          <TeachingEventActions event={event} />
-        </>
+        <p className="scms-calendar-event__enrolled">
+          Đã đăng ký {event.gymClass.enrolledCount}/{event.gymClass.capacity}
+        </p>
       )}
       <EventActions event={event} kind={kind} onDetail={onDetail} renderActions={renderActions} />
     </Card>

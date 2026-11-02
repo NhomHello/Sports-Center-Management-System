@@ -83,6 +83,7 @@ export const routeRegistry = [
     path: ROUTES.COACH_MEMBERS,
     element: <StudentsPage />,
     permission: PERMISSIONS.MEMBER_PROFILE_VIEW_ASSIGNED,
+    excludePermission: PERMISSIONS.CLASS_READ_ALL,
     menu: { label: 'Học viên của tôi', icon: <TeamOutlined />, group: GROUP_SCHEDULE },
   },
   {

@@ -1,6 +1,7 @@
 import { PERMISSIONS } from '@scms/shared';
 import { MS_PER_DAY, ROUTES } from '@/constants';
 import { ENROLLMENT_STATUS, SESSION_STATUS } from '@/constants/schedule';
+import { canAccessRoute } from '@/router/canAccessRoute';
 
 /** API gói hiện tại trả một object hoặc null; gói hết hạn có số ngày còn lại bằng 0. */
 export const getRemainingMembershipDays = (membership, now = Date.now()) => {
@@ -44,7 +45,7 @@ export const buildDashboardShortcuts = (routes, can) =>
       (route) =>
         route.menu &&
         ![ROUTES.DASHBOARD, ROUTES.CHANGE_PASSWORD].includes(route.path) &&
-        can(route.permission),
+        canAccessRoute(route, can),
     )
     .map((route) => ({
       path: route.path,

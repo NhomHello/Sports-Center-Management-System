@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildMenuItems } from './buildMenuItems';
 import { hasAnyPermission } from '@/utils/permission';
 import { ROUTES } from '@/constants';
+import { PERMISSIONS as P } from '@scms/shared';
 
 const routes = [
   { path: '/', permission: 'dashboard.view', menu: { label: 'Tổng quan' } },
@@ -15,6 +16,24 @@ const routes = [
 ];
 
 describe('buildMenuItems', () => {
+  it('ẩn học viên cá nhân với quyền quản lý toàn trung tâm, vẫn hiện cho HLV', () => {
+    const assignedRoute = {
+      path: ROUTES.COACH_MEMBERS,
+      permission: P.MEMBER_PROFILE_VIEW_ASSIGNED,
+      excludePermission: P.CLASS_READ_ALL,
+      menu: { label: 'Học viên của tôi', group: 'Lịch tập' },
+    };
+    const canWith =
+      (...granted) =>
+      (required) =>
+        hasAnyPermission(granted, required);
+    expect(
+      buildMenuItems([assignedRoute], canWith(P.MEMBER_PROFILE_VIEW_ASSIGNED, P.CLASS_READ_ALL)),
+    ).toEqual([]);
+    expect(
+      buildMenuItems([assignedRoute], canWith(P.MEMBER_PROFILE_VIEW_ASSIGNED))[0].children[0].key,
+    ).toBe(ROUTES.COACH_MEMBERS);
+  });
   it('hiện các màn cá nhân cho tài khoản không có quyền quản trị theo contract của hook', () => {
     const can = (...codes) => hasAnyPermission([], codes.flat());
     const personalRoutes = [

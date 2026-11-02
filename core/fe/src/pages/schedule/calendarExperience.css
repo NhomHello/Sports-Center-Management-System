@@ -248,7 +248,7 @@
 .scms-calendar-event__actions {
   display: grid;
   gap: 8px;
-  margin-top: 14px;
+  margin: 14px 0 0;
 }
 .scms-calendar-event__actions > .ant-btn {
   width: 100%;

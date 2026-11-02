@@ -3,13 +3,16 @@
   gap: 6px;
   margin-top: 12px;
 }
+.scms-calendar-event__actions > .scms-teaching-event-actions {
+  margin-top: 0;
+}
 .scms-teaching-event-actions > .ant-btn {
   width: 100%;
   height: auto;
   min-height: 34px;
   padding: 7px;
   font-size: 12px;
-  white-space: normal;
+  white-space: nowrap;
   line-height: 1.45;
   box-shadow: none;
 }
@@ -38,10 +41,36 @@
   line-height: 1.5;
 }
 @container (min-width: 900px) {
+  .scms-calendar--compact .scms-week-grid {
+    grid-template-columns: repeat(7, minmax(184px, 1fr));
+    min-width: min-content;
+  }
+  /* Các ngày chia sẻ hàng để thẻ và nút thẳng nhau, kể cả ngày có nhiều buổi. */
   .scms-calendar--compact .scms-week-grid .scms-schedule-day {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-row: 1 / span var(--scms-calendar-rows, 2);
+    row-gap: 12px;
     min-height: 260px;
   }
   .scms-calendar--compact .scms-schedule-day__header {
     flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-calendar-events {
+    display: contents;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-calendar-event.ant-card > .ant-card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-calendar-event__title {
+    min-height: 2lh;
+  }
+  .scms-calendar--compact .scms-week-grid .scms-calendar-event__actions {
+    margin-top: auto;
+    padding-top: 12px;
   }
 }

@@ -24,8 +24,8 @@ const STATUS_COLORS = Object.freeze({
 
 function QueueToolbar({ table, query }) {
   return (
-    <div className="scms-invoice-toolbar">
-      <div className="scms-invoice-toolbar__primary">
+    <div className="scms-reconcile-toolbar">
+      <div className="scms-reconcile-filters">
         <Select
           aria-label="Lý do đối soát"
           placeholder="Tất cả lý do"
@@ -46,7 +46,7 @@ function QueueToolbar({ table, query }) {
           Chỉ phiếu quá hạn nhắc lại
         </Checkbox>
       </div>
-      <div className="scms-invoice-toolbar__primary scms-reconcile-actions">
+      <div className="scms-reconcile-actions">
         <SepaySyncButton />
         <Button
           icon={<ReloadOutlined />}

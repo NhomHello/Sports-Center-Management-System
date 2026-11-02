@@ -683,75 +683,89 @@ a {
 }
 .scms-invoice-toolbar {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  margin-bottom: 24px;
+  container: invoice-toolbar / inline-size;
 }
-.scms-invoice-toolbar__primary,
-.scms-invoice-filters {
+.scms-invoice-toolbar__primary {
   display: flex;
   flex-wrap: wrap;
   min-width: 0;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
 }
-.scms-invoice-toolbar__primary {
-  flex: 1 1 620px;
+.scms-invoice-toolbar__primary > .ant-btn {
+  margin-inline-start: auto;
 }
 .scms-invoice-toolbar__primary > .ant-segmented {
   flex-shrink: 0;
   max-width: 100%;
 }
 .scms-invoice-filters {
-  flex: 1 1 480px;
-}
-.scms-invoice-filters .ant-input-affix-wrapper {
-  flex: 1 1 260px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 240px) auto;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
-  width: 300px;
+}
+.scms-invoice-filters[data-staff='true'] {
+  grid-template-columns:
+    minmax(220px, 1.4fr) repeat(2, minmax(150px, 1fr)) minmax(280px, 1.6fr)
+    auto;
+}
+.scms-invoice-filters > .ant-input-affix-wrapper,
+.scms-invoice-filters > .ant-select,
+.scms-invoice-filters > .ant-picker {
+  min-width: 0;
+  width: 100%;
 }
 .scms-invoice-filters .ant-input-prefix {
   margin-inline-end: 8px;
   color: var(--scms-subtle);
 }
-.scms-invoice-filters .ant-select {
-  flex: 1 1 170px;
-  width: 210px;
-}
 .scms-invoice-filters .ant-btn-text {
+  justify-self: end;
   color: var(--scms-muted);
 }
-@media (max-width: 600px) {
-  .scms-invoice-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+@container invoice-toolbar (max-width: 1050px) {
+  .scms-invoice-filters[data-staff='true'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .scms-invoice-toolbar__primary,
-  .scms-invoice-filters {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    flex-basis: auto;
+  .scms-invoice-filters[data-staff='true'] > .ant-input-affix-wrapper,
+  .scms-invoice-filters[data-staff='true'] > .ant-picker {
+    grid-column: span 2;
+  }
+  .scms-invoice-filters[data-staff='true'] > .ant-btn-text {
+    grid-column: 4;
+  }
+}
+@container invoice-toolbar (max-width: 700px) {
+  .scms-invoice-toolbar .scms-invoice-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scms-invoice-toolbar .scms-invoice-filters > .ant-input-affix-wrapper,
+  .scms-invoice-toolbar .scms-invoice-filters > .ant-picker,
+  .scms-invoice-toolbar .scms-invoice-filters > .ant-btn-text {
+    grid-column: 1 / -1;
+  }
+}
+@container invoice-toolbar (max-width: 360px) {
+  .scms-invoice-toolbar__primary > .ant-segmented,
+  .scms-invoice-toolbar__primary > .ant-btn {
     width: 100%;
   }
   .scms-invoice-toolbar__primary .ant-segmented-group {
-    width: 100%;
+    display: flex;
   }
   .scms-invoice-toolbar__primary .ant-segmented-item {
     flex: 1;
     min-width: 0;
   }
-  .scms-invoice-toolbar__primary .ant-segmented-item-label {
-    padding-inline: 8px;
-    white-space: normal;
-  }
-  .scms-invoice-filters .ant-input-affix-wrapper,
-  .scms-invoice-filters .ant-select {
-    width: 100%;
-  }
-  .scms-invoice-filters .ant-btn-text {
-    justify-self: end;
+  .scms-invoice-toolbar .scms-invoice-filters {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .scms-list-pagination {
@@ -1176,11 +1190,54 @@ a {
 }
 
 /* Hàng chờ đối soát: bộ lọc cùng khung với bảng, nút thao tác dồn phải. */
+.scms-reconcile-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  container: reconcile-toolbar / inline-size;
+}
+.scms-reconcile-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 320px) minmax(0, 1fr);
+  flex: 1 1 800px;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
 .scms-reconcile-filter.ant-select {
-  min-width: 220px;
+  min-width: 0;
+  width: 100%;
+}
+.scms-reconcile-filters > .ant-checkbox-wrapper {
+  min-height: var(--scms-control-height, 44px);
+  align-items: center;
 }
 .scms-reconcile-actions {
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-inline-start: auto;
+}
+@container reconcile-toolbar (max-width: 800px) {
+  .scms-reconcile-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scms-reconcile-filters > .ant-checkbox-wrapper {
+    grid-column: 1 / -1;
+    min-height: auto;
+  }
+}
+@container reconcile-toolbar (max-width: 520px) {
+  .scms-reconcile-filters,
+  .scms-reconcile-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
 }
 
 /* Tiêu đề trang ở header co lại (cắt "…") thay vì đẩy nút tài khoản tràn khỏi màn hình hẹp. */

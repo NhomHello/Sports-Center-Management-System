@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { Descriptions, Space, Tag } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Space, Tag } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { PageHeader } from '@/components/common/PageHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
+import { ROUTES } from '@/constants';
 import { COURSE_KEYS, SUMMARY_LABELS, SUMMARY_STATUS } from '@/constants/courses';
 import { getSummary } from '@/services/course.service';
 import { formatDateTime } from '@/utils/format';
@@ -32,6 +34,11 @@ export default function CourseSummaryPage() {
       <PageHeader
         title={summary ? `Tổng kết · ${summary.gymClass.name}` : 'Tổng kết khóa học'}
         subtitle="Chuyên cần được tính từ lịch học và điểm danh thực tế."
+        extra={
+          <Link to={ROUTES.COURSE_SUMMARIES}>
+            <Button icon={<ArrowLeftOutlined />}>Quay lại danh sách tổng kết</Button>
+          </Link>
+        }
       />
       <QueryState query={query}>
         {summary && (

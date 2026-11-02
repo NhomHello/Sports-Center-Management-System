@@ -1,7 +1,9 @@
+import { canAccessRoute } from './canAccessRoute';
+
 /**
  * Sinh items cho antd Menu tu route registry, chi giu route user co quyen.
  * Ham thuan (khong React) de test duoc.
- * @param {{ path: string, permission?: string|string[], menu?: { label: string, icon?: unknown, group?: string } }[]} routes
+ * @param {{ path: string, permission?: string|string[], excludePermission?: string, menu?: { label: string, icon?: unknown, group?: string } }[]} routes
  * @param {(permission: string|string[]|undefined) => boolean} can
  */
 export const buildMenuItems = (routes, can) => {
@@ -9,7 +11,7 @@ export const buildMenuItems = (routes, can) => {
   const groups = new Map();
 
   for (const route of routes) {
-    if (!route.menu || !can(route.permission)) continue;
+    if (!route.menu || !canAccessRoute(route, can)) continue;
     const item = { key: route.path, icon: route.menu.icon, label: route.menu.label };
     if (!route.menu.group) {
       items.push(item);

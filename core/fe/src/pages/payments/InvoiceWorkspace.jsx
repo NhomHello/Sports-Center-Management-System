@@ -56,22 +56,22 @@ export function InvoiceWorkspace({
               onChange={onScopeChange}
             />
           )}
-          <InvoiceFilters
-            key={`${isOwn}:${table.filters.search ?? ''}`}
-            staff={canReadAll}
-            filters={table.filters}
-            onChange={table.setFilters}
+          <Button
+            icon={<ReloadOutlined />}
             loading={query.isFetching}
-          />
+            disabled={notice?.retryable === false}
+            onClick={() => query.refetch()}
+          >
+            Làm mới
+          </Button>
         </div>
-        <Button
-          icon={<ReloadOutlined />}
+        <InvoiceFilters
+          key={`${isOwn}:${table.filters.search ?? ''}`}
+          staff={canReadAll}
+          filters={table.filters}
+          onChange={table.setFilters}
           loading={query.isFetching}
-          disabled={notice?.retryable === false}
-          onClick={() => query.refetch()}
-        >
-          Làm mới
-        </Button>
+        />
       </div>
       <InvoiceListContent
         query={query}
