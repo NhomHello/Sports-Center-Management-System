@@ -12,7 +12,7 @@ export const overpaidAwaiting = (item) =>
 
 /** Các thao tác dùng tiền của phiếu: chỉ khi phiếu còn mở và chưa có yêu cầu hoàn nào. */
 const settleActions = (item, is) => ({
-  map: is(R.NO_MATCH, R.LATE) && Boolean(item.webhookLog),
+  map: is(R.NO_MATCH, R.LATE, R.SCHEDULE_CONFLICT) && Boolean(item.webhookLog),
   confirm: is(R.MEMBER_CLAIM, R.UNDERPAID) && Boolean(item.invoiceId),
   // Chuyển thừa: hoá đơn gốc chờ chấp nhận trước, phần thừa chỉ dùng được sau khi chấp nhận.
   accept: is(R.OVERPAID) && overpaidAwaiting(item),

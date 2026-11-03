@@ -84,6 +84,15 @@ function PendingPanel({ instruction, currency }) {
 
 /** Hóa đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
 export function OnlinePaymentPanel({ invoice }) {
+  if (invoice.paymentBlockReason)
+    return (
+      <Alert
+        showIcon
+        type="warning"
+        title="Cần kiểm tra lịch trước khi thanh toán"
+        description={invoice.paymentBlockReason}
+      />
+    );
   if (invoice.status === INVOICE_STATUS.PAID && invoice.channel === INVOICE_CHANNEL.ONLINE) {
     return (
       <Alert

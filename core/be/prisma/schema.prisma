@@ -751,6 +751,7 @@ model PaymentWebhookLog {
 /// Lý do mở phiếu đối soát (UC-PAY-11..14).
 
 enum ReconciliationReason {
+  SCHEDULE_CONFLICT
 
   NO_MATCH
 

@@ -19,6 +19,7 @@ export const CASE_STATUS_LABELS = Object.freeze({
   REFUNDED: 'Đã hoàn tiền',
 });
 export const CASE_REASON = Object.freeze({
+  SCHEDULE_CONFLICT: 'SCHEDULE_CONFLICT',
   NO_MATCH: 'NO_MATCH',
   LATE: 'LATE',
   UNDERPAID: 'UNDERPAID',
@@ -27,6 +28,7 @@ export const CASE_REASON = Object.freeze({
   MEMBER_CLAIM: 'MEMBER_CLAIM',
 });
 export const CASE_REASON_LABELS = Object.freeze({
+  SCHEDULE_CONFLICT: 'Trùng lịch khóa học',
   NO_MATCH: 'Sai hoặc thiếu mã',
   LATE: 'Tiền về muộn',
   UNDERPAID: 'Thiếu tiền',
@@ -49,6 +51,7 @@ export const ACTIVE_CASE_STATUSES = Object.freeze([
 ]);
 /** BR-PAY-19: lý do phải ghi ít nhất một lần liên hệ trước khi đóng phiếu. */
 export const CONTACT_REQUIRED_REASONS = Object.freeze([
+  CASE_REASON.SCHEDULE_CONFLICT,
   CASE_REASON.DUPLICATE_TRANSFER,
   CASE_REASON.OVERPAID,
   CASE_REASON.MEMBER_CLAIM,

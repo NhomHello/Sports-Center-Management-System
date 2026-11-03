@@ -36,4 +36,10 @@ describe('caseActions', () => {
     const accepted = caseActions({ ...base, reason: 'OVERPAID', invoice: { status: 'PAID' } });
     expect([accepted.accept, accepted.renew]).toEqual([false, true]);
   });
+  it('trùng lịch: cần liên hệ, có thể chọn khóa khác hoặc hoàn; đã hoàn thì không dùng lại tiền', () => {
+    const pending = caseActions({ ...base, reason: 'SCHEDULE_CONFLICT' });
+    expect([pending.map, pending.refund, pending.needsContact]).toEqual([true, true, true]);
+    const closed = caseActions({ ...base, reason: 'SCHEDULE_CONFLICT', status: 'REFUNDED' });
+    expect([closed.map, closed.refund]).toEqual([false, false]);
+  });
 });

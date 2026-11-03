@@ -24,7 +24,7 @@ export const outcomeNotices = (invoice, result, key) => {
         message:
           `Trung tâm đã nhận ${fmtMoney(result.received)} / ${fmtMoney(invoice.amount)}. ` +
           `Vui lòng chuyển bù ${fmtMoney(result.missing)} với nội dung ${invoice.code} ` +
-          `trước ${fmtTime(result.expiresAt)} để kích hoạt gói.`,
+          `trước ${fmtTime(result.expiresAt)} để xác nhận giao dịch.`,
       }),
     ];
   }
@@ -37,12 +37,12 @@ export const outcomeNotices = (invoice, result, key) => {
         title: `Hoá đơn ${invoice.code}: trung tâm nhận ${fmtMoney(result.received)}`,
         message:
           `Số tiền nhiều hơn hoá đơn ${fmtMoney(invoice.amount)} (thừa ${fmtMoney(result.excess)}). ` +
-          'Hoá đơn chờ trung tâm xác nhận; trung tâm sẽ liên hệ để kích hoạt gói và hoàn hoặc dùng phần thừa.',
+          'Hoá đơn chờ trung tâm xác nhận; trung tâm sẽ liên hệ để xác nhận giao dịch và hoàn hoặc dùng phần thừa.',
       }),
       toReconcilers({
         eventKey: `${key}:overpaid`,
         title: `Hoá đơn ${invoice.code} chuyển thừa ${fmtMoney(result.excess)}`,
-        message: 'Liên hệ hội viên, rồi chấp nhận hoá đơn (kích hoạt gói) hoặc hoàn toàn bộ.',
+        message: 'Liên hệ hội viên, rồi chấp nhận hoá đơn (xác nhận giao dịch) hoặc hoàn toàn bộ.',
       }),
     ];
   }
@@ -58,6 +58,7 @@ export const outcomeNotices = (invoice, result, key) => {
 };
 
 const REVIEW_TITLE = {
+  [REASON.SCHEDULE_CONFLICT]: 'Khóa học trùng lịch, tiền chờ xử lý',
   [REASON.NO_MATCH]: 'Giao dịch không khớp hoá đơn',
   [REASON.LATE]: 'Tiền về sau khi hoá đơn hết hạn',
   [REASON.DUPLICATE_TRANSFER]: '[Cảnh báo] Hội viên chuyển 2 lần cho một mã',
@@ -70,7 +71,7 @@ export const buildWebhookNotices = ({ log, kase, invoice, result }) => {
   const notices = [
     toReconcilers({
       eventKey: key,
-      title: `${REVIEW_TITLE[kase.reason]}: ${fmtMoney(log.transferAmount)}`,
+      title: `${REVIEW_TITLE[kase.reason] ?? 'Giao dịch cần đối soát'}: ${fmtMoney(log.transferAmount)}`,
       message: `${kase.note}. Mở hàng chờ đối soát để xử lý phiếu #${kase.id}.`,
     }),
   ];
@@ -81,12 +82,17 @@ export const buildWebhookNotices = ({ log, kase, invoice, result }) => {
         kind: KIND.PAYMENT_REVIEW_ALERT,
         eventKey: `${key}:member`,
         title: `Trung tâm đã nhận ${fmtMoney(log.transferAmount)} cho hoá đơn ${invoice.code}`,
-        message:
-          kase.reason === REASON.DUPLICATE_TRANSFER
-            ? 'Hoá đơn này đã được thanh toán trước đó. Trung tâm sẽ liên hệ để hoàn tiền hoặc dùng gia hạn.'
-            : 'Hoá đơn đã hết hạn khi tiền về. Trung tâm sẽ kiểm tra và liên hệ bạn.',
+        message: reviewMessage(kase.reason),
       }),
     );
   }
   return notices;
 };
+
+function reviewMessage(reason) {
+  if (reason === REASON.SCHEDULE_CONFLICT)
+    return 'Trung tâm đã nhận tiền nhưng lịch khóa học bị trùng. Đăng ký chưa được xác nhận; trung tâm sẽ liên hệ để chọn khóa phù hợp hoặc hoàn tiền.';
+  if (reason === REASON.DUPLICATE_TRANSFER)
+    return 'Hóa đơn đã được thanh toán trước đó. Trung tâm sẽ liên hệ để hoàn khoản chuyển lặp hoặc dùng cho khóa khác.';
+  return 'Hóa đơn hoặc chỗ giữ không còn hiệu lực khi tiền về. Trung tâm sẽ kiểm tra và liên hệ bạn.';
+}

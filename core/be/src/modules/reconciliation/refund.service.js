@@ -1,10 +1,14 @@
+import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { lockInvoice, sumReceived } from '../payment/payment-apply.service.js';
 import { fmtMoney, sendNotices, toMember } from './payment-notify.service.js';
-import { releaseHoldsForInvoice } from '../course-order/course-hold.service.js';
+import {
+  abandonUnfundedCourseInvoice,
+  releaseHoldsForInvoice,
+} from '../course-order/course-hold.service.js';
 import { revokePurchase } from './refund-revoke.service.js';
 import { assertContacted, lockCase, updateCase } from './reconciliation-case.service.js';
 
@@ -67,7 +71,7 @@ const failUnpaidInvoice = async (tx, kase, actor) => {
     where: { id: invoice.id },
     data: { status: Enums.InvoiceStatus.FAILED },
   });
-  await releaseHoldsForInvoice(tx, invoice.id);
+  await releaseHoldsForInvoice(tx, invoice.id, actor.id);
   await audit(tx, actor, {
     entity: ENTITIES.INVOICE,
     entityId: invoice.id,
@@ -94,7 +98,16 @@ export const requestCaseRefund = async (id, { amount, reason }, actor) => {
     const max = await refundableAmount(tx, kase);
     const value = amount ?? max;
     if (!max || value > max) throw ApiError.businessRule(`Số hoàn tối đa là ${fmtMoney(max ?? 0)}`);
+    if (value !== max)
+      throw ApiError.businessRule(
+        'Hoàn phiếu đối soát phải hoàn toàn bộ số tiền còn lại để đóng phiếu đầy đủ',
+      );
     await failUnpaidInvoice(tx, kase, actor);
+    if ([REASON.SCHEDULE_CONFLICT, REASON.LATE, REASON.NO_MATCH].includes(kase.reason))
+      await abandonUnfundedCourseInvoice(tx, kase.invoiceId, {
+        actor,
+        reason: 'UNALLOCATED_TRANSFER_REFUND',
+      });
     const created = await tx.refund.create({
       data: {
         caseId: id,
@@ -158,6 +171,7 @@ export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
 /** Đóng yêu cầu hoàn bằng mã tham chiếu ngân hàng; phiếu đối soát liên quan chuyển REFUNDED. */
 export const completeRefund = (id, { reference }, actor) =>
   prisma.$transaction(async (tx) => {
+    await lockSchedule(tx);
     await tx.$queryRaw`SELECT id FROM refunds WHERE id = ${id} FOR UPDATE`;
     const refund = await tx.refund.findUnique({ where: { id } });
     if (!refund) throw ApiError.notFound('Không tìm thấy yêu cầu hoàn tiền');

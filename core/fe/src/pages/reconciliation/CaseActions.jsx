@@ -73,7 +73,7 @@ function SettleForms({ item, allowed, mutation }) {
       {allowed.map && (
         <>
           <Divider titlePlacement="start">Gán vào hóa đơn</Divider>
-          <CaseMapForm pending={pending} onAction={mutation.mutate} />
+          <CaseMapForm disabled={blocked} pending={pending} onAction={mutation.mutate} />
         </>
       )}
       {allowed.confirm && (

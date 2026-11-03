@@ -10,7 +10,10 @@ import { formatCurrency } from '@/utils/format';
 import { refreshPurchases } from '../purchases/CancelPurchasePolicy';
 
 const creditPaymentEnabled = (invoice, user, allowed) =>
-  Boolean(invoice?.id && user?.id) && allowed && invoice.status === INVOICE_STATUS.PENDING;
+  Boolean(invoice?.id && user?.id) &&
+  allowed &&
+  !invoice.paymentBlockReason &&
+  invoice.status === INVOICE_STATUS.PENDING;
 
 /** GY-34: API tự tính tối đa được dùng và số tiền còn thiếu; FE không trừ tiền cục bộ. */
 function useCreditPayment(invoice, onApplied) {

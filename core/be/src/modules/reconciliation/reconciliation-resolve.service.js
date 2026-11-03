@@ -1,11 +1,11 @@
+import { abandonUnfundedCourseInvoice } from '../course-order/course-hold.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
-import { createCourseOrder } from '../course-order/course-order.service.js';
+import { reserveCourseWithDb } from '../course-order/course-order.service.js';
 import { applyTransfer, lockInvoice, PAYMENT_OUTCOME } from '../payment/payment-apply.service.js';
 import { outcomeNotices } from './payment-notices.js';
 import { sendNotices } from './payment-notify.service.js';
 import {
-  ACTIVE_STATUSES,
   assertContacted,
   assertNotRefunded,
   lockCase,
@@ -59,6 +59,11 @@ const settleCase = async (tx, kase, invoice, { amount, reference, actor, action 
     ...NEXT_STATE[result.outcome](result),
   };
   const updated = await updateCase(tx, kase, { data, actor, action });
+  if (kase.invoiceId !== invoice.id)
+    await abandonUnfundedCourseInvoice(tx, kase.invoiceId, {
+      actor,
+      reason: 'RECONCILIATION_MAPPED_TO_OTHER_COURSE',
+    });
   return { kase: updated, invoice, result };
 };
 
@@ -67,14 +72,15 @@ const finish = async (out, key) => {
   return { ...out.kase, outcome: out.result.outcome, missing: out.result.missing };
 };
 
-const MAP_REASONS = [REASON.NO_MATCH, REASON.LATE];
+const MAP_REASONS = [REASON.NO_MATCH, REASON.LATE, REASON.SCHEDULE_CONFLICT];
 const RENEW_REASONS = [REASON.DUPLICATE_TRANSFER, REASON.OVERPAID];
 
 /** Điều kiện của từng thao tác; chạy cả trước khi tạo hoá đơn đích lẫn trong transaction. */
 const RULES = {
   map: (kase) => {
     if (!MAP_REASONS.includes(kase.reason) || !kase.webhookLog)
-      throw ApiError.businessRule('Chỉ map được giao dịch sai mã hoặc tiền về muộn');
+      throw ApiError.businessRule('Chỉ gán giao dịch chưa khớp, tiền muộn hoặc trùng lịch');
+    if (kase.reason === REASON.SCHEDULE_CONFLICT) assertContacted(kase);
   },
   renew: (kase) => {
     if (!RENEW_REASONS.includes(kase.reason))
@@ -92,23 +98,6 @@ const lockForAction = async (tx, id, rule) => {
   return kase;
 };
 
-/**
- * Kiểm tra trước (không khoá) để không tạo hoá đơn online "mồ côi" khi thao tác bị từ chối;
- * transaction phía sau vẫn kiểm tra lại dưới khoá.
- */
-const precheck = async (id, rule) => {
-  const kase = await prisma.reconciliationCase.findUnique({
-    where: { id },
-    include: { webhookLog: true, _count: { select: { contacts: true } } },
-  });
-  if (!kase) throw ApiError.notFound('Không tìm thấy phiếu đối soát');
-  if (!ACTIVE_STATUSES.includes(kase.status))
-    throw ApiError.conflict('Phiếu đối soát đã được xử lý, vui lòng tải lại');
-  rule(kase);
-  await assertNotRefunded(prisma, kase);
-  return kase;
-};
-
 /** Phần thừa chỉ tồn tại sau khi hoá đơn gốc được chấp nhận; trước đó toàn bộ tiền còn treo. */
 const assertOverpaidAccepted = async (db, kase) => {
   if (kase.reason !== REASON.OVERPAID) return;
@@ -118,9 +107,15 @@ const assertOverpaidAccepted = async (db, kase) => {
 };
 
 /** Hoá đơn đích: chọn hoá đơn có sẵn, hoặc tạo/tái sử dụng hoá đơn online cho gói đang bán. */
-const resolveTargetInvoice = async ({ invoiceId, memberId, classId }, actor) =>
+const resolveTargetInvoice = async (tx, { invoiceId, memberId, classId }, actor) =>
   invoiceId ??
-  (await createCourseOrder({ memberId, classId, channel: Enums.InvoiceChannel.ONLINE }, actor)).id;
+  (
+    await reserveCourseWithDb(
+      tx,
+      { memberId, classId, channel: Enums.InvoiceChannel.ONLINE },
+      actor,
+    )
+  ).id;
 
 /**
  * UC-PAY-11: gán giao dịch sai mã / tiền về muộn vào hoá đơn của hội viên.
@@ -128,10 +123,9 @@ const resolveTargetInvoice = async ({ invoiceId, memberId, classId }, actor) =>
  * @param {{ invoiceId?: number, memberId?: number, planId?: number }} body
  */
 export const mapCase = async (id, body, actor) => {
-  await precheck(id, RULES.map);
-  const target = await resolveTargetInvoice(body, actor);
   const out = await prisma.$transaction(async (tx) => {
     const kase = await lockForAction(tx, id, RULES.map);
+    const target = await resolveTargetInvoice(tx, body, actor);
     const invoice = await lockPayableInvoice(tx, target);
     const payload = kase.webhookLog.payload ?? {};
     const reference = payload.referenceCode ?? kase.webhookLog.providerTransactionId;
@@ -165,12 +159,10 @@ export const confirmCase = async (id, { amount, reference }, actor) => {
  * Phiếu gốc đóng; nếu số tiền không khớp giá gói thì hoá đơn mới mở phiếu thiếu/thừa riêng.
  */
 export const renewFromCase = async (id, { classId }, actor) => {
-  const preview = await precheck(id, RULES.renew);
-  await assertOverpaidAccepted(prisma, preview);
-  const target = await resolveTargetInvoice({ memberId: preview.userId, classId }, actor);
   const out = await prisma.$transaction(async (tx) => {
     const kase = await lockForAction(tx, id, RULES.renew);
     await assertOverpaidAccepted(tx, kase);
+    const target = await resolveTargetInvoice(tx, { memberId: kase.userId, classId }, actor);
     const amount = kase.reason === REASON.OVERPAID ? kase.excessAmount : kase.amount;
     const invoice = await lockPayableInvoice(tx, target);
     const result = await applyTransfer(tx, invoice, {

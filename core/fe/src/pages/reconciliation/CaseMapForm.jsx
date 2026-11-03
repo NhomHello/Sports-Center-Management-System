@@ -28,8 +28,11 @@ const listTransferTargets = async (memberId) => {
   return pages.flatMap((page) => page.data ?? []);
 };
 
+const MappingErrors = ({ errors }) =>
+  errors.map((q) => <Alert key={q.error.message} type="error" title={q.error.message} />);
+
 /** Gán sai mã vào hóa đơn còn chờ/thất bại hoặc tạo hóa đơn cho khóa học đang bán. */
-export function CaseMapForm({ pending, onAction }) {
+export function CaseMapForm({ pending, disabled = false, onAction }) {
   const { can } = usePermission();
   const [form] = Form.useForm();
   const [search, setSearch] = useState('');
@@ -54,7 +57,7 @@ export function CaseMapForm({ pending, onAction }) {
     <Form
       form={form}
       layout="vertical"
-      disabled={pending}
+      disabled={pending || disabled}
       onFinish={({ invoiceId, classId }) =>
         onAction({ action: 'map', data: invoiceId ? { invoiceId } : { memberId, classId } })
       }
@@ -64,9 +67,7 @@ export function CaseMapForm({ pending, onAction }) {
         type="info"
         title="Chọn hội viên rồi chọn hóa đơn, hoặc khóa học để tạo hóa đơn mới. Server đối chiếu tiền trước khi kích hoạt."
       />
-      {errors.map((q) => (
-        <Alert key={q.error.message} type="error" title={q.error.message} />
-      ))}
+      <MappingErrors errors={errors} />
       <Form.Item
         name="memberId"
         label="Hội viên"
@@ -87,6 +88,7 @@ export function CaseMapForm({ pending, onAction }) {
       <Form.Item name="invoiceId" label="Hóa đơn có sẵn">
         <Select
           allowClear
+          onChange={() => form.resetFields(['classId'])}
           loading={invoices.isFetching}
           options={(invoices.data ?? []).map((i) => ({
             value: i.id,
@@ -99,10 +101,11 @@ export function CaseMapForm({ pending, onAction }) {
       <Form.Item name="classId" label="Hoặc khóa học đang bán">
         <Select
           allowClear
+          onChange={() => form.resetFields(['invoiceId'])}
           options={(plans.data?.data ?? []).map((p) => ({ value: p.id, label: p.name }))}
         />
       </Form.Item>
-      <Button htmlType="submit" type="primary" disabled={!memberId} loading={pending}>
+      <Button htmlType="submit" type="primary" disabled={!memberId || disabled} loading={pending}>
         Gán giao dịch
       </Button>
     </Form>

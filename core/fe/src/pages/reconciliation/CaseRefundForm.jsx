@@ -4,6 +4,8 @@ import { formatCurrency } from '@/utils/format';
 import { overpaidAwaiting } from '@/utils/reconciliationActions';
 
 const HINTS = Object.freeze({
+  [CASE_REASON.SCHEDULE_CONFLICT]:
+    'Hoàn toàn bộ khoản chưa gán do trùng lịch. Hóa đơn chưa có khoản thu đã gán sẽ bị hủy và nhả chỗ; nếu có khoản khác đã ghi nhận, xử lý tiếp ở phiếu tương ứng.',
   [CASE_REASON.OVERPAID]:
     'Hoàn phần chuyển thừa; hóa đơn gốc đã chấp nhận vẫn giữ trạng thái đã thanh toán.',
   [CASE_REASON.DUPLICATE_TRANSFER]: 'Hoàn khoản chuyển lặp; đăng ký khóa học không thay đổi.',

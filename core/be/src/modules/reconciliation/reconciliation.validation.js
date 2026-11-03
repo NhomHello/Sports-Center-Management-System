@@ -36,9 +36,14 @@ export const mapSchema = {
   body: z
     .object({ invoiceId: id.optional(), memberId: id.optional(), classId: id.optional() })
     .strict()
-    .refine((body) => body.invoiceId || (body.memberId && body.classId), {
-      message: 'Chọn hoá đơn, hoặc chọn hội viên và khóa học',
-    }),
+    .refine(
+      (body) =>
+        (body.invoiceId && !body.memberId && !body.classId) ||
+        (!body.invoiceId && body.memberId && body.classId),
+      {
+        message: 'Chỉ chọn một cách: hóa đơn có sẵn hoặc hội viên và khóa học mới',
+      },
+    ),
 };
 export const confirmSchema = { params, body: z.object({ amount: money, reference }).strict() };
 export const renewSchema = { params, body: z.object({ classId: id }).strict() };

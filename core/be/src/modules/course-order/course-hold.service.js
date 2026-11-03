@@ -12,7 +12,7 @@ const cancelHold = (db, enrollment, actorId) =>
     data: {
       status: Enums.EnrollmentStatus.CANCELLED,
       cancelledAt: new Date(),
-      cancelledBy: actorId ?? enrollment.enrolledBy,
+      cancelledBy: actorId,
       holdExpiresAt: null,
     },
   });
@@ -56,7 +56,7 @@ export const releaseCourseHold = async (db, enrollment, actor) => {
  * đang chờ của hóa đơn đó.
  * Gọi trong transaction đã khóa hóa đơn.
  */
-export const releaseHoldsForInvoice = async (tx, invoiceId) => {
+export const releaseHoldsForInvoice = async (tx, invoiceId, actorId = null) => {
   await cancelPendingChanges(tx, invoiceId);
   const holds = await tx.classEnrollment.findMany({
     where: { invoiceId, status: Enums.EnrollmentStatus.PENDING_PAYMENT },
@@ -64,7 +64,7 @@ export const releaseHoldsForInvoice = async (tx, invoiceId) => {
   if (!holds.length) return;
   await lockSchedule(tx);
   for (const hold of holds) {
-    await cancelHold(tx, hold, null);
+    await cancelHold(tx, hold, actorId);
     await promoteWaitlist(tx, hold.classId);
   }
 };
@@ -90,4 +90,34 @@ export const confirmCourseInvoice = async (tx, invoice) => {
       cancelledBy: null,
     },
   });
+};
+
+/** Giao dịch chưa gán tiền được hoàn/chuyển khóa thì hủy invoice rỗng và nhả chỗ ngay. */
+export const abandonUnfundedCourseInvoice = async (tx, invoiceId, { actor, reason }) => {
+  if (!invoiceId) return null;
+  await lockSchedule(tx);
+  await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${invoiceId} FOR UPDATE`;
+  const invoice = await tx.invoice.findUnique({ where: { id: invoiceId } });
+  if (invoice?.kind !== Enums.InvoiceKind.COURSE || invoice.status !== Enums.InvoiceStatus.PENDING)
+    return null;
+  if (await tx.payment.count({ where: { invoiceId } })) return null;
+  await tx.invoice.update({
+    where: { id: invoiceId },
+    data: { status: Enums.InvoiceStatus.FAILED },
+  });
+  await releaseHoldsForInvoice(tx, invoiceId, actor.id);
+  await tx.auditLog.create({
+    data: {
+      userId: actor.id,
+      action: AUDIT_ACTIONS.UPDATE,
+      entity: ENTITIES.INVOICE,
+      entityId: String(invoiceId),
+      meta: {
+        reason,
+        before: { status: invoice.status },
+        after: { status: Enums.InvoiceStatus.FAILED },
+      },
+    },
+  });
+  return invoiceId;
 };

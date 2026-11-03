@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../../config/db.js', () => ({
   Enums: {
     ReconciliationReason: { UNDERPAID: 'UNDERPAID', OVERPAID: 'OVERPAID' },
+    InvoiceKind: { COURSE: 'COURSE' },
     InvoiceStatus: { PAID: 'PAID', PENDING: 'PENDING' },
     InvoiceChannel: { ONLINE: 'ONLINE' },
   },

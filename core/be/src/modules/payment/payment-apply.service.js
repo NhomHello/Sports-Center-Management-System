@@ -1,3 +1,4 @@
+import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums } from '../../config/db.js';
@@ -119,6 +120,7 @@ export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) 
  * @returns {Promise<{ outcome: string, received: number, missing: number, excess: number, expiresAt?: Date }>}
  */
 export const applyTransfer = async (tx, invoice, input) => {
+  if (invoice.kind === Enums.InvoiceKind.COURSE) await assertCourseHold(tx, invoice);
   const { amount, provider, reference = null, actorId = null, meta = {} } = input;
   const now = new Date();
   const received = (await sumReceived(tx, invoice.id)) + amount;

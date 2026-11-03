@@ -93,6 +93,9 @@ const handleTransfer = async (tx, payload, invoiceCode, invoice) => {
   return { log, kase, invoice, result };
 };
 
+const holdRejectionReason = (error) =>
+  error.details?.type === REASON.SCHEDULE_CONFLICT ? REASON.SCHEDULE_CONFLICT : REASON.LATE;
+
 const handle = async (tx, payload, invoiceCode) => {
   const invoice = invoiceCode ? await lockInvoice(tx, { code: invoiceCode }) : null;
   if (!invoice) {
@@ -116,7 +119,7 @@ const handle = async (tx, payload, invoiceCode) => {
       return toReview(tx, payload, {
         invoiceCode,
         invoice,
-        reason: REASON.LATE,
+        reason: holdRejectionReason(error),
         note: error.message,
       });
     }

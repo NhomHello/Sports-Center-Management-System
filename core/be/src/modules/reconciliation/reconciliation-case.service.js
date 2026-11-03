@@ -14,7 +14,12 @@ export const ACTIVE_STATUSES = [
 ];
 
 /** BR-PAY-19: các lý do phải có ít nhất một lần liên hệ hội viên trước khi đóng phiếu. */
-export const CONTACT_REQUIRED = [REASON.DUPLICATE_TRANSFER, REASON.OVERPAID, REASON.MEMBER_CLAIM];
+export const CONTACT_REQUIRED = [
+  REASON.DUPLICATE_TRANSFER,
+  REASON.OVERPAID,
+  REASON.MEMBER_CLAIM,
+  REASON.SCHEDULE_CONFLICT,
+];
 
 /**
  * Mở phiếu đối soát. Thiếu tiền mở ở trạng thái chờ chuyển bù, còn lại mở ở OPEN.

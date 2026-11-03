@@ -92,38 +92,48 @@ const createCourseInvoice = (db, { item, memberId, channel, actor, now }) => {
  * @param {{ classId: number, memberId: number, channel: string }} input
  * @param {{ id: number }} actor
  */
-export const createCourseOrder = async (
+/** Caller giữ schedule lock; tạo chỗ/hóa đơn cùng transaction với thao tác gán tiền. */
+export const reserveCourseWithDb = async (
+  db,
   { classId, memberId, channel, joinWaitlistWhenFull = false },
   actor,
 ) => {
-  const invoice = await withScheduleTransaction(async (db) => {
-    await loadMember(db, memberId);
-    await promoteWaitlist(db, classId);
-    const item = await loadPaidClass(db, classId);
-    const state = await getClassActions(db, item, memberId);
-    const reused = await existingHold(db, state.enrollment, channel);
-    if (reused) return reused;
-    if (joinWaitlistWhenFull && state.canJoinWaitlist) {
-      const waitlist = await joinWithDb(db, classId, { id: memberId }, actor);
-      return { queued: true, classId, waitlist };
-    }
-    if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);
-    const now = new Date();
-    const created = await createCourseInvoice(db, { item, memberId, channel, actor, now });
-    if (created.amount <= 0) throw ApiError.businessRule('Lớp không còn buổi để đăng ký');
-    const enrollment = await holdSeat(db, { item, memberId, invoice: created, actor });
-    await db.classWaitlist.updateMany({
-      where: { classId, memberId, status: Enums.WaitlistStatus.OFFERED, offeredUntil: { gt: now } },
-      data: { status: Enums.WaitlistStatus.ACCEPTED },
-    });
-    await writeScheduleAudit(db, actor, {
-      action: AUDIT_ACTIONS.CREATE,
-      entity: 'ClassEnrollment',
-      entityId: enrollment.id,
-      meta: { classId, memberId, invoiceId: created.id, status: enrollment.status },
-    });
-    return created;
+  await loadMember(db, memberId);
+  await promoteWaitlist(db, classId);
+  const item = await loadPaidClass(db, classId);
+  const state = await getClassActions(db, item, memberId);
+  const reused = await existingHold(db, state.enrollment, channel);
+  if (reused && state.scheduleConflict)
+    throw ApiError.conflict(
+      'Khóa học đang giữ chỗ đã bị trùng lịch. Hãy kiểm tra lại trước khi thanh toán.',
+      state.scheduleConflict,
+    );
+  if (reused) return reused;
+  if (joinWaitlistWhenFull && state.canJoinWaitlist) {
+    const waitlist = await joinWithDb(db, classId, { id: memberId }, actor);
+    return { queued: true, classId, waitlist };
+  }
+  if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);
+  const now = new Date();
+  const created = await createCourseInvoice(db, { item, memberId, channel, actor, now });
+  if (created.amount <= 0) throw ApiError.businessRule('Lớp không còn buổi để đăng ký');
+  const enrollment = await holdSeat(db, { item, memberId, invoice: created, actor });
+  await db.classWaitlist.updateMany({
+    where: { classId, memberId, status: Enums.WaitlistStatus.OFFERED, offeredUntil: { gt: now } },
+    data: { status: Enums.WaitlistStatus.ACCEPTED },
   });
+  await writeScheduleAudit(db, actor, {
+    action: AUDIT_ACTIONS.CREATE,
+    entity: 'ClassEnrollment',
+    entityId: enrollment.id,
+    meta: { classId, memberId, invoiceId: created.id, status: enrollment.status },
+  });
+  return created;
+};
+
+/** Tạo chỗ trước, dựng QR sau commit; không chờ người dùng chuyển tiền trong transaction. */
+export const createCourseOrder = async (input, actor) => {
+  const invoice = await withScheduleTransaction((db) => reserveCourseWithDb(db, input, actor));
   if (invoice.queued) return invoice;
   return invoice.channel === Enums.InvoiceChannel.ONLINE
     ? { ...invoice, paymentInstruction: await buildPaymentInstruction(invoice) }

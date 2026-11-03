@@ -1,3 +1,4 @@
+import { pendingCourseConflict } from '../course-order/course-hold-policy.service.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
@@ -147,6 +148,7 @@ export const getInvoice = async (id, actor, canReadAll) => {
     actor: collectors.find((collector) => collector.id === payment.actorId) ?? null,
   }));
   const totals = invoiceTotals(invoice);
+  const scheduleConflict = await pendingCourseConflict(prisma, invoice);
   return {
     ...invoice,
     ...totals,
@@ -159,6 +161,10 @@ export const getInvoice = async (id, actor, canReadAll) => {
     payments,
     centerInfo: { name, address, phone },
     currency,
-    paymentInstruction: await buildPaymentInstruction(invoice),
+    paymentBlockReason: scheduleConflict
+      ? 'Khóa học trùng lịch với một khóa đã đăng ký hoặc đang giữ chỗ. Vui lòng chọn lại lịch hoặc liên hệ trung tâm nếu đã chuyển tiền.'
+      : null,
+    scheduleConflict,
+    paymentInstruction: scheduleConflict ? null : await buildPaymentInstruction(invoice),
   };
 };

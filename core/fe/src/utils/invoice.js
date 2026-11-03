@@ -10,7 +10,8 @@ export const canPrintInvoice = ({ invoice, canExport, centerName }) =>
  * online đã chuyển thiếu (hội viên ra quầy nộp bù).
  */
 export const canCollectCash = ({ invoice, canRecordCash }) => {
-  if (!canRecordCash || invoice?.status !== INVOICE_STATUS.PENDING) return false;
+  if (!canRecordCash || invoice?.status !== INVOICE_STATUS.PENDING || invoice.paymentBlockReason)
+    return false;
   if (!(Number(invoice.amount) > 0)) return false;
   if (invoice.channel === INVOICE_CHANNEL.COUNTER) return true;
   return invoiceReceived(invoice) > 0;
