@@ -21,16 +21,30 @@ export function SessionFeedbackHistory() {
           dataSource={query.data?.data ?? []}
           pagination={table.paginationProps(query.data?.meta)}
           onChange={table.onTableChange}
-          scroll={{ x: 720 }}
+          scroll={{ x: 1100 }}
           columns={[
-            { title: 'Khóa học', render: (_, row) => row.session.gymClass.name },
-            { title: 'Buổi học', render: (_, row) => formatDateTime(row.session.startAt) },
+            {
+              title: 'Khóa học',
+              width: 220,
+              ellipsis: true,
+              render: (_, row) => row.session.gymClass.name,
+            },
+            {
+              title: 'Buổi học',
+              width: 160,
+              render: (_, row) => formatDateTime(row.session.startAt),
+            },
             {
               title: 'Đánh giá',
               render: (_, row) => (row.rating ? <Rate value={row.rating} disabled /> : '—'),
             },
-            { title: 'Nhận xét', dataIndex: 'note' },
-            { title: 'Người nhận xét', render: (_, row) => row.author.fullName },
+            { title: 'Nhận xét', width: 360, dataIndex: 'note' },
+            {
+              title: 'Người nhận xét',
+              width: 200,
+              ellipsis: true,
+              render: (_, row) => row.author.fullName,
+            },
           ]}
         />
       </QueryState>

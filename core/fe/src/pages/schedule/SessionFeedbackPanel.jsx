@@ -1,3 +1,4 @@
+import { SESSION_STATUS } from '@/constants/schedule';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Button, Form, Input, Modal, Rate, Space, Table } from 'antd';
@@ -55,7 +56,7 @@ export function SessionFeedbackPanel({ session }) {
     queryKey: [...QUERY_KEYS.SCHEDULE, 'session-feedback', session.id],
     queryFn: () => getSessionFeedback(session.id),
   });
-  const disabled = session.status === 'CANCELLED' || new Date(session.startAt) > new Date();
+  const disabled = session.status === SESSION_STATUS.CANCELLED || new Date(session.startAt) > new Date();
   return (
     <Space vertical className="scms-full-width">
       <h3>Nhận xét từng học viên</h3>
@@ -64,17 +65,19 @@ export function SessionFeedbackPanel({ session }) {
           rowKey={(row) => row.member.id}
           dataSource={query.data?.data.items ?? []}
           pagination={false}
-          scroll={{ x: 580 }}
+          scroll={{ x: 760 }}
           columns={[
-            { title: 'Học viên', render: (_, row) => row.member.fullName },
+            { title: 'Học viên', width: 200, render: (_, row) => row.member.fullName },
             {
               title: 'Đánh giá',
+              width: 120,
               render: (_, row) =>
                 row.feedback?.rating ? `${row.feedback.rating}/5` : 'Chưa đánh giá',
             },
-            { title: 'Ghi chú', render: (_, row) => row.feedback?.note || '—' },
+            { title: 'Ghi chú', width: 320, render: (_, row) => row.feedback?.note || '—' },
             {
               title: 'Thao tác',
+              width: 120,
               render: (_, row) => (
                 <Button disabled={disabled} onClick={() => setEditing(row)}>
                   Nhận xét

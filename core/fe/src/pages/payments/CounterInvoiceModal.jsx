@@ -1,3 +1,4 @@
+import { INVOICE_CHANNEL } from '@/constants';
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Alert, App, Descriptions, Form, Modal, Select } from 'antd';
@@ -34,7 +35,7 @@ export function CounterInvoiceModal({ open, onClose, onCreated, initialMember })
     mutationFn: (values) =>
       createCourseOrder(values.classId, {
         memberId,
-        channel: 'COUNTER',
+        channel: INVOICE_CHANNEL.COUNTER,
         joinWaitlistWhenFull: true,
       }),
     onSuccess: ({ data, message: text }) => {
