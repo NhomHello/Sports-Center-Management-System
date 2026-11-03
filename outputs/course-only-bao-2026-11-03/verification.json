@@ -1,0 +1,27 @@
+{
+  "branch": "sprint-4/be-bao",
+  "baselineMain": "66af2b2",
+  "author": "ptbao29 <phamthaibao29072004@gmail.com>",
+  "businessDecisions": {
+    "pricing": "full course prorated by remaining sessions",
+    "feedbackVisibility": "own student plus assigned coach/authorized manager"
+  },
+  "checks": {
+    "backendTestsPassed": 229,
+    "frontendTestsPassed": 162,
+    "e2e": "course-only.spec.mjs desktop passed",
+    "lint": "passed",
+    "build": "passed",
+    "freshDatabaseMigrations": 17
+  },
+  "concurrency": {
+    "parallelRepeatedCheckout": 6,
+    "parallelCompetingBuyers": 16,
+    "remainingSeats": 2,
+    "successfulHolds": 2,
+    "queued": 14,
+    "duplicateWebhookPayments": 1
+  },
+  "historicalData": "preserved; retired public membership endpoints return 410",
+  "newMigration": "20261103044229_course_session_descriptions_and_feedback"
+}
