@@ -21,6 +21,52 @@
   color: var(--scms-muted);
   font-size: 12px;
 }
+.scms-attendance-modal .ant-modal-body {
+  min-width: 0;
+}
+.scms-attendance-unlock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--scms-surface-soft);
+  border: 1px solid var(--scms-border);
+  border-radius: var(--scms-card-radius);
+}
+.scms-attendance-unlock__field {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.scms-attendance-unlock__button {
+  margin-top: 0;
+}
+.scms-attendance-form,
+.scms-attendance-table {
+  min-width: 0;
+}
+.scms-attendance-table .ant-table-cell {
+  overflow-wrap: anywhere;
+}
+.scms-attendance-member,
+.scms-attendance-member .ant-btn {
+  max-width: 100%;
+}
+.scms-attendance-member .ant-btn {
+  padding-inline: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+@media (max-width: 480px) {
+  .scms-attendance-unlock {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scms-attendance-unlock__button {
+    width: 100%;
+  }
+}
 .scms-calendar--compact .scms-calendar-event.ant-card > .ant-card-body {
   padding: 10px 8px;
 }

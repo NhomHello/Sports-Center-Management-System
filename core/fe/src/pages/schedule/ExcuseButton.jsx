@@ -1,3 +1,4 @@
+import { CloseCircleOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Button, Modal, Tag, Typography } from 'antd';
@@ -71,14 +72,10 @@ function ExcusedStatus({ canCancel, open, onOpen, onClose, mutation }) {
       <Tag color="blue">Xin nghỉ</Tag>
       {canCancel && (
         <>
-          <Button type="link" danger onClick={onOpen}>
+          <Button danger onClick={onOpen}>
             Hủy báo nghỉ
           </Button>
-          <CancelExcuseConfirmation
-            open={open}
-            close={onClose}
-            mutation={mutation}
-          />
+          <CancelExcuseConfirmation open={open} close={onClose} mutation={mutation} />
         </>
       )}
     </>
