@@ -11,30 +11,30 @@ const buy = async (channel = 'ONLINE') => {
 beforeAll(async () => { f = await createReconciliationFixture(); });
 afterAll(async () => cleanupReconciliationFixture(f));
 describe('TC-COURSE-SEPAY: giữ giao thức SePay cho bán khóa học', () => {
-  it('01: đúng tiền xác nhận COURSE, không tạo membership và không tính giá từ client', async () => {
+  it('TC-COURSE-SEPAY-01: đúng tiền xác nhận COURSE, không tạo membership và không tính giá từ client', async () => {
     const invoice = await buy(); expect(invoice.kind).toBe('COURSE');
     expect((await sendTransfer(f, invoice)).outcome).toBe('PAID');
     expect(await prisma.classEnrollment.count({ where: { invoiceId: invoice.id, status: 'BOOKED' } })).toBe(1);
     expect(await prisma.membership.count({ where: { userId: f.member.id } })).toBe(0);
   });
-  it('02: SePay gửi lặp id chỉ ghi một khoản thu', async () => {
+  it('TC-COURSE-SEPAY-02: SePay gửi lặp id chỉ ghi một khoản thu', async () => {
     const invoice = await buy(); await sendTransfer(f, invoice);
     const previous = f.sepayIds.at(-1);
     const repeated = await sendTransfer(f, invoice, { id: previous }); expect(repeated.status).toBe('DUPLICATE');
     expect(await prisma.payment.count({ where: { invoiceId: invoice.id } })).toBe(1);
   });
-  it('03: code rỗng vẫn khớp từ nội dung chuyển khoản', async () => {
+  it('TC-COURSE-SEPAY-03: code rỗng vẫn khớp từ nội dung chuyển khoản', async () => {
     const invoice = await buy(); const res = await sendTransfer(f, invoice, { code: null, content: `Thanh toan ${invoice.code}` });
     expect(res.outcome).toBe('PAID');
   });
-  it('04: thiếu/thừa mở đối soát, không đăng ký chính thức trước khi đủ tiền', async () => {
+  it('TC-COURSE-SEPAY-04: thiếu/thừa mở đối soát, không đăng ký chính thức trước khi đủ tiền', async () => {
     const invoice = await buy(); expect((await sendTransfer(f, invoice, { transferAmount: 100000 })).outcome).toBe('UNDERPAID');
     expect(await prisma.classEnrollment.count({ where: { invoiceId: invoice.id, status: 'BOOKED' } })).toBe(0);
     expect((await sendTransfer(f, invoice, { transferAmount: 200000 })).outcome).toBe('PAID');
     const over = await buy(); expect((await sendTransfer(f, over, { transferAmount: 350000 })).outcome).toBe('OVERPAID');
     expect((await prisma.invoice.findUnique({ where: { id: over.id } })).status).toBe('PENDING');
   });
-  it('05: không dùng webhook cho hóa đơn tại quầy; khóa API sai bị chặn', async () => {
+  it('TC-COURSE-SEPAY-05: không dùng webhook cho hóa đơn tại quầy; khóa API sai bị chặn', async () => {
     const invoice = await buy('COUNTER'); expect((await sendTransfer(f, invoice)).reason).toBe('NO_MATCH');
     const res = await api.post(apiPath('/payments/sepay/webhook')).set({ Authorization: 'Apikey invalid-test-secret' }).send({ id: 'invalid', transferType: 'in', transferAmount: 1 });
     expect(res.status).toBe(401);

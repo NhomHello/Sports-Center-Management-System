@@ -104,7 +104,7 @@ export const createCourseOrder = async (
     const reused = await existingHold(db, state.enrollment, channel);
     if (reused) return reused;
     if (joinWaitlistWhenFull && state.canJoinWaitlist) {
-      const waitlist = await joinWithDb(db, classId, { id: memberId });
+      const waitlist = await joinWithDb(db, classId, { id: memberId }, actor);
       return { queued: true, classId, waitlist };
     }
     if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);

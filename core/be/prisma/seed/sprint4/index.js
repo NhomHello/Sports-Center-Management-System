@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { prisma } from '../../../src/config/db.js';
 import { env } from '../../../src/config/env.js';
 import { logger } from '../../../src/config/logger.js';
+import { seedOpenCourse } from './open-course.demo.js';
 import { seedBase } from '../index.js';
 import { seedSprint4Catalog } from './catalog.demo.js';
 import { seedSprint4Courses } from './courses.demo.js';
@@ -15,6 +16,7 @@ export const seedSprint4 = async () => {
   const catalog = await seedSprint4Catalog();
   const classes = await seedSprint4Courses(catalog);
   await seedSprint4Revenue(catalog, classes);
+  await seedOpenCourse(catalog);
   logger.info({ classes: classes.map((c) => c.name), accounts: ['s4.coach@scms.test', 's4.member1@scms.test', 's4.member2@scms.test', 's4.member3@scms.test'] }, 'Seed Sprint 4 hoàn tất; mật khẩu lấy từ SEED_MOCK_PASSWORD');
 };
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

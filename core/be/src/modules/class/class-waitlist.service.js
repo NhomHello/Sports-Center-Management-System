@@ -67,7 +67,7 @@ export const promoteWaitlist = async (db, classId, now = new Date()) => {
 };
 
 /** Chỉ vào hàng chờ khi lớp đã đầy (bao gồm các chỗ đang giữ). */
-export const joinWithDb = async (db, classId, actor) => {
+export const joinWithDb = async (db, classId, actor, performedBy = actor) => {
   await promoteWaitlist(db, classId);
   const item = await db.gymClass.findUnique({ where: { id: classId }, include: CLASS_INCLUDE });
   if (!item) throw ApiError.notFound('Không tìm thấy lớp');
@@ -84,7 +84,7 @@ export const joinWithDb = async (db, classId, actor) => {
     create: { classId, memberId: actor.id },
     update: { status: W.WAITING, joinedAt: new Date(), offeredUntil: null },
   });
-  await writeScheduleAudit(db, actor, {
+  await writeScheduleAudit(db, performedBy, {
     action: AUDIT_ACTIONS.CREATE,
     entity: 'ClassWaitlist',
     entityId: row.id,

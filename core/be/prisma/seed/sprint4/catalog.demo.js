@@ -24,7 +24,5 @@ export const seedSprint4Catalog = async () => {
     birthDate: new Date('2000-01-01'), gender: 'UNDISCLOSED', heightCm: 165 + i, weightKg: 60 + i,
     goals: 'Nâng sức bền và vận động đều đặn', level: 'BEGINNER', healthNotes: 'Dữ liệu minh hoạ, không phải hồ sơ sức khoẻ thực.',
     emergencyName: 'Người liên hệ demo', emergencyPhone: '0900000001', shareWithCoach: i !== 2 } });
-  const plan = await prisma.membershipPlan.upsert({ where: { code: 'S4_DEMO_30' }, update: {}, create: {
-    code: 'S4_DEMO_30', name: 'S4 Demo · Tự tập 30 ngày', durationDays: 30, price: 450000 } });
-  return { coach, members, room, subject, plan };
+  return { coach, members, room, subject };
 };
