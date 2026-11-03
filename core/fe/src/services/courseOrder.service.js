@@ -5,10 +5,10 @@ import { http } from './http';
  */
 export const createCourseOrder = (classId, payloadOrMemberId) => {
   const payload =
-    typeof payloadOrMemberId === 'string'
+    typeof payloadOrMemberId === 'string' || typeof payloadOrMemberId === 'number'
       ? payloadOrMemberId
         ? { memberId: payloadOrMemberId }
         : {}
       : (payloadOrMemberId ?? {});
-  return http.post(`/classes/${classId}/orders`, payload);
+  return http.post(`/classes/${classId}/orders`, { joinWaitlistWhenFull: true, ...payload });
 };

@@ -1,123 +1,51 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Alert, App, Button, Card, Flex, Select } from 'antd';
-import { PERMISSIONS } from '@scms/shared';
+import { Alert, App, Button, Card, Select, Space } from 'antd';
+import { PERMISSIONS as P } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
 import { listMembers } from '@/services/member.service';
-import { listRoomTypes } from '@/services/schedule.service';
 import { checkIn } from '@/services/sprint3.service';
-import { formatDateTime } from '@/utils/format';
-import { SPACING } from '@/theme/theme';
-
-const memberOptions = (members) =>
-  members.map((member) => ({
-    value: member.id,
-    label: `${member.fullName} · ${member.phone ?? ''}`,
-  }));
-
-const areaOptions = (areas) =>
-  areas
-    .filter((area) => area.isActive && area.isSelfTrainingArea)
-    .map((area) => ({ value: area.id, label: area.name }));
-
-function CheckInFields({ query, areas, setSearch, setMemberId, areaId, setAreaId }) {
-  return (
-    <>
-      <Select
-        aria-label="Hội viên check-in"
-        placeholder="Tìm theo tên hoặc số điện thoại"
-        showSearch
-        filterOption={false}
-        onSearch={setSearch}
-        onChange={setMemberId}
-        loading={query.isFetching}
-        options={memberOptions(query.data?.data ?? [])}
-        style={{ maxWidth: '100%' }}
-      />
-      <Select
-        aria-label="Khu tự tập"
-        placeholder="Khu vực (tuỳ chọn)"
-        allowClear
-        style={{ minWidth: 180, maxWidth: '100%' }}
-        value={areaId}
-        onChange={(id) => setAreaId(id ?? null)}
-        options={areaOptions(areas.data?.data ?? [])}
-      />
-    </>
-  );
-}
-
-function CheckInFeedback({ mutation, query }) {
-  return (
-    <>
-      {mutation.isError && (
-        <Alert
-          showIcon
-          type="error"
-          title="Không thể check-in"
-          description={mutation.error.message}
-        />
-      )}
-      {query.isError && <Alert type="error" title={query.error.message} />}
-      {mutation.isSuccess && (
-        <Alert
-          showIcon
-          type={mutation.data.data.warning ? 'warning' : 'success'}
-          title={mutation.data.data.warning || 'Đã ghi nhận check-in'}
-          description={formatDateTime(mutation.data.data.createdAt)}
-        />
-      )}
-    </>
-  );
-}
-
-/** Check-in không tự kích hoạt gói; khung giờ / khu vực của gói và cảnh báo do backend kiểm tra. */
+/** Tiếp nhận tại quầy, không tạo quyền học hoặc yêu cầu mua gói tự tập. */
 export function CheckInPanel() {
   const { can } = usePermission();
   const { message } = App.useApp();
   const [search, setSearch] = useState('');
   const [memberId, setMemberId] = useState(null);
-  const [areaId, setAreaId] = useState(null);
-  const enabled = can(PERMISSIONS.ATTENDANCE_CHECK_IN);
   const query = useQuery({
-    queryKey: ['checkin-members', search],
+    queryKey: ['checkin-course-members', search],
     queryFn: () => listMembers({ search }),
-    enabled,
+    enabled: can(P.ATTENDANCE_CHECK_IN),
   });
-  const areas = useQuery({ queryKey: ['room-types'], queryFn: listRoomTypes, enabled });
-  const mutation = useMutation({
-    mutationFn: () => checkIn(memberId, areaId),
-    onError: (error) => message.error(error.message),
+  const save = useMutation({
+    mutationFn: () => checkIn(memberId),
+    onSuccess: ({ data }) => message.success(data.warning || 'Đã ghi nhận check-in'),
   });
-  if (!enabled) return null;
+  if (!can(P.ATTENDANCE_CHECK_IN)) return null;
   return (
-    <Card title="Check-in tại quầy">
-      <Flex wrap align="center" gap={SPACING.SM}>
-        <CheckInFields
-          query={query}
-          areas={areas}
-          setSearch={setSearch}
-          memberId={memberId}
-          setMemberId={(id) => {
-            setMemberId(id);
-            mutation.reset();
-          }}
-          areaId={areaId}
-          setAreaId={(id) => {
-            setAreaId(id);
-            mutation.reset();
-          }}
+    <Card title="Check-in hội viên">
+      <Space wrap>
+        <Select
+          aria-label="Hội viên check-in"
+          showSearch={{ filterOption: false, onSearch: setSearch }}
+          style={{ width: 300, maxWidth: '100%' }}
+          onChange={setMemberId}
+          loading={query.isFetching}
+          placeholder="Tìm hội viên theo tên, SĐT hoặc email"
+          options={(query.data?.data ?? []).map((m) => ({
+            value: m.id,
+            label: `${m.fullName} · ${m.phone || m.email || ''}`,
+          }))}
         />
         <Button
           type="primary"
           disabled={!memberId}
-          loading={mutation.isPending}
-          onClick={() => mutation.mutate()}
+          loading={save.isPending}
+          onClick={() => save.mutate()}
         >
-          Xác nhận đến trung tâm
+          Xác nhận check-in
         </Button>
-      </Flex>
-      <CheckInFeedback mutation={mutation} query={query} />
+        {save.isError && <Alert type="error" title={save.error.message} />}
+      </Space>
     </Card>
   );
 }

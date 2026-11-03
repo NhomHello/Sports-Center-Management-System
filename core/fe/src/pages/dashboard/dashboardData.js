@@ -23,11 +23,11 @@ const SHORTCUT_ORDER = [
 ];
 const SHORTCUT_DESCRIPTIONS = Object.freeze({
   [ROUTES.SCHEDULE]: 'Khám phá lớp học, xem lịch và theo dõi các buổi tập.',
-  [ROUTES.MEMBERS]: 'Tra cứu hồ sơ và thông tin gói tập của hội viên.',
+  [ROUTES.MEMBERS]: 'Tra cứu hồ sơ và đăng ký khóa học của học viên.',
   [ROUTES.MEMBERSHIP_PLANS]: 'Tìm hiểu thời hạn, quyền lợi và giá của từng gói tập.',
   [ROUTES.PAYMENTS]: 'Xem hóa đơn, trạng thái thanh toán và lịch sử giao dịch.',
   [ROUTES.NOTIFICATIONS]: 'Theo dõi thay đổi lớp học và cập nhật từ trung tâm.',
-  [ROUTES.PROFILE]: 'Xem thông tin cá nhân và gói tập của bạn.',
+  [ROUTES.PROFILE]: 'Xem thông tin cá nhân và khóa học của bạn.',
   [ROUTES.SYSTEM_USERS]: 'Tra cứu tài khoản và thông tin truy cập hệ thống.',
   [ROUTES.SYSTEM_ROLES]: 'Xem vai trò và phạm vi quyền trong hệ thống.',
   [ROUTES.SYSTEM_SETTINGS]: 'Xem thông tin trung tâm và các thiết lập vận hành.',

@@ -1,3 +1,4 @@
+import { SessionFeedbackPanel } from './SessionFeedbackPanel';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, Button, Form, Input, Modal, Space } from 'antd';
@@ -22,8 +23,7 @@ function useAttendanceClock() {
 
 function attendanceLock(session, now, unlockedUntil) {
   const isUnlocked = new Date(unlockedUntil ?? 0).getTime() > now;
-  if (session.status === 'CANCELLED')
-    return { disabled: true, message: 'Buổi học đã bị hủy.' };
+  if (session.status === 'CANCELLED') return { disabled: true, message: 'Buổi học đã bị hủy.' };
   if (new Date(session.startAt).getTime() > now)
     return { disabled: true, message: 'Chưa đến giờ bắt đầu điểm danh.' };
   if (new Date(session.endAt).getTime() <= now && !isUnlocked)
@@ -72,9 +72,7 @@ export function AttendanceModal({ session, onClose }) {
       width={760}
     >
       <QueryState query={query}>
-        {disabled && (
-          <Alert showIcon type="warning" title={disabledMessage} />
-        )}
+        {disabled && <Alert showIcon type="warning" title={disabledMessage} />}
         {save.isError && <Alert showIcon type="error" title={save.error.message} />}
         {data && (
           <Form
@@ -87,6 +85,7 @@ export function AttendanceModal({ session, onClose }) {
             <AttendanceTable data={data} />
           </Form>
         )}
+        {data && <SessionFeedbackPanel session={currentSession} />}
         {can(P.ATTENDANCE_MANAGE) && (
           <Form form={unlockForm} onFinish={unlock.mutate}>
             <Space>

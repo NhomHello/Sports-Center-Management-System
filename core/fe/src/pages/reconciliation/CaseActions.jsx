@@ -22,7 +22,7 @@ function PendingRefundNotice({ refund }) {
         <>
           Chuyển tiền thủ công cho hội viên rồi nhập mã tham chiếu tại{' '}
           <Link to={ROUTES.PAYMENTS}>Hóa đơn → Theo dõi hoàn tiền</Link>. Khoản này không được dùng
-          để gán hay gia hạn nữa.
+          để gán hay mua khóa học tiếp theo nữa.
         </>
       }
     />
@@ -36,12 +36,13 @@ function AcceptOverpaid({ item, pending, disabled, onAction }) {
       <Divider titlePlacement="start">Chấp nhận hóa đơn chuyển thừa</Divider>
       <Typography.Paragraph type="secondary">
         Hội viên chuyển {formatCurrency(item.invoiceReceived)} cho hóa đơn{' '}
-        {formatCurrency(item.invoice?.amount)}. Chấp nhận sẽ kích hoạt gói; phần thừa{' '}
+        {formatCurrency(item.invoice?.amount)}. Chấp nhận sẽ xác nhận đăng ký khóa học; phần thừa{' '}
         {formatCurrency(item.invoiceReceived - (item.invoice?.amount ?? 0))} xử lý tiếp bằng hoàn
-        tiền hoặc gia hạn. Nếu hội viên không muốn mua gói, dùng "Hoàn tiền" để hoàn toàn bộ.
+        tiền hoặc mua khóa học tiếp theo. Nếu hội viên không muốn mua khóa học, dùng "Hoàn tiền" để
+        hoàn toàn bộ.
       </Typography.Paragraph>
       <Popconfirm
-        title="Chấp nhận hóa đơn và kích hoạt gói?"
+        title="Chấp nhận hóa đơn và xác nhận đăng ký khóa học?"
         okText="Chấp nhận"
         cancelText="Không"
         disabled={disabled}
@@ -55,7 +56,7 @@ function AcceptOverpaid({ item, pending, disabled, onAction }) {
   );
 }
 
-/** Gán / xác nhận / gia hạn / từ chối: các cách dùng khoản tiền của phiếu. */
+/** Gán / xác nhận / mua khóa học tiếp theo / từ chối: các cách dùng khoản tiền của phiếu. */
 function SettleForms({ item, allowed, mutation }) {
   const pending = mutation.isPending;
   const blocked = allowed.needsContact;
@@ -119,7 +120,7 @@ export function CaseActions({ item, mutation }) {
         <Alert
           showIcon
           type="warning"
-          title="Ghi lại ít nhất một lần liên hệ hội viên ở trên trước khi xác nhận, từ chối, gia hạn hoặc hoàn tiền."
+          title="Ghi lại ít nhất một lần liên hệ hội viên ở trên trước khi xác nhận, từ chối, mua khóa học tiếp theo hoặc hoàn tiền."
         />
       )}
       <SettleForms item={item} allowed={allowed} mutation={mutation} />

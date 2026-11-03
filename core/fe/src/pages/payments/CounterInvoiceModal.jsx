@@ -1,165 +1,124 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Alert, Descriptions, Empty, Form, Modal, Select } from 'antd';
 import { useState } from 'react';
-import { QUERY_KEYS, TABLE, USER_STATUS } from '@/constants';
-import { useAuth } from '@/hooks/useAuth';
-import * as memberService from '@/services/member.service';
-import * as paymentService from '@/services/payment.service';
-import {
-  getApiAvailabilityNotice,
-  getApiOperationErrorMessage,
-  shouldRetryApiQuery,
-} from '@/utils/apiAvailability';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Alert, App, Descriptions, Form, Modal, Select } from 'antd';
+import { listMembers } from '@/services/member.service';
+import { listClasses } from '@/services/schedule.service';
+import { createCourseOrder } from '@/services/courseOrder.service';
 import { formatCurrency } from '@/utils/format';
-import { MembershipEffectPreview } from './MembershipEffectPreview';
-
-function QueryError({ query, resource }) {
-  if (!query.isError) return null;
-  const notice = getApiAvailabilityNotice(query.error, resource);
-  return (
-    <Alert showIcon type={notice.type} title={notice.message} description={notice.description} />
-  );
-}
-
-function CounterInvoiceContent({
-  form,
-  mutation,
-  membersQuery,
-  plansQuery,
-  plans,
-  plan,
-  memberId,
-  onSearch,
-}) {
-  return (
-    <>
-      <Alert
-        type="info"
-        showIcon
-        title="Chọn hội viên và gói tập để tạo hóa đơn."
-        style={{ marginBlock: 16 }}
-      />
-      <QueryError query={membersQuery} resource="Danh sách hội viên" />
-      <QueryError query={plansQuery} resource="Danh mục gói đang bán" />
-      {mutation.isError && (
-        <Alert
-          showIcon
-          type="error"
-          title={getApiOperationErrorMessage(mutation.error, 'tạo hóa đơn')}
-        />
-      )}
-      <Form form={form} layout="vertical" onFinish={mutation.mutate} disabled={mutation.isPending}>
-        <Form.Item
-          name="memberId"
-          label="Hội viên"
-          rules={[{ required: true, message: 'Chọn hội viên nhận hóa đơn' }]}
-        >
-          <Select
-            showSearch
-            filterOption={false}
-            onSearch={onSearch}
-            loading={membersQuery.isFetching}
-            placeholder="Tìm theo tên, email hoặc SĐT"
-            options={(membersQuery.data?.data ?? []).map((member) => ({
-              value: member.id,
-              label: `${member.fullName} · ${member.email || member.phone || member.id}`,
-              disabled: member.status !== USER_STATUS.ACTIVE,
-            }))}
-          />
-        </Form.Item>
-        <Form.Item
-          name="planId"
-          label="Gói đang bán"
-          rules={[{ required: true, message: 'Chọn gói tập' }]}
-        >
-          <Select
-            loading={plansQuery.isPending}
-            options={plans.map((item) => ({ value: item.id, label: item.name }))}
-            placeholder="Chọn gói tập"
-          />
-        </Form.Item>
-        {
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label="Giá gói (không thể sửa)">
-              {plan ? formatCurrency(plan.price) : 'Chưa chọn gói'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Thời hạn">
-              {plan ? `${plan.durationDays} ngày` : 'Chưa chọn gói'}
-            </Descriptions.Item>
-          </Descriptions>
-        }
-        <MembershipEffectPreview memberId={memberId} durationDays={plan?.durationDays} />
-        {plansQuery.isSuccess && plans.length === 0 && (
-          <Empty description="Chưa có gói đang bán trong danh mục trung tâm." />
-        )}
-      </Form>
-    </>
-  );
-}
-
-/** S16: chọn hội viên/gói từ API, giá chỉ đọc; không phát sinh membership khi PENDING. */
-export function CounterInvoiceModal({ open, onClose, onCreated }) {
-  const { user } = useAuth();
+const OPTION_PAGE_SIZE = 100;
+/** Bán khóa học tại quầy: server chốt giá trọn khóa theo số buổi còn lại và giữ chỗ có hạn. */
+export function CounterInvoiceModal({ open, onClose, onCreated, initialMember }) {
   const [form] = Form.useForm();
+  const { message } = App.useApp();
   const [search, setSearch] = useState('');
-  const planId = Form.useWatch('planId', form);
-  const memberId = Form.useWatch('memberId', form);
-  const membersQuery = useQuery({
-    queryKey: [...QUERY_KEYS.MEMBERS, 'counter-options', user?.id, search],
+  const memberId = Form.useWatch('memberId', form) ?? initialMember?.id;
+  const classId = Form.useWatch('classId', form);
+  const members = useQuery({
+    queryKey: ['counter-course-members', search],
+    queryFn: () => listMembers({ search }),
+    enabled: open && !initialMember,
+  });
+  const courses = useQuery({
+    queryKey: ['counter-course-options', memberId],
     queryFn: () =>
-      memberService.listMembers({
-        search: search || undefined,
-        page: TABLE.DEFAULT_PAGE,
-        pageSize: TABLE.DEFAULT_PAGE_SIZE,
+      listClasses({
+        scope: 'open',
+        paidOnly: true,
+        pageSize: OPTION_PAGE_SIZE,
+        ...(memberId && { memberId }),
       }),
     enabled: open,
-    retry: shouldRetryApiQuery,
   });
-  const plansQuery = useQuery({
-    queryKey: [...QUERY_KEYS.MEMBERSHIP_PLANS, user?.id],
-    queryFn: paymentService.listSellingPlans,
-    enabled: open,
-    retry: shouldRetryApiQuery,
-  });
-  const plans = plansQuery.data?.data ?? [];
-  const plan = plans.find((item) => item.id === planId);
-  const mutation = useMutation({
-    mutationFn: paymentService.createCounterInvoice,
-    onSuccess: ({ data }) => {
+  const item = courses.data?.data.find((c) => c.id === classId);
+  const save = useMutation({
+    mutationFn: (values) =>
+      createCourseOrder(values.classId, {
+        memberId,
+        channel: 'COUNTER',
+        joinWaitlistWhenFull: true,
+      }),
+    onSuccess: ({ data, message: text }) => {
       form.resetFields();
-      onCreated(data.id);
+      if (data.queued) {
+        message.info(text);
+        onClose();
+      } else onCreated(data.id);
     },
-    onError: (error) => form.setFields(error.toFormFields()),
   });
   return (
     <Modal
       open={open}
-      centered
-      forceRender
-      title="Tạo hóa đơn tại quầy"
-      okText="Tạo hóa đơn"
-      cancelText="Hủy"
-      confirmLoading={mutation.isPending}
-      okButtonProps={{ disabled: !plan || !memberId || membersQuery.isError || plansQuery.isError }}
+      title="Đăng ký khóa học tại quầy"
+      onCancel={onClose}
       onOk={() => form.submit()}
-      onCancel={() => {
-        if (!mutation.isPending) {
-          form.resetFields();
-          mutation.reset();
-          onClose();
-        }
-      }}
+      okText="Tạo hóa đơn / vào hàng chờ"
+      cancelText="Đóng"
+      confirmLoading={save.isPending}
+      okButtonProps={{ disabled: !memberId || !item }}
     >
-      <CounterInvoiceContent
-        form={form}
-        mutation={mutation}
-        membersQuery={membersQuery}
-        plansQuery={plansQuery}
-        plans={plans}
-        plan={plan}
-        memberId={memberId}
-        onSearch={setSearch}
+      <Alert
+        type="info"
+        showIcon
+        title="Giá trọn khóa được chia theo số buổi còn lại. Khóa đầy sẽ vào hàng chờ, chưa tạo hóa đơn."
       />
+      {[members, courses, save]
+        .filter((q) => q.isError)
+        .map((q) => (
+          <Alert type="error" key={q.error.message} title={q.error.message} />
+        ))}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={save.mutate}
+        initialValues={{ memberId: initialMember?.id }}
+      >
+        <MemberField initialMember={initialMember} members={members} setSearch={setSearch} />
+        <Form.Item name="classId" label="Khóa học" rules={[{ required: true }]}>
+          <Select
+            showSearch={{ optionFilterProp: 'label' }}
+            options={(courses.data?.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
+            loading={courses.isFetching}
+          />
+        </Form.Item>
+      </Form>
+      <CoursePriceSummary item={item} />
     </Modal>
+  );
+}
+
+function CoursePriceSummary({ item }) {
+  if (!item) return null;
+  return (
+    <Descriptions
+      bordered
+      column={1}
+      items={[
+        { key: 'price', label: 'Giá trọn khóa', children: formatCurrency(item.price) },
+        {
+          key: 'sessions',
+          label: 'Số buổi còn lại / tổng',
+          children: `${item.remainingSessions}/${item.totalSessions}`,
+        },
+        { key: 'due', label: 'Học phí phải trả', children: formatCurrency(item.priceForRemaining) },
+        { key: 'seats', label: 'Chỗ còn lại', children: item.seatsRemaining },
+      ]}
+    />
+  );
+}
+
+function MemberField({ initialMember, members, setSearch }) {
+  return (
+    <Form.Item name="memberId" label="Hội viên" rules={[{ required: !initialMember }]}>
+      <Select
+        disabled={Boolean(initialMember)}
+        showSearch={{ filterOption: false, onSearch: setSearch }}
+        placeholder="Tìm hội viên"
+        loading={members.isFetching}
+        options={(initialMember ? [initialMember] : (members.data?.data ?? [])).map((m) => ({
+          value: m.id,
+          label: `${m.fullName} · ${m.phone || m.email || ''}`,
+        }))}
+      />
+    </Form.Item>
   );
 }

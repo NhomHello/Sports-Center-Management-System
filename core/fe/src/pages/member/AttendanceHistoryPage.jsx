@@ -1,3 +1,4 @@
+import { SessionFeedbackHistory } from './SessionFeedbackHistory';
 import { useQuery } from '@tanstack/react-query';
 import { Card, Typography } from 'antd';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -64,6 +65,7 @@ export default function AttendanceHistoryPage() {
           )}
         </QueryState>
       </Card>
+      <SessionFeedbackHistory />
     </>
   );
 }

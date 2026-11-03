@@ -107,7 +107,7 @@ function ClassCapacityFields() {
           />
         </Form.Item>
       </div>
-      <Form.Item name="description" label="Mô tả">
+      <Form.Item name="description" label="Mô tả khóa học">
         <Input.TextArea
           maxLength={1000}
           rows={3}

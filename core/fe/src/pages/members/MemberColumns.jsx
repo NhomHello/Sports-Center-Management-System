@@ -1,8 +1,5 @@
 import { EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Avatar, Button, Space, Typography, Tooltip, Tag } from 'antd';
-import { StatusTag } from '@/components/common/StatusTag';
-import { MEMBERSHIP_STATUS_META } from '@/constants';
-import { formatDate } from '@/utils/format';
 
 const MEMBER_COLUMNS = [
   {
@@ -45,56 +42,11 @@ const MEMBER_COLUMNS = [
     ),
   },
   {
-    // Gia hạn cộng dồn vào cùng một gói hội viên nên đây là gói của lần mua gần nhất.
-    title: 'GÓI MUA GẦN NHẤT',
-    key: 'membership',
-    width: 180,
-    render: (_, member) => {
-      const planName = member.currentMembership?.plan?.name;
-      return planName ? (
-        <Tag
-          color="blue"
-          style={{
-            borderRadius: 6,
-            padding: '4px 12px',
-            fontSize: 13,
-            fontWeight: 500,
-            border: 'none',
-            background: '#e6f4ff',
-            color: '#1677ff',
-          }}
-        >
-          {planName}
-        </Tag>
-      ) : (
-        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-          Chưa đăng ký
-        </Typography.Text>
-      );
-    },
+    title: 'KHÓA GẦN NHẤT',
+    key: 'course',
+    render: (_, member) => member.latestCourse?.name || 'Chưa đăng ký',
   },
-  {
-    title: 'HIỆU LỰC',
-    key: 'status',
-    width: 160,
-    render: (_, member) => {
-      const status = member.currentMembership?.status;
-      return status ? (
-        <Space orientation="vertical" size={2}>
-          {member.currentMembership.isFrozen ? (
-            <Tag color="orange">Đang bảo lưu</Tag>
-          ) : (
-            <StatusTag value={status} meta={MEMBERSHIP_STATUS_META} />
-          )}
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            Tới: {formatDate(member.currentMembership?.endDate)}
-          </Typography.Text>
-        </Space>
-      ) : (
-        <Typography.Text type="secondary">--</Typography.Text>
-      );
-    },
-  },
+  { title: 'SỐ KHÓA ĐÃ ĐĂNG KÝ', dataIndex: 'activeCourseCount', render: (value) => value ?? 0 },
 ];
 
 /** Cột CRM dùng chung, giữ các hành động theo permission. */
@@ -128,7 +80,7 @@ export const getMemberColumns = (canManage, canUpdate, onPurchase, onViewDetail)
               onPurchase(member);
             }}
           >
-            {member.currentMembership?.status === 'ACTIVE' ? 'Gia hạn' : 'Mua gói'}
+            Đăng ký khóa học
           </Button>
         )}
       </Space>

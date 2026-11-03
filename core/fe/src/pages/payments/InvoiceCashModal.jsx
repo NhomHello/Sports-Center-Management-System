@@ -8,8 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import * as paymentService from '@/services/payment.service';
 import { canCollectCash, cashDue, invoiceReceived } from '@/utils/invoice';
-import { formatCurrency, formatDate } from '@/utils/format';
-import { MembershipEffectPreview } from './MembershipEffectPreview';
+import { formatCurrency } from '@/utils/format';
 import {
   getApiAvailabilityNotice,
   getApiOperationErrorMessage,
@@ -23,7 +22,7 @@ function CashInvoiceSummary({ invoice }) {
       <Descriptions column={1} bordered>
         <Descriptions.Item label="Mã hóa đơn">{invoice.code}</Descriptions.Item>
         <Descriptions.Item label="Hội viên">{invoice.user?.fullName}</Descriptions.Item>
-        <Descriptions.Item label="Gói tập">
+        <Descriptions.Item label="Khóa học">
           {invoice.planName ?? invoice.plan?.name}
         </Descriptions.Item>
         {topup && (
@@ -38,10 +37,6 @@ function CashInvoiceSummary({ invoice }) {
           </Typography.Text>
         </Descriptions.Item>
       </Descriptions>
-      <MembershipEffectPreview
-        memberId={invoice.userId}
-        durationDays={invoice.durationDays ?? invoice.plan?.durationDays}
-      />
     </>
   );
 }
@@ -68,8 +63,8 @@ function CashPaymentContent({ query, mutation, canCollect }) {
       <CashInvoiceSummary invoice={invoice} />
       <ApplyCreditButton invoice={invoice} onApplied={() => query.refetch()} />
       <Typography.Paragraph type="secondary">
-        Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Gói tập chỉ được cập nhật sau khi hệ thống ghi
-        nhận thanh toán thành công.
+        Xác nhận khi đã nhận đủ số tiền trên hóa đơn. Đăng ký khóa học chỉ được xác nhận sau khi hệ
+        thống ghi nhận thanh toán thành công.
       </Typography.Paragraph>
       {!canCollect && (
         <Alert
@@ -101,11 +96,7 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
     onSuccess: ({ data }) => {
       // Đóng modal trước rồi mới làm mới dữ liệu: nếu làm mới trước, hóa đơn PAID khiến modal
       // đang đóng chớp lên cảnh báo "không cho phép thu tiền".
-      message.success(
-        data.membership
-          ? `Đã thu tiền. Gói tập hiệu lực đến ${formatDate(data.membership.endDate)}.`
-          : 'Đã thu tiền.',
-      );
+      message.success('Đã thu tiền và xác nhận đăng ký khóa học.');
       onPaid(data.id);
       mutation.reset();
       [QUERY_KEYS.INVOICES, QUERY_KEYS.MEMBERS, QUERY_KEYS.NOTIFICATIONS].forEach((queryKey) =>

@@ -10,7 +10,7 @@ import { useTableQuery } from '@/hooks/useTableQuery';
 import { usePermission } from '@/hooks/usePermission';
 import * as memberService from '@/services/member.service';
 import { MemberFormModal } from './MemberFormModal';
-import { MemberMembershipModal } from './MemberMembershipModal';
+import { MemberCourseOrderModal } from './MemberCourseOrderModal';
 import { MemberDetailDrawer } from './MemberDetailDrawer';
 import { CheckInPanel } from './CheckInPanel';
 import { MembersListPanel } from './MembersListPanel';
@@ -44,7 +44,7 @@ export default function MembersPage() {
     queryFn: () => memberService.listMembers(table.params),
   });
 
-  const canManageMembership = can(PERMISSIONS.MEMBERSHIP_MANAGE);
+  const canManageMembership = can(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER);
   const canUpdateMember = can(PERMISSIONS.MEMBER_UPDATE);
   const columns = useMemo(
     () =>
@@ -96,7 +96,7 @@ export default function MembersPage() {
         onClose={() => setCreateOpen(false)}
         onOpenDuplicate={openDuplicate}
       />
-      <MemberMembershipModal
+      <MemberCourseOrderModal
         member={selectedPurchaseMember}
         open={Boolean(selectedPurchaseMember)}
         onClose={() => setSelectedPurchaseMember(undefined)}

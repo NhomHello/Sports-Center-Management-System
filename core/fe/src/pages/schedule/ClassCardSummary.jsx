@@ -48,6 +48,11 @@ export function ClassCardSummary({ item }) {
             <CoachProfileLink coach={item.coach} />
           </span>
         </div>
+        {item.description && (
+          <p className="scms-course-description-preview" title={item.description}>
+            {item.description}
+          </p>
+        )}
         <CourseOrderPrice item={item} />
       </div>
     </div>

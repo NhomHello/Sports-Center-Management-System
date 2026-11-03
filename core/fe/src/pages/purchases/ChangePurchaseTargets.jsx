@@ -3,15 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Alert, Input, Select, Space, Button, Typography } from 'antd';
 import { TABLE } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
-import { listMembershipPlans } from '@/services/membershipPlan.service';
 import { listClasses } from '@/services/schedule.service';
 
-const buildOptions = (rows, kind, currentId) =>
+const buildOptions = (rows, currentId) =>
   rows
     .filter((row) => row.id !== currentId)
-    .filter((row) => kind === 'membership' || row.seatsRemaining > 0)
+    .filter((row) => row.seatsRemaining > 0)
     .map((row) => ({ value: row.id, label: row.name }));
-const TARGET_LABELS = Object.freeze({ membership: 'Gói mới', enrollment: 'Lớp mới' });
+const TARGET_LABELS = Object.freeze({ enrollment: 'Khóa học mới' });
 
 /** Chỉ nạp danh mục có phân trang; lớp hết chỗ không được chọn để đổi. */
 export function ChangePurchaseTargets({ kind, currentId, memberId, value, onChange, disabled }) {
@@ -22,13 +21,11 @@ export function ChangePurchaseTargets({ kind, currentId, memberId, value, onChan
   const query = useQuery({
     queryKey: ['purchase', 'targets', user?.id, kind, memberId, params],
     queryFn: () =>
-      kind === 'membership'
-        ? listMembershipPlans({ ...params, isActive: true })
-        : listClasses({ ...params, status: 'OPEN', ...(memberId !== user?.id && { memberId }) }),
+      listClasses({ ...params, status: 'OPEN', ...(memberId !== user?.id && { memberId }) }),
     retry: false,
   });
   const rows = Array.isArray(query.data?.data) ? query.data.data : [];
-  const options = buildOptions(rows, kind, currentId);
+  const options = buildOptions(rows, currentId);
   return (
     <Space orientation="vertical" className="scms-full-width">
       <Input.Search

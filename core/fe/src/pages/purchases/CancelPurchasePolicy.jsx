@@ -23,9 +23,7 @@ export const validChangePreview = (data) =>
 /** Quyền thực hiện phụ thuộc chính chủ hay thao tác hộ, không so sánh tên role. */
 export function canManagePurchase({ kind, ownerId, userId, can }) {
   if (!ownerId || !userId) return false;
-  if (!['membership', 'enrollment'].includes(kind)) return false;
-  if (kind === 'membership')
-    return can(ownerId === userId ? P.MEMBERSHIP_PURCHASE : P.MEMBERSHIP_MANAGE);
+  if (kind !== 'enrollment') return false;
   return can(ownerId === userId ? P.CLASS_CANCEL_SELF : P.CLASS_ENROLL_FOR_MEMBER);
 }
 /** Làm mới các container do cả hai FE phụ trách, kể cả chi tiết và lịch sử. */

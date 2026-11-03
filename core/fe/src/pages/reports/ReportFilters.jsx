@@ -6,7 +6,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { ReportTimeFields } from './ReportTimeFields';
 import { reportQuery } from '@/utils/reportFilters';
 import { listMembers } from '@/services/member.service';
-import { listMembershipPlans } from '@/services/membershipPlan.service';
+import { listClasses } from '@/services/schedule.service';
 
 /** Lọc theo tên từ API có quyền; chỉ gửi ngày và ID đã chọn khi người dùng áp dụng. */
 export function ReportFilters({ today, onApply }) {
@@ -21,8 +21,9 @@ export function ReportFilters({ today, onApply }) {
   });
   const plans = useQuery({
     queryKey: ['report-plan-options', planSearch],
-    queryFn: () => listMembershipPlans({ search: planSearch }),
-    enabled: can(P.MEMBERSHIP_PLAN_READ),
+    queryFn: () =>
+      listClasses({ search: planSearch, scope: can(P.CLASS_READ_ALL) ? 'management' : 'open' }),
+    enabled: can(P.CLASS_READ),
   });
   return (
     <Card>
@@ -34,8 +35,8 @@ export function ReportFilters({ today, onApply }) {
         onFinish={(values) => onApply(reportQuery(values))}
       >
         <ReportTimeFields form={form} today={today} />
-        {can(P.MEMBERSHIP_PLAN_READ) && (
-          <Form.Item name="planId" label="Gói tập">
+        {can(P.CLASS_READ) && (
+          <Form.Item name="classId" label="Khóa học">
             <Select
               allowClear
               style={{ width: 200 }}

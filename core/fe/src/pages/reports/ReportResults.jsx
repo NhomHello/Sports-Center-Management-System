@@ -42,14 +42,6 @@ export function ReportResults({ report, format, setFormat, download }) {
           ]}
         />
         <StatGroup
-          title="Gói tập"
-          items={[
-            ['Gói trong kỳ', report.membership.total],
-            ['Gói hoạt động', report.membership.active],
-            ['Gói hết hạn', report.membership.expired],
-          ]}
-        />
-        <StatGroup
           title="Lớp học"
           items={[
             ['Lớp', report.classes.total],

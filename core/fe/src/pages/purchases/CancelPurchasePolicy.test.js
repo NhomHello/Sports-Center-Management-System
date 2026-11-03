@@ -25,10 +25,10 @@ describe('TC-UI-GY34: quyền và preview an toàn', () => {
     );
   });
   it('quyền chính chủ không áp dụng cho hội viên khác', () => {
-    const can = (permission) => permission === P.MEMBERSHIP_PURCHASE;
-    expect(canManagePurchase({ kind: 'membership', ownerId: 1, userId: 1, can })).toBe(true);
-    expect(canManagePurchase({ kind: 'membership', ownerId: 2, userId: 1, can })).toBe(false);
-    expect(canManagePurchase({ kind: 'membership', ownerId: undefined, userId: 1, can })).toBe(
+    const can = (permission) => permission === P.CLASS_CANCEL_SELF;
+    expect(canManagePurchase({ kind: 'enrollment', ownerId: 1, userId: 1, can })).toBe(true);
+    expect(canManagePurchase({ kind: 'enrollment', ownerId: 2, userId: 1, can })).toBe(false);
+    expect(canManagePurchase({ kind: 'enrollment', ownerId: undefined, userId: 1, can })).toBe(
       false,
     );
   });

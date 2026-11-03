@@ -21,7 +21,8 @@ import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
 import { CreditPanel } from '@/pages/member/CreditPanel';
 import { MemberTrainingPanel } from '@/pages/profiles/MemberTrainingPanel';
-import { MembershipTab } from './MemberMembershipTab';
+import { ClassListPanel } from '@/pages/schedule/ClassListPanel';
+import { ClassBookingActions } from '@/pages/schedule/ClassBookingActions';
 import { BookingBlockPanel } from './BookingBlockPanel';
 import { MemberInfoView } from './MemberInfoView';
 import { useVerifyMemberEmail } from './useVerifyMemberEmail';
@@ -93,11 +94,16 @@ function MemberDetailTabs({ member, can, isEditing, form, updateMutation, verify
             />
           ),
         },
-        {
-          key: 'membership',
-          label: 'Gói tập',
+        can(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) && {
+          key: 'courses',
+          label: 'Đăng ký khóa học',
           children: (
-            <MembershipTab member={member} canFreeze={can(PERMISSIONS.MEMBERSHIP_FREEZE_ALL)} />
+            <ClassListPanel
+              memberId={member.id}
+              renderActions={(item, options) => (
+                <ClassBookingActions item={item} memberId={member.id} {...options} />
+              )}
+            />
           ),
         },
         can(PERMISSIONS.MEMBER_READ) && {

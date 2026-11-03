@@ -47,11 +47,6 @@ export const getMemberSummary = () => http.get('/members/summary');
 export const checkIn = (memberId, roomTypeId) =>
   http.post('/check-ins', roomTypeId ? { memberId, roomTypeId } : { memberId });
 
-/** Tạo bảo lưu; mọi giới hạn kiểm tra ở server. */
-export const freezeMembership = (id, data) => http.post(`/memberships/${id}/freezes`, data);
-/** Kết thúc sớm và cộng số ngày thực dừng. */
-export const resumeMembership = (id) => http.post(`/memberships/${id}/freezes/resume`);
-
 /** Vào danh sách chờ của chính mình. */
 export const joinWaitlist = (id) => http.post(`/classes/${id}/waitlist/me`);
 /** Rời danh sách chờ và giải phóng chỗ giữ. */

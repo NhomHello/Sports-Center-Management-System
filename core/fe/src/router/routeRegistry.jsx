@@ -38,11 +38,10 @@ const GROUP_SYSTEM = 'Hệ thống';
 const GROUP_ACCOUNT = 'Tài khoản cá nhân';
 const GROUP_FINANCE = 'Tài chính';
 const GROUP_SCHEDULE = 'Lịch tập';
-const MembershipPlansPage = lazy(() => import('@/pages/membership/MembershipPlansPage'));
 const MembersPage = lazy(() => import('@/pages/members/MembersPage'));
 const SchedulePage = lazy(() => import('@/pages/schedule/SchedulePage'));
 
-const GROUP_MEMBER = 'Hội viên & gói tập';
+const GROUP_MEMBER = 'Học viên';
 
 const ReportsPage = lazy(() => import('@/pages/reports/ReportsPage'));
 const AttendanceHistoryPage = lazy(() => import('@/pages/member/AttendanceHistoryPage'));
@@ -114,12 +113,6 @@ export const routeRegistry = [
     element: <MembersPage />,
     permission: PERMISSIONS.MEMBER_READ,
     menu: { label: 'Quản lý hội viên', icon: <TeamOutlined />, group: GROUP_MEMBER },
-  },
-  {
-    path: ROUTES.MEMBERSHIP_PLANS,
-    element: <MembershipPlansPage />,
-    permission: PERMISSIONS.MEMBERSHIP_PLAN_READ,
-    menu: { label: 'Gói tập', icon: <GiftOutlined />, group: GROUP_MEMBER },
   },
   {
     path: ROUTES.PAYMENTS,

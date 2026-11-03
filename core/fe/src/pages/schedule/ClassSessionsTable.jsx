@@ -1,3 +1,5 @@
+import { SessionDescriptionModal } from './SessionDescriptionModal';
+import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { Button, Space, Table } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
@@ -12,6 +14,7 @@ import { AttendanceModal } from './AttendanceModal';
 /** Giữ lịch sử buổi; thao tác theo permission và thời điểm bắt đầu. */
 export function ClassSessionsTable({ sessions, memberCount = 0 }) {
   const { can } = usePermission();
+  const { user } = useAuth();
   const [action, setAction] = useState(null);
   const columns = [
     {
@@ -25,6 +28,12 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
         `${vietnamInput(s.startAt).format(DATE_FORMATS.TIME)} – ${vietnamInput(s.endAt).format(DATE_FORMATS.TIME)}`,
     },
     {
+      title: 'Nội dung buổi',
+      dataIndex: 'description',
+      render: (value) => value || 'Chưa có mô tả',
+      ellipsis: true,
+    },
+    {
       title: 'Trạng thái',
       render: (_, s) => <ScheduleStatusTag status={s.status} endAt={s.endAt} />,
     },
@@ -35,6 +44,12 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
           new Date(session.startAt) > new Date() && session.status === SESSION_STATUS.SCHEDULED;
         return (
           <Space wrap>
+            {canEditDescription(session, user, can) && (
+              <Button size="small" onClick={() => setAction({ session, mode: 'description' })}>
+                Nội dung buổi
+              </Button>
+            )}
+
             {future && can(P.CLASS_UPDATE) && (
               <Button size="small" onClick={() => setAction({ session, mode: 'reschedule' })}>
                 Đổi giờ
@@ -66,15 +81,29 @@ export function ClassSessionsTable({ sessions, memberCount = 0 }) {
         pagination={false}
         scroll={{ x: 800 }}
       />
+      <SessionActionDialog
+        action={action}
+        memberCount={memberCount}
+        onClose={() => setAction(null)}
+      />
+    </>
+  );
+}
+
+function canEditDescription(session, user, can) {
+  return can(P.CLASS_UPDATE) || (can(P.SCHEDULE_VIEW_TEACHING) && session.coachId === user?.id);
+}
+
+function SessionActionDialog({ action, memberCount, onClose }) {
+  return (
+    <>
       {action &&
-        (action.mode === 'attendance' ? (
-          <AttendanceModal session={action.session} onClose={() => setAction(null)} />
+        (action.mode === 'description' ? (
+          <SessionDescriptionModal session={action.session} onClose={() => onClose()} />
+        ) : action.mode === 'attendance' ? (
+          <AttendanceModal session={action.session} onClose={() => onClose()} />
         ) : (
-          <SessionActionModal
-            {...action}
-            memberCount={memberCount}
-            onClose={() => setAction(null)}
-          />
+          <SessionActionModal {...action} memberCount={memberCount} onClose={() => onClose()} />
         ))}
     </>
   );

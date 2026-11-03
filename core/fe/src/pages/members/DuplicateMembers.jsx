@@ -16,8 +16,7 @@ export function DuplicateMembers({ members, onOpen }) {
           <p>{m.phone}</p>
           <Tag>{m.status === USER_STATUS.ACTIVE ? 'Hoạt động' : 'Đã khóa'}</Tag>
           <p>
-            {m.currentMembership?.plan.name ?? 'Chưa có gói'} ·{' '}
-            {formatDate(m.currentMembership?.endDate)}
+            {m.activeCourseCount ?? 0} khóa đã đăng ký · {formatDate(m.currentMembership?.endDate)}
           </p>
           {m.status !== USER_STATUS.ACTIVE && (
             <Alert type="warning" title="Liên hệ quản lý để xử lý tài khoản bị khóa." />

@@ -92,7 +92,7 @@ export function OnlinePaymentPanel({ invoice }) {
         className="scms-online-paid"
         style={{ marginBottom: 16 }}
         icon={<CheckCircleFilled />}
-        title="Đã nhận thanh toán. Gói tập / khóa học đã có hiệu lực."
+        title="Đã nhận thanh toán. Khóa học đã có hiệu lực."
       />
     );
   }
@@ -108,7 +108,7 @@ export function OnlinePaymentPanel({ invoice }) {
           type="warning"
           style={{ marginBottom: 16 }}
           title="Hóa đơn đã quá hạn thanh toán"
-          description='Không chuyển khoản vào hóa đơn này nữa. Nếu bạn đã chuyển, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra; nếu chưa, hãy tạo hóa đơn mới từ trang Gói tập.'
+          description='Không chuyển khoản vào hóa đơn này nữa. Nếu bạn đã chuyển, bấm "Tôi đã chuyển khoản" để trung tâm kiểm tra; nếu chưa, hãy tạo hóa đơn mới từ trang Khóa học.'
         />
       );
     // BE trả paymentInstruction rỗng khi chưa cấu hình tài khoản nhận tiền: báo rõ thay vì để trống.

@@ -2,7 +2,6 @@ import { ENROLLMENT_STATUS } from '@/constants/schedule';
 import { shouldHideEnrollmentReason } from '@/utils/classBookingPresentation';
 import { formatDateTime } from '@/utils/format';
 import { BookingNotice } from './BookingControls';
-import { MembershipExpiryNotice } from './MembershipExpiryNotice';
 import { WaitlistNotice } from './WaitlistControls';
 
 const hasPendingPayment = (item, paid, allowed) =>
@@ -20,9 +19,6 @@ export function ClassBookingNotices({
   const paid = item.price > 0 && !booked;
   return (
     <div className="scms-booking-actions__notices">
-      {enrollAllowed && !booked && !paid && (
-        <MembershipExpiryNotice {...{ item, memberId, compact }} />
-      )}
       {compact && <WaitlistNotice {...{ item, memberId, booked }} allowed={enrollAllowed} />}
       {compact && hasPendingPayment(item, paid, enrollAllowed) && (
         <p className="scms-booking-note scms-booking-note--waitlist">

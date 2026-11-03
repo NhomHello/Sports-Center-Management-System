@@ -6,9 +6,9 @@ import { overpaidAwaiting } from '@/utils/reconciliationActions';
 const HINTS = Object.freeze({
   [CASE_REASON.OVERPAID]:
     'Hoàn phần chuyển thừa; hóa đơn gốc đã chấp nhận vẫn giữ trạng thái đã thanh toán.',
-  [CASE_REASON.DUPLICATE_TRANSFER]: 'Hoàn khoản chuyển lặp; gói tập không thay đổi.',
+  [CASE_REASON.DUPLICATE_TRANSFER]: 'Hoàn khoản chuyển lặp; đăng ký khóa học không thay đổi.',
   [CASE_REASON.UNDERPAID]:
-    'Hoàn số đã nhận của hóa đơn chưa đủ tiền; hóa đơn sẽ bị hủy và gói không được kích hoạt.',
+    'Hoàn số đã nhận của hóa đơn chưa đủ tiền; hóa đơn sẽ bị hủy và đăng ký không được xác nhận.',
   [CASE_REASON.NO_MATCH]: 'Hoàn khoản không gán được vào hóa đơn nào cho người đã chuyển.',
   [CASE_REASON.LATE]: 'Hoàn khoản tiền về sau khi hóa đơn đã hết hạn.',
 });
@@ -16,7 +16,7 @@ const HINTS = Object.freeze({
 /** BR-PAY-13: tạo yêu cầu hoàn, tiền chuyển trả thủ công rồi xác nhận ở Hóa đơn → Theo dõi hoàn tiền. */
 export function CaseRefundForm({ item, pending, disabled, onAction }) {
   const hint = overpaidAwaiting(item)
-    ? 'Hóa đơn chưa được chấp nhận: hoàn toàn bộ số đã nhận, hóa đơn bị hủy và gói không được kích hoạt.'
+    ? 'Hóa đơn chưa được chấp nhận: hoàn toàn bộ số đã nhận, hóa đơn bị hủy và đăng ký không được xác nhận.'
     : HINTS[item.reason];
   return (
     <Form

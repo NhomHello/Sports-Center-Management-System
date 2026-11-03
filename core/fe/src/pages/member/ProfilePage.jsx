@@ -33,7 +33,6 @@ import { normalizeOwnProfilePayload } from '@/utils/account';
 import { Link } from 'react-router';
 import { CreditPanel } from './CreditPanel';
 import { ProfileExtensions } from '@/pages/profiles/ProfileExtensions';
-import { ProfileMemberships } from './ProfileMemberships';
 
 function ProfileSummary({ profile }) {
   return (
@@ -186,7 +185,6 @@ function ProfileDetails({ form, query, mutation, hasPersonalProfile }) {
       <ProfileForm form={form} profile={profile} mutation={mutation} />
       {hasPersonalProfile && (
         <>
-          <ProfileMemberships profile={profile} />
           <CreditPanel />
         </>
       )}
@@ -251,7 +249,7 @@ export default function ProfilePage() {
         title="Hồ sơ cá nhân"
         subtitle={
           hasPersonalProfile
-            ? 'Thông tin tài khoản và gói tập hiện tại'
+            ? 'Thông tin tài khoản, khóa học và kết quả tập luyện'
             : 'Thông tin tài khoản cá nhân'
         }
         extra={

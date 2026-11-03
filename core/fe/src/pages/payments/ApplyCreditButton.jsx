@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePermission } from '@/hooks/usePermission';
 import { applyCredit, getMemberCredit, getOwnCredit } from '@/services/credit.service';
 import { formatCurrency } from '@/utils/format';
-import { refreshPurchases } from '../membership/CancelPurchasePolicy';
+import { refreshPurchases } from '../purchases/CancelPurchasePolicy';
 
 const creditPaymentEnabled = (invoice, user, allowed) =>
   Boolean(invoice?.id && user?.id) && allowed && invoice.status === INVOICE_STATUS.PENDING;

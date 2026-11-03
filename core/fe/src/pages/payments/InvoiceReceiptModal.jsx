@@ -86,7 +86,7 @@ function InvoiceSummary({ invoice, receivedAmount }) {
     <Descriptions bordered column={1}>
       <Descriptions.Item label="Mã hóa đơn">{invoice.code}</Descriptions.Item>
       <Descriptions.Item label="Hội viên">{invoice.user?.fullName ?? '—'}</Descriptions.Item>
-      <Descriptions.Item label="Gói tập">{planName}</Descriptions.Item>
+      <Descriptions.Item label="Khóa học / giao dịch">{planName}</Descriptions.Item>
       <Descriptions.Item label="Trạng thái">
         <StatusTag value={invoice.status} meta={INVOICE_STATUS_META} />
       </Descriptions.Item>
@@ -96,7 +96,7 @@ function InvoiceSummary({ invoice, receivedAmount }) {
       <Descriptions.Item label="Số tiền bằng chữ">
         {amountInWords(invoice.amount)}
       </Descriptions.Item>
-      <Descriptions.Item label="Thời hạn mua">{invoiceDuration(invoice)} ngày</Descriptions.Item>
+      <Descriptions.Item label="Thời hạn mua">{invoiceTerm(invoice)}</Descriptions.Item>
       <Descriptions.Item label="Tổng thực nhận">
         {formatCurrency(receivedAmount, invoice.currency)}
       </Descriptions.Item>
@@ -323,4 +323,10 @@ export function InvoiceReceiptModal({
       />
     </Modal>
   );
+}
+
+function invoiceTerm(invoice) {
+  return invoice.kind === 'COURSE'
+    ? `${invoice.sessionCount ?? 0} buổi`
+    : `${invoiceDuration(invoice) ?? '—'} ngày (lịch sử)`;
 }

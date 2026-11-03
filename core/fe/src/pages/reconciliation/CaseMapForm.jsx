@@ -5,7 +5,7 @@ import { PERMISSIONS } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
 import { listMembers } from '@/services/member.service';
 import { listInvoices } from '@/services/payment.service';
-import { listMembershipPlans } from '@/services/membershipPlan.service';
+import { listClasses } from '@/services/schedule.service';
 import { INVOICE_CHANNEL, INVOICE_STATUS, INVOICE_STATUS_META } from '@/constants';
 import { MAP_INVOICE_PAGE_SIZE } from '@/constants/reconciliation';
 import { formatCurrency } from '@/utils/format';
@@ -28,7 +28,7 @@ const listTransferTargets = async (memberId) => {
   return pages.flatMap((page) => page.data ?? []);
 };
 
-/** Gán sai mã vào hóa đơn còn chờ/thất bại hoặc tạo hóa đơn cho gói đang bán. */
+/** Gán sai mã vào hóa đơn còn chờ/thất bại hoặc tạo hóa đơn cho khóa học đang bán. */
 export function CaseMapForm({ pending, onAction }) {
   const { can } = usePermission();
   const [form] = Form.useForm();
@@ -46,8 +46,8 @@ export function CaseMapForm({ pending, onAction }) {
   });
   const plans = useQuery({
     queryKey: ['reconcile-plans'],
-    queryFn: () => listMembershipPlans({ isActive: true }),
-    enabled: can(PERMISSIONS.MEMBERSHIP_PLAN_READ),
+    queryFn: () => listClasses({ scope: 'open', paidOnly: true }),
+    enabled: can(PERMISSIONS.CLASS_READ),
   });
   const errors = [members, invoices, plans].filter((q) => q.isError);
   return (
@@ -55,14 +55,14 @@ export function CaseMapForm({ pending, onAction }) {
       form={form}
       layout="vertical"
       disabled={pending}
-      onFinish={({ invoiceId, planId }) =>
-        onAction({ action: 'map', data: invoiceId ? { invoiceId } : { memberId, planId } })
+      onFinish={({ invoiceId, classId }) =>
+        onAction({ action: 'map', data: invoiceId ? { invoiceId } : { memberId, classId } })
       }
     >
       <Alert
         showIcon
         type="info"
-        title="Chọn hội viên rồi chọn hóa đơn, hoặc gói để tạo hóa đơn mới. Server đối chiếu tiền trước khi kích hoạt."
+        title="Chọn hội viên rồi chọn hóa đơn, hoặc khóa học để tạo hóa đơn mới. Server đối chiếu tiền trước khi kích hoạt."
       />
       {errors.map((q) => (
         <Alert key={q.error.message} type="error" title={q.error.message} />
@@ -76,7 +76,7 @@ export function CaseMapForm({ pending, onAction }) {
           showSearch
           filterOption={false}
           onSearch={setSearch}
-          onChange={() => form.resetFields(['invoiceId', 'planId'])}
+          onChange={() => form.resetFields(['invoiceId', 'classId'])}
           loading={members.isFetching}
           options={(members.data?.data ?? []).map((m) => ({
             value: m.id,
@@ -96,7 +96,7 @@ export function CaseMapForm({ pending, onAction }) {
           }))}
         />
       </Form.Item>
-      <Form.Item name="planId" label="Hoặc gói đang bán">
+      <Form.Item name="classId" label="Hoặc khóa học đang bán">
         <Select
           allowClear
           options={(plans.data?.data ?? []).map((p) => ({ value: p.id, label: p.name }))}

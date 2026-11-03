@@ -59,10 +59,26 @@ export function ClassOverview({ item, selectedSession }) {
           },
         ]}
       />
-      {item.description && <Typography.Paragraph>{item.description}</Typography.Paragraph>}
+      {item.description && (
+        <section>
+          <Typography.Title level={5}>Mô tả khóa học</Typography.Title>
+          <Typography.Paragraph>{item.description}</Typography.Paragraph>
+        </section>
+      )}
+      <SessionDescription description={session?.description} />
       <p className="scms-class-action-scope">
         Đăng ký và hủy áp dụng cho toàn bộ các buổi còn lại của lớp.
       </p>
     </>
+  );
+}
+
+function SessionDescription({ description }) {
+  if (!description) return null;
+  return (
+    <section>
+      <Typography.Title level={5}>Nội dung buổi đang xem</Typography.Title>
+      <Typography.Paragraph>{description}</Typography.Paragraph>
+    </section>
   );
 }

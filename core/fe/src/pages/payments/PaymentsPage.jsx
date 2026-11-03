@@ -59,9 +59,9 @@ export default function PaymentsPage() {
   const [showOwn, setShowOwn] = useState(false);
   const canReadAll = can(PERMISSIONS.INVOICE_READ_ALL);
   const canCreate =
-    can(PERMISSIONS.MEMBERSHIP_MANAGE) &&
+    can(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) &&
     can(PERMISSIONS.MEMBER_READ) &&
-    can(PERMISSIONS.MEMBERSHIP_PLAN_READ);
+    can(PERMISSIONS.CLASS_READ);
   const isOwn = !canReadAll || showOwn;
   const query = useQuery({
     queryKey: [...QUERY_KEYS.INVOICES, 'list', user?.id, isOwn, table.params],

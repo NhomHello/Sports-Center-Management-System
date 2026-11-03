@@ -40,7 +40,11 @@ export default function SettingsPage() {
     queryFn: settingService.listSettings,
     retry: shouldRetryApiQuery,
   });
-  const groups = useMemo(() => settingsQuery.data?.data ?? [], [settingsQuery.data]);
+  const groups = useMemo(
+    () =>
+      (settingsQuery.data?.data ?? []).filter((group) => group.group !== SETTING_GROUPS.MEMBERSHIP),
+    [settingsQuery.data],
+  );
 
   useEffect(() => {
     // Chua co data thi Form chua render (dang PageLoading) -> khong goi setFieldsValue

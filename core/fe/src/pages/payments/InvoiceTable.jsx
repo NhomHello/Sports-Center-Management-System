@@ -47,7 +47,7 @@ const buildColumns = ({ showMember, onCash, onDetail }) =>
       ellipsis: true,
     },
     {
-      title: 'Gói tập',
+      title: 'Khóa học',
       key: 'plan',
       render: (_, invoice) => invoice.planName ?? invoice.plan?.name ?? '—',
     },
@@ -113,8 +113,8 @@ export function InvoiceTable({
       locale={{
         emptyText: (
           <Empty description="Chưa có hóa đơn nào.">
-            <Link to={ROUTES.MEMBERSHIP_PLANS}>
-              <Button>Xem gói tập</Button>
+            <Link to={ROUTES.SCHEDULE}>
+              <Button>Xem khóa học</Button>
             </Link>
           </Empty>
         ),

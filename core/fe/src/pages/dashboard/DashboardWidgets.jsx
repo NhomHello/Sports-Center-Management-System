@@ -2,12 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Alert, Card, Statistic } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { usePermission } from '@/hooks/usePermission';
-import { listOwnMemberships } from '@/services/membership.service';
+import { getOwnProfile } from '@/services/member.service';
 import { listInvoices } from '@/services/payment.service';
 import { getReport, getReconciliationSummary, getMemberSummary } from '@/services/sprint3.service';
 import { vietnamInput } from '@/utils/schedule';
 import { formatCurrency } from '@/utils/format';
-import { getRemainingMembershipDays } from './dashboardData';
 
 function Widget({ title, query, value, currency }) {
   return (
@@ -33,9 +32,9 @@ export function DashboardWidgets() {
     to: today.format('YYYY-MM-DD'),
   };
   const own = useQuery({
-    queryKey: ['ownMembership'],
-    queryFn: listOwnMemberships,
-    enabled: can(P.MEMBERSHIP_READ_OWN) && !can(P.MEMBERSHIP_READ_ALL),
+    queryKey: ['own-course-profile'],
+    queryFn: getOwnProfile,
+    enabled: can(P.SCHEDULE_VIEW_OWN) && !can(P.CLASS_READ_ALL),
   });
   const invoices = useQuery({
     queryKey: ['invoices', 'pending-widget'],
@@ -58,14 +57,14 @@ export function DashboardWidgets() {
     enabled: can(P.PAYMENT_RECONCILE),
   });
   // Ô "số ngày gói" là của hội viên; quản lý (có quyền xem gói của mọi người) không cần.
-  const personal = can(P.MEMBERSHIP_READ_OWN) && !can(P.MEMBERSHIP_READ_ALL);
+  const personal = can(P.SCHEDULE_VIEW_OWN) && !can(P.CLASS_READ_ALL);
   return (
     <div className="scms-kpi-grid">
       {personal && (
         <Widget
-          title="Số ngày gói còn lại"
+          title="Khóa học đã đăng ký"
           query={own}
-          value={(r) => getRemainingMembershipDays(r?.data)}
+          value={(r) => r?.data.activeCourseCount ?? 0}
         />
       )}
       {can(P.INVOICE_READ_ALL) && (
@@ -79,7 +78,11 @@ export function DashboardWidgets() {
         <Widget title="Hội viên hoạt động" query={members} value={(r) => r?.data.active || 0} />
       )}
       {can(P.MEMBER_READ) && (
-        <Widget title="Hội viên sắp hết hạn" query={members} value={(r) => r?.data.expiring || 0} />
+        <Widget
+          title="Hội viên đã đăng ký khóa"
+          query={members}
+          value={(r) => r?.data.enrolled || 0}
+        />
       )}
       {can(P.REPORT_VIEW) && (
         <Widget

@@ -25,7 +25,6 @@ export const REPORT_CHART = Object.freeze({
 export const REPORT_DIMENSIONS = Object.freeze([
   { value: 'byKind', label: 'Loại doanh thu' },
   { value: 'byChannel', label: 'Kênh thanh toán' },
-  { value: 'byPlan', label: 'Top gói tự tập' },
   { value: 'byClass', label: 'Top lớp' },
   { value: 'bySubject', label: 'Bộ môn' },
 ]);

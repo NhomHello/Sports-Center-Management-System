@@ -50,7 +50,9 @@ export function CourseOrderActions({ item, memberId, allowed, compact = false })
         ...(memberId ? { memberId } : {}),
         channel: memberId ? INVOICE_CHANNEL.COUNTER : INVOICE_CHANNEL.ONLINE,
       }),
-    ({ data }) => openInvoice(data.id),
+    ({ data }) => {
+      if (!data.queued) openInvoice(data.id);
+    },
   );
   if (!allowed) return null;
   return (

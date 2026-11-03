@@ -20,7 +20,11 @@ function RefundNotice({ invoice, requested }) {
       showIcon
       type="warning"
       title="Hoàn toàn bộ hóa đơn — không hoàn một phần"
-      description={`Khi tạo yêu cầu: hóa đơn chuyển sang "Đã hoàn tiền" và ${invoice.durationDays ?? invoice.plan?.durationDays ?? ''} ngày gói tập đã cộng từ hóa đơn này bị rút lại ngay. Phần chuyển thừa hãy hoàn ở Hàng chờ đối soát, không hoàn ở đây.`}
+      description={
+        invoice.kind === 'COURSE'
+          ? 'Hoàn toàn bộ sẽ hủy đăng ký khóa học và nhả chỗ. Khoản chuyển thừa được hoàn riêng trong Hàng chờ đối soát.'
+          : 'Đây là hóa đơn lịch sử. Hệ thống giữ nguyên quy tắc hoàn của giao dịch gốc.'
+      }
     />
   );
 }
@@ -33,7 +37,7 @@ function RequestFields({ invoice, refundable }) {
         <Descriptions.Item label="Số tiền sẽ hoàn">
           <strong>{formatCurrency(refundable, invoice.currency)}</strong>
         </Descriptions.Item>
-        <Descriptions.Item label="Gói bị rút ngày">
+        <Descriptions.Item label="Khóa học / giao dịch sẽ chấm dứt quyền lợi">
           {invoice.planName ?? invoice.plan?.name ?? '—'}
         </Descriptions.Item>
       </Descriptions>

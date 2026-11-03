@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { ChangePurchaseActions } from '../membership/ChangePurchaseActions';
+import { ChangePurchaseActions } from '../purchases/ChangePurchaseActions';
 
 /** Khe GY-00: item.enrollment là đăng ký của memberId đang chọn. */
 export function EnrollmentActions({ item, memberId, onSuccess }) {

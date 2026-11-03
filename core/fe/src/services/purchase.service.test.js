@@ -20,7 +20,7 @@ describe('Hợp đồng GY-31/34/41', () => {
       data: { memberId: 15 },
     });
   });
-  it.each(['membership', 'enrollment'])(
+  it.each(['enrollment'])(
     'TC-UI-GY34-01: preview và hủy %s đúng tài nguyên',
     (kind) => {
       const base = kind === 'membership' ? '/memberships/8' : '/enrollments/8';
@@ -32,7 +32,6 @@ describe('Hợp đồng GY-31/34/41', () => {
     },
   );
   it.each([
-    ['membership', 'memberships', 'planId'],
     ['enrollment', 'enrollments', 'classId'],
   ])('TC-UI-GY34-02: đổi %s chỉ gửi đích, không tính tiền ở FE', (kind, resource, key) => {
     purchase.previewChange(kind, 8, 9);
@@ -49,8 +48,7 @@ describe('Hợp đồng GY-31/34/41', () => {
     expect(() => purchase.previewCancellation('unknown', 8)).toThrow(TypeError);
     expect(http.get).not.toHaveBeenCalled();
   });
-  it('TC-UI-GY41-01: tải chi tiết bảo lưu từ kỳ gói', () => {
-    purchase.getPurchaseMembership(8);
-    expect(http.get).toHaveBeenCalledWith('/memberships/8');
+  it('TC-UI-COURSE-ONLY: không gọi API gói đã ngừng', () => {
+    expect(() => purchase.previewCancellation('membership', 8)).toThrow(TypeError);
   });
 });

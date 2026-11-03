@@ -66,7 +66,9 @@ export function CourseOrderControls({ item, memberId, allowed, cancel }) {
   const navigate = useNavigate();
   const order = useScheduleMutation(
     () => createCourseOrder(item.id, memberId),
-    (result) => navigate(invoicePath(result.data.id)),
+    (result) => {
+      if (!result.data.queued) navigate(invoicePath(result.data.id));
+    },
   );
   const status = item.enrollment?.status;
   if (status === ENROLLMENT_STATUS.PENDING_PAYMENT)

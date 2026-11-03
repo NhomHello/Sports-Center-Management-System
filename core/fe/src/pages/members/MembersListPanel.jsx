@@ -41,7 +41,7 @@ export function MembersListPanel({ membersQuery, table, columns, onView }) {
               <span className="scms-members-directory__count">{total}</span>
             </Typography.Title>
             <Typography.Text type="secondary">
-              Quản lý thông tin và gói tập của hội viên
+              Quản lý thông tin và khóa học của hội viên
             </Typography.Text>
           </div>
         </div>
@@ -54,17 +54,16 @@ export function MembersListPanel({ membersQuery, table, columns, onView }) {
           />
           <Select
             className="scms-member-filter"
-            aria-label="Lọc trạng thái gói"
+            aria-label="Lọc đăng ký khóa học"
             placeholder="Tất cả hội viên"
             allowClear
             options={[
-              { value: 'ACTIVE', label: 'Đang hoạt động' },
-              { value: 'EXPIRING', label: 'Sắp hết hạn' },
-              { value: 'NO_PLAN', label: 'Chưa có gói' },
+              { value: 'REGISTERED', label: 'Đã đăng ký khóa học' },
+              { value: 'WAITING', label: 'Trong danh sách chờ' },
+              { value: 'NO_COURSE', label: 'Chưa đăng ký khóa học' },
               { value: 'UNVERIFIED', label: 'Chưa xác minh email' },
-              { value: 'FROZEN', label: 'Đang bảo lưu' },
             ]}
-            onChange={(membershipFilter) => table.setFilters({ membershipFilter })}
+            onChange={(courseFilter) => table.setFilters({ courseFilter })}
           />
         </div>
         {membersQuery.isError && <Alert type="error" title={membersQuery.error.message} />}

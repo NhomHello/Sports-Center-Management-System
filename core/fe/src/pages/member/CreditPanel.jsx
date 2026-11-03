@@ -9,8 +9,8 @@ import { getOwnCredit, getMemberCredit } from '@/services/credit.service';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 
 const REASONS = Object.freeze({
-  CANCELLATION: 'Hủy gói / khóa',
-  CHANGE: 'Đổi gói / lớp',
+  CANCELLATION: 'Hủy khóa học',
+  CHANGE: 'Đổi khóa học',
   PAYMENT: 'Thanh toán',
   ADJUSTMENT: 'Điều chỉnh',
 });

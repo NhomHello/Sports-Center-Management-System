@@ -6,22 +6,20 @@ import { canManagePurchase } from './CancelPurchasePolicy';
 import { CancelPurchaseController } from './CancelPurchaseController';
 import { ChangePurchaseController } from './ChangePurchaseController';
 
-function PurchaseButtons({ kind, active, setMode }) {
+function PurchaseButtons({ active, setMode }) {
   return (
     <>
       <Tooltip
         title={
-          active
-            ? undefined
-            : 'Chỉ thao tác trên gói hoặc khóa còn hoạt động; kết thúc bảo lưu trước khi hủy/đổi.'
+          active ? undefined : 'Chỉ thao tác trên khóa học đã đăng ký và còn buổi chưa diễn ra.'
         }
       >
         <Button danger disabled={!active} onClick={() => setMode('cancel')}>
-          {kind === 'membership' ? 'Hủy gói' : 'Hủy khóa học'}
+          Hủy khóa học
         </Button>
       </Tooltip>
       <Button disabled={!active} onClick={() => setMode('change')}>
-        {kind === 'membership' ? 'Đổi gói' : 'Đổi lớp'}
+        Đổi khóa học
       </Button>
     </>
   );
