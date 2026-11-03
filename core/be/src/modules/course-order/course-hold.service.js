@@ -1,10 +1,10 @@
+import { lockSchedule } from '../../common/utils/schedule-transaction.js';
+import { assertCourseHold } from './course-hold-policy.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { promoteWaitlist } from '../class/class-waitlist.service.js';
 import { cancelPendingChanges } from '../purchase-change/purchase-change.service.js';
-
-const lockSchedule = (db) => db.$queryRaw`SELECT id FROM schedule_locks WHERE id = 1 FOR UPDATE`;
 
 const cancelHold = (db, enrollment, actorId) =>
   db.classEnrollment.update({
@@ -79,8 +79,7 @@ export const extendHolds = (tx, invoiceId, holdExpiresAt) =>
 /** Hóa đơn khóa học đủ tiền: chỗ đang giữ thành đăng ký chính thức (BR-2.1 mới). */
 export const confirmCourseInvoice = async (tx, invoice) => {
   await lockSchedule(tx);
-  const enrollment = await tx.classEnrollment.findFirst({ where: { invoiceId: invoice.id } });
-  if (!enrollment) return null;
+  const enrollment = await assertCourseHold(tx, invoice);
   return tx.classEnrollment.update({
     where: { id: enrollment.id },
     data: {

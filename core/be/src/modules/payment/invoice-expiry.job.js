@@ -84,7 +84,10 @@ export const expireOverdueInvoices = async (now = new Date()) => {
   const due = await prisma.invoice.findMany({
     where: {
       status: Enums.InvoiceStatus.PENDING,
-      channel: Enums.InvoiceChannel.ONLINE,
+      OR: [
+        { channel: Enums.InvoiceChannel.ONLINE },
+        { kind: { in: [Enums.InvoiceKind.COURSE, Enums.InvoiceKind.ADJUSTMENT] } },
+      ],
       expiresAt: { lte: now },
     },
     select: { id: true },

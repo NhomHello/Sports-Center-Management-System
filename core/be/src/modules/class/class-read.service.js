@@ -88,6 +88,7 @@ export const list = async (query, context) => {
         ? [teachingScope(context.user.id)]
         : []),
       {
+        ...(query.paidOnly && { price: { gt: 0 } }),
         ...(query.status && { status: query.status }),
         ...(query.subjectId && { subjectId: query.subjectId }),
         ...(query.coachId && { coachId: query.coachId }),

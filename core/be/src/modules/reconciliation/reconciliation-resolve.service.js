@@ -1,6 +1,6 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
-import { createOnlineOrder } from '../membership/membership-invoice.service.js';
+import { createCourseOrder } from '../course-order/course-order.service.js';
 import { applyTransfer, lockInvoice, PAYMENT_OUTCOME } from '../payment/payment-apply.service.js';
 import { outcomeNotices } from './payment-notices.js';
 import { sendNotices } from './payment-notify.service.js';
@@ -118,8 +118,9 @@ const assertOverpaidAccepted = async (db, kase) => {
 };
 
 /** Hoá đơn đích: chọn hoá đơn có sẵn, hoặc tạo/tái sử dụng hoá đơn online cho gói đang bán. */
-const resolveTargetInvoice = async ({ invoiceId, memberId, planId }, actor) =>
-  invoiceId ?? (await createOnlineOrder({ memberId, planId }, actor)).id;
+const resolveTargetInvoice = async ({ invoiceId, memberId, classId }, actor) =>
+  invoiceId ??
+  (await createCourseOrder({ memberId, classId, channel: Enums.InvoiceChannel.ONLINE }, actor)).id;
 
 /**
  * UC-PAY-11: gán giao dịch sai mã / tiền về muộn vào hoá đơn của hội viên.
@@ -163,10 +164,10 @@ export const confirmCase = async (id, { amount, reference }, actor) => {
  * BR-PAY-17/18: hội viên đồng ý dùng khoản chuyển lặp / phần thừa cho một lần gia hạn mới.
  * Phiếu gốc đóng; nếu số tiền không khớp giá gói thì hoá đơn mới mở phiếu thiếu/thừa riêng.
  */
-export const renewFromCase = async (id, { planId }, actor) => {
+export const renewFromCase = async (id, { classId }, actor) => {
   const preview = await precheck(id, RULES.renew);
   await assertOverpaidAccepted(prisma, preview);
-  const target = await resolveTargetInvoice({ memberId: preview.userId, planId }, actor);
+  const target = await resolveTargetInvoice({ memberId: preview.userId, classId }, actor);
   const out = await prisma.$transaction(async (tx) => {
     const kase = await lockForAction(tx, id, RULES.renew);
     await assertOverpaidAccepted(tx, kase);

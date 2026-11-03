@@ -1,6 +1,6 @@
 import { Enums } from '../../config/db.js';
 const kindNames = {
-  [Enums.InvoiceKind.MEMBERSHIP]: 'Gói tự tập',
+  [Enums.InvoiceKind.MEMBERSHIP]: 'Giao dịch lịch sử',
   [Enums.InvoiceKind.COURSE]: 'Khoá học',
   [Enums.InvoiceKind.ADJUSTMENT]: 'Chênh lệch đổi',
 };

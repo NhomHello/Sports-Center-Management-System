@@ -5,6 +5,7 @@ import { toWebhookPayload } from '../src/modules/reconciliation/sepay-sync.servi
 import { api, apiPath, bearer } from './helpers/api.js';
 import {
   asManager,
+  createReconciliationCourse,
   buyOnline,
   cleanupReconciliationFixture,
   createReconciliationFixture,
@@ -41,7 +42,7 @@ beforeAll(async () => {
 afterAll(() => cleanupReconciliationFixture(f));
 
 describe('Map giao dịch sai mã và tiền về muộn (UC-PAY-11)', () => {
-  it('không có mã ⇒ NO_MATCH; map vào hội viên + gói ⇒ tạo hoá đơn và PAID', async () => {
+  it('không có mã ⇒ NO_MATCH; map vào hội viên + khóa học ⇒ tạo hoá đơn và PAID', async () => {
     await freshInvoice();
     const res = await sendTransfer(f, null, { transferAmount: 300000, content: 'nguyen van a' });
     expect(res.reason).toBe(REASON.NO_MATCH);
@@ -49,14 +50,15 @@ describe('Map giao dịch sai mã và tiền về muộn (UC-PAY-11)', () => {
       where: { providerTransactionId: f.sepayIds.at(-1) },
     });
     const kase = await latestCase(f, { webhookLogId: log.id });
+    const course = await createReconciliationCourse(f);
     const mapped = await asManager(f, 'post', `/reconciliations/${kase.id}/map`, {
       memberId: f.member.id,
-      planId: f.plan.id,
+      classId: course.id,
     });
     expect(mapped.body.data).toMatchObject({ status: STATUS.MATCHED, outcome: 'PAID' });
     const again = await asManager(f, 'post', `/reconciliations/${kase.id}/map`, {
       memberId: f.member.id,
-      planId: f.plan.id,
+      classId: course.id,
     });
     expect(again.status).toBe(409);
     const detail = await asManager(f, 'get', `/reconciliations/${kase.id}`);

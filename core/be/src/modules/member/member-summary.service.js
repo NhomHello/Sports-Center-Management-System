@@ -1,22 +1,22 @@
-import { SETTING_KEYS as K } from '@scms/shared';
 import { prisma, Enums } from '../../config/db.js';
-import { TIME } from '../../constants/index.js';
-import { getValue } from '../setting/setting.service.js';
-/** Chỉ số vận hành hội viên; ngưỡng nhắc gia hạn dùng cấu hình đang có. */
+/** Tổng quan dựa trên tài khoản, đăng ký khoá và hàng chờ, không dựa vào kỳ gói. */
 export const summary = async () => {
-  const days = await getValue(K.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
-  const now = new Date();
-  const end = new Date(now.getTime() + days * TIME.MS_PER_DAY);
-  const [active, expiring] = await prisma.$transaction([
+  const [active, enrolled, waiting] = await prisma.$transaction([
     prisma.user.count({ where: { status: Enums.UserStatus.ACTIVE, role: { isDefault: true } } }),
     prisma.user.count({
       where: {
-        status: Enums.UserStatus.ACTIVE,
-        memberships: {
-          some: { status: Enums.MembershipStatus.ACTIVE, endDate: { gt: now, lte: end } },
+        role: { isDefault: true },
+        classEnrollments: {
+          some: {
+            status: Enums.EnrollmentStatus.BOOKED,
+            gymClass: { status: { in: [Enums.ClassStatus.OPEN, Enums.ClassStatus.CLOSED] } },
+          },
         },
       },
     }),
+    prisma.classWaitlist.count({
+      where: { status: { in: [Enums.WaitlistStatus.WAITING, Enums.WaitlistStatus.OFFERED] } },
+    }),
   ]);
-  return { active, expiring, reminderDays: days };
+  return { active, enrolled, waiting };
 };

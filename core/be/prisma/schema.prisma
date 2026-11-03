@@ -239,6 +239,8 @@ enum CreditReason {
 /// Tai khoan dang nhap. Moi user co DUNG MOT role; role quyet dinh permission.
 
 model User {
+  sessionFeedback SessionFeedback[] @relation("FeedbackMember")
+  authoredSessionFeedback SessionFeedback[] @relation("FeedbackAuthor")
   coachProfile CoachProfile?
   memberProfile MemberProfile?
   authoredCourseSummaries CourseSummary[] @relation("SummaryAuthor")
@@ -1204,6 +1206,8 @@ model GymClass {
 /// Snapshot phòng/HLV bảo toàn lịch cũ khi lớp chuyển phòng hoặc đổi người dạy.
 
 model ClassSession {
+  description String? @db.VarChar(2000)
+  feedback SessionFeedback[]
 
   id                      Int           @id @default(autoincrement())
 
@@ -2020,4 +2024,23 @@ model CourseRating {
   @@unique([classId, memberId])
   @@index([coachId, hiddenAt, createdAt])
   @@map("course_ratings")
+}
+
+/// Nhận xét riêng từng học viên/buổi, tách điểm danh để lưu ghi chú không tạo kết quả vắng/có mặt.
+model SessionFeedback {
+ version Int @default(1)
+ id Int @id @default(autoincrement())
+ sessionId Int @map("session_id")
+ memberId Int @map("member_id")
+ authorId Int @map("author_id")
+ rating Int?
+ note String @default("") @db.VarChar(2000)
+ session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+ member User @relation("FeedbackMember", fields: [memberId], references: [id], onDelete: Restrict)
+ author User @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+ createdAt DateTime @default(now()) @map("created_at")
+ updatedAt DateTime @updatedAt @map("updated_at")
+ @@unique([sessionId, memberId])
+ @@index([memberId, updatedAt])
+ @@map("session_feedback")
 }

@@ -7,7 +7,6 @@ import {
 } from '../src/modules/cancellation/settlement.js';
 import {
   buyCourseCash,
-  buyPlanCash,
   cleanupGopyFixture,
   createGopyFixture,
   createPaidClass,
@@ -71,12 +70,8 @@ describe('GY-32/33: hủy có tính tiền, số dư tài khoản', () => {
       'CANCELLED',
     );
 
-    const order = await f.call(
-      'post',
-      '/memberships/me/orders',
-      { planId: f.planA.id },
-      f.memberToken,
-    );
+    const nextCourse = await createPaidClass(f, { price: 300000, roomId: f.roomOther.id, coachId: f.coachOther.id });
+    const order = await f.call('post', `/classes/${nextCourse.id}/orders`, {}, f.memberToken);
     const applied = await f.call(
       'post',
       `/invoices/${order.body.data.id}/apply-credit`,
@@ -88,45 +83,10 @@ describe('GY-32/33: hủy có tính tiền, số dư tài khoản', () => {
     expect((await f.call('get', '/me/credit', undefined, f.memberToken)).body.data.balance).toBe(
       preview.body.data.refundAmount - 300000,
     );
-    expect(await prisma.membership.count({ where: { invoiceId: order.body.data.id } })).toBe(1);
+    expect(await prisma.classEnrollment.count({ where: { invoiceId: order.body.data.id, status: 'BOOKED' } })).toBe(1);
   });
 
-  it('hủy kỳ gói chưa bắt đầu: hoàn 100%, không phí, tạo yêu cầu hoàn tiền', async () => {
-    await buyPlanCash(f, f.other.id, f.planA.id);
-    const queued = await buyPlanCash(f, f.other.id, f.planB.id);
-    const preview = await f.call('get', `/memberships/${queued.id}/cancel-preview`);
-    expect(preview.body.data).toMatchObject({
-      remainingValue: 600000,
-      fee: 0,
-      refundAmount: 600000,
-      beforeStart: true,
-    });
-    const res = await f.call('post', `/memberships/${queued.id}/cancel`, {
-      settlement: 'REFUND',
-      reason: 'Đổi ý',
-    });
-    expect(res.status).toBe(200);
-    const refund = await prisma.refund.findUniqueOrThrow({ where: { id: res.body.data.refundId } });
-    expect(refund).toMatchObject({
-      amount: 600000,
-      status: 'PENDING',
-      invoiceId: queued.invoiceId,
-    });
-    expect((await prisma.membership.findUnique({ where: { id: queued.id } })).status).toBe(
-      'CANCELLED',
-    );
-  });
 
-  it('hội viên không hủy được kỳ gói của người khác', async () => {
-    const period = await prisma.membership.findFirstOrThrow({
-      where: { userId: f.other.id, status: 'ACTIVE' },
-    });
-    const res = await f.call(
-      'get',
-      `/memberships/${period.id}/cancel-preview`,
-      undefined,
-      f.memberToken,
-    );
-    expect(res.status).toBe(403);
-  });
+
+
 });

@@ -10,11 +10,7 @@ export const memberReport = async (query) => {
   const range = reportRange(query);
   return prisma.$transaction(
     async (db) => {
-      const [members, periods, enrollments, changes, classes] = await loadMemberReportData(
-        db,
-        query,
-        range,
-      );
+      const [members, enrollments, classes] = await loadMemberReportData(db, query, range);
       const rows = bucketRanges(query).map((bucket) => {
         const scheduled = classes.filter((c) => c.sessions.some((s) => inside(s.startAt, bucket)));
         const capacity = scheduled.reduce((sum, c) => sum + c.capacity, 0);
@@ -33,11 +29,8 @@ export const memberReport = async (query) => {
           date: bucket.key,
           newMembers: members.filter((m) => periodKey(m.createdAt, query.groupBy) === bucket.key)
             .length,
-          activePeriods: periods.filter((m) => activeInBucket(m, bucket)).length,
+          activeCourses: scheduled.length,
           newEnrollments: enrollments.filter((e) => inside(e.enrolledAt, bucket)).length,
-          cancelledPlans: changes.filter(
-            (c) => c.kind === Enums.PurchaseChangeKind.CANCEL_PLAN && inside(c.completedAt, bucket),
-          ).length,
           cancelledEnrollments: enrollments.filter((e) => inside(e.cancelledAt, bucket)).length,
           classCount: scheduled.length,
           seats: capacity,
@@ -50,11 +43,3 @@ export const memberReport = async (query) => {
     { isolationLevel: Enums.TransactionIsolationLevel.RepeatableRead },
   );
 };
-function activeInBucket(membership, bucket) {
-  const start = Math.max(membership.startDate.getTime(), bucket.start.getTime());
-  const end = Math.min(membership.endDate.getTime(), bucket.end.getTime());
-  if (end <= start) return false;
-  return !membership.freezes.some(
-    (f) => f.startAt.getTime() <= start && (f.endedAt ?? f.endAt).getTime() >= end,
-  );
-}

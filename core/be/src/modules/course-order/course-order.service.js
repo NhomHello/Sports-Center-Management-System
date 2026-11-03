@@ -6,7 +6,7 @@ import {
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS } from '../../constants/index.js';
 import { getClassActions } from '../class/class-booking-policy.service.js';
-import { promoteWaitlist } from '../class/class-waitlist.service.js';
+import { joinWithDb, promoteWaitlist } from '../class/class-waitlist.service.js';
 import { CLASS_INCLUDE, coursePricing } from '../class/class.mapper.js';
 import { createInvoiceRecord, loadInvoicePolicy } from '../payment/invoice-create.service.js';
 import { INVOICE_INCLUDE } from '../payment/invoice.service.js';
@@ -50,14 +50,14 @@ const holdSeat = (db, { item, memberId, invoice, actor }) =>
       enrolledBy: actor.id,
       status: Enums.EnrollmentStatus.PENDING_PAYMENT,
       invoiceId: invoice.id,
-      holdExpiresAt: invoice.channel === Enums.InvoiceChannel.ONLINE ? invoice.expiresAt : null,
+      holdExpiresAt: invoice.expiresAt,
     },
     update: {
       status: Enums.EnrollmentStatus.PENDING_PAYMENT,
       enrolledBy: actor.id,
       enrolledAt: new Date(),
       invoiceId: invoice.id,
-      holdExpiresAt: invoice.channel === Enums.InvoiceChannel.ONLINE ? invoice.expiresAt : null,
+      holdExpiresAt: invoice.expiresAt,
       cancelledBy: null,
       cancelledAt: null,
       exceptionUntil: null,
@@ -92,7 +92,10 @@ const createCourseInvoice = (db, { item, memberId, channel, actor, now }) => {
  * @param {{ classId: number, memberId: number, channel: string }} input
  * @param {{ id: number }} actor
  */
-export const createCourseOrder = async ({ classId, memberId, channel }, actor) => {
+export const createCourseOrder = async (
+  { classId, memberId, channel, joinWaitlistWhenFull = false },
+  actor,
+) => {
   const invoice = await withScheduleTransaction(async (db) => {
     await loadMember(db, memberId);
     await promoteWaitlist(db, classId);
@@ -100,6 +103,10 @@ export const createCourseOrder = async ({ classId, memberId, channel }, actor) =
     const state = await getClassActions(db, item, memberId);
     const reused = await existingHold(db, state.enrollment, channel);
     if (reused) return reused;
+    if (joinWaitlistWhenFull && state.canJoinWaitlist) {
+      const waitlist = await joinWithDb(db, classId, { id: memberId });
+      return { queued: true, classId, waitlist };
+    }
     if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);
     const now = new Date();
     const created = await createCourseInvoice(db, { item, memberId, channel, actor, now });
@@ -117,6 +124,7 @@ export const createCourseOrder = async ({ classId, memberId, channel }, actor) =
     });
     return created;
   });
+  if (invoice.queued) return invoice;
   return invoice.channel === Enums.InvoiceChannel.ONLINE
     ? { ...invoice, paymentInstruction: await buildPaymentInstruction(invoice) }
     : invoice;

@@ -1,41 +1,23 @@
-import { SETTING_KEYS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
-import { TIME } from '../../constants/index.js';
-import { getValue } from '../setting/setting.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 
-async function membershipFilter(filter) {
-  const now = new Date();
-  const active = {
-    status: Enums.MembershipStatus.ACTIVE,
-    startDate: { lte: now },
-    endDate: { gt: now },
-  };
-  const filters = {
-    ACTIVE: { memberships: { some: active } },
-    NO_PLAN: { memberships: { none: {} } },
-    UNVERIFIED: { email: { not: null }, emailVerifiedAt: null },
-    FROZEN: { memberships: { some: { status: Enums.MembershipStatus.FROZEN } } },
-  };
-  if (filter === 'EXPIRING') {
-    const days = await getValue(SETTING_KEYS.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
-    return {
-      memberships: {
-        some: {
-          ...active,
-          endDate: { gt: now, lte: new Date(now.getTime() + days * TIME.MS_PER_DAY) },
-        },
-      },
-    };
-  }
-  return filters[filter] ?? {};
-}
-/** Bộ lọc thực hiện trước phân trang để không bỏ sót hồ sơ ngoài trang hiện tại. */
+const registered = { status: Enums.EnrollmentStatus.BOOKED };
+const filters = {
+  REGISTERED: { classEnrollments: { some: registered } },
+  NO_COURSE: { classEnrollments: { none: registered } },
+  UNVERIFIED: { email: { not: null }, emailVerifiedAt: null },
+  WAITING: {
+    waitlist: {
+      some: { status: { in: [Enums.WaitlistStatus.WAITING, Enums.WaitlistStatus.OFFERED] } },
+    },
+  },
+};
+/** Lọc đăng ký khoá trước phân trang; không trả thông tin gói tự tập. */
 export const list = async (query) => {
   const where = {
     role: { isDefault: true },
-    ...(await membershipFilter(query.membershipFilter)),
+    ...filters[query.courseFilter],
     ...(query.search && {
       OR: ['fullName', 'email', 'phone'].map((field) => ({ [field]: { contains: query.search } })),
     }),
@@ -45,27 +27,23 @@ export const list = async (query) => {
       where,
       include: {
         ...USER_WITH_ROLE,
-        // Kỳ có hạn muộn nhất (kể cả kỳ mua nối tiếp) cho biết hội viên còn gói tới ngày nào.
-        memberships: {
-          where: { status: { not: Enums.MembershipStatus.CANCELLED } },
+        classEnrollments: {
+          where: registered,
+          orderBy: { enrolledAt: 'desc' },
           take: 1,
-          orderBy: { endDate: 'desc' },
-          include: { plan: true },
+          include: { gymClass: { select: { id: true, name: true } } },
         },
+        _count: { select: { classEnrollments: { where: registered } } },
       },
       orderBy: { id: 'desc' },
       ...toPrismaPage(query),
     }),
     prisma.user.count({ where }),
   ]);
-  const items = users.map(({ memberships, ...user }) => {
-    const current = memberships[0];
-    return {
-      ...toPublicUser(user),
-      currentMembership: current
-        ? { ...current, isFrozen: current.status === Enums.MembershipStatus.FROZEN }
-        : null,
-    };
-  });
+  const items = users.map(({ classEnrollments, _count, ...user }) => ({
+    ...toPublicUser(user),
+    activeCourseCount: _count.classEnrollments,
+    latestCourse: classEnrollments[0]?.gymClass ?? null,
+  }));
   return { items, meta: buildPageMeta({ ...query, total }) };
 };

@@ -67,31 +67,34 @@ export const promoteWaitlist = async (db, classId, now = new Date()) => {
 };
 
 /** Chỉ vào hàng chờ khi lớp đã đầy (bao gồm các chỗ đang giữ). */
-export const join = (classId, actor) =>
-  withScheduleTransaction(async (db) => {
-    await promoteWaitlist(db, classId);
-    const item = await db.gymClass.findUnique({ where: { id: classId }, include: CLASS_INCLUDE });
-    if (!item) throw ApiError.notFound('Không tìm thấy lớp');
-    const existing = await db.classWaitlist.findUnique({
-      where: { classId_memberId: { classId, memberId: actor.id } },
-    });
-    if (existing && [W.WAITING, W.OFFERED].includes(existing.status)) return existing;
-    const state = await eligibleState(db, item, actor.id, new Date());
-    if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);
-    if (item._count.enrollments + (await heldSeats(db, classId, new Date())) < item.capacity)
-      throw ApiError.conflict('Lớp còn chỗ, hãy đăng ký trực tiếp');
-    const row = await db.classWaitlist.upsert({
-      where: { classId_memberId: { classId, memberId: actor.id } },
-      create: { classId, memberId: actor.id },
-      update: { status: W.WAITING, joinedAt: new Date(), offeredUntil: null },
-    });
-    await writeScheduleAudit(db, actor, {
-      action: AUDIT_ACTIONS.CREATE,
-      entity: 'ClassWaitlist',
-      entityId: row.id,
-    });
-    return row;
+export const joinWithDb = async (db, classId, actor) => {
+  await promoteWaitlist(db, classId);
+  const item = await db.gymClass.findUnique({ where: { id: classId }, include: CLASS_INCLUDE });
+  if (!item) throw ApiError.notFound('Không tìm thấy lớp');
+  const existing = await db.classWaitlist.findUnique({
+    where: { classId_memberId: { classId, memberId: actor.id } },
   });
+  if (existing && [W.WAITING, W.OFFERED].includes(existing.status)) return existing;
+  const state = await eligibleState(db, item, actor.id, new Date());
+  if (!state.canEnroll) throw ApiError.businessRule(state.enrollReason);
+  if (item._count.enrollments + (await heldSeats(db, classId, new Date())) < item.capacity)
+    throw ApiError.conflict('Lớp còn chỗ, hãy đăng ký trực tiếp');
+  const row = await db.classWaitlist.upsert({
+    where: { classId_memberId: { classId, memberId: actor.id } },
+    create: { classId, memberId: actor.id },
+    update: { status: W.WAITING, joinedAt: new Date(), offeredUntil: null },
+  });
+  await writeScheduleAudit(db, actor, {
+    action: AUDIT_ACTIONS.CREATE,
+    entity: 'ClassWaitlist',
+    entityId: row.id,
+  });
+  return row;
+};
+
+/** Vào hàng chờ bằng cùng khoá với checkout; không mở transaction lồng nhau. */
+export const join = (classId, actor) =>
+  withScheduleTransaction((db) => joinWithDb(db, classId, actor));
 
 /** Rời hàng chờ giải phóng chỗ giữ và thông báo ngay người kế tiếp. */
 export const leave = (classId, actor) =>

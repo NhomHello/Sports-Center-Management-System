@@ -3,6 +3,8 @@
  * Prefix chung (/api/v1) lay tu env.API_PREFIX trong app.js.
  */
 
+import sessionFeedbackRoutes from './modules/session-feedback/session-feedback.routes.js';
+import retiredMembershipRoutes from './modules/membership/retired-membership.routes.js';
 import profileRoutes from './modules/profile/profile.routes.js';
 import auditRoutes from './modules/audit/audit.routes.js';
 import attendanceHistoryRoutes from './modules/attendance/attendance-history.routes.js';
@@ -25,8 +27,6 @@ import sepayRoutes from './modules/payment/sepay.routes.js';
 import operatingFrameRoutes from './modules/operating-frame/operating-frame.routes.js';
 import roomTypeRoutes from './modules/room-type/room-type.routes.js';
 import paymentRoutes from './modules/payment/payment.routes.js';
-import membershipPlanRoutes from './modules/membership-plan/membership-plan.routes.js';
-import membershipRoutes from './modules/membership/membership.routes.js';
 import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import settingRoutes from './modules/setting/setting.routes.js';
@@ -45,9 +45,11 @@ const router = Router();
 router.use('/audit-logs', auditRoutes);
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);
+router.use(retiredMembershipRoutes);
 router.use(courseSummaryRoutes);
 router.use(profileRoutes);
 router.use('/reports', reportRoutes);
+router.use(sessionFeedbackRoutes);
 router.use('/attendance', attendanceHistoryRoutes);
 router.use(sprint3Routes);
 // Góp ý GV GĐ2–4: đường dẫn đầy đủ, đứng trước các router theo tiền tố (/members, /invoices…).
@@ -66,10 +68,8 @@ router.use('/reconciliations', reconciliationRoutes);
 router.use('/refunds', refundRoutes);
 router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
-router.use('/memberships', membershipRoutes);
 router.use('/users', userRoutes);
 router.use('/settings', settingRoutes);
-router.use('/membership-plans', membershipPlanRoutes);
 router.use('/subjects', subjectRoutes);
 router.use('/rooms', roomRoutes);
 router.use('/room-types', roomTypeRoutes);

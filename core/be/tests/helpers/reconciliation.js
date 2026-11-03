@@ -1,3 +1,5 @@
+import { TIME } from '../../src/constants/index.js';
+import { legacyOrder } from './legacy-invoice.js';
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
@@ -61,16 +63,21 @@ export const cleanupReconciliationFixture = async (f) => {
   await prisma.auditLog.deleteMany({
     where: { userId: null, entity: 'Invoice', createdAt: { gte: f.startedAt } },
   });
+  if (f.courseIds?.length) await prisma.classEnrollment.deleteMany({ where: { classId: { in: f.courseIds } } });
   await cleanupSprintFixture(f);
+  if (f.courseIds?.length) {
+    await prisma.classEvent.deleteMany({ where: { classId: { in: f.courseIds } } });
+    await prisma.classSession.deleteMany({ where: { classId: { in: f.courseIds } } });
+    await prisma.gymClass.deleteMany({ where: { id: { in: f.courseIds } } });
+    await prisma.room.delete({ where: { id: f.courseRoom.id } });
+    await prisma.subject.delete({ where: { id: f.courseSubject.id } });
+  }
   await prisma.membershipPlan.deleteMany({ where: { id: { in: [f.plan.id, f.renewal.id] } } });
 };
 
 /** Hội viên tự mua gói online, trả về hoá đơn PENDING. */
-export const buyOnline = async (f, token = f.memberToken, planId = f.plan.id) => {
-  const { api, apiPath, bearer } = await getApi();
-  return (await api.post(apiPath('/memberships/me/orders')).set(bearer(token)).send({ planId })).body
-    .data;
-};
+export const buyOnline = (f, token = f.memberToken, planId = f.plan.id) =>
+  legacyOrder(token === f.otherToken ? f.other.id : f.member.id, planId);
 
 /** Gửi một webhook tiền vào; mặc định đúng mã và đúng số tiền của hoá đơn. */
 export const sendTransfer = async (f, invoice, overrides = {}) => {
@@ -102,4 +109,20 @@ export const latestCase = async (f, where) => {
 export const asManager = async (f, method, path, body) => {
   const { api, apiPath, bearer } = await getApi();
   return api[method](apiPath(path)).set(bearer(f.adminToken)).send(body);
+};
+
+const COURSE_OFFSET = Object.freeze({ firstDays: 20, spacingDays: 2 });
+/** Khóa học riêng cho kiểm thử chuyển tiền từ giao dịch cũ sang sản phẩm mới. */
+export const createReconciliationCourse = async (f, price = f.plan.price) => {
+  f.courseIds ??= [];
+  f.courseSubject ??= await prisma.subject.create({ data: { name: `${f.prefix} Payment Course` } });
+  f.courseRoom ??= await prisma.room.create({ data: { name: `${f.prefix} Payment Room`, capacity: 20 } });
+  const coach = await prisma.user.findUniqueOrThrow({ where: { email: env.SEED_ADMIN_EMAIL } });
+  const start = new Date(Date.now() + (COURSE_OFFSET.firstDays + f.courseIds.length * COURSE_OFFSET.spacingDays) * TIME.MS_PER_DAY);
+  const end = new Date(start.getTime() + TIME.MS_PER_HOUR);
+  const item = await prisma.gymClass.create({ data: { name: `${f.prefix} Khóa ${f.courseIds.length + 1}`, price,
+    subjectId: f.courseSubject.id, roomId: f.courseRoom.id, coachId: coach.id, capacity: 20,
+    startsOn: start, endsOn: end, weeklySchedule: [], registrationStartAt: new Date(Date.now() - TIME.MS_PER_DAY), registrationEndAt: start,
+    sessions: { create: { startAt: start, endAt: end, coachId: coach.id, roomId: f.courseRoom.id } } } });
+  f.courseIds.push(item.id); return item;
 };

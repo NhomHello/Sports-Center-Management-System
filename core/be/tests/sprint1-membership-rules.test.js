@@ -1,71 +1,19 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { Enums, prisma } from '../src/config/db.js';
-import { TIME } from '../src/constants/index.js';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { api, apiPath, bearer } from './helpers/api.js';
-import { cleanupSprintFixture, createSprintFixture } from './helpers/sprint1.js';
-
-let fixture;
-let plan;
-
-beforeAll(async () => {
-  fixture = await createSprintFixture();
-  plan = await prisma.membershipPlan.create({
-    data: {
-      code: `${fixture.prefix}_RULES`,
-      name: `${fixture.prefix} Rules`,
-      price: 200000,
-      durationDays: 15,
-    },
+import { createSprintFixture, cleanupSprintFixture } from './helpers/sprint1.js';
+let f;
+beforeAll(async () => { f = await createSprintFixture(); });
+afterAll(async () => cleanupSprintFixture(f));
+describe('TC-COURSE-CUTOVER: ngừng bán gói tự tập', () => {
+  it('API mua/gia hạn/bảo lưu/danh mục gói trả 410, không tạo dữ liệu mới', async () => {
+    for (const [method, path] of [['post', '/memberships/orders'], ['post', '/memberships/me/orders'], ['post', '/memberships/1/freezes'], ['post', '/memberships/1/change'], ['get', '/membership-plans'], ['post', '/membership-plans']]) {
+      const res = await api[method](apiPath(path)).set(bearer(f.adminToken)).send({ planId: 1, memberId: f.member.id });
+      expect(res.status).toBe(410); expect(res.body.message).toContain('khóa học');
+    }
   });
-});
-
-afterAll(async () => cleanupSprintFixture(fixture));
-
-describe('Sprint 1: vòng đời membership và hóa đơn', () => {
-  it('không cho kích hoạt membership trực tiếp, bắt buộc đi qua hóa đơn PAID', async () => {
-    const bypass = await api
-      .post(apiPath('/memberships/purchase'))
-      .set(bearer(fixture.adminToken))
-      .send({ memberId: fixture.member.id, planId: plan.id, paidAt: new Date() });
-    expect(bypass.status).toBe(404);
-    expect(await prisma.membership.count({ where: { userId: fixture.member.id } })).toBe(0);
-  });
-
-  it('hóa đơn tại quầy không tự hết hạn khi tạo lại; gói có hóa đơn chỉ được ngừng bán', async () => {
-    const createOrder = () =>
-      api
-        .post(apiPath('/memberships/orders'))
-        .set(bearer(fixture.adminToken))
-        .send({ memberId: fixture.member.id, planId: plan.id });
-    const first = await createOrder();
-    await prisma.invoice.update({
-      where: { id: first.body.data.id },
-      data: { expiresAt: new Date(Date.now() - TIME.MS_PER_MINUTE) },
-    });
-    // Hóa đơn tại quầy chờ lễ tân thu tiền: không bị huỷ ngầm sau thời gian chờ online (BR-3.4
-    // chỉ áp dụng giao dịch online), tạo lại thì dùng lại hóa đơn cũ (BR-1.13).
-    const replacement = await createOrder();
-    expect(replacement.status).toBe(201);
-    expect(replacement.body.data.id).toBe(first.body.data.id);
-    expect(
-      (await prisma.invoice.findUniqueOrThrow({ where: { id: first.body.data.id } })).status,
-    ).toBe(Enums.InvoiceStatus.PENDING);
-
-    const removed = await api
-      .delete(apiPath(`/membership-plans/${plan.id}`))
-      .set(bearer(fixture.adminToken));
-    expect(removed.status).toBe(200);
-    expect(removed.body.data).toMatchObject({
-      status: Enums.MembershipPlanStatus.STOPPED,
-      isActive: false,
-    });
-    const audits = await prisma.auditLog.findMany({
-      where: {
-        entity: 'Invoice',
-        entityId: { in: [String(first.body.data.id), String(replacement.body.data.id)] },
-      },
-      select: { id: true },
-    });
-    fixture.auditIds.push(...audits.map(({ id }) => id));
+  it('hồ sơ cá nhân không trả gói tập hoặc đề nghị mua/gia hạn', async () => {
+    const res = await api.get(apiPath('/members/me')).set(bearer(f.memberToken));
+    expect(res.status).toBe(200); expect(res.body.data).not.toHaveProperty('memberships');
+    expect(res.body.data).not.toHaveProperty('currentMembership'); expect(res.body.data.activeCourseCount).toBe(0);
   });
 });

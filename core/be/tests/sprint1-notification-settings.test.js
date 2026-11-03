@@ -189,6 +189,6 @@ describe('Sprint 1: metadata, validation và quyền cấu hình', () => {
     ).toBe(403);
     const profile = await api.get(apiPath('/members/me')).set(bearer(token));
     expect(profile.status).toBe(200);
-    expect(profile.body.data.membershipAccess).toBe(false);
+    expect(profile.body.data).not.toHaveProperty('membershipAccess');
   });
 });

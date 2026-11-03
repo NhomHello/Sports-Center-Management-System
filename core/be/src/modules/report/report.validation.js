@@ -5,6 +5,7 @@ const filters = {
   from: z.iso.date(),
   to: z.iso.date(),
   planId: id.optional(),
+  classId: id.optional(),
   memberId: id.optional(),
   groupBy: z.enum(REPORT_GROUPS).default('day'),
   compare: z.literal('previous').optional(),

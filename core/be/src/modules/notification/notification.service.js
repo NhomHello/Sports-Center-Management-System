@@ -1,53 +1,9 @@
-import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
-import { Enums, prisma } from '../../config/db.js';
-import { TIME } from '../../constants/index.js';
-import * as settingService from '../setting/setting.service.js';
-
-const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
-const renewalKinds = new Set([
-  Enums.NotificationKind.MEMBERSHIP_EXPIRY_REMINDER,
-  Enums.NotificationKind.MEMBERSHIP_EXPIRED,
-]);
-const toNotificationView = (item) => ({
-  ...item,
-  ...(renewalKinds.has(item.kind) && {
-    action: { type: 'RENEW_MEMBERSHIP', label: 'Gia hạn gói tập', membershipId: item.membershipId },
-  }),
-});
-
-async function createExpiryReminders(userId) {
-  const reminderDays = await settingService.getValue(SETTING_KEYS.MEMBERSHIP_EXPIRY_REMINDER_DAYS);
-  const now = new Date();
-  const memberships = await prisma.membership.findMany({
-    where: {
-      userId,
-      freezes: { none: { endedAt: null, startAt: { lte: now }, endAt: { gt: now } } },
-      status: Enums.MembershipStatus.ACTIVE,
-      endDate: { gt: now, lte: new Date(now.getTime() + reminderDays * TIME.MS_PER_DAY) },
-    },
-    include: { plan: true },
-  });
-  if (!memberships.length) return;
-  const dateFormatter = new Intl.DateTimeFormat('vi-VN', { timeZone: VIETNAM_TIME_ZONE });
-  // BR-1.5: createMany + dedupeKey cho phép chạy lại sau lỗi mà không gửi trùng.
-  await prisma.notification.createMany({
-    skipDuplicates: true,
-    data: memberships.map((membership) => ({
-      userId,
-      membershipId: membership.id,
-      kind: Enums.NotificationKind.MEMBERSHIP_EXPIRY_REMINDER,
-      dedupeKey: `membership-expiry:${membership.id}:${membership.endDate.toISOString()}`,
-      title: 'Gói tập sắp hết hạn',
-      message: `Gói ${membership.plan.name} sẽ hết hạn vào ${dateFormatter.format(membership.endDate)}.`,
-    })),
-  });
-}
+import { prisma } from '../../config/db.js';
 
 /** UC-UM-17: danh sách và tổng chưa đọc đều giới hạn theo id đã xác thực. */
 export const listForUser = async (userId, query) => {
-  await createExpiryReminders(userId);
   const where = {
     userId,
     ...(query.kind && { kind: query.kind }),
@@ -64,7 +20,7 @@ export const listForUser = async (userId, query) => {
     prisma.notification.count({ where: { userId, readAt: null } }),
   ]);
   return {
-    items: items.map(toNotificationView),
+    items,
     meta: { ...buildPageMeta({ ...query, total }), unreadCount },
   };
 };

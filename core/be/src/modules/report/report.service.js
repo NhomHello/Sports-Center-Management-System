@@ -44,7 +44,7 @@ export const dashboard = async (query) => {
   await assertReportRange(query);
   return prisma.$transaction(
     async (db) => {
-      const [events, payment, memberships, sessions, enrollments] = await loadReportData(db, query);
+      const [events, payment, sessions, enrollments] = await loadReportData(db, query);
       const revenue = summarizeEvents(events, query);
       const comparison = query.compare
         ? compareRevenue(
@@ -62,6 +62,7 @@ export const dashboard = async (query) => {
           groupBy: query.groupBy ?? 'day',
           compare: query.compare ?? null,
           planId: query.planId ?? null,
+          classId: query.classId ?? null,
           memberId: query.memberId ?? null,
         },
         timeZone: TIME.VIETNAM_ZONE,
@@ -69,11 +70,6 @@ export const dashboard = async (query) => {
         comparison,
         breakdown: buildBreakdown(events),
         payment: { count: payment._count, receivedAmount: payment._sum.receivedAmount ?? 0 },
-        membership: {
-          total: memberships.length,
-          active: memberships.filter((m) => m.status === Enums.MembershipStatus.ACTIVE).length,
-          expired: memberships.filter((m) => m.status === Enums.MembershipStatus.EXPIRED).length,
-        },
         classes: {
           total: new Set(sessions.map((s) => s.classId)).size,
           sessions: sessions.length,

@@ -55,11 +55,11 @@ describe('Sprint 3 Khải: history, receipt and identity', () => {
   it('TC-S3-KAPI-06: member filters run before pagination', async () => {
     const res = await get('/members', f.adminToken, {
       search: f.prefix,
-      membershipFilter: 'NO_PLAN',
+      courseFilter: 'NO_COURSE',
       pageSize: 1,
     });
     expect(res.status).toBe(200);
-    expect(res.body.meta.total).toBe(1);
-    expect(res.body.data[0].id).toBe(f.other.id);
+    expect(res.body.meta.total).toBe(2);
+    expect(res.body.data).toHaveLength(1);
   });
 });

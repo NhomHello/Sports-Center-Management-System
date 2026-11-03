@@ -34,14 +34,14 @@ export const contactSchema = {
 export const mapSchema = {
   params,
   body: z
-    .object({ invoiceId: id.optional(), memberId: id.optional(), planId: id.optional() })
+    .object({ invoiceId: id.optional(), memberId: id.optional(), classId: id.optional() })
     .strict()
-    .refine((body) => body.invoiceId || (body.memberId && body.planId), {
-      message: 'Chọn hoá đơn, hoặc chọn hội viên và gói tập',
+    .refine((body) => body.invoiceId || (body.memberId && body.classId), {
+      message: 'Chọn hoá đơn, hoặc chọn hội viên và khóa học',
     }),
 };
 export const confirmSchema = { params, body: z.object({ amount: money, reference }).strict() };
-export const renewSchema = { params, body: z.object({ planId: id }).strict() };
+export const renewSchema = { params, body: z.object({ classId: id }).strict() };
 export const refundRequestSchema = {
   params,
   body: z.object({ amount: money.optional(), reason }).strict(),

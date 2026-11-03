@@ -75,6 +75,7 @@ export const ENTITIES = Object.freeze({
 /** Ma loi Prisma hay gap: https://www.prisma.io/docs/orm/reference/error-reference */
 export const PRISMA_ERROR = Object.freeze({
   UNIQUE_VIOLATION: 'P2002',
+  WRITE_CONFLICT: 'P2034',
   RECORD_NOT_FOUND: 'P2025',
   FOREIGN_KEY_VIOLATION: 'P2003',
 });
@@ -118,3 +119,12 @@ export const SPRINT3 = Object.freeze({
   PDF_MARGIN: 40,
   PDF_FONT_SIZE: 10,
 });
+
+/** Giới hạn kỹ thuật của ghi đồng thời và nội dung buổi học. */
+export const COURSE_CONTENT = Object.freeze({
+  DESCRIPTION_MAX: 2000,
+  NOTE_MAX: 2000,
+  RATING_MIN: 1,
+  RATING_MAX: 5,
+});
+export const TRANSACTION_RETRY = Object.freeze({ MAX_ATTEMPTS: 3, DELAY_MS: 25 });

@@ -120,6 +120,7 @@ export const cleanupClassFixture = async (f) => {
     where: classWhere,
     select: { id: true },
   });
+  await prisma.sessionFeedback.deleteMany({ where: { session: classWhere } });
   await prisma.classEvent.deleteMany({ where: classWhere });
   await prisma.classEnrollment.deleteMany({ where: classWhere });
   await prisma.classSession.deleteMany({ where: classWhere });

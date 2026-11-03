@@ -1,40 +1,26 @@
-import { PERMISSIONS } from '@scms/shared';
 import { ensureUniqueContacts } from '../../common/utils/account-contacts.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
-import * as permissionService from '../permission/permission.service.js';
 import { logger } from '../../config/logger.js';
 import { getPendingEmail, requestEmailChange } from '../auth/email-verification.service.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 
 /** Hồ sơ luôn lấy id từ token; membership chỉ hiện khi có quyền đọc tương ứng. */
 export const getOwn = async (actor) => {
-  const granted = await permissionService.getCodesByRoleId(actor.roleId);
-  const membershipAccess =
-    granted.has(PERMISSIONS.MEMBERSHIP_READ_OWN) || granted.has(PERMISSIONS.MEMBERSHIP_READ_ALL);
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: actor.id },
     include: {
       ...USER_WITH_ROLE,
-      ...(membershipAccess && {
-        memberships: { include: { plan: true }, orderBy: { endDate: 'desc' } },
-      }),
+      _count: {
+        select: { classEnrollments: { where: { status: Enums.EnrollmentStatus.BOOKED } } },
+      },
     },
   });
-  const { memberships: storedMemberships = [], ...profile } = user;
-  const memberships = storedMemberships.map((item) => ({
-    ...item,
-    status: item.endDate <= new Date() ? Enums.MembershipStatus.EXPIRED : item.status,
-  }));
+  const { _count, ...profile } = user;
   return {
     ...toPublicUser(profile),
     pendingEmail: await getPendingEmail(actor.id),
-    membershipAccess,
-    memberships,
-    currentMembership:
-      memberships.find(
-        (item) => item.status === Enums.MembershipStatus.ACTIVE && item.endDate > new Date(),
-      ) ?? null,
+    activeCourseCount: _count.classEnrollments,
   };
 };
 

@@ -1,3 +1,5 @@
+import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
+import { ApiError } from '../../common/errors/api-error.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { PRISMA_ERROR, SEPAY } from '../../constants/index.js';
@@ -105,6 +107,19 @@ const handle = async (tx, payload, invoiceCode) => {
   if (member.status !== Enums.UserStatus.ACTIVE) {
     const note = 'Tài khoản hội viên đã bị khoá';
     return toReview(tx, payload, { invoiceCode, invoice, reason: REASON.NO_MATCH, note });
+  }
+  if (invoice.kind === Enums.InvoiceKind.COURSE) {
+    try {
+      await assertCourseHold(tx, invoice);
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error;
+      return toReview(tx, payload, {
+        invoiceCode,
+        invoice,
+        reason: REASON.LATE,
+        note: error.message,
+      });
+    }
   }
   return handleTransfer(tx, payload, invoiceCode, invoice);
 };

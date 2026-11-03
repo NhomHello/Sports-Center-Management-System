@@ -5,20 +5,16 @@ import { reportRange } from './report-periods.js';
 const invoiceScope = (q) => ({
   ...(q.memberId && { userId: q.memberId }),
   ...(q.planId && { planId: q.planId }),
+  ...(q.classId && { classId: q.classId }),
 });
 
 /** Đọc toàn bộ chỉ số trong transaction nhất quán. */
 export const loadReportData = async (db, query) => {
   const range = reportRange(query);
   const scope = invoiceScope(query);
-  const membershipScope = {
-    ...scope,
-    startDate: { lt: range.lt },
-    endDate: { gte: range.gte },
-  };
   const enrollmentScope = {
     ...(query.memberId && { memberId: query.memberId }),
-    ...(query.planId && { member: { memberships: { some: membershipScope } } }),
+    ...(query.classId && { classId: query.classId }),
   };
   return Promise.all([
     loadFinanceEvents(db, query),
@@ -27,14 +23,10 @@ export const loadReportData = async (db, query) => {
       _count: true,
       _sum: { receivedAmount: true },
     }),
-    db.membership.findMany({
-      where: membershipScope,
-      select: { status: true, freezes: { where: { endedAt: null } } },
-    }),
     db.classSession.findMany({
       where: {
         startAt: range,
-        ...((query.memberId || query.planId) && {
+        ...((query.memberId || query.classId) && {
           gymClass: { enrollments: { some: enrollmentScope } },
         }),
       },

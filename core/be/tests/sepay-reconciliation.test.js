@@ -3,6 +3,7 @@ import { Enums, prisma } from '../src/config/db.js';
 import { api, apiPath, bearer } from './helpers/api.js';
 import {
   asManager,
+  createReconciliationCourse,
   buyOnline,
   cleanupReconciliationFixture,
   createReconciliationFixture,
@@ -137,21 +138,18 @@ describe('Đối soát SePay: thừa tiền và chuyển lặp (UC-PAY-11, 13)',
     const summary = await asManager(f, 'get', '/reconciliations/summary');
     expect(summary.body.data.duplicate).toBeGreaterThanOrEqual(1);
 
+    const course = await createReconciliationCourse(f);
     const noContact = await asManager(f, 'post', `/reconciliations/${kase.id}/renew`, {
-      planId: f.renewal.id,
+      classId: course.id,
     });
     expect(noContact.status).toBe(422);
     await contact(kase.id);
     const renewed = await asManager(f, 'post', `/reconciliations/${kase.id}/renew`, {
-      planId: f.renewal.id,
+      classId: course.id,
     });
     expect(renewed.body.data).toMatchObject({ status: STATUS.MATCHED, outcome: 'PAID' });
-    // GY-20: gia hạn bằng khoản lặp là một kỳ mới nối sau kỳ vừa mua.
-    const after = await prisma.membership.findFirstOrThrow({
-      where: { userId: f.other.id, id: { not: before.id } },
-      orderBy: { id: 'desc' },
-    });
-    expect(after.startDate).toEqual(before.endDate);
-    expect(after.endDate.getTime() - before.endDate.getTime()).toBe(10 * 24 * 3600 * 1000);
+    const after = await prisma.classEnrollment.findUniqueOrThrow({ where: { classId_memberId: { classId: course.id, memberId: f.other.id } } });
+    expect(after.status).toBe('BOOKED');
+    expect((await prisma.membership.findUnique({ where: { id: before.id } })).endDate).toEqual(before.endDate);
   });
 });

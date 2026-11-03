@@ -36,7 +36,7 @@ export const holdTargetSeat = (db, { target, memberId, invoice, actor }) => {
     status: Enums.EnrollmentStatus.PENDING_PAYMENT,
     enrolledBy: actor.id,
     invoiceId: invoice.id,
-    holdExpiresAt: invoice.channel === Enums.InvoiceChannel.ONLINE ? invoice.expiresAt : null,
+    holdExpiresAt: invoice.expiresAt,
   };
   return db.classEnrollment.upsert({
     where: { classId_memberId: { classId: target.id, memberId } },

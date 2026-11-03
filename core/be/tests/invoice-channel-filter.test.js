@@ -1,3 +1,4 @@
+import { legacyOrder } from './helpers/legacy-invoice.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Enums, prisma } from '../src/config/db.js';
 import { api, apiPath, bearer } from './helpers/api.js';
@@ -21,18 +22,8 @@ beforeAll(async () => {
       durationDays: 30,
     },
   });
-  online = (
-    await api
-      .post(apiPath('/memberships/me/orders'))
-      .set(bearer(fixture.memberToken))
-      .send({ planId: plan.id })
-  ).body.data;
-  counter = (
-    await api
-      .post(apiPath('/memberships/orders'))
-      .set(bearer(fixture.adminToken))
-      .send({ memberId: fixture.member.id, planId: other.id })
-  ).body.data;
+  online = await legacyOrder(fixture.member.id, plan.id, 'ONLINE');
+  counter = await legacyOrder(fixture.member.id, other.id, 'COUNTER');
   fixture.extraPlanId = other.id;
 });
 afterAll(async () => {

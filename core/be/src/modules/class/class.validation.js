@@ -42,6 +42,7 @@ export const createClassSchema = { body: classBody };
 export const updateClassSchema = { ...classIdSchema, body: classBody };
 export const listClassSchema = {
   query: paginationQuerySchema.extend({
+    paidOnly: z.stringbool().optional(),
     search: z.string().trim().max(VALIDATION.SEARCH_MAX_LENGTH).optional(),
     subjectId: id.optional(),
     coachId: id.optional(),

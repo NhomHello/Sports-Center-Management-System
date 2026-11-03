@@ -4,9 +4,8 @@ import { memberReport } from './report-member.service.js';
 const columns = [
   ['date', 'Kỳ'],
   ['newMembers', 'Hội viên mới'],
-  ['activePeriods', 'Kỳ gói hiệu lực'],
+  ['activeCourses', 'Khóa học trong kỳ'],
   ['newEnrollments', 'Đăng ký mới'],
-  ['cancelledPlans', 'Huỷ gói'],
   ['cancelledEnrollments', 'Huỷ đăng ký'],
   ['classCount', 'Lớp'],
   ['seats', 'Sức chứa'],

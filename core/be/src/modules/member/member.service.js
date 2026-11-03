@@ -1,14 +1,9 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { recordAudit } from '../../common/utils/audit.js';
-import { Enums, prisma } from '../../config/db.js';
+import { prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { USER_WITH_ROLE, toPublicUser } from '../user/user.mapper.js';
 import * as userService from '../user/user.service.js';
-
-const MEMBERSHIP_STATUS = Object.freeze({
-  ACTIVE: 'ACTIVE',
-  EXPIRED: 'EXPIRED',
-});
 
 /**
  * Lấy role mặc định dành cho hội viên.
@@ -61,47 +56,6 @@ const ensureUniqueIdentity = async ({ email, phone }, excludeId) => {
 };
 
 /**
- * Bổ sung trạng thái ACTIVE/EXPIRED cho membership.
- * @param {object} membership
- * @returns {object}
- */
-const toMembershipView = (membership) => ({
-  ...membership,
-  status: membership.endDate >= new Date() ? MEMBERSHIP_STATUS.ACTIVE : MEMBERSHIP_STATUS.EXPIRED,
-});
-
-/**
- * Lấy membership gần nhất của hội viên.
- * @param {number} memberId
- * @returns {Promise<object|null>}
- */
-const getMembershipSummary = async (memberId) => {
-  const membership = await prisma.membership.findFirst({
-    where: { userId: memberId, status: { not: Enums.MembershipStatus.CANCELLED } },
-    include: { plan: true },
-    orderBy: { endDate: 'desc' },
-  });
-
-  return membership ? toMembershipView(membership) : null;
-};
-
-/**
- * Lấy lịch sử membership của hội viên.
- * Gói STOPPED vẫn được include để không làm mất lịch sử.
- * @param {number} memberId
- * @returns {Promise<object[]>}
- */
-const getMembershipHistory = async (memberId) => {
-  const memberships = await prisma.membership.findMany({
-    where: { userId: memberId },
-    include: { plan: true },
-    orderBy: { startDate: 'desc' },
-  });
-
-  return memberships.map(toMembershipView);
-};
-
-/**
  * Đăng ký hội viên tại quầy bằng vai trò mặc định của hệ thống.
  * @param {{ email?: string, password: string, fullName: string, phone: string }} data
  * @param {{ id: number }} actor
@@ -148,16 +102,12 @@ export const getById = async (id) => {
     throw ApiError.notFound('Không tìm thấy hội viên');
   }
 
-  const [currentMembership, membershipHistory] = await Promise.all([
-    getMembershipSummary(id),
-    getMembershipHistory(id),
-  ]);
-
-  return {
-    ...toPublicUser(member),
-    currentMembership,
-    membershipHistory,
-  };
+  const enrollments = await prisma.classEnrollment.findMany({
+    where: { memberId: id },
+    include: { gymClass: { select: { id: true, name: true, description: true } } },
+    orderBy: { enrolledAt: 'desc' },
+  });
+  return { ...toPublicUser(member), courseEnrollments: enrollments };
 };
 
 /**

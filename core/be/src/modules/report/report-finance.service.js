@@ -4,6 +4,7 @@ import { reportRange } from './report-periods.js';
 const scopeFor = (query) => ({
   ...(query.memberId && { userId: query.memberId }),
   ...(query.planId && { planId: query.planId }),
+  ...(query.classId && { classId: query.classId }),
 });
 const details = {
   payments: { where: { provider: Enums.PaymentProvider.CREDIT }, select: { receivedAmount: true } },

@@ -1,3 +1,4 @@
+import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
@@ -75,6 +76,7 @@ export const openOrRefreshOverpaidCase = async (tx, invoice, log, excess) => {
 
 /** Khoá phiếu (FOR UPDATE) và chặn thao tác trên phiếu đã đóng (409 để FE tải lại). */
 export const lockCase = async (tx, id) => {
+  await lockSchedule(tx);
   await tx.$queryRaw`SELECT id FROM reconciliation_cases WHERE id = ${id} FOR UPDATE`;
   const kase = await tx.reconciliationCase.findUnique({
     where: { id },

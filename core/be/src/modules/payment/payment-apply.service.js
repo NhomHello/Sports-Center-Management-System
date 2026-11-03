@@ -1,3 +1,4 @@
+import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES, TIME } from '../../constants/index.js';
@@ -21,6 +22,7 @@ const OPEN_STATUSES = [
 
 /** Khoá hàng hoá đơn (FOR UPDATE) rồi đọc lại bản đầy đủ; null nếu không có. */
 export const lockInvoice = async (tx, { id, code }) => {
+  await lockSchedule(tx);
   const [row] = id
     ? await tx.$queryRaw`SELECT id FROM invoices WHERE id = ${id} FOR UPDATE`
     : await tx.$queryRaw`SELECT id FROM invoices WHERE code = ${code} FOR UPDATE`;

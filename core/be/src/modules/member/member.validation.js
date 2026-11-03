@@ -68,7 +68,7 @@ export const createMemberSchema = {
 
 export const listMembersSchema = {
   query: paginationQuerySchema.extend({
-    membershipFilter: z.enum(['ACTIVE', 'EXPIRING', 'NO_PLAN', 'UNVERIFIED', 'FROZEN']).optional(),
+    courseFilter: z.enum(['REGISTERED', 'NO_COURSE', 'UNVERIFIED', 'WAITING']).optional(),
     search: z
       .string()
       .trim()
