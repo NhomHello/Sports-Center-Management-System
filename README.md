@@ -65,7 +65,7 @@ scripts       npm run dev / setup
 | `npm run dev -- --prepare-only` | Chỉ chuẩn bị DB/seed để kiểm tra, không chiếm cổng BE/FE         |
 | `npm run db:migrate`    | Tạo migration mới sau khi sửa `schema.prisma` (hỏi tên)  |
 | `npm run db:seed`       | Đồng bộ permission / role / settings / mock user vào DB  |
-| `npm run db:demo`       | Reset dữ liệu nghiệp vụ rồi dựng dữ liệu demo (8 lớp, 45 hội viên, 9 gói tập, lịch sử thanh toán, tình huống đối soát) |
+| `npm run db:demo`       | Xóa và tạo lại dữ liệu bán khóa học (16 khóa, giữ chỗ, hàng chờ, lịch sử và tổng kết) |
 | `npm run db:clean`      | Chỉ reset: xoá hoá đơn, lớp, hội viên… giữ quyền, vai trò, cấu hình và tài khoản admin |
 | `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
 | `npm run lint`          | Lint toàn bộ (tự chạy khi commit)                        |
@@ -75,21 +75,17 @@ scripts       npm run dev / setup
 
 ## Dữ liệu demo
 
-`npm run db:demo` (chỉ chạy ở môi trường dev, có chặn `NODE_ENV=production`) gọi đúng các service nghiệp vụ
-nên dữ liệu sinh ra giống khi người dùng thao tác thật. Mã nguồn ở `core/be/prisma/seed/demo/`.
+Xem [hướng dẫn thay dữ liệu khóa học](docs/huong-dan/refresh-course-data.md).
+`npm run db:refresh:courses` chỉ xem trước; thêm `-- --yes` để xóa nghiệp vụ cũ và tạo lại
+bộ mẫu có liên kết đúng. `npm run db:demo` thực hiện xóa và tạo lại ngay.
+Giữ admin, phân quyền, settings/SePay và khung hoạt động; lỗi khi tạo/kiểm tra sẽ rollback nghiệp vụ.
 
-- Tài khoản: `admin@scms.local` / `SEED_ADMIN_PASSWORD`; `quanly`, `letan`, `letan2`, `coach.yoga|gym|boxing|pilates|dance|abcd|zxcv`,
-  `member1`…`member45` `@scms.local` / `SEED_MOCK_PASSWORD`.
-- `member1`–`member15` có sẵn các tình huống của `docs/kiem-thu/nghiem-thu/LoTrinh_Demo_Sprint2_Sprint3.md` (mục 1.2):
-  giữ chỗ lớp đầy, danh sách chờ, chuyển thiếu/thừa/hai lần, báo đã chuyển, gói sắp hết hạn, bảo lưu, hết hạn,
-  chưa xác minh email, bị chặn đăng ký, bị khoá.
-- `member16`–`member21`: tình huống góp ý giảng viên (Phần C của tài liệu demo): số dư sau hủy khóa, giữ chỗ khóa
-  chờ thanh toán, kỳ gói nối tiếp, gói "Tự tập sáng sớm" (check-in ngoài khung bị từ chối), đổi gói chờ thu chênh
-  lệch, báo nghỉ buổi. 5/8 lớp có học phí (bán theo khóa), 3 lớp miễn phí.
-- Có 9 gói tập mẫu; các lớp được đăng ký đến đủ sức chứa để kiểm tra danh sách và điểm danh. Lớp
-  "Boxing nhóm nhỏ" vẫn đầy để giữ tình huống danh sách chờ.
-- Lớp "Sức mạnh cơ bản" có một buổi đang diễn ra ngay lúc seed để HLV `coach.gym` thử điểm danh.
-- Hoá đơn online chờ thanh toán tự hết hạn sau `PAYMENT_ONLINE_TIMEOUT_MINUTES`; chạy lại `npm run db:demo` trước buổi demo.
+Bộ mẫu mới có 16 khóa, 44 đăng ký/hóa đơn, giữ chỗ thanh toán, hàng chờ, mô tả buổi học,
+ghi chú học viên và tổng kết. Không tạo gói tập. Tài khoản HLV `s4.coach@scms.test`,
+học viên `s4.member1@scms.test` đến `s4.member3@scms.test`, mật khẩu `SEED_MOCK_PASSWORD`.
+Dữ liệu demo Sprint 2/3 bên dưới chỉ mô tả bộ seed cũ.
+
+[Xử lý trùng lịch, thanh toán quầy/online và đối soát](docs/huong-dan/course-payment-conflicts.md).
 
 ## Sprint 2
 

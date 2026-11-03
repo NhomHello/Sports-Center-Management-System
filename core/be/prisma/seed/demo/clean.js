@@ -1,82 +1,36 @@
-/**
- * Reset dữ liệu nghiệp vụ của DB dev về trống để dựng lại demo.
- * GIỮ: permissions, roles, system_settings (gồm tài khoản nhận tiền SePay), tài khoản admin
- * (SEED_ADMIN_EMAIL), bảng migration và các bảng legacy Sprint 1 không còn trong schema.
- * XOÁ: hoá đơn, thanh toán, đối soát, số dư, lịch sử hủy/đổi, gói hội viên, lớp/buổi/đăng ký, thông báo, nhật ký,
- * bộ môn, loại phòng, phòng, gói tập và mọi tài khoản khác (khung giờ hoạt động là cấu hình, được giữ).
- *
- * Chạy: npm run db:clean -- --yes   (từ chối khi NODE_ENV=production hoặc thiếu --yes)
- */
+/** Dọn dữ liệu nghiệp vụ/legacy; giữ cấu hình, phân quyền, admin và số thứ tự ID. */
 import { prisma } from '../../../src/config/db.js';
-import { env } from '../../../src/config/env.js';
 import { logger } from '../../../src/config/logger.js';
+import { lockSchedule } from '../../../src/common/utils/schedule-transaction.js';
+import { buildCleanupPlan, clearBusinessData } from '../course-only/cleanup-plan.js';
+import { assertRefreshAllowed, loadPreservedAdmin } from '../course-only/refresh-service.js';
+import { DATASET } from '../course-only/dataset-config.js';
 
-// Thứ tự con → cha để không vướng khoá ngoại; không tắt FOREIGN_KEY_CHECKS.
-const TABLES_IN_ORDER = [
-  'sessionFeedback',
-  'courseRating', 'courseSummaryItem', 'courseSummary', 'coachProfile', 'memberProfile',
-  // Sổ số dư và lịch sử hủy/đổi tham chiếu hoá đơn, kỳ gói, đăng ký và khoản hoàn.
-  'creditTransaction',
-  'purchaseChange',
-  'reconciliationContact',
-  'refund',
-  'reconciliationCase',
-  'paymentWebhookLog',
-  'payment',
-  'invoice',
-  'membershipFreeze',
-  'membership',
-  'attendance',
-  'checkIn',
-  'classWaitlist',
-  'classEnrollment',
-  'classEvent',
-  'roomMaintenance',
-  'classSession',
-  'gymClass',
-  'subject',
-  'room',
-  // Gói tự tập tham chiếu loại phòng (khu tự tập) với RESTRICT: gỡ liên kết trước.
-  'planRoomType',
-  'planFrame',
-  'roomType',
-  'membershipPlan',
-  'notification',
-  'auditLog',
-  'loginThrottle',
-  'emailVerificationToken',
-];
-
-/**
- * Xoá dữ liệu nghiệp vụ trong một transaction; trả số dòng đã xoá theo bảng.
- * @returns {Promise<Record<string, number>>}
- */
-export const cleanDatabase = () =>
-  prisma.$transaction(
+/** Không tắt FOREIGN_KEY_CHECKS; gỡ liên kết nullable và xoá con trước cha trong transaction. */
+export const cleanDatabase = async () => {
+  assertRefreshAllowed();
+  const admin = await loadPreservedAdmin();
+  const plan = await buildCleanupPlan();
+  return prisma.$transaction(
     async (tx) => {
-      const deleted = {};
-      for (const model of TABLES_IN_ORDER) {
-        deleted[model] = (await tx[model].deleteMany({})).count;
-      }
-      deleted.user = (
-        await tx.user.deleteMany({ where: { email: { not: env.SEED_ADMIN_EMAIL } } })
-      ).count;
-      return deleted;
+      await lockSchedule(tx);
+      return clearBusinessData(tx, plan, admin.id);
     },
-    { timeout: 120000 },
+    { timeout: DATASET.TX_TIMEOUT_MS, maxWait: DATASET.MAX_WAIT_MS },
   );
-
-const isEntry = process.argv[1]?.endsWith('clean.js');
-if (isEntry) {
-  if (env.NODE_ENV === 'production') {
-    logger.error('Từ chối reset: NODE_ENV=production');
-    process.exit(1);
-  }
-  if (!process.argv.includes('--yes')) {
-    logger.error('Lệnh này xoá toàn bộ dữ liệu nghiệp vụ. Chạy lại với --yes để xác nhận.');
-    process.exit(1);
-  }
-  const deleted = await cleanDatabase();
-  logger.info({ deleted }, 'Đã reset dữ liệu nghiệp vụ');
-  await prisma.$disconnect();
+};
+if (process.argv[1]?.endsWith('clean.js')) {
+  Promise.resolve()
+    .then(() => {
+      assertRefreshAllowed();
+      if (!process.argv.includes('--yes'))
+        throw new Error('Lệnh này xóa dữ liệu nghiệp vụ. Thêm --yes để thực hiện');
+      return cleanDatabase();
+    })
+    .then((deleted) => logger.info({ deleted }, 'Đã dọn dữ liệu nghiệp vụ'))
+    .catch((err) => {
+      logger.error({ err }, 'Dọn dữ liệu không thành công');
+      process.exitCode = 1;
+    })
+    .finally(() => prisma.$disconnect());
 }
