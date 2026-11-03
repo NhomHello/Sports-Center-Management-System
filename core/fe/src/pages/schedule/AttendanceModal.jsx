@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Button, Form, Input, Modal, Space } from 'antd';
+import { Alert, Button, Form, Input, Modal } from 'antd';
 import { PERMISSIONS as P } from '@scms/shared';
 import { QUERY_KEYS } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
@@ -22,13 +22,36 @@ function useAttendanceClock() {
 
 function attendanceLock(session, now, unlockedUntil) {
   const isUnlocked = new Date(unlockedUntil ?? 0).getTime() > now;
-  if (session.status === 'CANCELLED')
-    return { disabled: true, message: 'Buổi học đã bị hủy.' };
+  if (session.status === 'CANCELLED') return { disabled: true, message: 'Buổi học đã bị hủy.' };
   if (new Date(session.startAt).getTime() > now)
     return { disabled: true, message: 'Chưa đến giờ bắt đầu điểm danh.' };
   if (new Date(session.endAt).getTime() <= now && !isUnlocked)
     return { disabled: true, message: 'Buổi học đã kết thúc; cần quản lý mở quyền sửa.' };
   return { disabled: false, message: null };
+}
+
+function AttendanceUnlockForm({ sessionId }) {
+  const [form] = Form.useForm();
+  const unlock = useScheduleMutation(({ reason }) => service.unlockAttendance(sessionId, reason));
+  return (
+    <Form form={form} className="scms-attendance-unlock" layout="vertical" onFinish={unlock.mutate}>
+      <Form.Item
+        name="reason"
+        className="scms-attendance-unlock__field"
+        rules={[{ required: true, whitespace: true }]}
+      >
+        <Input size="large" placeholder="Lý do mở hạn sửa" />
+      </Form.Item>
+      <Button
+        size="large"
+        htmlType="submit"
+        loading={unlock.isPending}
+        className="scms-attendance-unlock__button"
+      >
+        Mở hạn sửa
+      </Button>
+    </Form>
+  );
 }
 
 /** Chỉ gửi các lựa chọn đã ghi; không mặc định mọi người vắng khi mở form. */
@@ -50,8 +73,6 @@ export function AttendanceModal({ session, onClose }) {
       ),
     onClose,
   );
-  const unlock = useScheduleMutation(({ reason }) => service.unlockAttendance(session.id, reason));
-  const [unlockForm] = Form.useForm();
   const data = query.data?.data;
   const currentSession = data?.session ?? session;
   const { disabled, message: disabledMessage } = attendanceLock(
@@ -62,6 +83,8 @@ export function AttendanceModal({ session, onClose }) {
   return (
     <Modal
       open
+      centered
+      className="scms-attendance-modal"
       title="Điểm danh buổi học"
       onCancel={onClose}
       onOk={() => form.submit()}
@@ -69,15 +92,15 @@ export function AttendanceModal({ session, onClose }) {
       cancelText="Đóng"
       confirmLoading={save.isPending}
       okButtonProps={{ disabled }}
-      width={760}
+      width={720}
+      style={{ maxWidth: '92vw' }}
     >
       <QueryState query={query}>
-        {disabled && (
-          <Alert showIcon type="warning" title={disabledMessage} />
-        )}
+        {disabled && <Alert showIcon type="warning" title={disabledMessage} />}
         {save.isError && <Alert showIcon type="error" title={save.error.message} />}
         {data && (
           <Form
+            className="scms-attendance-form"
             key={query.dataUpdatedAt}
             form={form}
             onFinish={save.mutate}
@@ -87,18 +110,7 @@ export function AttendanceModal({ session, onClose }) {
             <AttendanceTable data={data} />
           </Form>
         )}
-        {can(P.ATTENDANCE_MANAGE) && (
-          <Form form={unlockForm} onFinish={unlock.mutate}>
-            <Space>
-              <Form.Item name="reason" rules={[{ required: true, whitespace: true }]}>
-                <Input placeholder="Lý do mở hạn sửa" />
-              </Form.Item>
-              <Button htmlType="submit" loading={unlock.isPending}>
-                Mở hạn sửa
-              </Button>
-            </Space>
-          </Form>
-        )}
+        {can(P.ATTENDANCE_MANAGE) && <AttendanceUnlockForm sessionId={session.id} />}
       </QueryState>
     </Modal>
   );

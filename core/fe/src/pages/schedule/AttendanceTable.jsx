@@ -13,18 +13,30 @@ export function AttendanceTable({ data }) {
     <Table
       rowKey={(row) => row.member.id}
       dataSource={data.items}
+      className="scms-attendance-table"
+      size="middle"
       pagination={false}
+      scroll={{ x: 420, y: 'min(42vh, 340px)' }}
       columns={[
-        { title: 'Hội viên', render: (_, row) => <StudentProfileButton member={row.member} /> },
+        {
+          title: 'Hội viên',
+          width: '55%',
+          render: (_, row) => (
+            <div className="scms-attendance-member">
+              <StudentProfileButton member={row.member} />
+            </div>
+          ),
+        },
         {
           title: 'Điểm danh',
+          width: '45%',
           render: (_, row) => (
             <Form.Item name={String(row.member.id)} noStyle>
               <Select
                 allowClear
                 aria-label={`Điểm danh ${row.member.fullName}`}
                 placeholder="Chưa ghi"
-                style={{ width: 180 }}
+                style={{ width: '100%', maxWidth: '160px' }}
                 options={OPTIONS}
               />
             </Form.Item>
