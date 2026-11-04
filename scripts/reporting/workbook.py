@@ -1,3 +1,4 @@
+from workflows import FLOWS, STATES
 """Generate task, commit and data traceability without rewriting Git attribution."""
 from collections import Counter
 import textwrap
@@ -70,14 +71,12 @@ def build(snapshot):
     sheet(book,'CanDoiChieu',['Task ID','Người nhận','Nội dung','Hành động cần làm'],[[t['id'],t['owner'],t['function'],'Mở task và file/test tương ứng; xác nhận commit triển khai. Không sửa message/author để tạo bằng chứng giả.'] for t in tasks if not t['commits']],{1:14,2:18,3:110,4:95})
     dictionary=[]
     for name,model in snapshot['models'].items():
-        if not name[0].isupper():
-            continue
         for field in model['fields']:
             relational=field['type'].rstrip('?[]') in snapshot['models']
-            dictionary.append([name,model['table'],field['name'],field['column'] if not relational else 'Quan hệ Prisma',field['type'],'Có' if field['type'].endswith('?') else 'Không',field['attributes'],'' if name[0].islower() else 'Xem module nghiệp vụ / bảng kỹ thuật'])
+            dictionary.append([name,model['table'],field['name'],field['column'] if not relational else 'Quan hệ Prisma',field['type'],'Có' if field['type'].endswith('?') else 'Không',field['attributes'],'' if name[0].islower() else 'Vật lý; kiểm tra phạm vi legacy ở báo cáo'])
     sheet(book,'DataDictionary',['Model','Bảng','Field','Cột DB / quan hệ','Kiểu Prisma','Nullable','Ràng buộc','Phạm vi'],dictionary,{1:27,2:32,3:30,4:30,5:27,7:100,8:50})
-    sheet(book,'ModelConstraints',['Model','Ràng buộc cấp model'],[[name,c] for name,model in snapshot['models'].items() if name[0].isupper() for c in model['constraints']],{1:32,2:135})
-    sheet(book,'ForeignKeys',['Bảng con','Quan hệ','FK','Bảng cha','Tham chiếu','Mỗi con có cha','Mỗi cha có con'],[[r['from'],r['field'],','.join(r['keys']),r['to'],','.join(r['references']),'0..1' if r['optional'] else '1','0..1' if r['unique'] else '0..*'] for r in snapshot['relations'] if r['from'][0].isupper() and r['to'][0].isupper()],{1:30,2:30,3:34,4:30,5:25})
+    sheet(book,'ModelConstraints',['Model','Ràng buộc cấp model'],[[name,c] for name,model in snapshot['models'].items() for c in model['constraints']],{1:32,2:135})
+    sheet(book,'ForeignKeys',['Bảng con','Quan hệ','FK','Bảng cha','Tham chiếu','Mỗi con có cha','Mỗi cha có con'],[[r['from'],r['field'],','.join(r['keys']),r['to'],','.join(r['references']),'0..1' if r['optional'] else '1','0..1' if r['unique'] else '0..*'] for r in snapshot['relations']],{1:30,2:30,3:34,4:30,5:25})
     sheet(book,'Enums',['Enum','Các giá trị'],[[name,', '.join(values)] for name,values in snapshot['enums'].items()],{1:35,2:130})
     sheet(book,'FuncRule',['Func','Rule'],RULES,{1:32,2:145})
     sheet(book,'Demo28Phut',['Mốc','Phút','Người đề xuất','Màn hình','Thao tác / kết quả','Điều kiện / dự phòng'],DEMO,{1:22,2:10,3:25,4:42,5:105,6:100})
@@ -87,6 +86,6 @@ def build(snapshot):
     chart.add_data(Reference(page,min_col=2,min_row=1,max_row=len(months)+1),titles_from_data=True)
     chart.set_categories(Reference(page,min_col=1,min_row=2,max_row=len(months)+1));page.add_chart(chart,'D2')
     sheet(book,'ChecklistNop',['Yêu cầu','Artifact','Bằng chứng / việc còn lại'],[
-      ['Features + flow','SWP391_BaoCaoDoAn_v1.docx','14 nhóm tính năng, 7 swimlane theo actor'],['State chart','Báo cáo + so-do/state-*.svg','7 sơ đồ; tách enum với trạng thái suy diễn'],['Conceptual + ERD','Báo cáo; ERD_DayDu PDF; DataDictionary','42 model đang dùng, 72 quan hệ có FK; schema là nguồn'],['Func | Rule','Báo cáo; FuncRule','35 quy tắc hiện hành và nguồn kiểm chứng'],['Slide ≤5','SWP391_ThuyetTrinh_v1.pptx','5 slide có speaker notes; giả định giới hạn 5 slide'],['Demo 25–30 phút','KichBanDemo; Demo28Phut','28 phút; cần diễn tập trực tiếp, không đánh dấu đã diễn tập'],['Git + task + timeline','GitTimeline; TaskTraceability','Giữ SHA, author, ngày và trạng thái gốc'],['Phân công S4','Task sheet S4 + role split','Bảo nhận toàn bộ phần Nhanh; lịch sử Git giữ nguyên']
+      ['Features + flow','SWP391_BaoCaoDoAn_v1.docx',f'14 nhóm tính năng, {len(FLOWS)} swimlane theo actor'],['State chart','Báo cáo + so-do/state-*.svg',f'{len(STATES)} sơ đồ; tách enum với trạng thái suy diễn'],['Conceptual + ERD','Báo cáo; ERD_DayDu PDF; DataDictionary',f'{len(snapshot["models"])} model vật lý, {len(snapshot["relations"])} FK; có bảng legacy giữ lịch sử'],['Func | Rule','Báo cáo; FuncRule','44 quy tắc hiện hành và nguồn kiểm chứng'],['Slide ≤5','SWP391_ThuyetTrinh_v1.pptx','5 slide có speaker notes; giả định giới hạn 5 slide'],['Demo 25–30 phút','KichBanDemo; Demo28Phut','28 phút; cần diễn tập trực tiếp, không đánh dấu đã diễn tập'],['Git + task + timeline','GitTimeline; TaskTraceability','Giữ SHA, author, ngày và trạng thái gốc'],['Phân công S4','Task sheet S4 + role split','Bảo nhận toàn bộ phần Nhanh; lịch sử Git giữ nguyên']
     ],{1:30,2:70,3:110})
     book.save(OUT/'SWP391_TaskTraceability_v1.xlsx')

@@ -104,8 +104,8 @@ def collect():
         matches = [c for c in commits if task['id'] in c['tasks']]
         task['commits'] = [c['hash'] for c in matches]
         task['evidence'] = 'ID trực tiếp trong commit' if matches else 'Cần đối chiếu nội dung; không suy ra từ tên nhánh'
-    sources = ['core/be/prisma/schema.prisma', 'docs/README.md', 'README.md', 'package.json', 'core/be/package.json', 'core/fe/package.json', *sorted({t['source'] for t in tasks}), *[str(p.relative_to(ROOT)) for p in sorted((ROOT/'docs/yeu-cau').glob('*.docx'))]]
-    snapshot = {'baseline': git('rev-parse', 'main'), 'date': '2026-10-29', 'repo': REPO, 'sources': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in sources}, 'tasks': tasks, 'commits': commits, 'models': models, 'relations': relations, 'enums': enums}
+    sources = ['core/be/prisma/schema.prisma', 'docs/README.md', 'README.md', 'package.json', 'core/be/package.json', 'core/fe/package.json', *[str(p.relative_to(ROOT)) for folder in ['core/be/src','core/fe/src','core/shared/src'] for p in sorted((ROOT/folder).rglob('*')) if p.suffix in {'.js','.jsx'}], *[str(p.relative_to(ROOT)) for p in sorted((ROOT/'scripts/reporting').glob('*.py'))], *[str(p.relative_to(ROOT)) for p in sorted((ROOT/'docs/huong-dan').glob('course-*.md'))], *sorted({t['source'] for t in tasks}), *[str(p.relative_to(ROOT)) for p in sorted((ROOT/'docs/yeu-cau').glob('*.docx'))]]
+    snapshot = {'baseline': git('rev-parse', 'main'), 'date': __import__('content').REVIEW_DATE, 'repo': REPO, 'sources': {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in sources}, 'tasks': tasks, 'commits': commits, 'models': models, 'relations': relations, 'enums': enums}
     (OUT / 'evidence.json').write_text(json.dumps(snapshot, ensure_ascii=False, indent=2))
     print(json.dumps({'commits': len(commits), 'tasks': len(tasks), 'directTaskLinks': sum(bool(t['commits']) for t in tasks), 'models': len(models), 'relations': len(relations)}, ensure_ascii=False))
     return snapshot

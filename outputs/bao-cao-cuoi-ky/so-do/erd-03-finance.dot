@@ -2,7 +2,7 @@ digraph G {
 graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
 node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
 edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
-label="Gói và tài chính"; labelloc=t;
+label="Khóa học, tài chính và bảng lịch sử"; labelloc=t;
 User [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>User</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">users</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">status : UserStatus</TD></TR><TR><TD ALIGN="LEFT">roleId : Int [FK]</TD></TR></TABLE>>];
 MembershipPlan [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>MembershipPlan</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">membership_plans</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">code : String</TD></TR><TR><TD ALIGN="LEFT">name : String</TD></TR><TR><TD ALIGN="LEFT">status : MembershipPlanStatus</TD></TR></TABLE>>];
 Membership [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>Membership</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">memberships</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">userId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">planId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">status : MembershipStatus</TD></TR><TR><TD ALIGN="LEFT">invoiceId : Int? [FK]</TD></TR></TABLE>>];

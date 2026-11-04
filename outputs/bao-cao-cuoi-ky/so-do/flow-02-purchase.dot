@@ -2,28 +2,27 @@ digraph G {
 graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
 node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
 edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
-label="Mua gói tự tập hoặc khóa học"; labelloc=t;
-subgraph cluster_0 { label="Hội viên / lễ tân"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
-a [label="Chọn gói tự tập hoặc khóa\nvà kênh mua", shape=box];
+label="Mua khóa và thanh toán sát hạn"; labelloc=t;
+subgraph cluster_0 { label="Hội viên / nhân viên"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+a [label="Chọn khóa và kênh mua", shape=box];
 }
 subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
-b [label="Kiểm tra quyền, sản phẩm;\nkhóa: sức chứa và trùng lịch", shape=box];
-c [label="Điều kiện hợp lệ?", shape=diamond];
-d [label="Tính giá; tạo Invoice PENDING;\nkhóa: giữ PENDING_PAYMENT", shape=box];
-f [label="Giao dịch hợp lệ\nvà đúng tổng tiền?", shape=diamond];
-g [label="Invoice PAID; tạo kỳ gói\nhoặc BOOKED; audit", shape=box];
-h [label="Thiếu/thừa/sai mã: đối soát;\nhết hạn: FAILED, nhả chỗ", shape=box];
-i [label="Từ chối; không tạo giao dịch", shape=box];
+b [label="Khóa lịch, kiểm tra lịch/chỗ;\nsnapshot giá và giữ chỗ", shape=box];
+d [label="Đúng tổng tiền, đúng hạn\nvà chỗ còn hợp lệ?", shape=diamond];
+e [label="PAID + BOOKED;\nnút Đã đăng ký bị khóa", shape=box];
+f [label="Thiếu/thừa/trễ/trùng lịch:\nlưu tiền và phiếu đối soát", shape=box];
+g [label="Hết deadline: ngừng thu/QR;\nonline chờ webhook đúng hạn", shape=box];
+h [label="Hết grace chưa chốt:\nFAILED, CANCELLED, mời FIFO", shape=box];
 }
-subgraph cluster_2 { label="Kênh thanh toán"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
-e [label="Thu quầy / webhook SePay\nhoặc dùng số dư", shape=box];
+subgraph cluster_2 { label="Ngân hàng / thu quầy"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+c [label="Chuyển tiền / xác nhận thu\ntrước deadline", shape=box];
 }
 a -> b [label=""];
 b -> c [label=""];
-c -> d [label="Có"];
-c -> i [label="Không"];
-d -> e [label=""];
-e -> f [label=""];
-f -> g [label="Có"];
-f -> h [label="Không"];
+c -> d [label=""];
+d -> e [label="Có"];
+d -> f [label="Không"];
+b -> g [label="Đến hạn"];
+g -> d [label="Webhook có chứng cứ trước hạn"];
+g -> h [label="Hết khoảng chờ"];
 }

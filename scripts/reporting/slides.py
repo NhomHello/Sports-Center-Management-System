@@ -59,12 +59,12 @@ def build(snapshot):
         text(slide,x,5.2,2.85,1.05,role,14,'C6DDE9')
     slide.notes_slide.notes_text_frame.text='00:00–01:00. Nhóm trình bày Sports Center Management System cho SWP391 FA26, đề tài 4. Nêu tên bốn thành viên và phạm vi hệ thống. Phần chia việc trên slide là nhóm công việc tiêu biểu; đóng góp đầy đủ xem task sheet và Git. Ở Sprint 4, Bảo nhận toàn bộ phần trước đây giao Nhanh; Khôi làm hồ sơ full-stack, Khải FE tổng kết và kiểm thử.'
     slide=new(prs,2,'02  WHY / CONTEXT','Một thay đổi vận hành chạm nhiều bộ phận')
-    for x,kicker,title,body in [(.6,'01  LỊCH VÀ CHỖ','Đăng ký trùng?','Lớp, HLV và phòng có thể xung đột.\nGiữ chỗ phải nhất quán khi nhiều người cùng đăng ký.'),(4.72,'02  TIỀN VÀ QUYỀN LỢI','Tiền về chưa khớp?','Thiếu, thừa, sai mã và chuyển lặp.\nCần biết khi nào được kích hoạt gói hoặc chỗ học.'),(8.84,'03  KẾT QUẢ VÀ LỊCH SỬ','Ai đổi, đổi lúc nào?','Hồ sơ, điểm danh và kết quả cần đúng phạm vi.\nBáo cáo phải giải thích được thu và hoàn.')]:
+    for x,kicker,title,body in [(.6,'01  LỊCH VÀ CHỖ','Đăng ký trùng?','Lớp, HLV và phòng có thể xung đột.\nGiữ chỗ phải nhất quán khi nhiều người cùng đăng ký.'),(4.72,'02  TIỀN VÀ QUYỀN LỢI','Tiền về chưa khớp?','Thiếu, thừa, sai mã và chuyển lặp.\nCần biết khi nào được xác nhận chỗ học.'),(8.84,'03  KẾT QUẢ VÀ LỊCH SỬ','Ai đổi, đổi lúc nào?','Hồ sơ, điểm danh và kết quả cần đúng phạm vi.\nBáo cáo phải giải thích được thu và hoàn.')]:
         card(slide,x,2.1,3.9,3.95,kicker,title,body)
     text(slide,.65,6.28,12,.5,'Bối cảnh nghiệp vụ của đồ án; dữ liệu demo là dữ liệu giả, không phải kết quả khảo sát thực địa.',13,MUTED)
     slide.notes_slide.notes_text_frame.text='01:00–02:00. Dùng một tình huống xuyên suốt: hội viên mua khóa nhưng chuyển thiếu tiền, trong khi chỗ lớp phải được giữ đúng hạn. Nếu chỉ quản lý bằng tin nhắn/bảng tính, trạng thái tiền, chỗ và thông báo có thể lệch nhau. Mục tiêu là kiểm soát các điểm này bằng một luồng có trạng thái, quyền và lịch sử. Không nêu số liệu tiết kiệm thời gian hay doanh thu vì nhóm chưa có đo đạc thực tế.'
     slide=new(prs,3,'03  WHAT + WHO','Một luồng thống nhất, bốn phạm vi trách nhiệm')
-    stages=['Chọn gói / khóa','Giữ chỗ + hóa đơn','Thu tiền hợp lệ','Học + tổng kết','Báo cáo + audit']
+    stages=['Chọn khóa học','Giữ chỗ + hóa đơn','Thu tiền hợp lệ','Học + tổng kết','Báo cáo + audit']
     for index,label in enumerate(stages):
         x=.6+index*2.5;box(slide,x,2.15,2.25,.72,TEAL if index==2 else BLUE)
         text(slide,x+.08,2.35,2.1,.35,label,13,WHITE,True)
@@ -73,8 +73,8 @@ def build(snapshot):
     for index,(name,body) in enumerate(roles):
         x=.6+index*3.1;box(slide,x,3.45,2.9,1.85,WHITE)
         text(slide,x+.13,3.7,2.64,.5,name,14,TEAL,True);text(slide,x+.13,4.32,2.64,.8,body,14,MUTED)
-    text(slide,.65,5.8,12,1,'Gói tự tập ≠ khóa học     |     API kiểm tra quyền và phạm vi     |     Snapshot khi công bố',19,INK,True)
-    slide.notes_slide.notes_text_frame.text='02:00–03:30. Giải thích hai sản phẩm độc lập: kỳ gói cho quyền tự tập; khóa/lớp có đăng ký riêng, có thể miễn phí hoặc thu học phí. Lớp thu phí tạo hóa đơn và giữ chỗ; chỉ khi đủ tiền mới BOOKED. Lễ tân làm hộ dùng cùng luật với hội viên nhưng ghi đúng người thao tác. HLV chỉ có học viên theo các buổi thực dạy và đồng ý chia sẻ. Mọi thao tác quan trọng kiểm tra permission ở API, menu không phải ranh giới bảo vệ.'
+    text(slide,.65,5.8,12,1,'Bán khóa học  |  Quyền kiểm tra tại API  |  Tổng kết có snapshot',19,INK,True)
+    slide.notes_slide.notes_text_frame.text='02:00–03:30. Phạm vi hiện hành chỉ bán khóa học; các bảng gói cũ giữ để đối chiếu.  Lớp thu phí tạo hóa đơn và giữ chỗ; chỉ khi đủ tiền mới BOOKED. Lễ tân làm hộ dùng cùng luật với hội viên nhưng ghi đúng người thao tác. HLV chỉ có học viên theo các buổi thực dạy và đồng ý chia sẻ. Mọi thao tác quan trọng kiểm tra permission ở API, menu không phải ranh giới bảo vệ.'
     slide=new(prs,4,'04  TECHNOLOGY + ARCHITECTURE','Giữ nghiệp vụ nhất quán tại API và dữ liệu',True)
     for x,title,body in [(.6,'TRÌNH DUYỆT','React 19 · Ant Design 6\nRouter · Query · Zustand'),(4.72,'API NGHIỆP VỤ','Node · Express 5 · Zod\nJWT → quyền → service'),(8.84,'DỮ LIỆU','Prisma 7 · MySQL 8\nTransaction · FK · unique')]:
         box(slide,x,2.25,3.9,1.75,'1B435E');text(slide,x+.18,2.52,3.5,.4,title,17,'8FC8DE',True);text(slide,x+.18,3.12,3.5,.65,body,15,WHITE)
@@ -83,16 +83,12 @@ def build(snapshot):
         y=4.55+index*.6;text(slide,.7,y,2.5,.4,title,13,'8FC8DE',True);text(slide,3.25,y,9.2,.4,body,16,WHITE)
     slide.notes_slide.notes_text_frame.text='03:30–05:00. Dự án là npm workspaces: core/fe, core/be và core/shared. Browser gửi HTTP JSON; Express xác thực JWT, nạp permission và validate Zod trước service. Service dùng Prisma với MySQL. Tranh chấp chỗ và thanh toán được kiểm tra lại trong transaction có khóa. Worker chạy cùng vòng đời server, chưa phải một dịch vụ queue riêng. SePay gọi webhook vào API; SMTP gửi từ server. Tổng kết công bố có snapshot, revision và audit; báo cáo dùng cùng builder khi xem và xuất file.'
     slide=new(prs,5,'05  LIVE DEMO / 28 PHÚT','Chứng minh luồng chạy được và có bằng chứng')
-    steps=[('06–10’','Mua → thiếu tiền → chuyển bù → PAID'),('10–13’','Đăng ký, chặn trùng lịch, xử lý hộ'),('13–16’','Hồ sơ và phạm vi chia sẻ'),('16–21’','Tổng kết → PDF → đánh giá → mở lại'),('21–24’','Báo cáo theo kỳ và xuất Excel')]
+    steps=[('06–10’','Mua khóa → thiếu → bù trong hạn → PAID'),('10–13’','Hủy khóa → mã HT → admin hoàn'),('13–16’','Buổi 1–N: điểm danh, đánh giá, note'),('16–21’','Tổng kết → PDF → đánh giá → mở lại'),('21–24’','Báo cáo theo kỳ và xuất Excel')]
     for index,(time,label) in enumerate(steps):
         y=2.15+index*.62;text(slide,.65,y,1.25,.4,time,16,TEAL,True);text(slide,1.95,y,5.6,.45,label,17,INK)
-    image=ROOT/'outputs/sprint4-bao/reports-desktop.png'
-    if image.exists():
-        from PIL import Image
-        width,height=Image.open(image).size
-        picture=slide.shapes.add_picture(str(image),Inches(7.85),Inches(2.25),width=Inches(4.8),height=Inches(2.8))
-        picture.crop_bottom=max(0,1-(2.8/4.8)/(height/width))
-    text(slide,7.9,5.35,4.7,.7,'Ảnh giao diện báo cáo Sprint 4\nDữ liệu seed phục vụ demo',12,MUTED)
+    box(slide,8.0,2.3,4.6,2.9,WHITE)
+    text(slide,8.2,2.55,4.15,.6,'Điểm cần chứng minh',18,TEAL,True)
+    text(slide,8.2,3.2,4.1,1.7,'15 phút + chờ webhook\nHT: liên hệ admin hoàn\nĐủ Buổi 1–N, đúng hội viên',16,INK)
     box(slide,.65,6.0,11.9,.68,INK);text(slide,.85,6.15,11.5,.4,'24–26’: task + commit + test     •     26–28’: hỏi đáp và dự phòng',16,WHITE)
-    slide.notes_slide.notes_text_frame.text='05:00–06:00: giới thiệu thứ tự rồi chuyển trình duyệt. Demo 06:00–24:00 theo runbook. 24:00–26:00 mở một task, commit thật, service và test có liên quan; phân biệt ngày kế hoạch với author/committer date. 26:00–28:00 hỏi đáp. Giữ sẵn profile bốn vai trò, hóa đơn mới và một tổng kết DRAFT. Dùng simulator local đã kiểm tra, không chuyển tiền thật. Nếu webhook không sẵn, đổi sang thu quầy và nói rõ kênh thay thế. Cần cả nhóm diễn tập trực tiếp trước nộp; việc tạo kịch bản không có nghĩa đã diễn tập.'
+    slide.notes_slide.notes_text_frame.text='05:00–06:00: giới thiệu thứ tự rồi chuyển trình duyệt. Demo 06:00–24:00 theo runbook. 24:00–26:00 mở một task, commit thật, service và test có liên quan; phân biệt ngày kế hoạch với author/committer date. 26:00–28:00 hỏi đáp. Giữ sẵn profile bốn vai trò, hóa đơn mới và một tổng kết DRAFT. Hủy khóa không ghi vào ví; admin tra HT rồi xác nhận chuyển trả giả lập. Dùng simulator local đã kiểm tra, không chuyển tiền thật. Nếu webhook không sẵn, đổi sang thu quầy và nói rõ kênh thay thế. Cần cả nhóm diễn tập trực tiếp trước nộp; việc tạo kịch bản không có nghĩa đã diễn tập.'
     prs.save(OUT/'SWP391_ThuyetTrinh_v1.pptx')

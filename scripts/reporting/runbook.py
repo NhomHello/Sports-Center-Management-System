@@ -1,53 +1,50 @@
-"""Demo instructions with explicit preconditions, expected outcomes and fallback."""
+"""Current course-only demo instructions; never treat simulation as a bank transfer."""
 from evidence import ROOT, OUT
 from documents import document, table, page, picture
-from content import DEMO, QUESTIONS
+from content import DEMO, QUESTIONS, REVIEW_DATE, TEST_EVIDENCE
 from workflows import FLOWS, STATES
 
 
 def build(snapshot):
-    doc=document('Kịch bản trình bày và demo','28 phút • đề xuất người trình bày để nhóm phân công lại khi diễn tập • bản v1')
-    doc.add_paragraph('Mục tiêu là chứng minh luồng vận hành xuyên vai trò, gồm cả một nhánh bị từ chối và một tình huống tiền về không khớp. Bộ 5 slide dành khoảng 6 phút, demo khoảng 18 phút, bằng chứng và hỏi đáp 4 phút. Giữ slide 5 làm màn điều hướng khi chuyển sang trình duyệt.')
-    table(doc,['Mốc','Phút','Người đề xuất','Nội dung / thành công'],[[time,minutes,person,f'{screen}\n{action}\n{fallback}'] for time,minutes,person,screen,action,fallback in DEMO])
-    page(doc,'Chuẩn bị trước buổi báo cáo')
+    doc=document('Kịch bản trình bày và demo','Cập nhật 05/11/2026 • 28 phút • Chỉ bán khóa học, hoàn qua admin bằng mã HT')
+    doc.add_paragraph('Bốn browser profile theo permission, dữ liệu local giả lập. Không có bước mua gói tự tập hoặc ghi tiền hủy vào ví. Chỉ gọi khoản hoàn DONE sau thao tác chuyển trả giả lập được giải thích rõ.')
+    table(doc,['Mốc','Phút','Người đề xuất','Thao tác và kết quả'],[[time,minutes,person,screen+'\n'+action+'\n'+fallback] for time,minutes,person,screen,action,fallback in DEMO])
+    page(doc,'Chuẩn bị trước buổi diễn tập')
     for text in [
-      'Đối chiếu mã nguồn: git switch main; git pull --ff-only. Không kéo thay đổi mới chưa kiểm tra ngay trước giờ báo cáo.',
-      'Máy cần Node >=22 (README khuyên 24), Docker Compose v2, Git. Với môi trường sạch dùng npm run dev; hướng dẫn đầy đủ ở docs/huong-dan/onboarding.md. Tắt ghi/chia sẻ màn hình terminal có mật khẩu vì script dev có in tài khoản demo từ .env.',
-      'Với database local đã chạy: npm run db:deploy -w @scms/be; npm run db:generate; npm run db:seed. Kiểm tra health API và đăng nhập bằng đúng origin trong CORS_ORIGINS.',
-      'Bổ sung dữ liệu Sprint 4 bằng npm run db:seed:sprint4. Seed idempotent không reset nhưng vẫn thêm dữ liệu; chỉ dùng database demo. Không dùng db:reset/db:demo để phục hồi một tình huống giữa buổi trình bày.',
-      'Chuẩn bị bốn browser profile: quản lý (SEED_ADMIN_EMAIL), lễ tân letan@scms.local, HLV s4.coach@scms.test, hội viên s4.member1@scms.test. Mật khẩu lấy từ biến seed tại máy demo; không chép vào tài liệu hoặc slide.',
-      'Với flow đăng ký lớp dùng tài khoản demo phù hợp và lớp miễn phí còn chỗ; chọn thêm một lớp chồng giờ để chứng minh backend chặn. Lớp thu phí chỉ có chỗ chính thức khi hóa đơn PAID.',
-      'Giữ S4 Demo · Khoá Chờ HLV nộp ở DRAFT; dùng quản lý mở lại có lý do nếu trước đó đã công bố. S4 Demo · Khoá Đã công bố dùng để dự phòng kết quả/PDF; tài khoản seed có thể khác tên hiển thị nhưng email ổn định.',
-      'Xác nhận trước kênh thu quầy và simulator local. Nếu demo SMTP, dùng sandbox; không cấu hình thì chỉ trình bày thông báo in-app và trạng thái retry, không nói email đã gửi.',
-      'Mở sẵn Excel traceability, một commit thật, service và test của cùng chức năng. Các sheet Review giữ trạng thái chờ review. Chuẩn bị bản PDF và ảnh sơ đồ để dự phòng màn hình trình chiếu.',
-      'Diễn tập cùng cả nhóm ít nhất một lượt có bấm giờ. Chỉ sau lượt thật mới cập nhật task diễn tập; hiện việc tạo tài liệu không được xem là đã diễn tập.'
+        'Lấy đúng mã main đã kiểm tra; không kéo code chưa thử ngay trước giờ báo cáo. Baseline bộ tài liệu: '+snapshot['baseline'],
+        'Chuẩn bị Node/npm, MySQL, migration và Prisma Client theo README. Sau cập nhật chạy SEED_MOCK_DATA=false npm run db:seed để đồng bộ metadata cấu hình, không đổi tỷ lệ đã lưu.',
+        'Dựng dữ liệu trước buổi diễn tập: npm run db:refresh:courses chỉ preview. -- --yes xóa nghiệp vụ và map lại 16 khóa, chỉ chạy trên DB demo sau khi kiểm tra đúng tên DB. Không reset giữa buổi báo cáo.',
+        'Admin dùng SEED_ADMIN_EMAIL; HLV s4.coach@scms.test; học viên s4.member1…3@scms.test; mật khẩu lấy từ cấu hình tại máy, không đưa lên màn hình/file. Nếu cần tài khoản nhân viên, admin cấp permission phù hợp trước demo.',
+        'Bộ mới có khóa lịch sử/tổng kết và hai khóa tương lai. Chọn khóa nâng cao đang còn chỗ để mua; khóa nền tảng có giữ chỗ/chờ để giải thích FIFO. Giá/tên và deadline đọc UI, không đoán mã hóa đơn.',
+        'Chuẩn bị một lớp nháp đã kết thúc cho tổng kết. Lớp công bố rồi thì dùng mở lại theo quyền, không xóa dữ liệu.',
+        'Xác nhận cấu hình ngân hàng/SePay ở local và simulator. Không chuyển tiền thật; nếu không hiện QR dùng luồng thu tiền mặt và nói rõ kênh dự phòng.',
+        'Chuẩn bị một ví dụ giữa khóa 20 buổi/đã học 10 để trình bày công thức; phí lấy từ UI. Nếu thiếu đúng dataset, chỉ trình bày ví dụ và bằng chứng test, không sửa trạng thái DB trước hội đồng.',
+        'Mở sẵn test case mới, commit thật, tài liệu trạng thái và PDF dự phòng. Diễn tập trực tiếp có bấm giờ; chưa diễn tập không đánh dấu task diễn tập hoàn tất.',
     ]:doc.add_paragraph(text,style='List Bullet')
-    page(doc,'Chi tiết thao tác và kết quả mong đợi')
-    table(doc,['Luồng','Cách chạy','Kiểm tra'],[
-      ['Thanh toán local','Tạo hóa đơn online mới, ghi đúng mã và số tiền đang hiển thị. Ví dụ hóa đơn 300000: npm run demo:webhook -- <MA_HOA_DON> 200000; sau đó chạy với 100000. Thay số ví dụ bằng số thật của hóa đơn.','Lần đầu PENDING và chờ bù 100000; lần sau PAID; chỉ một quyền lợi được cấp. Simulator đọc secret từ .env và gọi cổng backend trong .env.'],
-      ['Quầy dự phòng','Lễ tân chọn hội viên và sản phẩm, tạo hóa đơn quầy, thu đúng số tiền theo giao diện.','PAID, kỳ gói hoặc đăng ký BOOKED; tải biên lai PDF. Nêu rõ đây là kênh quầy, không phải xác nhận webhook.'],
-      ['Đăng ký/hủy hộ','Lễ tân tìm hội viên theo email, chọn lớp miễn phí còn chỗ, đăng ký rồi hủy trước deadline.','Hiển thị đúng số chỗ; enrolledBy/cancelledBy đúng nhân viên; audit giữ lịch sử. Thử tên dài trên mobile 320px không tràn.'],
-      ['Hồ sơ và chia sẻ','HLV tắt showContact; hội viên kiểm tra danh bạ. Hội viên bật/tắt shareWithCoach; HLV xem học viên trong phạm vi.','Tắt liên hệ không làm đổi email đăng nhập; tắt chia sẻ không trả trainingProfile; HLV không xem hóa đơn/số dư.'],
-      ['Tổng kết','HLV chọn lớp DRAFT; sửa từng học viên, chọn khác gợi ý nhưng để trống nhận xét để thấy validation; điền đủ, công bố.','Thiếu kết quả/tiến bộ bị chặn; missing attendance cần xác nhận; công bố có snapshot và revision.'],
-      ['Kết quả/đánh giá','Hội viên mở Hồ sơ → kết quả đã công bố, tải PDF; tạo/sửa đánh giá trong hạn. Quản lý ẩn nhận xét có lý do.','Chỉ chính chủ; sao 1–5; một rating/lớp; HLV thấy tên viết tắt; ẩn nhận xét vẫn giữ điểm sao.'],
-      ['Mở lại','Quản lý mở tổng kết PUBLISHED, ghi lý do; HLV sửa và công bố lại.','DRAFT rồi PUBLISHED; revision tăng; dữ liệu đã công bố giữ snapshot cho tới lần công bố mới.'],
-      ['Báo cáo','Chọn khoảng có dữ liệu seed, nhóm tháng, so sánh kỳ trước; tải Excel rồi kiểm tra bộ lọc và số tổng.','Thu − hoàn = thuần; cơ cấu cộng khớp tổng; CREDIT không tính lại; kỳ trước 0 hiển thị dấu gạch.']
+    page(doc,'Các ca thao tác trên giao diện')
+    table(doc,['Ca','Thao tác','Kết quả cần chỉ ra'],[
+        ['Mua khóa online','Chọn khóa → Đăng ký khóa học → xác nhận → QR của hóa đơn mới.','PENDING_PAYMENT giữ chỗ; chưa BOOKED. Đủ tiền mới hiện Đã đăng ký và nút bị khóa.'],
+        ['Thiếu rồi bù','Ghi đúng mã; ví dụ tổng 300000: npm run demo:webhook -- <MA> 100000 rồi 200000 trong deadline.','Cộng dồn đúng; đóng phiếu thiếu; một đăng ký chính thức. Dùng số tiền của hóa đơn đang mở thay vì cố định ví dụ.'],
+        ['Sát hạn','Chỉ ra deadline/grace ở UI và mở test course-payment-window/course-payment-deadline.','15 phút để chuyển, 120 giây chờ thông báo tiền đúng hạn. Quá grace không giành lại chỗ; không phải đợi 17 phút trong demo.'],
+        ['Thu quầy','Nhân viên chọn học viên/khóa, mở hóa đơn quầy và xác nhận thu đủ trước hạn.','Mốc chốt server dưới khóa; quá hạn bị từ chối dù job chưa chạy. Khách chuyển khoản tại quầy dùng hóa đơn ONLINE.'],
+        ['Hủy và mã hoàn','Hội viên mở khóa đã trả tiền → Hủy khóa học → đọc preview/phí → lý do → xác nhận. Mở Hồ sơ → Lịch sử hủy khóa học.','Không có lựa chọn ví; có mã HT…, số tiền và trạng thái chờ admin. Chứng từ/điểm/note cũ vẫn còn.'],
+        ['Admin hoàn','Hóa đơn → Theo dõi hoàn tiền → tìm HT… → kiểm tra người/số tiền → Xác nhận đã chuyển trả → tham chiếu DEMO.','Nêu rõ chuyển trả giả lập. Sau DONE hội viên thấy Đã hoàn tiền và có thông báo. Không gọi việc tạo yêu cầu là đã hoàn.'],
+        ['Thông báo','Mở thông báo ở hội viên, nhân viên có quyền hoàn và HLV.','Hội viên có mã/số tiền; admin có yêu cầu; HLV chỉ biết học viên rút; FIFO chỉ mời khi khóa còn hạn.'],
+        ['Buổi 1–N','Hội viên vào Điểm danh & nhận xét → chọn khóa. Admin mở Chi tiết hội viên → Buổi học & nhận xét.','Đủ mọi buổi cùng giờ/HLV/điểm/đánh giá/note. Dữ liệu trống không tự thành vắng; không thấy ghi chú của người khác.'],
+        ['Hồ sơ và tổng kết','Thử chia sẻ hồ sơ; HLV sửa nháp và công bố; hội viên xem/PDF/rating; quản lý mở lại với lý do.','Scope/permission đúng; công bố snapshot và revision, không tự đổi số liệu cũ.'],
+        ['Báo cáo','Chọn khoảng có dữ liệu, nhóm tháng, xuất Excel và đối chiếu màn hình.','Nói rõ tiền giả lập; thu/hoàn/thuần và quyền xuất đúng bộ lọc.'],
     ])
-    page(doc,'Phương án dự phòng và giới hạn')
-    table(doc,['Tình huống','Xử lý minh bạch'],[['Backend/DB không truy cập','Kiểm tra health và dịch vụ; dùng PDF/ảnh để giải thích thiết kế, không gọi ảnh là demo trực tiếp.'],['QR/webhook không sẵn','Đổi sang luồng thu quầy đã kiểm tra; nêu rõ kênh dự phòng. Không sửa status trực tiếp trong DB trước hội đồng.'],['Hóa đơn online cũ hết hạn','Tạo hóa đơn mới; không dùng lại QR hết hạn.'],['Tổng kết đã công bố','Quản lý mở lại với lý do; không xóa dữ liệu để dựng lại.'],['SMTP không cấu hình','Trình bày in-app/outbox retry; không tuyên bố email đã gửi.'],['Thời gian gần hết','Rút ngắn lần tải file thứ hai và thao tác theme; vẫn giữ điều kiện bị chặn, snapshot và đối soát.']])
-    page(doc,'Hỏi đáp kỹ thuật')
-    table(doc,['Câu hỏi','Câu trả lời theo triển khai'],QUESTIONS)
-    page(doc,'Mở bằng chứng task và Git')
-    doc.add_paragraph('Dùng SWP391_TaskTraceability_v1.xlsx: lọc một Task ID trong TaskTraceability; mở nguồn task tại hàng đã ghi; đối chiếu commit URL và source/test. GitTimeline giữ cả author và committer date. Người nhận task có thể khác tác giả một phần mã được dùng lại; việc chuyển trách nhiệm Sprint 4 sang Bảo không thay đổi lịch sử Git.')
-    doc.add_paragraph('Bảo nhận toàn bộ task Sprint 4 trước đây giao Nhanh. Task sheet S4 hiện hành: Bảo 17, Khôi 11, Khải 7; giữ Review/In Progress theo nguồn. Những ngày 03/11–16/11 là kế hoạch, trong khi một số mã đã được commit 29/10. Không sửa ngày Git để khớp lịch dự kiến.')
-    page(doc,'Tái tạo và kiểm tra bộ nộp')
-    doc.add_paragraph('Generator ở scripts/reporting. Cài Python môi trường riêng và requirements.txt; cài @viz-js/viz riêng ngoài dependency ứng dụng. Chạy build.py với SWP_VIZ_MODULE trỏ tới module Viz.js; cần LibreOffice để xuất DOCX/PPTX sang PDF và kiểm tra thực tế. Không chạy reconcile.py để dựng lại thông thường: script này là bước áp dụng quyết định phân công, chỉ dùng khi cần thực hiện lại có kiểm tra.')
-    doc.add_paragraph('Ví dụ: uv venv /tmp/swp-report-venv; uv pip install --python /tmp/swp-report-venv/bin/python -r scripts/reporting/requirements.txt; npm install --prefix /tmp/swp-viz @viz-js/viz; SWP_VIZ_MODULE=/tmp/swp-viz/node_modules/@viz-js/viz/dist/viz.js /tmp/swp-report-venv/bin/python scripts/reporting/build.py. Đường dẫn là ví dụ cho Linux; thay bằng môi trường của máy.')
-    doc.add_paragraph('Kiểm tra DOCX/PPTX/XLSX mở được, đủ 5 slide, PDF không bị cắt chữ, ERD đủ 42 model đang dùng/72 quan hệ, số phút demo bằng 28, và không còn task Sprint 4 gán Nhanh. evidence.json giữ SHA nguồn đã đọc. Bản mã nguồn được chụp để báo cáo: '+snapshot['baseline'])
+    page(doc,'Dự phòng và giới hạn')
+    table(doc,['Tình huống','Cách trình bày'],[['QR/webhook chưa sẵn','Dùng thu quầy đã kiểm tra; không nói ngân hàng thật đã kết nối xuyên suốt.'],['Hóa đơn đã quá hạn','Ngừng chuyển, chờ nhả chỗ rồi mua lại theo điều kiện hoặc xử lý khoản đã chuyển qua đối soát.'],['Không đủ dữ liệu giữa khóa','Dùng công thức và bằng chứng test; không bịa rằng vừa học 10 buổi trên sân khấu.'],['Tổng kết đã công bố','Mở lại bằng permission/lý do; không reset.'],['SMTP chưa cấu hình','Chỉ chứng minh in-app/outbox; không nói email đã gửi.'],['Máy lỗi','Dùng PDF/ảnh và nói đây là tài liệu, không gọi là demo trực tiếp.']])
+    table(doc,['Câu hỏi','Trả lời theo triển khai'],QUESTIONS)
+    doc.add_paragraph(TEST_EVIDENCE)
+    page(doc,'Tái tạo bộ tài liệu')
+    doc.add_paragraph('Cài requirements.txt trong môi trường Python riêng; Viz.js tách khỏi dependency app. Ví dụ: uv venv /tmp/swp-report-venv; uv pip install --python /tmp/swp-report-venv/bin/python -r scripts/reporting/requirements.txt; npm install --prefix /tmp/swp-viz @viz-js/viz; SWP_VIZ_MODULE=/tmp/swp-viz/node_modules/@viz-js/viz/dist/viz.js /tmp/swp-report-venv/bin/python scripts/reporting/build.py. Cần LibreOffice để xuất PDF. Generator chỉ đọc source và dựng file, không truy cập DB hoặc .env.')
+    doc.add_paragraph('Không chạy reconcile.py để dựng thông thường vì script đó áp dụng phân công lịch sử. Bằng chứng Git giữ author/committer thật, trạng thái Review từ nguồn và 28 phút là kế hoạch chưa phải xác nhận đã diễn tập.')
     doc.save(OUT/'SWP391_KichBanDemo_v1.docx')
-    current=document('Sơ đồ luồng và trạng thái hiện hành','Đồng bộ với phạm vi main ngày 29/10/2026; chỉ mô tả các luồng đã có service triển khai.')
+    current=document('Sơ đồ luồng và trạng thái hiện hành','Main '+snapshot['baseline']+' • '+REVIEW_DATE+' • Khóa học, hoàn qua admin và lịch sử từng buổi')
     for flow in FLOWS:
-        page(current,flow[1]);picture(current,flow[0],8.4)
+        page(current,flow[1]);picture(current,flow[0],8.1)
     for state in STATES:
         page(current,state[1]);picture(current,state[0],6);current.add_paragraph(state[4]);current.add_paragraph('Nguồn: '+state[5])
     current.save(ROOT/'docs/yeu-cau/02_Flow_Va_StateChart.docx')

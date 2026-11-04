@@ -7,7 +7,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from PIL import Image
 from evidence import ROOT, OUT
-from content import FEATURES, RULES, DEMO, QUESTIONS
+from content import FEATURES, RULES, DEMO, QUESTIONS, REVIEW_DATE, TEST_EVIDENCE
 from workflows import FLOWS, STATES
 from diagrams import DOMAINS
 
@@ -28,7 +28,7 @@ def document(title,subtitle):
         doc.styles[name].font.color.rgb=RGBColor.from_string('163B58')
     doc.add_heading(title,0);doc.add_paragraph(subtitle)
     footer=section.footer.paragraphs[0]
-    footer.text='Sports Center  •  29/10/2026  •  '
+    footer.text='Sports Center  •  '+ '/'.join(reversed(REVIEW_DATE.split('-'))) +'  •  '
     field=OxmlElement('w:fldSimple');field.set(qn('w:instr'),'PAGE');footer._p.append(field)
     return doc
 
@@ -64,56 +64,48 @@ def page(doc,title):
 
 
 def build_report(snapshot):
-    baseline=snapshot['baseline'];commits=snapshot['commits'];tasks=snapshot['tasks']
-    doc=document('Báo cáo đồ án phần mềm','Thiết kế, triển khai và bằng chứng đóng góp • Bản v1 • Nhóm Nhanh, Bảo, Khôi, Khải')
-    doc.add_paragraph('Hệ thống quản lý trung tâm thể thao kết nối tài khoản, gói tự tập, lớp học, thanh toán và đánh giá kết quả. Bản nộp giải thích vì sao cần hệ thống, từng vai trò thao tác gì, dữ liệu được bảo vệ và chuyển trạng thái thế nào, cùng bằng chứng mã nguồn và kiểm thử.')
-    table(doc,['Hạng mục','Nội dung'],[['Môn / đề tài','SWP391 FA26 • Đề tài 4 • GV MinhTTH5'],['Mã nguồn kiểm chứng',baseline],['Kho Git',snapshot['repo']],['Phạm vi triển khai','Tài khoản, gói tự tập, lớp/lịch, điểm danh, thanh toán/đối soát, hồ sơ, tổng kết, đánh giá, báo cáo.'],['Bộ trình bày','5 slide; kịch bản nói + demo 28 phút. Số 5 là giả định chuẩn bị theo ảnh bảng; cần tuân theo yêu cầu cuối cùng của giảng viên.']])
-    doc.add_heading('Nội dung báo cáo',1)
-    for text in ['1. Bối cảnh, giải pháp và vai trò','2. Chức năng và swimlane theo trách nhiệm','3. State chart theo đối tượng nghiệp vụ','4. Conceptual model, ERD và ràng buộc dữ liệu','5. Business Rules với bảng Func | Rule','6. Kiến trúc, chất lượng và kiểm thử','7. Đóng góp, task và lịch sử Git','8. Danh mục nộp và giới hạn cần trình bày']:
-        doc.add_paragraph(text)
-    page(doc,'1. Bối cảnh, giải pháp và vai trò')
-    doc.add_paragraph('Trung tâm cần theo dõi nhiều loại quyền lợi: kỳ tự tập, chỗ trong lớp, các buổi đã học và giao dịch thanh toán. Quản lý riêng trên bảng tính/tin nhắn dễ tạo lịch trùng, xác nhận tiền không khớp, hoặc thiếu lịch sử khi đổi lịch/hoàn tiền. Đây là bài toán vận hành giả định của đồ án; không gán số liệu khảo sát hay khách hàng thực tế khi chưa có bằng chứng.')
-    table(doc,['Vai trò nghiệp vụ','Việc cần hoàn thành','Điểm kiểm soát'],[['Hội viên','Mua gói/khóa, đăng ký, xem lịch/kết quả, chia sẻ hồ sơ, đánh giá','Chỉ dữ liệu chính chủ; không tự xác nhận thanh toán'],['Lễ tân','Tìm hội viên, mua/đăng ký hộ, thu tiền, hỗ trợ hồ sơ','Ghi đúng người thực hiện; không tự đổi giá sản phẩm'],['HLV','Xem lịch/roster, điểm danh, hồ sơ được chia sẻ, lập tổng kết','Đúng buổi thực dạy/phạm vi; không xem dữ liệu tài chính'],['Quản lý','Danh mục/tài nguyên/quyền, đối soát, mở lại, moderation, báo cáo','Permission riêng, audit và lý do cho thao tác quan trọng']])
-    doc.add_paragraph('Tên vai trò trên là cách diễn giải nghiệp vụ. API kiểm tra permission và phạm vi bản ghi, không so chuỗi tên role. Gói tự tập và khóa học là hai sản phẩm độc lập: không áp dụng điều kiện membership cũ để chặn đăng ký lớp.')
-    page(doc,'2. Chức năng hiện có')
-    table(doc,['ID và chức năng','Hành vi triển khai / người dùng'],[[f'{i} • {name}',f'{description}\nTác nhân: {actors}'] for i,name,description,actors,_,_ in FEATURES])
-    doc.add_heading('Ánh xạ mã nguồn và kiểm thử',2)
-    table(doc,['Nhóm','Module và bằng chứng tiêu biểu'],[[f[0],f'Module BE: {f[4]}\n{f[5]}'] for f in FEATURES])
+    baseline=snapshot['baseline']
+    models,relations=len(snapshot['models']),len(snapshot['relations'])
+    doc=document('Báo cáo đồ án phần mềm','Bản cập nhật 05/11/2026 • Chỉ bán khóa học • Nhóm Nhanh, Bảo, Khôi, Khải')
+    doc.add_paragraph('Hệ thống quản lý tài khoản, khóa học theo buổi, thanh toán, hủy và hoàn tiền qua admin, hồ sơ, điểm danh/nhận xét, tổng kết và báo cáo. Gói tự tập đã dừng bán; bảng và chứng từ cũ được giữ để đối chiếu, không phải luồng bán hàng hiện hành.')
+    table(doc,['Hạng mục','Hiện trạng'],[['Mã runtime main',baseline],['Ngày rà soát',REVIEW_DATE],['Kho Git',snapshot['repo']],['Giữ chỗ','Mặc định 15 phút chuyển tiền; online thêm 120 giây chờ webhook đúng hạn. Các giá trị đọc system_settings.'],['Hủy và hoàn','Hội viên cung cấp mã HT… cho admin; admin chuyển trả và xác nhận tham chiếu. Không ghi tiền hủy vào ví.'],['Kiểm thử',TEST_EVIDENCE],['Bộ trình bày','5 slide; kịch bản nói và demo 28 phút, cần nhóm diễn tập trực tiếp.']])
+    page(doc,'1. Bối cảnh và trách nhiệm')
+    doc.add_paragraph('Bài toán vận hành của đồ án: nhiều người cùng đăng ký chỗ cuối, tiền ngân hàng về sát hạn, chuyển thiếu/thừa và nhu cầu tra lại dữ liệu học sau khi hủy. Không sử dụng số liệu khảo sát, khách hàng hay tiền ngân hàng thật khi chưa có bằng chứng.')
+    table(doc,['Vai trò nghiệp vụ','Trách nhiệm','Giới hạn'],[['Hội viên','Chọn khóa, thanh toán, xem từng buổi, hủy và tra mã hoàn','Chỉ dữ liệu của mình; không tự xác nhận đã hoàn'],['Nhân viên hỗ trợ','Tìm hội viên, tạo đơn/đăng ký hộ, thu quầy','Không tự đổi giá; mốc chốt do server'],['HLV','Điểm danh/nhận xét buổi phụ trách, hồ sơ chia sẻ, tổng kết','Không nhận số tiền/mã hoàn khi học viên rút'],['Admin theo permission','Đối soát, tra HT và xác nhận chuyển trả, cấu hình, báo cáo','Quyền API và phạm vi bản ghi; không so tên role trong code']])
+    page(doc,'2. Chức năng hiện hành')
+    table(doc,['Nhóm chức năng','Hành vi và người sử dụng'],[[f'{i} • {name}',description+'\nTác nhân: '+actors] for i,name,description,actors,_,_ in FEATURES])
+    table(doc,['Nhóm','Mã nguồn và kiểm thử'],[[f[0],f[4]+'\n'+f[5]] for f in FEATURES])
+    doc.add_heading('Những thay đổi thay thế tài liệu cũ',2)
+    table(doc,['Trước đây','Hiện hành'],[['Bán gói tự tập, gia hạn/bảo lưu','Chỉ bán khóa; dữ liệu gói cũ được giữ lịch sử, API bán gói 410'],['Thiếu tiền kéo hạn chuyển bù/giữ chỗ dài','Khóa giữ deadline gốc; hết grace nhả chỗ và xử lý tiền đã nhận'],['Hủy chọn CREDIT/ví','Hủy tạo REFUND và mã HT để liên hệ admin'],['Hai bảng điểm danh và nhận xét tách rời','Chọn khóa → đủ Buổi 1–N; ghép đúng sessionId/memberId'],['Hóa đơn PAID được hiểu luôn còn quyền học','Sau hủy giữ chứng từ nhưng UI báo đăng ký đã hủy'],['Nhắc lại chức năng AI/kế hoạch tập luyện','Ngoài phạm vi; không dùng làm ca demo hoặc tiêu chí đã hoàn tất']])
     for flow in FLOWS:
-        page(doc,'2.1 Swimlane • '+flow[1]);picture(doc,flow[0],8.4)
-        doc.add_paragraph('Mỗi cột là một lane trách nhiệm. Mũi tên ghi điều kiện chuyển; hình thoi là điểm quyết định. Luồng thể hiện đường chính và ngoại lệ quan trọng, còn validation chi tiết xem bảng Business Rules.')
+        page(doc,'3. Swimlane • '+flow[1]);picture(doc,flow[0],8.1)
+        doc.add_paragraph('Các lane là trách nhiệm; mũi tên ghi điều kiện. Chi tiết validation và nguồn service được đối chiếu trong bảng Func | Rule.')
     for index in range(0,len(STATES),2):
-        page(doc,'3. State chart • trạng thái và điều kiện chuyển')
+        page(doc,'4. Trạng thái và điều kiện chuyển')
         for state in STATES[index:index+2]:
-            doc.add_heading(state[1],2);picture(doc,state[0],3.3)
-            doc.add_paragraph(state[4]);doc.add_paragraph('Nguồn service: '+state[5])
-    page(doc,'4. Mô hình khái niệm')
-    picture(doc,'conceptual',7)
-    doc.add_paragraph('User là tài khoản chung, không tách bảng Member/Coach riêng chỉ theo tên vai trò. Membership biểu diễn kỳ gói; ClassEnrollment biểu diễn đăng ký lớp; Invoice/Payment/Refund biểu diễn nghĩa vụ và dòng tiền. Conceptual model diễn tả khái niệm, còn ERD bên dưới giữ tên model thực tế.')
-    doc.add_paragraph(f'Phạm vi trình bày có 42 model đang dùng và 72 quan hệ có FK khai báo qua @relation(fields, references). ERD đầy đủ nằm ở SWP391_ERD_DayDu_v1.pdf và so-do/erd-full.svg; bảng DataDictionary/ForeignKeys trong Excel giữ toàn bộ trường và liên kết. Các hình miền dưới đây lược bớt trường thường để đọc cấu trúc; không thay thế schema.')
+            doc.add_heading(state[1],2);picture(doc,state[0],3.15)
+            doc.add_paragraph(state[4]);doc.add_paragraph('Nguồn: '+state[5])
+    page(doc,'5. Mô hình khái niệm và ERD')
+    picture(doc,'conceptual',6.7)
+    doc.add_paragraph(f'Schema hiện có {models} model và {relations} quan hệ FK khai báo. Có {sum(n[0].isupper() for n in snapshot["models"])} model PascalCase và 7 bảng legacy chữ thường; tên model tồn tại không đồng nghĩa chức năng còn được mở. SessionFeedback là nhận xét theo buổi, khác CourseRating là hội viên đánh giá khóa.')
+    doc.add_paragraph('ERD vật lý đầy đủ ở SWP391_ERD_DayDu_v1.pdf / so-do/erd-full.svg. Workbook DataDictionary và ForeignKeys giữ mọi model/FK; các ERD miền dưới đây giúp đọc chi tiết.')
     for name,(title,_) in DOMAINS.items():
-        page(doc,'4.1 ERD theo miền • '+title);picture(doc,name,8.25)
-        doc.add_paragraph('Mũi tên đi từ bảng con giữ FK tới bảng cha. Nhãn đầu cha 1/0..1 biểu diễn FK bắt buộc/nullable; nhãn phía con 0..*/0..1 biểu diễn nhiều/một theo unique. Một cột tên ...Id chỉ được vẽ là FK khi schema khai báo quan hệ.')
-    page(doc,'4.2 Ràng buộc dữ liệu cần bảo vệ')
-    table(doc,['Ràng buộc','Ý nghĩa'],[['RolePermission(roleId, permissionId)','Một quyền không gán trùng cho cùng role.'],['ClassEnrollment(classId, memberId)','Một bản ghi đăng ký/lớp/hội viên; đăng ký lại cập nhật trạng thái/thời điểm.'],['CourseSummary.classId unique','Mỗi lớp một tổng kết; job chạy lại không tạo thêm tổng kết.'],['CourseSummaryItem(summaryId, memberId)','Mỗi học viên có tối đa một item trong tổng kết.'],['CourseRating(classId, memberId)','Một đánh giá trên một khóa cho mỗi học viên.'],['Membership.activeUserId unique nullable','Đồng bộ đúng một kỳ đang hiệu lực; kỳ mua trước không tự cho quyền tự tập.'],['Transaction và khóa DB','Đồng bộ kiểm tra sức chứa/ghi chỗ; ghi thanh toán và trao quyền lợi cùng giao dịch.'],['Snapshot và sổ giao dịch','Giữ tên/giá hóa đơn; giữ chuyên cần đã công bố; hoàn/số dư có dòng riêng.']])
-    doc.add_paragraph('Mô hình và bảng quy tắc tương ứng với các service đang được sử dụng; bảng DataDictionary và ModelConstraints giữ chi tiết trường và ràng buộc để đối chiếu.')
-    page(doc,'5. Business Rules hiện hành')
-    doc.add_paragraph('Bảng Func | Rule áp dụng theo mã nguồn hiện có. Những số ngày/ngưỡng nêu trong đặc tả là giá trị seed mặc định; nghiệp vụ đọc cấu hình DB. Quy tắc đã sửa thay thế nội dung cũ trong bảng lịch sử Trước/Sau.')
+        page(doc,'5.1 ERD • '+title);picture(doc,name,8.1)
+    table(doc,['Ràng buộc','Ý nghĩa'],[['ClassEnrollment(classId,memberId)','Một bản ghi hiện tại; hủy/mua lại không xóa snapshot PurchaseChange/audit'],['Attendance / SessionFeedback(sessionId,memberId)','Chỉ dữ liệu đúng học viên, không ghép theo lớp đơn thuần'],['Invoice và Payment','Snapshot học phí; webhook ID chống trùng; áp dụng tiền và trao chỗ cùng transaction'],['Refund','PENDING → DONE sau chuyển trả; HT là mã trình bày từ id'],['CourseSummary / CourseSummaryItem / CourseRating','Tổng kết một lớp, snapshot/revision và một đánh giá mỗi học viên/khóa'],['Dữ liệu lịch sử','Không xóa chứng từ, điểm danh/nhận xét khi hủy; bảng gói và CreditTransaction cũ còn để đối chiếu']])
+    page(doc,'6. Business Rules • Func | Rule')
+    doc.add_paragraph('Giá trị mặc định là cấu hình, không phải hằng cố định trong nghiệp vụ. Nội dung mới thay quy tắc bán gói và hoàn hủy vào ví của tài liệu cũ.')
     table(doc,['Func','Rule'],RULES)
-    page(doc,'6. Công nghệ và kiến trúc')
-    picture(doc,'architecture',6)
-    table(doc,['Tầng','Triển khai'],[['Frontend','React 19, Vite 8, Ant Design 6, Router, TanStack Query, Axios, Zustand.'],['Backend','Node 24 theo README; Express 5, JWT, Zod, Pino; module routes/controller/service/validation.'],['Dữ liệu','Prisma 7 và MySQL 8; migration được quản lý trong Git, FK/unique/transaction và khoá DB.'],['Tác vụ nền','Worker trong vòng đời server: hóa đơn hết hạn, danh sách chờ, tổng kết, thông báo/email retry. Không mô tả là một hệ thống queue độc lập nếu chưa triển khai.'],['Tích hợp và xuất file','SePay webhook; SMTP theo cấu hình; PDF/Excel/CSV từ builder theo bộ lọc.']])
-    doc.add_heading('Kết quả kiểm thử tại mã nguồn snapshot',2)
-    doc.add_paragraph('Phiên kiểm tra 29/10/2026: 238 backend + 160 frontend tests đạt; lint/build/format đạt. Sau sửa lỗi, 65 E2E liên quan đạt, 5 bỏ qua theo cấu hình; kiểm tra riêng tạo lớp desktop/mobile thêm 2 ca đạt. e2e-summary.json trích thống kê của lần 70 test (65 đạt, 5 skip, 0 lỗi). Đây không phải tuyên bố đã chạy lại toàn bộ E2E sau bản sửa.')
-    doc.add_paragraph('Hai lỗi đã tái hiện và sửa: tên hội viên dài làm tràn 320px; test tìm phòng chưa render trong Select ảo. Cập nhật API Ant Design cho List/Modal và range picker; bổ sung E2E thông báo đọc đơn/lần nhiều trên desktop/mobile. Build còn cảnh báo kích thước chunk, không phải lỗi biên dịch.')
-    page(doc,'7. Đóng góp, task và timeline')
-    table(doc,['Thành viên','Phân công hiện hành Sprint 4'],[['Bảo','Toàn bộ task trước đây giao Nhanh; nền dữ liệu, BE tổng kết/đánh giá, báo cáo BE/FE, seed, tài liệu/demo.'],['Khôi','Hồ sơ HLV/hội viên full-stack; phạm vi học viên; kiểm thử hồ sơ.'],['Khải','FE tổng kết/kết quả/đánh giá/báo cáo tổng kết; kiểm thử và test case.'],['Nhanh','Không còn task riêng của Sprint 4; đóng góp các sprint trước giữ theo task sheet và Git.']])
-    doc.add_paragraph(f'Có {len(commits)} commit reachable từ main và {len(tasks)} task trong bốn task sheet. {sum(bool(t["commits"]) for t in tasks)} task có ID xuất hiện trực tiếp trong commit message. Không có ID không có nghĩa chưa làm; sheet TaskFileEvidence nối toàn bộ task với nhóm file triển khai và lịch sử chạm file để đối chiếu nội dung/hàm/test. Workbook giữ riêng người được phân công, author Git, co-author trailer, ngày kế hoạch và thời gian commit.')
-    doc.add_paragraph('Đã đồng bộ task sheet Sprint 4 và bảng phân chia UC: bổ sung #110–126 cho phạm vi hiện hành và loại các hàng phạm vi đã huỷ khỏi tổng hợp công việc thực hiện. Trạng thái Review giữ nghĩa chờ review; S4-34 còn diễn tập trực tiếp. Không tạo lại lịch sử hoặc đổi tác giả để hợp thức hóa phân công.')
-    doc.add_heading('Cách chứng minh một chức năng khi hỏi đáp',2)
-    doc.add_paragraph('Mở TaskTraceability theo ID → đọc mô tả/quy tắc và nguồn → mở commit có ID hoặc xác nhận qua file → mở service/test → chạy UI và chỉ ra dữ liệu/audit. Đọc cả tác giả và thay đổi thực tế; không dùng số dòng/commit làm điểm đóng góp.')
-    page(doc,'8. Bộ nộp và việc cần hoàn tất bởi nhóm')
-    table(doc,['Tệp','Mục đích'],[['SWP391_BaoCaoDoAn_v1.docx / .pdf','Báo cáo thiết kế và hiện trạng triển khai.'],['SWP391_ThuyetTrinh_v1.pptx / .pdf','5 slide thuyết trình; PowerPoint có speaker notes.'],['SWP391_KichBanDemo_v1.docx / .pdf','Chuẩn bị, kịch bản 28 phút, expected result, fallback và hỏi đáp.'],['SWP391_TaskTraceability_v1.xlsx','Task gốc, timeline Git, phân công, data dictionary, liên kết và checklist.'],['SWP391_ERD_DayDu_v1.pdf; so-do/','ERD đầy đủ, SVG/PNG và nguồn DOT để sửa.'],['evidence.json; reconciliation.json; e2e-summary.json','Snapshot và sổ đối chiếu thay đổi tài liệu/phân công; không chứa .env.']])
-    doc.add_paragraph('Trước nộp: cả nhóm diễn tập trực tiếp và xác nhận tác giả/alias, bổ sung liên kết cho task thiếu ID, kiểm tra giới hạn slide theo yêu cầu giảng viên. SMTP và SePay ngoài môi trường local chỉ được nói đã hoạt động nếu đã thực sự kiểm tra; dữ liệu seed phải được giới thiệu là dữ liệu giả.')
+    page(doc,'7. Kiến trúc và kiểm chứng')
+    picture(doc,'architecture',5.8)
+    table(doc,['Tầng','Hiện trạng'],[['Frontend','React, Ant Design, Router, TanStack Query, Axios, Zustand; menu theo permission'],['Backend','Express; JWT → permission → Zod → controller/service; service dùng Prisma'],['Database','MySQL, FK/unique và transaction; schedule lock trước invoice lock'],['Worker','Hết hạn, FIFO, tổng kết, outbox/email trong vòng đời server; không mô tả thành dịch vụ queue riêng'],['Tích hợp','SePay webhook xác thực; hoàn ngân hàng do admin thực hiện bên ngoài; SMTP có cấu hình/retry']])
+    doc.add_paragraph(TEST_EVIDENCE)
+    doc.add_paragraph('Các ca mới đã chứng minh: không tự đăng ký lớp khi tạo tài khoản; webhook sát hạn; thu quầy quá hạn; thiếu→đủ/thừa; hoàn không trùng; lịch sử hủy/nhận xét còn sau mua lại; bảng 20 buổi và quyền riêng tư giữa hai học viên.')
+    page(doc,'8. Đóng góp và bằng chứng Git')
+    table(doc,['Thành viên','Phân công Sprint 4'],[['Bảo','Toàn bộ phần trước đây giao Nhanh; nền dữ liệu, BE, báo cáo BE/FE, seed và tài liệu/demo'],['Khôi','Hồ sơ HLV/hội viên full-stack, phạm vi hồ sơ và E2E'],['Khải','FE tổng kết/đánh giá/báo cáo tổng kết và kiểm thử'],['Nhanh','Giữ đóng góp và author các sprint trước; không gán lại lịch sử Git']])
+    doc.add_paragraph(f'Có {len(snapshot["commits"])} commit reachable từ main và {len(snapshot["tasks"])} task trong các task sheet. Workbook phân biệt người được giao, author, committer date, kế hoạch và liên kết bằng chứng. Review không tự đổi thành Done; không dùng số commit/dòng làm điểm đóng góp.')
+    doc.add_paragraph('Không sửa task sheet hoặc đổi author khi dựng bộ tài liệu. Snapshot runtime là main '+baseline+'; hash nguồn tài liệu/generator được ghi ở evidence.json. Tài liệu bàn giao Sprint 3 giữ đúng thời điểm lịch sử.')
+    page(doc,'9. Danh mục nộp và vận hành demo')
+    table(doc,['Artifact','Nội dung'],[['Báo cáo DOCX/PDF','Chức năng, swimlane, trạng thái, ERD, Func | Rule và bằng chứng'],['Use Case / Business Rules / Sprint 4 DOCX','Đặc tả hiện hành và các mục đã nghỉ dùng được đánh dấu'],['Slide v1/v2 PPTX/PDF','Mỗi bản 5 slide, speaker notes và kịch bản 28 phút'],['Kịch bản DOCX/PDF','Thao tác UI, dữ liệu, kết quả mong đợi và dự phòng'],['TaskTraceability XLSX','Task gốc, Git, nguồn, model/FK và enum'],['verification.json','Kiểm tra artifact và hash; không phải kết quả chạy lại mọi E2E']])
+    doc.add_paragraph('Không chép .env, mật khẩu hoặc token vào tài liệu. Dữ liệu seed và tham chiếu chuyển trả trên sân khấu là giả lập. Cả nhóm cần diễn tập; bộ tài liệu không thay thế kiểm chứng ngân hàng/SMTP thật.')
     doc.save(OUT/'SWP391_BaoCaoDoAn_v1.docx')
     return doc

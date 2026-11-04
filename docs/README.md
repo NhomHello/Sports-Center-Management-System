@@ -13,11 +13,15 @@ Bộ tài liệu bám theo chức năng hiện có trên `main`. Quy tắc cũ �
 
 ## Bộ nộp cuối kỳ
 
+Đã đồng bộ ngày **05/11/2026** theo runtime `main` **801f9e6**: chỉ bán khóa học, deadline/grace, hoàn HT qua admin, lịch sử hủy/thông báo và lịch sử Buổi 1–N. Kết quả kiểm thử ghi đúng lần kiểm tra 04/11; tài liệu bàn giao Sprint 3 là lịch sử.
+
 - [Báo cáo đồ án](../outputs/bao-cao-cuoi-ky/SWP391_BaoCaoDoAn_v1.docx): tính năng, swimlane, state chart, conceptual model, ERD và bảng Func | Rule.
-- [Slide thuyết trình](../outputs/bao-cao-cuoi-ky/SWP391_ThuyetTrinh_v1.pptx): 5 slide, có ghi chú người trình bày; tổng nói và demo 28 phút.
+- [Slide thuyết trình](../outputs/bao-cao-cuoi-ky/SWP391_ThuyetTrinh_v2.pptx): 5 slide, có ghi chú người trình bày; tổng nói và demo 28 phút.
 - [Kịch bản và hướng dẫn](../outputs/bao-cao-cuoi-ky/SWP391_KichBanDemo_v1.docx): chuẩn bị máy, từng bước demo, kết quả mong đợi và phương án dự phòng.
 - [Bằng chứng task và Git](../outputs/bao-cao-cuoi-ky/SWP391_TaskTraceability_v1.xlsx): phân công, trạng thái nguồn, ngày kế hoạch, author/committer date và liên kết commit.
 - [ERD đầy đủ](../outputs/bao-cao-cuoi-ky/SWP391_ERD_DayDu_v1.pdf): toàn bộ model và FK thuộc phạm vi đang triển khai; ảnh SVG và nguồn sơ đồ ở `so-do/`.
+
+PDF của bốn đặc tả Word hiện hành nằm trong [bộ đặc tả PDF](../outputs/bao-cao-cuoi-ky/dac-ta/). Nguồn sinh và kiểm tra tại `scripts/reporting/build.py`; không chạy `reconcile.py` chỉ để dựng tài liệu.
 
 ## Phân công Sprint 4 hiện hành
 

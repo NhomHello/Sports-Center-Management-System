@@ -78,7 +78,7 @@ def build():
         text(s, x, 5.34, 2.8, .43, name, 20, NAVY, True)
         text(s, x, 5.97, 2.86, .76, role, 12.5, MUTED)
     s = base(prs, 2, '01   BỐI CẢNH VÀ VẤN ĐỀ', 'Các điểm cần kiểm soát trong vận hành')
-    problems = [('01', 'Lịch học và sức chứa', 'Trùng lịch HLV, phòng hoặc hội viên;\ntranh chấp chỗ khi đăng ký đồng thời.'), ('02', 'Thanh toán và quyền lợi', 'Tiền về thiếu, thừa, sai mã hoặc chuyển lặp;\ncần xác định đúng lúc kích hoạt gói và chỗ học.'), ('03', 'Kết quả và lịch sử thay đổi', 'Hồ sơ, điểm danh, tổng kết cần đúng phạm vi;\nsố liệu thu và hoàn phải đối chiếu được.')]
+    problems = [('01', 'Lịch học và sức chứa', 'Trùng lịch HLV, phòng hoặc hội viên;\ntranh chấp chỗ khi đăng ký đồng thời.'), ('02', 'Thanh toán và quyền lợi', 'Tiền về thiếu, thừa, sai mã hoặc chuyển lặp;\ncần xác định đúng lúc xác nhận chỗ học.'), ('03', 'Kết quả và lịch sử thay đổi', 'Hồ sơ, điểm danh, tổng kết cần đúng phạm vi;\nsố liệu thu và hoàn phải đối chiếu được.')]
     for i, (number, title, body) in enumerate(problems):
         y = 2.18 + i * 1.22
         text(s, .7, y, .7, .55, number, 27, TEAL)
@@ -87,20 +87,20 @@ def build():
         rect(s, 1.73, y + 1, 10.9, .008, LINE)
     text(s, .7, 6.24, 11.9, .46, 'Mục tiêu: thống nhất trạng thái, trách nhiệm và bằng chứng xử lý.', 18, TEAL, True)
     s = base(prs, 3, '02   GIẢI PHÁP VÀ NGƯỜI SỬ DỤNG', 'Một quy trình chung, bốn phạm vi trách nhiệm')
-    roles = [('Hội viên', 'Mua gói, đăng ký lớp\nXem lịch và kết quả\nChia sẻ hồ sơ, đánh giá'), ('Lễ tân', 'Tìm và đăng ký hộ\nThu tiền tại quầy\nGhi nhận người thực hiện'), ('Huấn luyện viên', 'Lịch dạy, điểm danh\nHồ sơ trong phạm vi\nLập tổng kết khóa học'), ('Quản lý', 'Tài nguyên và phân quyền\nĐối soát, kiểm duyệt\nBáo cáo và mở lại tổng kết')]
+    roles = [('Hội viên', 'Mua khóa, đăng ký lớp\nXem lịch và kết quả\nChia sẻ hồ sơ, đánh giá'), ('Lễ tân', 'Tìm và đăng ký hộ\nThu tiền tại quầy\nGhi nhận người thực hiện'), ('Huấn luyện viên', 'Lịch dạy, điểm danh\nHồ sơ trong phạm vi\nLập tổng kết khóa học'), ('Quản lý', 'Tài nguyên và phân quyền\nĐối soát, kiểm duyệt\nBáo cáo và mở lại tổng kết')]
     for i, (role, body) in enumerate(roles):
         x = .68 + i * 3.09
         rect(s, x, 2.23, 2.78, .035, TEAL)
         text(s, x, 2.5, 2.92, .5, role, 17 if i != 2 else 15.5, NAVY, True)
         text(s, x, 3.21, 2.87, 1.6, body, 15.5, MUTED)
-    stages = ['Chọn gói / khóa', 'Giữ chỗ, hóa đơn', 'Thanh toán', 'Học và tổng kết', 'Báo cáo, nhật ký']
+    stages = ['Chọn khóa học', 'Giữ chỗ, hóa đơn', 'Thanh toán', 'Học và tổng kết', 'Báo cáo, nhật ký']
     for i, stage in enumerate(stages):
         x = .68 + i * 2.47
         rect(s, x, 5.12, 2.16, .66, 'E8F0F0')
         text(s, x + .1, 5.3, 1.98, .32, stage, 12.8, NAVY, True)
         if i < 4:
             text(s, x + 2.2, 5.27, .25, .35, '→', 16, TEAL)
-    for i, label in enumerate(['Gói tự tập và khóa học tách biệt', 'Kiểm tra quyền và phạm vi tại API', 'Chốt chuyên cần khi công bố']):
+    for i, label in enumerate(['Chỉ bán khóa học', 'Kiểm tra quyền và phạm vi tại API', 'Chốt chuyên cần khi công bố']):
         text(s, .7 + i * 4.12, 6.26, 3.8, .48, label, 12.5, MUTED)
     s = base(prs, 4, '03   CÔNG NGHỆ VÀ KIẾN TRÚC', 'Kiểm soát nghiệp vụ tại API và dữ liệu', True)
     layers = [('GIAO DIỆN WEB', 'React 19 · Ant Design 6\nRouter · Query · Zustand'), ('API NGHIỆP VỤ', 'Node.js · Express 5 · Zod\nJWT · Quyền · Service'), ('DỮ LIỆU', 'Prisma 7 · MySQL 8\nTransaction · FK · Unique')]
@@ -116,7 +116,7 @@ def build():
         text(s, .73, y, 2.3, .35, title, 15, 'A6CBD2', True)
         text(s, 3.2, y, 9.35, .4, body, 16, WHITE)
     s = base(prs, 5, '04   DEMO VÀ BẰNG CHỨNG', 'Kịch bản trình bày và demo trong 28 phút')
-    steps = [('06–10’', 'Mua → thiếu tiền → chuyển bù → PAID'), ('10–13’', 'Đăng ký, chặn trùng lịch, xử lý hộ'), ('13–16’', 'Hồ sơ và phạm vi chia sẻ'), ('16–21’', 'Tổng kết → PDF → đánh giá → mở lại'), ('21–24’', 'Báo cáo theo kỳ và xuất Excel')]
+    steps = [('06–10’', 'Mua khóa → thiếu → bù trong hạn → PAID'), ('10–13’', 'Hủy khóa → mã HT → admin hoàn'), ('13–16’', 'Buổi 1–N: điểm danh, đánh giá, note'), ('16–21’', 'Tổng kết → PDF → đánh giá → mở lại'), ('21–24’', 'Báo cáo theo kỳ và xuất Excel')]
     for i, (time, label) in enumerate(steps):
         y = 2.18 + i * .65
         text(s, .73, y, 1.25, .4, time, 17, TEAL, True)

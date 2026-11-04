@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "date": "2026-11-01",
+  "date": "2026-11-05",
+  "baseline": "801f9e69bb333ddd72b5cafd1a1fe4e02af9f2d3",
   "slides": 5,
   "pdfPages": 5,
   "speakerNotesPreserved": true,
   "textWithinPageBounds": true,
-  "style": "Formal academic; off-white, navy, muted teal and gold; editable text and vector shapes",
+  "style": "Formal editable typography; current course-only scope",
   "sha256": {
-    "SWP391_ThuyetTrinh_v1.pptx": "2a9aa04f8e3f4d2f4193dd4e0710be5feeb93e385ee1da42f9f82f010003b2bc",
-    "SWP391_ThuyetTrinh_v2.pptx": "8e470dd032d2713c9be3abc334607dd76bd4495b52e3f782da850b89c0e6e060",
-    "SWP391_ThuyetTrinh_v2.pdf": "98406b2fe75d93a880aef0bf756a84a4405f0aa4e2e1810c3151541888510fa3"
+    "SWP391_ThuyetTrinh_v2.pptx": "0e350a27a97151fa46f9426d6264764eab58fc806dd08da2a6055855cb372fc8",
+    "SWP391_ThuyetTrinh_v2.pdf": "360a7f7540958467c7885827c0e51a682d5c7910b4f6cde3e825e961b9d68947"
   }
 }

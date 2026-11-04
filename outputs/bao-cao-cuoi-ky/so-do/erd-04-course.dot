@@ -10,7 +10,14 @@ GymClass [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" C
 CourseSummary [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseSummary</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_summaries</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">classId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">status : CourseSummaryStatus</TD></TR></TABLE>>];
 CourseSummaryItem [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseSummaryItem</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_summary_items</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">summaryId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR></TABLE>>];
 CourseRating [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>CourseRating</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">course_ratings</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">classId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int [FK]</TD></TR></TABLE>>];
+ClassSession [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>ClassSession</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">class_sessions</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">classId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">roomId : Int? [FK]</TD></TR><TR><TD ALIGN="LEFT">coachId : Int? [FK]</TD></TR><TR><TD ALIGN="LEFT">status : SessionStatus</TD></TR></TABLE>>];
+Attendance [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>Attendance</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">attendance</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">sessionId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">status : AttendanceStatus</TD></TR></TABLE>>];
+SessionFeedback [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#163b58"><FONT COLOR="white"><B>SessionFeedback</B></FONT></TD></TR><TR><TD><FONT POINT-SIZE="9">session_feedback</FONT></TD></TR><TR><TD ALIGN="LEFT">id : Int [PK]</TD></TR><TR><TD ALIGN="LEFT">sessionId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">memberId : Int [FK]</TD></TR><TR><TD ALIGN="LEFT">authorId : Int [FK]</TD></TR></TABLE>>];
 GymClass -> User [label="coachId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+ClassSession -> User [label="coachId", headlabel="0..1", taillabel="0..*", labeldistance=2, fontsize=8];
+ClassSession -> GymClass [label="classId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+Attendance -> ClassSession [label="sessionId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+Attendance -> User [label="memberId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
 CoachProfile -> User [label="userId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
 MemberProfile -> User [label="userId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
 CourseSummary -> GymClass [label="classId", headlabel="1", taillabel="0..1", labeldistance=2, fontsize=8];
@@ -20,4 +27,7 @@ CourseSummaryItem -> User [label="memberId", headlabel="1", taillabel="0..*", la
 CourseRating -> GymClass [label="classId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
 CourseRating -> User [label="memberId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
 CourseRating -> User [label="coachId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+SessionFeedback -> ClassSession [label="sessionId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+SessionFeedback -> User [label="memberId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
+SessionFeedback -> User [label="authorId", headlabel="1", taillabel="0..*", labeldistance=2, fontsize=8];
 }

@@ -1,0 +1,23 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.5", fontname="DejaVu Sans", fontsize=15];
+node [shape=box, style="rounded,filled", fillcolor="#eef5fb", color="#a4bdce", fontname="DejaVu Sans", fontsize=11, margin="0.14,0.1"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#527087", arrowsize=0.7];
+label="Điểm danh và nhận xét theo khóa"; labelloc=t;
+subgraph cluster_0 { label="Hội viên / admin"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#f4f8fc";
+b [label="Chọn hội viên theo quyền;\nchọn một khóa trong lịch sử", shape=box];
+e [label="Xem Buổi 1–N: giờ, HLV,\nđiểm danh, đánh giá, note", shape=box];
+}
+subgraph cluster_1 { label="Hệ thống"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#eaf4f3";
+c [label="Kiểm tra chính chủ /\nattendance.manage", shape=diamond];
+d [label="Ghép sessionId + memberId;\nlấy mọi buổi, cả dữ liệu trống", shape=box];
+f [label="401 / 403 / 404;\nkhông lộ note của người khác", shape=box];
+}
+subgraph cluster_2 { label="HLV đúng buổi"; color="#cbdbe7"; style="rounded,filled"; fillcolor="#fff8ec";
+a [label="Ghi điểm danh và nhận xét\ntheo quyền/phạm vi buổi", shape=box];
+}
+a -> d [label="Dữ liệu đã ghi"];
+b -> c [label=""];
+c -> d [label="Đúng phạm vi"];
+c -> f [label="Không hợp lệ"];
+d -> e [label=""];
+}
