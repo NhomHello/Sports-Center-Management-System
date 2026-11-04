@@ -74,7 +74,14 @@ export function CourseOrderControls({ item, memberId, allowed, cancel }) {
   if (status === ENROLLMENT_STATUS.PENDING_PAYMENT)
     return <PendingCourse item={item} cancel={cancel} />;
   if (status === ENROLLMENT_STATUS.BOOKED)
-    return <EnrollmentActions item={item} memberId={memberId} />;
+    return (
+      <Space wrap>
+        <Button type="primary" disabled>
+          Đã đăng ký
+        </Button>
+        <EnrollmentActions item={item} memberId={memberId} />
+      </Space>
+    );
   if (!allowed) return null;
   return <BuyCourseButton item={item} memberId={memberId} order={order} />;
 }
