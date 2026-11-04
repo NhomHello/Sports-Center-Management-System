@@ -1,3 +1,4 @@
+import { coursePaymentExpired } from './invoice';
 import { INVOICE_STATUS } from '@/constants';
 import {
   ACTIVE_CASE_STATUSES,
@@ -10,10 +11,16 @@ import {
 export const overpaidAwaiting = (item) =>
   item.reason === R.OVERPAID && item.invoice?.status !== INVOICE_STATUS.PAID;
 
+const canConfirmInvoice = (item) => {
+  if (!item.invoiceId) return false;
+  if (item.invoice?.kind !== 'COURSE') return true;
+  return item.invoice.status === INVOICE_STATUS.PENDING && !coursePaymentExpired(item.invoice);
+};
+
 /** Các thao tác dùng tiền của phiếu: chỉ khi phiếu còn mở và chưa có yêu cầu hoàn nào. */
 const settleActions = (item, is) => ({
   map: is(R.NO_MATCH, R.LATE, R.SCHEDULE_CONFLICT) && Boolean(item.webhookLog),
-  confirm: is(R.MEMBER_CLAIM, R.UNDERPAID) && Boolean(item.invoiceId),
+  confirm: is(R.MEMBER_CLAIM, R.UNDERPAID) && canConfirmInvoice(item),
   // Chuyển thừa: hoá đơn gốc chờ chấp nhận trước, phần thừa chỉ dùng được sau khi chấp nhận.
   accept: is(R.OVERPAID) && item.invoice?.status === INVOICE_STATUS.PENDING,
   renew:

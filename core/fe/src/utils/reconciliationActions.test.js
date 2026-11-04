@@ -53,3 +53,14 @@ it('chuyển thừa nhưng khóa đã hết giữ chỗ: chỉ hoàn toàn bộ,
   });
   expect(actions).toMatchObject({ accept: false, renew: false, refund: true });
 });
+
+it('phiếu thiếu của khóa đã hết hạn chỉ được hoàn, không tiếp tục xác nhận trên chỗ cũ', () => {
+  const actions = caseActions({
+    status: 'REFUND_PENDING',
+    reason: 'UNDERPAID',
+    invoiceId: 3,
+    invoice: { kind: 'COURSE', status: 'FAILED', expiresAt: '2000-01-01' },
+    refunds: [],
+  });
+  expect(actions).toMatchObject({ confirm: false, refund: true });
+});

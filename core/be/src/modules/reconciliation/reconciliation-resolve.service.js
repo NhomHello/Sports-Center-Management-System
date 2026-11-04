@@ -1,3 +1,4 @@
+import { allocateOverpaidCredit } from './reconciliation-credit-transfer.service.js';
 import { abandonUnfundedCourseInvoice } from '../course-order/course-hold.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
@@ -165,10 +166,13 @@ export const renewFromCase = async (id, { classId }, actor) => {
     const target = await resolveTargetInvoice(tx, { memberId: kase.userId, classId }, actor);
     const amount = kase.reason === REASON.OVERPAID ? kase.excessAmount : kase.amount;
     const invoice = await lockPayableInvoice(tx, target);
+    const funding =
+      kase.reason === REASON.OVERPAID
+        ? await allocateOverpaidCredit(tx, kase, { invoice, amount, actor })
+        : { provider: Enums.PaymentProvider.MANUAL, reference: `CASE-${kase.id}` };
     const result = await applyTransfer(tx, invoice, {
       amount,
-      provider: Enums.PaymentProvider.MANUAL,
-      reference: `CASE-${kase.id}`,
+      ...funding,
       actorId: actor.id,
       meta: { caseId: kase.id, fromInvoiceId: kase.invoiceId, action: 'RENEW' },
     });

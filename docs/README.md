@@ -36,3 +36,5 @@ Sửa nội dung tại nguồn hiện hành thay vì tạo thêm kế hoạch c�
 [Bán khóa học, hàng chờ và nhận xét theo buổi](huong-dan/course-only-2026-11-03.md) thay thế luồng bán gói tự tập trong tài liệu cũ. Giá trọn khóa, tính phần còn lại theo số buổi. SePay và dữ liệu hóa đơn lịch sử được giữ.
 
 [Xử lý hạn giữ chỗ, webhook sát hạn và thu tiền tại quầy](huong-dan/course-payment-deadlines.md).
+
+[Kết thúc các nhánh chuyển thiếu, thừa và chuyển nhiều lần](huong-dan/course-payment-resolution.md).

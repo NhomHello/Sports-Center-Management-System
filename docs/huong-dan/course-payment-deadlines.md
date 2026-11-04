@@ -87,3 +87,6 @@ sau khi nhân viên chuyển trả và nhập tham chiếu. Không tự lấy l�
   modal thu tiền tự khóa nút khi hết hạn.
 
 Các test dùng timestamp mô phỏng và database thật, không chuyển tiền ngân hàng thật.
+
+Chi tiết các nhánh chuyển thiếu/thừa đến trạng thái kết thúc:
+[Quy trình kết thúc đối soát](course-payment-resolution.md).
