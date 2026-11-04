@@ -27,7 +27,7 @@ export function ClassSeatSummary({ item }) {
       <div className="scms-class-card__capacity-legend">
         <span>
           <i aria-hidden />
-          {data.enrolledCount} đã đăng ký
+          Sĩ số: {data.enrolledCount} học viên
         </span>
         {data.heldSeats > 0 && (
           <span>
