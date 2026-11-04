@@ -1,3 +1,4 @@
+import { CourseHistoryPanel } from '@/pages/course-history/CourseHistoryPanel';
 import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
 import {
@@ -105,6 +106,11 @@ function MemberDetailTabs({ member, can, isEditing, form, updateMutation, verify
               )}
             />
           ),
+        },
+        can(PERMISSIONS.ATTENDANCE_MANAGE) && {
+          key: 'course-history',
+          label: 'Buổi học & nhận xét',
+          children: <CourseHistoryPanel key={member.id} memberId={member.id} />,
         },
         can(PERMISSIONS.MEMBER_READ) && {
           key: 'training',

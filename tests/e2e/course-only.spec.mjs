@@ -74,6 +74,7 @@ test('TC-COURSE-ONLY-E2E: bán khóa học, SePay và ghi chú cá nhân theo bu
   const feedback = await request.get(`${apiRoot}/attendance/feedback/me`, { headers: tokenHeader(f.memberToken) });
   expect(feedback.status()).toBe(200); expect((await feedback.json()).data.some((row) => row.note === note)).toBe(true);
   await member.page.goto('/attendance');
+  await member.page.locator('.ant-card').filter({ has: member.page.getByText(f.item.name, { exact: true }) }).getByRole('button', { name: 'Xem các buổi học', exact: true }).click();
   await expect(member.page.getByText(note, { exact: true })).toBeVisible();
   await member.page.screenshot({ path: info.outputPath('member-own-feedback.png'), fullPage: true });
   expect(errors).toEqual([]); expect(retiredRequests).toEqual([]);

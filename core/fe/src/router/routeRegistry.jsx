@@ -106,7 +106,7 @@ export const routeRegistry = [
     path: ROUTES.ATTENDANCE,
     element: <AttendanceHistoryPage />,
     permission: PERMISSIONS.SCHEDULE_VIEW_OWN,
-    menu: { label: 'Lịch sử điểm danh', icon: <CalendarOutlined />, group: GROUP_SCHEDULE },
+    menu: { label: 'Điểm danh & nhận xét', icon: <CalendarOutlined />, group: GROUP_SCHEDULE },
   },
   {
     path: ROUTES.MEMBERS,
