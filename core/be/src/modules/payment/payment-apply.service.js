@@ -1,3 +1,4 @@
+import { closeCoveredPaymentCases } from './payment-case-closure.service.js';
 import { assertCoursePaymentWindow } from './course-payment-window.service.js';
 import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
@@ -16,12 +17,6 @@ export const PAYMENT_OUTCOME = Object.freeze({
   OVERPAID: 'OVERPAID',
 });
 
-const OPEN_STATUSES = [
-  Enums.ReconciliationStatus.OPEN,
-  Enums.ReconciliationStatus.WAITING_MEMBER,
-  Enums.ReconciliationStatus.WAITING_TOPUP,
-];
-
 /** Khoá hàng hoá đơn (FOR UPDATE) rồi đọc lại bản đầy đủ; null nếu không có. */
 export const lockInvoice = async (tx, { id, code }) => {
   await lockSchedule(tx);
@@ -38,37 +33,6 @@ export const sumReceived = async (tx, invoiceId) => {
     tx.refund.aggregate({ where: { invoiceId, ...INVOICE_REFUND_WHERE }, _sum: { amount: true } }),
   ]);
   return (paid.receivedAmount ?? 0) - (refunded.amount ?? 0);
-};
-
-/** Đủ tiền thì phiếu chờ chuyển bù / phiếu "đã chuyển khoản" của hoá đơn được đóng cùng lúc. */
-const closeSettledCases = async (tx, invoiceId, actorId, now) => {
-  const cases = await tx.reconciliationCase.findMany({
-    where: {
-      invoiceId,
-      reason: {
-        in: [Enums.ReconciliationReason.UNDERPAID, Enums.ReconciliationReason.MEMBER_CLAIM],
-      },
-      // Phiếu bị job chuyển "chờ hoàn" khi quá hạn chuyển bù nhưng chưa tạo lệnh hoàn: tiền bù về
-      // muộn làm hoá đơn đủ tiền thì phiếu đó cũng đóng, tránh hoàn nhầm toàn bộ số đã nhận.
-      OR: [
-        { status: { in: OPEN_STATUSES } },
-        { status: Enums.ReconciliationStatus.REFUND_PENDING, refunds: { none: {} } },
-      ],
-    },
-    select: { id: true, webhookLogId: true },
-  });
-  if (cases.length === 0) return;
-  await tx.reconciliationCase.updateMany({
-    where: { id: { in: cases.map((item) => item.id) } },
-    data: { status: Enums.ReconciliationStatus.MATCHED, resolvedAt: now, resolvedById: actorId },
-  });
-  const logIds = cases.map((item) => item.webhookLogId).filter(Boolean);
-  if (logIds.length) {
-    await tx.paymentWebhookLog.updateMany({
-      where: { id: { in: logIds } },
-      data: { status: Enums.WebhookLogStatus.RESOLVED, reviewedById: actorId, reviewedAt: now },
-    });
-  }
 };
 
 const writeAudit = (tx, invoice, actorId, meta) =>
@@ -103,7 +67,7 @@ export const settleInvoice = async (
     data: { status: Enums.InvoiceStatus.PAID, paidAt: now },
   });
   const granted = await grantPurchase(tx, invoice, now);
-  await closeSettledCases(tx, invoice.id, actorId, now);
+  await closeCoveredPaymentCases(tx, invoice.id, actorId, now);
   await writeAudit(tx, invoice, actorId, {
     ...meta,
     after: { status: Enums.InvoiceStatus.PAID },
@@ -166,6 +130,7 @@ export const applyTransfer = async (tx, invoice, input) => {
     return { outcome: PAYMENT_OUTCOME.UNDERPAID, received, missing, excess: 0, expiresAt };
   }
   if (received > invoice.amount) {
+    await closeCoveredPaymentCases(tx, invoice.id, actorId, now);
     if (invoice.status !== Enums.InvoiceStatus.PENDING)
       await tx.invoice.update({
         where: { id: invoice.id },

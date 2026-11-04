@@ -1,3 +1,4 @@
+import { closeRestoredCreditCases } from '../reconciliation/refund-case-closure.service.js';
 import { getPaymentWindow } from './course-payment-window.service.js';
 import { Enums, prisma } from '../../config/db.js';
 import { logger } from '../../config/logger.js';
@@ -43,6 +44,7 @@ const expireOne = (id, now) =>
       // Phần trả bằng số dư quay lại số dư; chỉ tiền chuyển khoản thật mới phải hoàn tay.
       const restored = await restoreCreditPayments(tx, invoice, null);
       await releaseHoldsForInvoice(tx, id);
+      if (restored > 0) await closeRestoredCreditCases(tx, invoice);
       if (received - restored > 0) await moveTopupCasesToRefund(tx, id);
       await tx.auditLog.create({
         data: {

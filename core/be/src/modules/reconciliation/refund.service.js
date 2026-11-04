@@ -1,3 +1,4 @@
+import { closeRefundedInvoiceCases } from './refund-case-closure.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
@@ -194,6 +195,7 @@ export const completeRefund = (id, { reference }, actor) =>
         action: 'REFUND_DONE',
       });
     }
+    await closeRefundedInvoiceCases(tx, done, actor);
     await audit(tx, actor, {
       entity: ENTITIES.REFUND,
       entityId: id,
