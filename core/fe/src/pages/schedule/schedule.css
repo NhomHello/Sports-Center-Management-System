@@ -57,6 +57,10 @@
   min-width: 0;
   max-width: 640px;
 }
+.scms-attendance-select .ant-select-selection-item,
+.scms-attendance-select .ant-select-selection-placeholder {
+  text-align: center;
+}
 .scms-query-state {
   display: flex;
   min-height: 200px;

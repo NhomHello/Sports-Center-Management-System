@@ -1,7 +1,7 @@
 import { SESSION_STATUS } from '@/constants/schedule';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Button, Form, Input, Modal, Rate, Space, Table } from 'antd';
+import { Alert, Button, Form, Input, Modal, Rate, Table } from 'antd';
 import { useScheduleMutation } from '@/hooks/useScheduleMutation';
 import { QUERY_KEYS } from '@/constants';
 import { getSessionFeedback, saveSessionFeedback } from '@/services/sessionFeedback.service';
@@ -58,14 +58,13 @@ export function SessionFeedbackPanel({ session }) {
   });
   const disabled = session.status === SESSION_STATUS.CANCELLED || new Date(session.startAt) > new Date();
   return (
-    <Space vertical className="scms-full-width">
-      <h3>Nhận xét từng học viên</h3>
+    <div className="scms-full-width">
       <QueryState query={query}>
         <Table
           rowKey={(row) => row.member.id}
           dataSource={query.data?.data.items ?? []}
           pagination={false}
-          scroll={{ x: 760 }}
+          scroll={{ x: 760, y: 300 }}
           columns={[
             { title: 'Học viên', width: 200, render: (_, row) => row.member.fullName },
             {
@@ -97,6 +96,6 @@ export function SessionFeedbackPanel({ session }) {
           }}
         />
       )}
-    </Space>
+    </div>
   );
 }
