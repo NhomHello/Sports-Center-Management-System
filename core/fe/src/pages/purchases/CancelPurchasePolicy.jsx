@@ -1,10 +1,7 @@
 import { PERMISSIONS as P } from '@scms/shared';
 import { QUERY_KEYS } from '@/constants';
 
-export const SETTLEMENT_OPTIONS = Object.freeze([
-  { value: 'REFUND', label: 'Nhận tiền hoàn' },
-  { value: 'CREDIT', label: 'Ghi vào số dư' },
-]);
+export const SETTLEMENT_OPTIONS = Object.freeze([{ value: 'REFUND', label: 'Nhận tiền hoàn' }]);
 const isMoney = (value) => Number.isSafeInteger(value) && value >= 0;
 
 /** Chỉ kiểm tra kiểu dữ liệu, không áp dụng công thức tiền hoặc phí trên FE. */
@@ -34,6 +31,8 @@ export function refreshPurchases(client) {
     QUERY_KEYS.INVOICES,
     QUERY_KEYS.NOTIFICATIONS,
     QUERY_KEYS.ME,
+    ['course-cancellations'],
+    ['refunds'],
     ['purchase'],
     ['credit'],
     ['ownMembership'],

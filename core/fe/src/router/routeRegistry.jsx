@@ -117,7 +117,11 @@ export const routeRegistry = [
   {
     path: ROUTES.PAYMENTS,
     element: <PaymentsPage />,
-    permission: [PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL],
+    permission: [
+      PERMISSIONS.INVOICE_READ_OWN,
+      PERMISSIONS.INVOICE_READ_ALL,
+      PERMISSIONS.PAYMENT_REFUND,
+    ],
     menu: { label: 'Hóa đơn', icon: <CreditCardOutlined />, group: GROUP_FINANCE },
   },
   {

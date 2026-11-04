@@ -1,3 +1,4 @@
+import { PAYOUT_LABELS } from '../cancellations/cancellationHistory';
 import { PaymentDeadlineNotice } from './PaymentDeadlineNotice';
 import { usePaymentDeadline } from '@/hooks/usePaymentDeadline';
 import { ApplyCreditButton } from './ApplyCreditButton';
@@ -86,11 +87,25 @@ function PendingPanel({ instruction, currency }) {
   );
 }
 
+function CancelledCourseNotice({ history }) {
+  return (
+    <Alert
+      showIcon
+      type="info"
+      title="Đăng ký khóa học đã hủy"
+      description={`Hóa đơn được giữ làm lịch sử thanh toán. ${PAYOUT_LABELS[history.payoutStatus]}. Mã hoàn: ${history.refund?.code ?? 'Không phát sinh'}. Xem Lịch sử hủy khóa học trong hồ sơ để biết chi tiết.`}
+    />
+  );
+}
+
+const isExpiredPending = (invoice, expired) => invoice.status === INVOICE_STATUS.PENDING && expired;
+
 /** Hóa đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
 export function OnlinePaymentPanel({ invoice }) {
   const { expired } = usePaymentDeadline(invoice);
-  if (invoice.status === INVOICE_STATUS.PENDING && expired)
-    return <PaymentDeadlineNotice invoice={invoice} />;
+  if (invoice.courseCancellation)
+    return <CancelledCourseNotice history={invoice.courseCancellation} />;
+  if (isExpiredPending(invoice, expired)) return <PaymentDeadlineNotice invoice={invoice} />;
   if (invoice.paymentBlockReason)
     return (
       <Alert

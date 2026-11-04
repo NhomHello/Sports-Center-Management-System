@@ -1,21 +1,44 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert, App, Button, Form, Input, Modal, Table } from 'antd';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { Alert, App, Form, Input, Modal, Select, Space } from 'antd';
 import { useState } from 'react';
 import { useTableQuery } from '@/hooks/useTableQuery';
 import { listRefunds, completeRefund } from '@/services/sprint3.service';
-import { formatCurrency } from '@/utils/format';
 import { QueryState } from '../schedule/QueryState';
+import { RefundHistoryTable } from './RefundHistoryTable';
 
-/** Có thể tiếp tục xác nhận chuyển trả sau khi đóng modal tạo hoàn tiền. */
-/** Danh sách yêu cầu hoàn tiền chờ chuyển trả; trang Hóa đơn hiện ở tab riêng khi có quyền. */
-export function RefundList() {
+function RefundFilters({ onChange }) {
+  return (
+    <Space wrap>
+      <Input.Search
+        allowClear
+        aria-label="Tìm mã hoàn tiền"
+        placeholder="Mã hoàn HT…, hóa đơn hoặc hội viên"
+        onSearch={(search) => onChange({ search })}
+      />
+      <Select
+        allowClear
+        aria-label="Lọc trạng thái hoàn tiền"
+        placeholder="Trạng thái"
+        style={{ minWidth: 180 }}
+        options={[
+          { value: 'PENDING', label: 'Chờ chuyển trả' },
+          { value: 'DONE', label: 'Đã hoàn tất' },
+        ]}
+        onChange={(status) => onChange({ status })}
+      />
+    </Space>
+  );
+}
+
+/** Tra cứu mã hoàn để admin chuyển trả; hội viên chỉ xem các yêu cầu thuộc chính mình. */
+export function RefundList({ own = false }) {
   const table = useTableQuery();
   const client = useQueryClient();
   const [selected, setSelected] = useState(null);
   const [form] = Form.useForm();
   const query = useQuery({
-    queryKey: ['refunds', table.params],
-    queryFn: () => listRefunds(table.params),
+    queryKey: ['refunds', own, table.params],
+    queryFn: () => listRefunds(table.params, own),
   });
   const { message } = App.useApp();
   const save = useMutation({
@@ -24,48 +47,23 @@ export function RefundList() {
       message.success('Đã xác nhận chuyển trả cho hội viên');
       setSelected(null);
       client.invalidateQueries({ queryKey: ['refunds'] });
+      client.invalidateQueries({ queryKey: ['course-cancellations'] });
     },
   });
+  const selectRefund = (row) => {
+    save.reset();
+    form.resetFields();
+    setSelected(row);
+  };
   return (
     <>
+      <RefundFilters onChange={table.setFilters} />
       <QueryState query={query}>
-        <Table
-          rowKey="id"
-          dataSource={query.data?.data}
-          pagination={table.paginationProps(query.data?.meta)}
-          onChange={table.onTableChange}
-          scroll={{ x: 600 }}
-          columns={[
-            { title: 'Hóa đơn', dataIndex: ['invoice', 'code'] },
-            { title: 'Số tiền hoàn', dataIndex: 'amount', render: (v) => formatCurrency(v) },
-            { title: 'Lý do', dataIndex: 'reason' },
-            {
-              title: 'Trạng thái',
-              dataIndex: 'status',
-              render: (v) => (v === 'PENDING' ? 'Chờ chuyển trả' : 'Đã chuyển trả'),
-            },
-            { title: 'Tham chiếu', dataIndex: 'reference' },
-            {
-              title: 'Thao tác',
-              render: (_, row) =>
-                row.status === 'PENDING' && (
-                  <Button
-                    onClick={() => {
-                      save.reset();
-                      form.resetFields();
-                      setSelected(row);
-                    }}
-                  >
-                    Xác nhận đã chuyển trả
-                  </Button>
-                ),
-            },
-          ]}
-        />
+        <RefundHistoryTable {...{ query, table, own }} onSelect={selectRefund} />
       </QueryState>
       <Modal
         open={Boolean(selected)}
-        title="Xác nhận đã chuyển trả"
+        title={`Xác nhận đã chuyển trả ${selected?.code ?? ''}`}
         onCancel={() => setSelected(null)}
         onOk={() => form.submit()}
         confirmLoading={save.isPending}
@@ -76,10 +74,10 @@ export function RefundList() {
         <Form form={form} onFinish={save.mutate}>
           <Form.Item
             name="reference"
-            label="Mã tham chiếu"
+            label="Mã tham chiếu ngân hàng"
             rules={[{ required: true, whitespace: true }]}
           >
-            <Input maxLength={191} />
+            <Input maxLength={100} />
           </Form.Item>
         </Form>
       </Modal>

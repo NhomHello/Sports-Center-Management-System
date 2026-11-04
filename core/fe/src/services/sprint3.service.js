@@ -32,7 +32,8 @@ export const createClaim = (id, data) => http.post(`/invoices/${id}/claims`, dat
 /** Tạo yêu cầu hoàn, backend cập nhật invoice và ngày gói. */
 export const requestRefund = (id, data) => http.post(`/invoices/${id}/refund`, data);
 /** Danh sách yêu cầu hoàn để tiếp tục xử lý chuyển trả. */
-export const listRefunds = (params) => http.get('/refunds', { params });
+export const listRefunds = (params, own = false) =>
+  http.get(own ? '/refunds/me' : '/refunds', { params });
 /** Xác nhận tiền đã chuyển trả bằng mã tham chiếu ngân hàng. */
 export const completeRefund = (id, reference) =>
   http.post(`/refunds/${id}/complete`, { reference });

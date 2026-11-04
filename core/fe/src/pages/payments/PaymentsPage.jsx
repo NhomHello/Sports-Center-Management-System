@@ -1,3 +1,4 @@
+import { CancellationHistoryPanel } from '@/pages/cancellations/CancellationHistoryPanel';
 /* eslint-disable max-lines-per-function -- Bỏ giới hạn dòng theo yêu cầu Sprint 1. */
 import { PlusOutlined } from '@ant-design/icons';
 import { PERMISSIONS } from '@scms/shared';
@@ -22,7 +23,7 @@ import { InvoiceCashModal } from './InvoiceCashModal';
 /** Tab hóa đơn luôn có; lịch sử giao dịch và hoàn tiền chỉ hiện khi có quyền. */
 const buildTabs = ({ can, workspace }) =>
   [
-    {
+    can(PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL) && {
       key: 'invoices',
       label: 'Hóa đơn',
       children: workspace,
@@ -32,16 +33,32 @@ const buildTabs = ({ can, workspace }) =>
       label: 'Lịch sử giao dịch',
       children: <PaymentHistoryPanel />,
     },
-    can(PERMISSIONS.PAYMENT_REFUND) && {
+    can(PERMISSIONS.INVOICE_READ_ALL, PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) && {
+      key: 'cancellations',
+      label: 'Lịch sử hủy khóa học',
+      children: <CancellationHistoryPanel all />,
+    },
+    can(PERMISSIONS.PAYMENT_REFUND, PERMISSIONS.INVOICE_READ_OWN) && {
       key: 'refunds',
-      label: 'Theo dõi hoàn tiền',
+      label: can(PERMISSIONS.PAYMENT_REFUND) ? 'Theo dõi hoàn tiền' : 'Yêu cầu hoàn tiền của tôi',
       children: (
         <Card variant="borderless" className="scms-workspace-card">
-          <RefundList />
+          <RefundList own={!can(PERMISSIONS.PAYMENT_REFUND)} />
         </Card>
       ),
     },
   ].filter(Boolean);
+
+const headingFor = (refundOnly, isOwn) => {
+  if (refundOnly)
+    return { title: 'Hoàn tiền', subtitle: 'Tra cứu mã hoàn và xác nhận chuyển trả cho hội viên' };
+  return {
+    title: 'Hóa đơn',
+    subtitle: isOwn
+      ? 'Hóa đơn và lịch sử thanh toán của bạn'
+      : 'Tạo hóa đơn và ghi nhận thanh toán tại quầy',
+  };
+};
 
 /** S16/S30: tạo hóa đơn, xác nhận thu tiền, tra cứu và in theo quyền API. */
 export default function PaymentsPage() {
@@ -58,6 +75,7 @@ export default function PaymentsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [showOwn, setShowOwn] = useState(false);
   const canReadAll = can(PERMISSIONS.INVOICE_READ_ALL);
+  const refundOnly = !can(PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.INVOICE_READ_ALL);
   const canCreate =
     can(PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) &&
     can(PERMISSIONS.MEMBER_READ) &&
@@ -105,12 +123,7 @@ export default function PaymentsPage() {
   return (
     <>
       <PageHeader
-        title="Hóa đơn"
-        subtitle={
-          isOwn
-            ? 'Hóa đơn và lịch sử thanh toán của bạn'
-            : 'Tạo hóa đơn và ghi nhận thanh toán tại quầy'
-        }
+        {...headingFor(refundOnly, isOwn)}
         extra={
           canCreate && (
             <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateOpen(true)}>

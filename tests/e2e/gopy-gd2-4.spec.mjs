@@ -9,7 +9,7 @@ import {
 } from '../../core/be/tests/helpers/sprint2.js';
 import { card, login } from './helpers/ui.mjs';
 
-// GY-36 (live): mua khóa học, giữ chỗ, dùng số dư, hủy khóa ghi số dư — API và DB thật.
+// GY-36 (live): mua khóa học, giữ chỗ, dùng số dư, hủy khóa hoàn qua admin — API và DB thật.
 const PRICE = 1200000;
 let f;
 let course;
@@ -83,7 +83,7 @@ test('GY-33: dùng số dư thanh toán hóa đơn khóa học → đăng ký ch
   expect(booked.status).toBe('BOOKED');
 });
 
-test('GY-34: hủy khóa trước ngày bắt đầu → hoàn 100% vào số dư', async ({ page }) => {
+test('GY-34: hủy khóa trước ngày bắt đầu → tạo mã hoàn tiền qua admin', async ({ page }) => {
   await login(page, f.member, f.password);
   const source = card(page, course.name);
   await expect(source.getByText('Đã đăng ký', { exact: true })).toBeVisible();
@@ -91,11 +91,16 @@ test('GY-34: hủy khóa trước ngày bắt đầu → hoàn 100% vào số d�
   const dialog = page.getByRole('dialog').filter({ hasText: 'Hủy khóa học' });
   await expect(dialog.getByText('Được hoàn', { exact: true })).toBeVisible();
   await expect(dialog.getByText(`${money(PRICE)}`).first()).toBeVisible();
-  await dialog.getByText('Ghi vào số dư').click();
+  await expect(dialog.getByText('Ghi vào số dư')).toHaveCount(0);
   await dialog.getByLabel('Lý do hủy').fill('Đổi lịch làm việc');
   const cancelled = page.waitForResponse((r) => r.url().endsWith('/cancel'));
   await dialog.getByRole('button', { name: 'Xác nhận hủy' }).click();
   expect((await cancelled).status()).toBe(200);
   const user = await prisma.user.findUniqueOrThrow({ where: { id: f.member.id } });
-  expect(user.creditBalance).toBe(2 * PRICE);
+  expect(user.creditBalance).toBe(PRICE);
+  const request = await prisma.refund.findFirstOrThrow({
+    where: { invoice: { classId: course.id, userId: f.member.id } },
+  });
+  expect(request.amount).toBe(PRICE);
+  expect(request.status).toBe('PENDING');
 });

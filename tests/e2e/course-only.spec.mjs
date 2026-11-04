@@ -62,8 +62,9 @@ test('TC-COURSE-ONLY-E2E: bán khóa học, SePay và ghi chú cá nhân theo bu
   await teacher.page.getByRole('button', { name: 'Lưu nội dung', exact: true }).click();
   await expect(teacher.page.getByText('Luyện nhịp thở và động tác kiểm soát tư thế.')).toBeVisible();
   await teacher.page.getByRole('button', { name: 'Điểm danh', exact: true }).first().click();
-  const attendance = teacher.page.getByRole('dialog').filter({ has: teacher.page.getByText('Nhận xét từng học viên', { exact: true }) });
+  const attendance = teacher.page.getByRole('dialog').filter({ hasText: 'Điểm danh buổi học' });
   await expect(attendance).toBeVisible();
+  await attendance.getByRole('tab', { name: 'Nhận xét học viên', exact: true }).click();
   await attendance.getByRole('row').filter({ hasText: f.member.fullName }).getByRole('button', { name: 'Nhận xét', exact: true }).click();
   const note = 'Tiến bộ rõ ở tư thế; cần giữ nhịp thở đều trong buổi sau.';
   await teacher.page.getByLabel('Nhận xét và lưu ý cho học viên').fill(note);

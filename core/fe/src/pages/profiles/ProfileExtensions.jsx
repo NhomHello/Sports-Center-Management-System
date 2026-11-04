@@ -1,3 +1,4 @@
+import { CancellationHistoryPanel } from '@/pages/cancellations/CancellationHistoryPanel';
 import { PERMISSIONS as P } from '@scms/shared';
 import { Tabs } from 'antd';
 import { usePermission } from '@/hooks/usePermission';
@@ -8,6 +9,11 @@ import { MemberTrainingPanel } from './MemberTrainingPanel';
 export function ProfileExtensions() {
   const { can } = usePermission();
   const items = [
+    can(P.INVOICE_READ_OWN, P.SCHEDULE_VIEW_OWN) && {
+      key: 'cancellations',
+      label: 'Lịch sử hủy khóa học',
+      children: <CancellationHistoryPanel />,
+    },
     can(P.COURSE_SUMMARY_READ_OWN) && {
       key: 'course-results',
       label: 'Khóa học đã hoàn thành',

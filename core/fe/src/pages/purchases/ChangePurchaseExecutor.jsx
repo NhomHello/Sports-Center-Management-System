@@ -7,9 +7,11 @@ import { refreshPurchases } from './CancelPurchasePolicy';
 
 const adjustmentId = (change) => change?.adjustmentInvoice?.id ?? change?.adjustmentInvoiceId;
 const successText = (result) =>
-  result.data?.status === 'PENDING_PAYMENT'
-    ? 'Cần thanh toán chênh lệch để hoàn tất đổi'
-    : result.message || 'Đã xử lý yêu cầu';
+  result.data?.refundCode
+    ? `Đã tạo yêu cầu hoàn ${result.data.refundCode}. Vui lòng liên hệ admin với mã này.`
+    : result.data?.status === 'PENDING_PAYMENT'
+      ? 'Cần thanh toán chênh lệch để hoàn tất đổi'
+      : result.message || 'Đã xử lý yêu cầu';
 
 /** Container chung: chờ thu thêm thì mở hóa đơn, không tự đánh dấu đã đổi thành công. */
 export function ChangePurchaseExecutor({

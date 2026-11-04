@@ -19,7 +19,7 @@ import { QUERY_KEYS, USER_STATUS_META } from '@/constants';
 import { usePermission } from '@/hooks/usePermission';
 import { StatusTag } from '@/components/common/StatusTag';
 import * as memberService from '@/services/member.service';
-import { CreditPanel } from '@/pages/member/CreditPanel';
+import { CancellationHistoryPanel } from '@/pages/cancellations/CancellationHistoryPanel';
 import { MemberTrainingPanel } from '@/pages/profiles/MemberTrainingPanel';
 import { ClassListPanel } from '@/pages/schedule/ClassListPanel';
 import { ClassBookingActions } from '@/pages/schedule/ClassBookingActions';
@@ -111,10 +111,10 @@ function MemberDetailTabs({ member, can, isEditing, form, updateMutation, verify
           label: 'Hồ sơ tập luyện',
           children: <MemberTrainingPanel memberId={member.id} />,
         },
-        can(PERMISSIONS.PAYMENT_READ_ALL) && {
-          key: 'credit',
-          label: 'Số dư',
-          children: <CreditPanel memberId={member.id} />,
+        can(PERMISSIONS.INVOICE_READ_ALL, PERMISSIONS.CLASS_ENROLL_FOR_MEMBER) && {
+          key: 'cancellations',
+          label: 'Lịch sử hủy khóa học',
+          children: <CancellationHistoryPanel memberId={member.id} />,
         },
       ].filter(Boolean)}
     />

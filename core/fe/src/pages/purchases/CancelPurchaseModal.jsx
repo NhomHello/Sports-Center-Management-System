@@ -1,6 +1,6 @@
-import { Alert, Descriptions, Form, Input, Modal, Radio } from 'antd';
+import { Alert, Descriptions, Form, Input, Modal } from 'antd';
 import { formatCurrency } from '@/utils/format';
-import { SETTLEMENT_OPTIONS, validCancelPreview } from './CancelPurchasePolicy';
+import { validCancelPreview } from './CancelPurchasePolicy';
 
 function CancellationPreview({ data }) {
   return (
@@ -61,16 +61,9 @@ export function CancelPurchaseModal({ kind, query, mutation, onSubmit, onClose }
         layout="vertical"
         disabled={!ready || mutation.isPending}
         onFinish={(values) => {
-          if (ready) onSubmit({ ...values, reason: values.reason.trim() });
+          if (ready) onSubmit({ ...values, settlement: 'REFUND', reason: values.reason.trim() });
         }}
       >
-        <Form.Item
-          label="Cách nhận phần được hoàn"
-          name="settlement"
-          rules={[{ required: true, message: 'Chọn cách nhận tiền' }]}
-        >
-          <Radio.Group options={SETTLEMENT_OPTIONS} />
-        </Form.Item>
         <Form.Item
           label="Lý do hủy"
           name="reason"
@@ -82,7 +75,7 @@ export function CancelPurchaseModal({ kind, query, mutation, onSubmit, onClose }
       <Alert
         showIcon
         type="info"
-        title="Nhận tiền hoàn cần trung tâm chuyển trả và xác nhận. Ghi số dư dùng cho lần mua tiếp theo."
+        title="Sau khi hủy, xem mã hoàn trong Lịch sử hủy khóa học rồi liên hệ admin cung cấp mã để được chuyển trả. Không ghi vào ví/số dư."
       />
     </Modal>
   );

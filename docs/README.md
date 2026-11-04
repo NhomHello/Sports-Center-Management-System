@@ -38,3 +38,5 @@ Sửa nội dung tại nguồn hiện hành thay vì tạo thêm kế hoạch c�
 [Xử lý hạn giữ chỗ, webhook sát hạn và thu tiền tại quầy](huong-dan/course-payment-deadlines.md).
 
 [Kết thúc các nhánh chuyển thiếu, thừa và chuyển nhiều lần](huong-dan/course-payment-resolution.md).
+
+[Hủy khóa học, tra mã hoàn và người nhận thông báo](huong-dan/course-cancellation-history.md).

@@ -1,5 +1,8 @@
 # Kết thúc các nhánh chuyển thiếu, thừa và nhiều lần
 
+Luồng hủy khóa học hiện hành dùng mã hoàn để liên hệ admin, không ghi vào ví:
+[xem lịch sử hủy và thông báo](course-cancellation-history.md).
+
 Giữ chính sách hạn tại [course-payment-deadlines.md](course-payment-deadlines.md): chuyển tiền
 trong 15 phút mặc định, thêm khoảng chờ webhook đúng hạn, không dùng việc chuyển thiếu để kéo dài
 chỗ học. Ví dụ trong bảng dưới: khóa có giá 300.000đ.

@@ -31,7 +31,6 @@ import {
 } from '@/utils/apiAvailability';
 import { normalizeOwnProfilePayload } from '@/utils/account';
 import { Link } from 'react-router';
-import { CreditPanel } from './CreditPanel';
 import { ProfileExtensions } from '@/pages/profiles/ProfileExtensions';
 
 function ProfileSummary({ profile }) {
@@ -177,17 +176,12 @@ function ProfileContent({ query }) {
   );
 }
 
-function ProfileDetails({ form, query, mutation, hasPersonalProfile }) {
+function ProfileDetails({ form, query, mutation }) {
   const profile = query.data?.data;
   if (!profile || query.isError) return null;
   return (
     <Space orientation="vertical" size={SPACING.LG} className="scms-full-width">
       <ProfileForm form={form} profile={profile} mutation={mutation} />
-      {hasPersonalProfile && (
-        <>
-          <CreditPanel />
-        </>
-      )}
     </Space>
   );
 }
@@ -264,12 +258,7 @@ export default function ProfilePage() {
           <ProfileContent query={profileQuery} />
         </Col>
         <Col xs={24} lg={16}>
-          <ProfileDetails
-            form={form}
-            query={profileQuery}
-            mutation={mutation}
-            hasPersonalProfile={hasPersonalProfile}
-          />
+          <ProfileDetails form={form} query={profileQuery} mutation={mutation} />
         </Col>
       </Row>
     </>
