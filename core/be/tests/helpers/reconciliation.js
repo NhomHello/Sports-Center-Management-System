@@ -63,6 +63,7 @@ export const cleanupReconciliationFixture = async (f) => {
   await prisma.auditLog.deleteMany({
     where: { userId: null, entity: 'Invoice', createdAt: { gte: f.startedAt } },
   });
+  if (f.courseIds?.length) await prisma.classWaitlist.deleteMany({ where: { classId: { in: f.courseIds } } });
   if (f.courseIds?.length) await prisma.classEnrollment.deleteMany({ where: { classId: { in: f.courseIds } } });
   await cleanupSprintFixture(f);
   if (f.courseIds?.length) {

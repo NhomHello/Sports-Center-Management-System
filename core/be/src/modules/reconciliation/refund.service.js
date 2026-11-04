@@ -47,7 +47,7 @@ const refundableAmount = async (tx, kase) => {
   if (kase.reason === REASON.OVERPAID) {
     // Chưa chấp nhận hoá đơn: hoàn toàn bộ và huỷ hoá đơn; đã chấp nhận: chỉ hoàn phần thừa.
     const invoice = await tx.invoice.findUnique({ where: { id: kase.invoiceId } });
-    return invoice?.status === Enums.InvoiceStatus.PENDING
+    return invoice?.status !== Enums.InvoiceStatus.PAID
       ? sumReceived(tx, kase.invoiceId)
       : kase.excessAmount;
   }

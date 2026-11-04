@@ -1,3 +1,4 @@
+import { assertCoursePaymentWindow } from './course-payment-window.service.js';
 import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { SETTING_KEYS } from '@scms/shared';
@@ -83,7 +84,7 @@ const writeAudit = (tx, invoice, actorId, meta) =>
 
 /** Quyền lợi của từng loại hoá đơn khi đủ tiền: kỳ gói, chỗ học chính thức, hoặc hoàn tất đổi. */
 const grantPurchase = (tx, invoice, now) => {
-  if (invoice.kind === Enums.InvoiceKind.COURSE) return confirmCourseInvoice(tx, invoice);
+  if (invoice.kind === Enums.InvoiceKind.COURSE) return confirmCourseInvoice(tx, invoice, now);
   if (invoice.kind === Enums.InvoiceKind.ADJUSTMENT) return onAdjustmentPaid(tx, invoice);
   return activatePaidInvoice(invoice, now, tx);
 };
@@ -92,8 +93,11 @@ const grantPurchase = (tx, invoice, now) => {
  * Chốt hoá đơn đã đủ tiền: PAID, trao quyền lợi (kỳ gói BR-1.3/1.4, chỗ học, đổi gói/lớp) và đóng
  * phiếu chờ bù / báo đã chuyển. Dùng khi nhận đúng số tiền và khi quản lý chấp nhận chuyển thừa.
  */
-export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) => {
-  const now = new Date();
+export const settleInvoice = async (
+  tx,
+  invoice,
+  { actorId = null, meta = {}, now = new Date() },
+) => {
   await tx.invoice.update({
     where: { id: invoice.id },
     data: { status: Enums.InvoiceStatus.PAID, paidAt: now },
@@ -109,20 +113,27 @@ export const settleInvoice = async (tx, invoice, { actorId = null, meta = {} }) 
   return granted;
 };
 
+const topupDeadline = async (invoice, now) => {
+  if (invoice.kind === Enums.InvoiceKind.COURSE) return invoice.expiresAt;
+  const hours = await settingService.getValue(SETTING_KEYS.PAYMENT_TOPUP_DEADLINE_HOURS);
+  return new Date(now.getTime() + hours * TIME.MS_PER_HOUR);
+};
+
 /**
  * Ghi nhận một khoản tiền vào hoá đơn (webhook, map thủ công, gia hạn từ tiền thừa đều dùng hàm này).
  * BR-PAY-06/16: chỉ tự PAID khi tổng nhận bằng đúng số hoá đơn. Thiếu: giữ PENDING với hạn chuyển
- * bù mới. Thừa: giữ PENDING, chưa kích hoạt gói, chờ quản lý liên hệ rồi chấp nhận hoặc hoàn tiền.
+ * bù mới cho hóa đơn cũ; khóa học giữ deadline gốc. Thừa: chờ quản lý chấp nhận hoặc hoàn tiền.
  * Phải gọi trong transaction sau khi đã khoá hoá đơn bằng lockInvoice.
  * @param {import('@prisma/client').Prisma.TransactionClient} tx
  * @param {object} invoice hoá đơn đã khoá, có include plan
- * @param {{ amount: number, provider: string, reference?: string|null, actorId?: number|null, meta?: object }} input
+ * @param {{ amount: number, provider: string, reference?: string|null, actorId?: number|null, meta?: object, paidAt?: Date|null, decisionAt?: Date }} input
  * @returns {Promise<{ outcome: string, received: number, missing: number, excess: number, expiresAt?: Date }>}
  */
 export const applyTransfer = async (tx, invoice, input) => {
-  if (invoice.kind === Enums.InvoiceKind.COURSE) await assertCourseHold(tx, invoice);
+  const now = input.decisionAt ?? new Date();
+  await assertCoursePaymentWindow(invoice, { ...input, now });
+  if (invoice.kind === Enums.InvoiceKind.COURSE) await assertCourseHold(tx, invoice, now);
   const { amount, provider, reference = null, actorId = null, meta = {} } = input;
-  const now = new Date();
   const received = (await sumReceived(tx, invoice.id)) + amount;
   const payment = await tx.payment.create({
     data: {
@@ -131,14 +142,20 @@ export const applyTransfer = async (tx, invoice, input) => {
       requestedAmount: invoice.amount,
       receivedAmount: amount,
       reference,
-      paidAt: now,
+      paidAt: input.paidAt ?? now,
       actorId,
     },
   });
-  const base = { ...meta, provider, amount, received, paymentId: payment.id };
+  const base = {
+    ...meta,
+    provider,
+    amount,
+    received,
+    paymentId: payment.id,
+    decisionAt: now.toISOString(),
+  };
   if (received < invoice.amount) {
-    const hours = await settingService.getValue(SETTING_KEYS.PAYMENT_TOPUP_DEADLINE_HOURS);
-    const expiresAt = new Date(now.getTime() + hours * TIME.MS_PER_HOUR);
+    const expiresAt = await topupDeadline(invoice, now);
     await tx.invoice.update({
       where: { id: invoice.id },
       data: { status: Enums.InvoiceStatus.PENDING, expiresAt },
@@ -158,6 +175,10 @@ export const applyTransfer = async (tx, invoice, input) => {
     const excess = received - invoice.amount;
     return { outcome: PAYMENT_OUTCOME.OVERPAID, received, missing: 0, excess };
   }
-  await settleInvoice(tx, invoice, { actorId, meta: { ...base, outcome: PAYMENT_OUTCOME.PAID } });
+  await settleInvoice(tx, invoice, {
+    actorId,
+    meta: { ...base, outcome: PAYMENT_OUTCOME.PAID },
+    now,
+  });
   return { outcome: PAYMENT_OUTCOME.PAID, received, missing: 0, excess: 0 };
 };

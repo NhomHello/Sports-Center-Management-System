@@ -1,3 +1,4 @@
+import { getPaymentWindow, paymentWindow } from './course-payment-window.service.js';
 import { pendingCourseConflict } from '../course-order/course-hold-policy.service.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
@@ -116,9 +117,15 @@ export const listInvoices = async (query, actor, canReadAll) => {
     prisma.invoice.count({ where }),
   ]);
   const currency = await settingService.getValue(SETTING_KEYS.CURRENCY);
+  const graceSeconds = await settingService.getValue(SETTING_KEYS.PAYMENT_WEBHOOK_GRACE_SECONDS);
   return {
     // UC-PAY-08: số đã nhận để hiện "đã nhận X / còn thiếu Y" với hoá đơn chuyển bù.
-    items: items.map((item) => ({ ...item, currency, ...invoiceTotals(item) })),
+    items: items.map((item) => ({
+      ...item,
+      currency,
+      ...paymentWindow(item, graceSeconds),
+      ...invoiceTotals(item),
+    })),
     meta: buildPageMeta({ ...query, total }),
   };
 };
@@ -148,9 +155,11 @@ export const getInvoice = async (id, actor, canReadAll) => {
     actor: collectors.find((collector) => collector.id === payment.actorId) ?? null,
   }));
   const totals = invoiceTotals(invoice);
+  const window = await getPaymentWindow(invoice);
   const scheduleConflict = await pendingCourseConflict(prisma, invoice);
   return {
     ...invoice,
+    ...window,
     ...totals,
     // FE không đọc được system_settings: trả sẵn số được hoàn và hạn báo "đã chuyển khoản".
     refundableAmount: invoice.status === Enums.InvoiceStatus.PAID ? totals.receivedAmount : 0,

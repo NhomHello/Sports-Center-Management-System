@@ -18,6 +18,18 @@ export const PAYMENT_SETTINGS = [
     maxValue: 1440,
   },
   {
+    key: 'PAYMENT_WEBHOOK_GRACE_SECONDS',
+    type: SETTING_TYPES.NUMBER,
+    defaultValue: '120',
+    label: 'Thời gian chờ xác nhận ngân hàng sau hạn giữ chỗ',
+    description: 'Chỉ chờ webhook tiền đã ghi nhận trước hạn; không gia hạn thời gian chuyển tiền',
+    group: SETTING_GROUPS.PAYMENT,
+    unit: 'giây',
+    integer: true,
+    minValue: 0,
+    maxValue: 600,
+  },
+  {
     key: 'INVOICE_CODE_PREFIX',
     type: SETTING_TYPES.STRING,
     defaultValue: 'INV',

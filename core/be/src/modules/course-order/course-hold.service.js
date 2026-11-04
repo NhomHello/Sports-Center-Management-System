@@ -1,3 +1,4 @@
+import { assertCourseSettlementWindow } from '../payment/course-payment-window.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { assertCourseHold } from './course-hold-policy.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
@@ -77,9 +78,10 @@ export const extendHolds = (tx, invoiceId, holdExpiresAt) =>
   });
 
 /** Hóa đơn khóa học đủ tiền: chỗ đang giữ thành đăng ký chính thức (BR-2.1 mới). */
-export const confirmCourseInvoice = async (tx, invoice) => {
+export const confirmCourseInvoice = async (tx, invoice, decisionAt = new Date()) => {
   await lockSchedule(tx);
-  const enrollment = await assertCourseHold(tx, invoice);
+  await assertCourseSettlementWindow(tx, invoice, decisionAt);
+  const enrollment = await assertCourseHold(tx, invoice, decisionAt);
   return tx.classEnrollment.update({
     where: { id: enrollment.id },
     data: {

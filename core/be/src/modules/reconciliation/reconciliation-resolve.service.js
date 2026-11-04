@@ -102,7 +102,7 @@ const lockForAction = async (tx, id, rule) => {
 const assertOverpaidAccepted = async (db, kase) => {
   if (kase.reason !== REASON.OVERPAID) return;
   const invoice = await db.invoice.findUnique({ where: { id: kase.invoiceId } });
-  if (invoice?.status === Enums.InvoiceStatus.PENDING)
+  if (invoice?.status !== Enums.InvoiceStatus.PAID)
     throw ApiError.businessRule('Chấp nhận hoá đơn gốc trước khi dùng phần thừa để gia hạn');
 };
 
