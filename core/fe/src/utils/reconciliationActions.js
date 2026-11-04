@@ -8,15 +8,16 @@ import {
 
 /** Phiếu chuyển thừa mà hoá đơn gốc còn chờ quản lý chấp nhận (BR-PAY-06). */
 export const overpaidAwaiting = (item) =>
-  item.reason === R.OVERPAID && item.invoice?.status === INVOICE_STATUS.PENDING;
+  item.reason === R.OVERPAID && item.invoice?.status !== INVOICE_STATUS.PAID;
 
 /** Các thao tác dùng tiền của phiếu: chỉ khi phiếu còn mở và chưa có yêu cầu hoàn nào. */
 const settleActions = (item, is) => ({
   map: is(R.NO_MATCH, R.LATE, R.SCHEDULE_CONFLICT) && Boolean(item.webhookLog),
   confirm: is(R.MEMBER_CLAIM, R.UNDERPAID) && Boolean(item.invoiceId),
   // Chuyển thừa: hoá đơn gốc chờ chấp nhận trước, phần thừa chỉ dùng được sau khi chấp nhận.
-  accept: is(R.OVERPAID) && overpaidAwaiting(item),
-  renew: is(R.DUPLICATE_TRANSFER) || (is(R.OVERPAID) && !overpaidAwaiting(item)),
+  accept: is(R.OVERPAID) && item.invoice?.status === INVOICE_STATUS.PENDING,
+  renew:
+    is(R.DUPLICATE_TRANSFER) || (is(R.OVERPAID) && item.invoice?.status === INVOICE_STATUS.PAID),
   reject: is(R.MEMBER_CLAIM),
   ignore: is(R.NO_MATCH) && !item.invoiceId,
 });

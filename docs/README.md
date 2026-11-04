@@ -34,3 +34,5 @@ Sửa nội dung tại nguồn hiện hành thay vì tạo thêm kế hoạch c�
 ## Phạm vi mới từ 03/11/2026
 
 [Bán khóa học, hàng chờ và nhận xét theo buổi](huong-dan/course-only-2026-11-03.md) thay thế luồng bán gói tự tập trong tài liệu cũ. Giá trọn khóa, tính phần còn lại theo số buổi. SePay và dữ liệu hóa đơn lịch sử được giữ.
+
+[Xử lý hạn giữ chỗ, webhook sát hạn và thu tiền tại quầy](huong-dan/course-payment-deadlines.md).

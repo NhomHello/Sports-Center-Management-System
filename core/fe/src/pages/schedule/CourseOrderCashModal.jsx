@@ -1,3 +1,5 @@
+import { PaymentDeadlineNotice } from '../payments/PaymentDeadlineNotice';
+import { usePaymentDeadline } from '@/hooks/usePaymentDeadline';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, Modal } from 'antd';
 import { PERMISSIONS } from '@scms/shared';
@@ -17,6 +19,7 @@ export function CourseOrderCashModal({ invoiceId, onClose }) {
     staleTime: 0,
   });
   const invoice = query.data?.data;
+  const { expired } = usePaymentDeadline(invoice);
   const mutation = useScheduleMutation(
     () => collectCash(invoiceId),
     () => {
@@ -35,7 +38,7 @@ export function CourseOrderCashModal({ invoiceId, onClose }) {
       onCancel={() => {
         if (!mutation.isPending) onClose();
       }}
-      okButtonProps={{ disabled: !allowed || query.isFetching || query.isError }}
+      okButtonProps={{ disabled: !allowed || expired || query.isFetching || query.isError }}
       onOk={() => mutation.mutate()}
     >
       {query.isPending && <p>Đang tải hóa đơn…</p>}
@@ -47,6 +50,7 @@ export function CourseOrderCashModal({ invoiceId, onClose }) {
           <p>Số tiền phải thu: {formatCurrency(cashDue(invoice), invoice.currency)}</p>
         </>
       )}
+      <PaymentDeadlineNotice invoice={invoice} />
       {mutation.isError && <Alert type="error" title={mutation.error.message} />}
     </Modal>
   );

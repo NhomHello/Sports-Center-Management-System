@@ -43,3 +43,13 @@ describe('caseActions', () => {
     expect([closed.map, closed.refund]).toEqual([false, false]);
   });
 });
+
+it('chuyển thừa nhưng khóa đã hết giữ chỗ: chỉ hoàn toàn bộ, không chấp nhận/gia hạn phần thừa', () => {
+  const actions = caseActions({
+    status: 'REFUND_PENDING',
+    reason: 'OVERPAID',
+    invoice: { status: 'FAILED' },
+    refunds: [],
+  });
+  expect(actions).toMatchObject({ accept: false, renew: false, refund: true });
+});

@@ -4,6 +4,9 @@
 `20261103140224_course_schedule_conflict_reconciliation_reason` và generate Prisma Client
 trước khi dùng mã mới.
 
+Chi tiết các mốc 15 phút, webhook trễ và thu quầy tại
+[hạn thanh toán khóa học](course-payment-deadlines.md).
+
 ## Đăng ký đồng thời
 
 Transaction ghi dùng khóa `schedule_locks` trước khi đọc sức chứa/lịch rồi giữ khóa đến commit.

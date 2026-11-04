@@ -1,3 +1,5 @@
+import { PaymentDeadlineNotice } from './PaymentDeadlineNotice';
+import { usePaymentDeadline } from '@/hooks/usePaymentDeadline';
 import { ApplyCreditButton } from './ApplyCreditButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Descriptions, Modal, Typography } from 'antd';
@@ -60,6 +62,7 @@ function CashPaymentContent({ query, mutation, canCollect }) {
           title={getApiOperationErrorMessage(mutation.error, 'ghi nhận thu tiền')}
         />
       )}
+      <PaymentDeadlineNotice invoice={invoice} />
       <CashInvoiceSummary invoice={invoice} />
       <ApplyCreditButton invoice={invoice} onApplied={() => query.refetch()} />
       <Typography.Paragraph type="secondary">
@@ -91,6 +94,7 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
     staleTime: 0,
   });
   const invoice = query.data?.data;
+  const { expired } = usePaymentDeadline(invoice);
   const mutation = useMutation({
     mutationFn: paymentService.collectCash,
     onSuccess: ({ data }) => {
@@ -107,7 +111,8 @@ export function InvoiceCashModal({ invoiceId, onClose, onPaid }) {
   const canCollect =
     canCollectCash({ invoice, canRecordCash: can(PERMISSIONS.PAYMENT_RECORD_CASH) }) &&
     !query.isFetching &&
-    !query.isError;
+    !query.isError &&
+    !expired;
   return (
     <Modal
       open={Boolean(invoiceId)}

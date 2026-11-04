@@ -1,3 +1,5 @@
+import { PaymentDeadlineNotice } from './PaymentDeadlineNotice';
+import { usePaymentDeadline } from '@/hooks/usePaymentDeadline';
 import { ApplyCreditButton } from './ApplyCreditButton';
 import { CheckCircleFilled, ClockCircleOutlined } from '@ant-design/icons';
 import { Alert, Descriptions, Image, Space, Typography } from 'antd';
@@ -15,7 +17,7 @@ const useRemainingSeconds = (expiresAt) => {
     const timer = setInterval(() => setNow(Date.now()), TICK_MS);
     return () => clearInterval(timer);
   }, []);
-  return Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / TICK_MS));
+  return Math.max(0, Math.ceil((new Date(expiresAt).getTime() - now) / TICK_MS));
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -52,7 +54,9 @@ function PendingPanel({ instruction, currency }) {
           description={`Đã nhận ${formatCurrency(instruction.receivedAmount, currency)} / còn thiếu ${formatCurrency(instruction.amount, currency)}. Chuyển bù bằng cùng mã hóa đơn trước hạn bên dưới.`}
         />
       )}
-      <Image src={instruction.qrUrl} alt="Mã QR chuyển khoản" width={240} preview={false} />
+      {remaining > 0 && (
+        <Image src={instruction.qrUrl} alt="Mã QR chuyển khoản" width={240} preview={false} />
+      )}
       <Descriptions bordered size="small" column={1} className="scms-full-width">
         <Descriptions.Item label="Ngân hàng">{instruction.bankCode}</Descriptions.Item>
         <Descriptions.Item label="Số tài khoản">
@@ -84,6 +88,9 @@ function PendingPanel({ instruction, currency }) {
 
 /** Hóa đơn online: hiện QR khi chờ thanh toán, báo thành công khi webhook đã xác nhận. */
 export function OnlinePaymentPanel({ invoice }) {
+  const { expired } = usePaymentDeadline(invoice);
+  if (invoice.status === INVOICE_STATUS.PENDING && expired)
+    return <PaymentDeadlineNotice invoice={invoice} />;
   if (invoice.paymentBlockReason)
     return (
       <Alert
