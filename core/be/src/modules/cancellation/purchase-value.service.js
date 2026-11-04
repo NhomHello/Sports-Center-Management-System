@@ -2,7 +2,12 @@ import { PERMISSIONS as P } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
 import { sumReceived } from '../payment/payment-apply.service.js';
-import { futureSessions, remainingCourseValue, remainingPlanValue } from './settlement.js';
+import {
+  courseUsage,
+  futureSessions,
+  remainingCourseValue,
+  remainingPlanValue,
+} from './settlement.js';
 
 const LIVE = [Enums.MembershipStatus.ACTIVE, Enums.MembershipStatus.FROZEN];
 
@@ -55,6 +60,7 @@ export const loadEnrollmentFor = async (db, id, context) => {
  * của một lần đổi = giá sản phẩm mới (phần còn lại của sản phẩm cũ đã chuyển sang).
  */
 export const paidValue = async (db, invoice) => {
+  if (invoice.kind === Enums.InvoiceKind.COURSE) return invoice.amount;
   if (invoice.kind !== Enums.InvoiceKind.ADJUSTMENT) return sumReceived(db, invoice.id);
   const change = await db.purchaseChange.findFirst({ where: { adjustmentInvoiceId: invoice.id } });
   return change?.newPrice ?? 0;
@@ -91,10 +97,17 @@ export const enrollmentValue = async (db, enrollment, now = new Date()) => {
   const sessionCount = invoice.sessionCount ?? 0;
   const unheld = futureSessions(enrollment.gymClass.sessions, now).length;
   if (!unheld) throw ApiError.businessRule('Khóa học không còn buổi chưa diễn ra');
+  const usage = courseUsage(
+    { sessions: enrollment.gymClass.sessions, enrolledAt: enrollment.enrolledAt, sessionCount },
+    now,
+  );
+  const { usedSessions, remainingSessions } = usage;
   return {
     invoice,
     paid,
-    remainingValue: remainingCourseValue({ paid, sessionCount, unheld }),
-    beforeStart: unheld >= sessionCount,
+    sessionCount,
+    ...usage,
+    remainingValue: remainingCourseValue({ paid, sessionCount, unheld: remainingSessions }),
+    beforeStart: usedSessions === 0,
   };
 };

@@ -22,7 +22,7 @@ export const listForSession = async (id, context) => {
       include: { member: { select: { id: true, fullName: true } } },
     }),
     prisma.attendance.findMany({
-      where: { sessionId: id },
+      where: { sessionId: id, status: { not: Enums.AttendanceStatus.EXCUSED } },
       select: { member: { select: { id: true, fullName: true } } },
     }),
   ]);
@@ -45,7 +45,7 @@ async function assertMember(db, session, memberId) {
       where: { sessionId_memberId: { sessionId: session.id, memberId } },
     }),
   ]);
-  if (!enrollment && !recorded)
+  if (!enrollment && (!recorded || recorded.status === Enums.AttendanceStatus.EXCUSED))
     throw ApiError.businessRule('Học viên chưa có đăng ký chính thức cho buổi này');
 }
 

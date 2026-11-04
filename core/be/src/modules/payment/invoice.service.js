@@ -1,3 +1,4 @@
+import { latestForInvoice } from '../cancellation-history/cancellation-history.service.js';
 import { getPaymentWindow, paymentWindow } from './course-payment-window.service.js';
 import { pendingCourseConflict } from '../course-order/course-hold-policy.service.js';
 import { SETTING_KEYS } from '@scms/shared';
@@ -169,6 +170,7 @@ export const getInvoice = async (id, actor, canReadAll) => {
         : null,
     payments,
     centerInfo: { name, address, phone },
+    courseCancellation: await latestForInvoice(invoice.id),
     currency,
     paymentBlockReason: scheduleConflict
       ? 'Khóa học trùng lịch với một khóa đã đăng ký hoặc đang giữ chỗ. Vui lòng chọn lại lịch hoặc liên hệ trung tâm nếu đã chuyển tiền.'

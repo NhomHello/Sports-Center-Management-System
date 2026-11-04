@@ -1,3 +1,5 @@
+import { refundCode } from '../reconciliation/refund-reference.js';
+import { recordCourseCancellation } from './cancellation-record.service.js';
 import { SETTING_KEYS as K } from '@scms/shared';
 import {
   withScheduleTransaction,
@@ -51,13 +53,24 @@ const recordCancel = async (db, { kind, source, value, preview, input, actor }) 
     actor,
     reason: input.reason ?? `Hủy ${value.invoice.planName ?? 'gói'} (${value.invoice.code})`,
   });
-  await writeScheduleAudit(db, actor, {
-    action: AUDIT_ACTIONS.DELETE,
-    entity: 'PurchaseChange',
-    entityId: change.id,
-    meta: { kind, ...preview, settlement: change.settlement, reason: input.reason },
-  });
-  return done;
+  if (kind === Enums.PurchaseChangeKind.CANCEL_COURSE)
+    await recordCourseCancellation(db, {
+      change: done,
+      enrollment: source,
+      value,
+      preview,
+      actor,
+      reason: input.reason ?? 'Không ghi lý do',
+    });
+  else {
+    await writeScheduleAudit(db, actor, {
+      action: AUDIT_ACTIONS.DELETE,
+      entity: 'PurchaseChange',
+      entityId: change.id,
+      meta: { kind, ...preview, settlement: change.settlement, reason: input.reason },
+    });
+  }
+  return { ...done, refundCode: done.refundId ? refundCode(done.refundId) : null };
 };
 
 /** Đồng bộ trạng thái kỳ (bảo lưu tới hạn, hết hạn) trước khi kiểm tra điều kiện hủy/đổi. */
@@ -100,14 +113,15 @@ export const previewEnrollment = async (id, context) => {
 /** POST /enrollments/:id/cancel — hủy cả khóa đã thanh toán, nhả chỗ cho danh sách chờ. */
 export const cancelEnrollment = (id, input, context) =>
   withScheduleTransaction(async (db) => {
+    const now = new Date();
     const enrollment = await loadEnrollmentFor(db, id, context);
-    const value = await enrollmentValue(db, enrollment);
+    const value = await enrollmentValue(db, enrollment, now);
     const preview = await quote(value);
     await db.classEnrollment.update({
       where: { id },
       data: {
         status: Enums.EnrollmentStatus.CANCELLED,
-        cancelledAt: new Date(),
+        cancelledAt: now,
         cancelledBy: context.user.id,
         exceptionUntil: null,
       },

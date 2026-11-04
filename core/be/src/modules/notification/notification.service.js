@@ -1,3 +1,4 @@
+import { NOTIFICATION_LIMITS } from '../../constants/index.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { prisma } from '../../config/db.js';
@@ -60,8 +61,8 @@ export const createForUsers = async ({ userIds, kind, title, message, eventKey, 
   const data = userIds.map((userId) => ({
     userId,
     kind,
-    title,
-    message,
+    title: title.slice(0, NOTIFICATION_LIMITS.TITLE),
+    message: message.slice(0, NOTIFICATION_LIMITS.MESSAGE),
     dedupeKey: `${eventKey}:${userId}`,
   }));
   const result = await db.notification.createMany({ data, skipDuplicates: true });

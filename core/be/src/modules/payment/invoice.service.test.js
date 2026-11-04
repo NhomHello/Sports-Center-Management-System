@@ -18,6 +18,9 @@ vi.mock('../../config/db.js', () => ({
     user: { findMany: mocks.findCollectors },
   },
 }));
+vi.mock('../cancellation-history/cancellation-history.service.js', () => ({
+  latestForInvoice: vi.fn().mockResolvedValue(null),
+}));
 vi.mock('../setting/setting.service.js', () => ({ getValue: mocks.getValue }));
 
 const { getInvoice, getReceipt } = await import('./invoice.service.js');

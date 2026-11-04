@@ -128,3 +128,6 @@ export const COURSE_CONTENT = Object.freeze({
   RATING_MAX: 5,
 });
 export const TRANSACTION_RETRY = Object.freeze({ MAX_ATTEMPTS: 3, DELAY_MS: 25 });
+
+/** Giới hạn lưu thông báo theo schema; cắt phần mô tả để tên/lý do dài không làm hỏng giao dịch. */
+export const NOTIFICATION_LIMITS = Object.freeze({ TITLE: 150, MESSAGE: 500 });

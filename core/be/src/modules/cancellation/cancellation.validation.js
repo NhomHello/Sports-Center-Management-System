@@ -9,7 +9,7 @@ export const cancelPurchaseSchema = {
   params,
   body: z
     .object({
-      settlement: z.enum(['REFUND', 'CREDIT']),
+      settlement: z.literal('REFUND').default('REFUND'),
       reason: z.string().trim().max(REASON_MAX_LENGTH).optional(),
     })
     .strict(),

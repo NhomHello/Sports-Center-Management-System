@@ -84,4 +84,13 @@ export const pastSessions = async (classId, count) => {
       },
     });
   }
+  const earliest = await prisma.classSession.findFirst({
+    where: { classId },
+    orderBy: { startAt: 'asc' },
+  });
+  if (earliest)
+    await prisma.classEnrollment.updateMany({
+      where: { classId, status: 'BOOKED' },
+      data: { enrolledAt: new Date(earliest.startAt.getTime() - TIME.MS_PER_HOUR) },
+    });
 };

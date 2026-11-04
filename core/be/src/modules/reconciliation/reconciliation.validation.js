@@ -57,9 +57,16 @@ export const syncSchema = {
 };
 
 export const refundListSchema = {
-  query: paginationQuerySchema.extend({
-    status: z.enum(Object.values(Enums.RefundStatus)).optional(),
-  }),
+  query: paginationQuerySchema
+    .extend({
+      status: z.enum(Object.values(Enums.RefundStatus)).optional(),
+      search: z.string().trim().max(VALIDATION.SEARCH_MAX_LENGTH).optional(),
+      memberId: id.optional(),
+    })
+    .strict(),
+};
+export const ownRefundListSchema = {
+  query: refundListSchema.query.omit({ memberId: true }).strict(),
 };
 export const refundCompleteSchema = { params, body: z.object({ reference }).strict() };
 

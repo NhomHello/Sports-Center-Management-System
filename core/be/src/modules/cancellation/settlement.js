@@ -31,6 +31,23 @@ export const remainingPlanValue = ({ paid, startDate, endDate }, now = new Date(
   return total > 0 ? Math.min(paid, roundMoney((paid * unused) / total)) : 0;
 };
 
+/** Số buổi thuộc lần mua, tách buổi đã diễn ra, còn lại và đã hủy khỏi lịch. */
+export const courseUsage = ({ sessions, enrolledAt, sessionCount }, now = new Date()) => {
+  const owned = sessions.filter(
+    (s) => s.status !== Enums.SessionStatus.CANCELLED && s.startAt >= enrolledAt,
+  );
+  const usedSessions = owned.filter((s) => s.startAt <= now).length;
+  const remainingSessions = Math.min(
+    futureSessions(sessions, now).length,
+    Math.max(0, sessionCount - usedSessions),
+  );
+  return {
+    usedSessions,
+    remainingSessions,
+    cancelledSessions: Math.max(0, sessionCount - usedSessions - remainingSessions),
+  };
+};
+
 /** Giá trị chưa dùng của khóa học: số đã trả × buổi chưa diễn ra / số buổi đã mua. */
 export const remainingCourseValue = ({ paid, sessionCount, unheld }) =>
   sessionCount > 0

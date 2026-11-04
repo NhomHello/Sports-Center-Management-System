@@ -1,10 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '../src/config/db.js';
 import { classPayload } from './helpers/sprint2.js';
-import {
-  cleanupGopyFixture,
-  createGopyFixture,
-} from './helpers/gopy.js';
+import { cleanupGopyFixture, createGopyFixture } from './helpers/gopy.js';
 
 const HOUR = 3600000;
 
@@ -47,6 +44,11 @@ describe('GY-30: báo nghỉ một buổi', () => {
         startAt: new Date(now - HOUR),
         endAt: new Date(now + HOUR),
       },
+    });
+    // Fixture chuyển buổi về quá khứ thì thời điểm đăng ký cũng phải trước buổi đó.
+    await prisma.classEnrollment.updateMany({
+      where: { classId: item.id, memberId: f.member.id },
+      data: { enrolledAt: new Date(now - 2 * HOUR) },
     });
     const record = await f.call('put', `/classes/sessions/${session.id}/attendance`, {
       entries: [{ memberId: f.member.id, status: 'ABSENT' }],

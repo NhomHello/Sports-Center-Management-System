@@ -61,7 +61,7 @@ export const roster = async (id, context) => {
   // Đăng ký lại lớp ghi đè enrolledAt; người đã có điểm danh ở buổi này vẫn phải hiện trong roster.
   const listed = new Set(items.map((item) => item.member.id));
   const recorded = attendance
-    .filter((row) => !listed.has(row.memberId))
+    .filter((row) => !listed.has(row.memberId) && row.status !== Enums.AttendanceStatus.EXCUSED)
     .map((row) => ({ member: row.member, status: Enums.EnrollmentStatus.BOOKED }));
   return {
     session,
@@ -94,7 +94,11 @@ export const record = (id, entries, context) =>
       },
     });
     const recorded = await db.attendance.findMany({
-      where: { sessionId: id, memberId: { in: entries.map((e) => e.memberId) } },
+      where: {
+        sessionId: id,
+        memberId: { in: entries.map((e) => e.memberId) },
+        status: { not: Enums.AttendanceStatus.EXCUSED },
+      },
       select: { memberId: true },
     });
     const allowed = new Set([...eligible, ...recorded].map((row) => row.memberId));

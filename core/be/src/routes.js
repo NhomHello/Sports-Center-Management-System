@@ -1,3 +1,4 @@
+import cancellationHistoryRoutes from './modules/cancellation-history/cancellation-history.routes.js';
 /**
  * Gom tat ca route cua cac module. Them module moi => them 1 dong o day.
  * Prefix chung (/api/v1) lay tu env.API_PREFIX trong app.js.
@@ -42,6 +43,7 @@ import {
 
 const router = Router();
 
+router.use('/course-cancellations', cancellationHistoryRoutes);
 router.use('/audit-logs', auditRoutes);
 router.use(HEALTH_PATH, healthRoutes);
 router.use('/auth', authRoutes);

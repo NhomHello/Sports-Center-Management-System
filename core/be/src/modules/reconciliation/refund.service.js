@@ -1,7 +1,7 @@
+import { notifyRefundCompleted } from './refund-notification.service.js';
 import { closeRefundedInvoiceCases } from './refund-case-closure.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { ApiError } from '../../common/errors/api-error.js';
-import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
 import { Enums, prisma } from '../../config/db.js';
 import { AUDIT_ACTIONS, ENTITIES } from '../../constants/index.js';
 import { lockInvoice, sumReceived } from '../payment/payment-apply.service.js';
@@ -136,6 +136,17 @@ export const refundInvoice = async (invoiceId, { amount, reason }, actor) => {
     if (!invoice) throw ApiError.notFound('Không tìm thấy hoá đơn');
     if (invoice.status !== Enums.InvoiceStatus.PAID)
       throw ApiError.conflict('Chỉ hoàn tiền hoá đơn đã thanh toán');
+    const cancellation = await tx.purchaseChange.findFirst({
+      where: {
+        fromInvoiceId: invoice.id,
+        kind: Enums.PurchaseChangeKind.CANCEL_COURSE,
+        status: Enums.PurchaseChangeStatus.DONE,
+      },
+    });
+    if (cancellation)
+      throw ApiError.conflict(
+        'Khóa đã hủy và đã tính quyền lợi. Hãy xử lý mã hoàn hiện có, không tạo yêu cầu hoàn toàn bộ hóa đơn lần nữa',
+      );
     const received = await sumReceived(tx, invoice.id);
     const value = amount ?? received;
     if (received <= 0) throw ApiError.businessRule('Hoá đơn không còn tiền để hoàn');
@@ -196,6 +207,7 @@ export const completeRefund = (id, { reference }, actor) =>
       });
     }
     await closeRefundedInvoiceCases(tx, done, actor);
+    await notifyRefundCompleted(tx, done);
     await audit(tx, actor, {
       entity: ENTITIES.REFUND,
       entityId: id,
@@ -204,17 +216,4 @@ export const completeRefund = (id, { reference }, actor) =>
     return done;
   }, TX);
 
-/** Danh sách yêu cầu hoàn tiền để kế toán/Manager theo dõi việc chuyển trả. */
-export const listRefunds = async (query) => {
-  const where = query.status ? { status: query.status } : {};
-  const [items, total] = await prisma.$transaction([
-    prisma.refund.findMany({
-      where,
-      include: { invoice: { select: { id: true, code: true, userId: true } } },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      ...toPrismaPage(query),
-    }),
-    prisma.refund.count({ where }),
-  ]);
-  return { items, meta: buildPageMeta({ ...query, total }) };
-};
+export { listRefunds } from './refund-history.service.js';

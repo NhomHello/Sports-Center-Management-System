@@ -1,8 +1,7 @@
+import { notifyRefundRequested } from '../reconciliation/refund-notification.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
 import { addCredit } from '../credit/credit.service.js';
-
-const fmt = (value) => `${value.toLocaleString('vi-VN')} đ`;
 
 /**
  * Trả phần tiền của một lần hủy/đổi cho hội viên: REFUND tạo yêu cầu hoàn để quản lý chuyển trả
@@ -12,19 +11,20 @@ const fmt = (value) => `${value.toLocaleString('vi-VN')} đ`;
  */
 export const payOut = async (db, { change, amount, settlement, actor, reason }) => {
   if (amount <= 0) return change;
+  if (
+    [Enums.PurchaseChangeKind.CANCEL_COURSE, Enums.PurchaseChangeKind.CHANGE_CLASS].includes(
+      change.kind,
+    ) &&
+    settlement !== Enums.SettlementMode.REFUND
+  )
+    throw ApiError.businessRule(
+      'Hoàn tiền khóa học được chuyển trả qua admin, không ghi vào ví/số dư',
+    );
   if (settlement === Enums.SettlementMode.REFUND) {
     const refund = await db.refund.create({
       data: { invoiceId: change.fromInvoiceId, amount, reason, requestedById: actor.id },
     });
-    await db.notification.create({
-      data: {
-        userId: change.userId,
-        kind: Enums.NotificationKind.PAYMENT_REFUND,
-        title: `Trung tâm sẽ hoàn ${fmt(amount)} cho bạn`,
-        message: `${reason}. Bạn sẽ nhận thông báo khi chuyển trả xong.`,
-        dedupeKey: `purchase-change-refund:${change.id}`,
-      },
-    });
+    await notifyRefundRequested(db, refund, { userId: change.userId, reason });
     return db.purchaseChange.update({ where: { id: change.id }, data: { refundId: refund.id } });
   }
   if (settlement === Enums.SettlementMode.CREDIT) {

@@ -32,10 +32,22 @@ reconciliationRoutes.post('/:id/ignore', validate(schema.noteSchema), controller
 
 /** /refunds: theo dõi và xác nhận đã chuyển trả (BR-PAY-13). */
 export const refundRoutes = Router();
-refundRoutes.use(authenticate, authorize(PERMISSIONS.PAYMENT_REFUND));
-refundRoutes.get('/', validate(schema.refundListSchema), controller.listRefunds);
+refundRoutes.use(authenticate);
+refundRoutes.get(
+  '/me',
+  authorize(PERMISSIONS.INVOICE_READ_OWN, PERMISSIONS.SCHEDULE_VIEW_OWN),
+  validate(schema.ownRefundListSchema),
+  controller.listOwnRefunds,
+);
+refundRoutes.get(
+  '/',
+  authorize(PERMISSIONS.PAYMENT_REFUND),
+  validate(schema.refundListSchema),
+  controller.listRefunds,
+);
 refundRoutes.post(
   '/:id/complete',
+  authorize(PERMISSIONS.PAYMENT_REFUND),
   validate(schema.refundCompleteSchema),
   controller.completeRefund,
 );

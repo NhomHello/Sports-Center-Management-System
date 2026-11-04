@@ -63,6 +63,15 @@ export const cleanupSprintFixture = async (fixture) => {
   const whereUser = { userId: { in: fixture.userIds } };
   const byInvoice = { invoice: whereUser };
 
+  const changes = await prisma.purchaseChange.findMany({ where: whereUser, select: { id: true } });
+  const refunds = await prisma.refund.findMany({
+    where: { OR: [byInvoice, { case: whereUser }] },
+    select: { id: true },
+  });
+  await prisma.notification.deleteMany({
+    where: { OR: refunds.map((refund) => ({ dedupeKey: { startsWith: `refund:${refund.id}:` } })) },
+  });
+
   // Xóa các bản ghi phụ thuộc trước để tránh vi phạm khóa ngoại.
   await prisma.creditTransaction.deleteMany({ where: whereUser });
   await prisma.purchaseChange.deleteMany({ where: whereUser });
@@ -83,7 +92,11 @@ export const cleanupSprintFixture = async (fixture) => {
   await prisma.membership.deleteMany({ where: whereUser });
   await prisma.auditLog.deleteMany({
     where: {
-      OR: [{ userId: { in: fixture.userIds } }, { id: { in: fixture.auditIds } }],
+      OR: [
+        { userId: { in: fixture.userIds } },
+        { id: { in: fixture.auditIds } },
+        { entity: 'PurchaseChange', entityId: { in: changes.map((change) => String(change.id)) } },
+      ],
     },
   });
   await prisma.user.deleteMany({

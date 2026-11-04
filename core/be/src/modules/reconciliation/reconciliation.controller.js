@@ -92,6 +92,15 @@ export const listRefunds = async (req, res) => {
   sendSuccess(res, { data: items, meta });
 };
 
+/** Hội viên chỉ xem yêu cầu hoàn của chính mình. */
+export const listOwnRefunds = async (req, res) => {
+  const { items, meta } = await refundService.listRefunds({
+    ...req.validated.query,
+    memberId: req.user.id,
+  });
+  sendSuccess(res, { data: items, meta });
+};
+
 /** POST /refunds/:id/complete */
 export const completeRefund = async (req, res) =>
   sendSuccess(res, {
