@@ -1,3 +1,4 @@
+import { closeRefundedInvoiceCases } from './refund-case-closure.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { buildPageMeta, toPrismaPage } from '../../common/utils/pagination.js';
@@ -47,7 +48,7 @@ const refundableAmount = async (tx, kase) => {
   if (kase.reason === REASON.OVERPAID) {
     // Chưa chấp nhận hoá đơn: hoàn toàn bộ và huỷ hoá đơn; đã chấp nhận: chỉ hoàn phần thừa.
     const invoice = await tx.invoice.findUnique({ where: { id: kase.invoiceId } });
-    return invoice?.status === Enums.InvoiceStatus.PENDING
+    return invoice?.status !== Enums.InvoiceStatus.PAID
       ? sumReceived(tx, kase.invoiceId)
       : kase.excessAmount;
   }
@@ -194,6 +195,7 @@ export const completeRefund = (id, { reference }, actor) =>
         action: 'REFUND_DONE',
       });
     }
+    await closeRefundedInvoiceCases(tx, done, actor);
     await audit(tx, actor, {
       entity: ENTITIES.REFUND,
       entityId: id,

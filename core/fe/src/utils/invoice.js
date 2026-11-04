@@ -5,23 +5,31 @@ import { getApiAvailabilityNotice } from './apiAvailability';
 export const canPrintInvoice = ({ invoice, canExport, centerName }) =>
   invoice?.status === INVOICE_STATUS.PAID && canExport && Boolean(centerName?.trim());
 
+/** Hạn thanh toán khóa học không kéo dài bởi khoảng chờ webhook. */
+export const coursePaymentExpired = (invoice, now = Date.now()) =>
+  invoice?.kind === 'COURSE' &&
+  new Date(invoice.paymentDeadline ?? invoice.expiresAt).getTime() <= now;
+
 /**
  * BR-PAY-14: thu tiền mặt cho hoá đơn tại quầy đang chờ, hoặc thu phần còn thiếu của hoá đơn
  * online đã chuyển thiếu (hội viên ra quầy nộp bù).
  */
 export const canCollectCash = ({ invoice, canRecordCash }) => {
-  if (!canRecordCash || invoice?.status !== INVOICE_STATUS.PENDING || invoice.paymentBlockReason)
+  if (
+    !canRecordCash ||
+    invoice?.status !== INVOICE_STATUS.PENDING ||
+    invoice.paymentBlockReason ||
+    coursePaymentExpired(invoice)
+  )
     return false;
-  if (!(Number(invoice.amount) > 0)) return false;
+  if (!(Number(invoice.amount) > 0) || invoiceReceived(invoice) >= Number(invoice.amount))
+    return false;
   if (invoice.channel === INVOICE_CHANNEL.COUNTER) return true;
   return invoiceReceived(invoice) > 0;
 };
 
-/** Số tiền lễ tân cần thu: giá gốc với hoá đơn tại quầy, phần còn thiếu với hoá đơn online. */
-export const cashDue = (invoice) =>
-  invoice.channel === INVOICE_CHANNEL.COUNTER
-    ? Number(invoice.amount)
-    : Number(invoice.amount) - invoiceReceived(invoice);
+/** Tiền mặt còn phải thu cho cả hai kênh, sau khi trừ số dư/tiền đã ghi nhận. */
+export const cashDue = (invoice) => Math.max(0, Number(invoice.amount) - invoiceReceived(invoice));
 
 /** Tạo thông báo rõ ràng khi API danh sách hóa đơn chưa được backend đăng ký. */
 export const getInvoiceListErrorNotice = (error, canReadAll) => {
@@ -62,6 +70,15 @@ const statusMetaOf = (status) => INVOICE_STATUS_META[status] ?? { color: 'defaul
 const pendingMeta = (invoice, now) => {
   const online = invoice.channel === INVOICE_CHANNEL.ONLINE;
   const received = invoiceReceived(invoice);
+  if (coursePaymentExpired(invoice, now)) {
+    const awaiting = online && new Date(invoice.holdReleaseAt).getTime() > now;
+    return {
+      color: 'orange',
+      label: awaiting
+        ? 'Hết hạn chuyển tiền, chờ xác nhận ngân hàng'
+        : 'Hết hạn giữ chỗ, chờ xử lý',
+    };
+  }
   if (received > Number(invoice.amount))
     return { color: 'orange', label: 'Chuyển thừa, chờ xác nhận' };
   // Đã nhận đủ/thừa thì không bị huỷ vì quá hạn (chờ quản lý xử lý).

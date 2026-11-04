@@ -1,3 +1,4 @@
+import { coursePaymentExpired } from '@/utils/invoice';
 import { useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, App, Button, Space } from 'antd';
@@ -13,6 +14,7 @@ const creditPaymentEnabled = (invoice, user, allowed) =>
   Boolean(invoice?.id && user?.id) &&
   allowed &&
   !invoice.paymentBlockReason &&
+  !coursePaymentExpired(invoice) &&
   invoice.status === INVOICE_STATUS.PENDING;
 
 /** GY-34: API tự tính tối đa được dùng và số tiền còn thiếu; FE không trừ tiền cục bộ. */

@@ -1,3 +1,4 @@
+import { graceSeconds } from './helpers/payment-deadline.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '../src/config/db.js';
 import { env } from '../src/config/env.js';
@@ -54,7 +55,7 @@ describe('TC-COURSE-RACE: thanh toán và hàng đợi đồng thời', () => {
   it('TC-COURSE-RACE-04: hết hạn nhả chỗ cho người đứng đầu; tiền tới muộn không giành lại chỗ', async () => {
     const invoice = await prisma.invoice.findFirst({ where: { classId: item.id, status: 'PENDING' } });
     const first = await prisma.classWaitlist.findFirst({ where: { classId: item.id, status: 'WAITING' }, orderBy: [{ joinedAt: 'asc' }, { id: 'asc' }] });
-    await prisma.invoice.update({ where: { id: invoice.id }, data: { expiresAt: new Date(Date.now() - 1000) } });
+    await prisma.invoice.update({ where: { id: invoice.id }, data: { expiresAt: new Date(Date.now() - ((await graceSeconds()) + 1) * 1000) } });
     await expireOverdueInvoices();
     expect((await prisma.classWaitlist.findUnique({ where: { id: first.id } })).status).toBe('OFFERED');
     const accepted = await order(signAccessToken({ sub: first.memberId })); expect(accepted.status).toBe(201); expect(accepted.body.data.queued).not.toBe(true);

@@ -4,7 +4,7 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { heldSeats } from '../class/class-member-eligibility.service.js';
 
 /** Không phục hồi đăng ký đã huỷ hoặc đổi sang invoice khác khi tiền về trễ. */
-export const assertCourseHold = async (db, invoice) => {
+export const assertCourseHold = async (db, invoice, now = new Date()) => {
   const enrollment = await db.classEnrollment.findFirst({
     where: {
       invoiceId: invoice.id,
@@ -26,16 +26,16 @@ export const assertCourseHold = async (db, invoice) => {
   const item = enrollment.gymClass;
   if (
     ![Enums.ClassStatus.OPEN, Enums.ClassStatus.CLOSED].includes(item.status) ||
-    !item.sessions.some((s) => s.status === Enums.SessionStatus.SCHEDULED && s.startAt > new Date())
+    !item.sessions.some((s) => s.status === Enums.SessionStatus.SCHEDULED && s.startAt > now)
   )
     throw ApiError.conflict('Khoá học không còn nhận thanh toán');
-  const conflict = await findMemberScheduleConflict(db, { item, memberId: invoice.userId });
+  const conflict = await findMemberScheduleConflict(db, { item, memberId: invoice.userId }, now);
   if (conflict)
     throw ApiError.conflict(
       'Lịch khóa học đã thay đổi và trùng với khóa khác của học viên. Cần chọn lại khóa hoặc đối soát tiền đã chuyển.',
       { ...conflict, type: Enums.ReconciliationReason.SCHEDULE_CONFLICT },
     );
-  const held = await heldSeats(db, item.id, new Date(), invoice.userId);
+  const held = await heldSeats(db, item.id, now, invoice.userId);
   if (item._count.enrollments + held >= item.capacity)
     throw ApiError.conflict('Khoá học đã đủ chỗ, cần đối soát khoản tiền');
   return enrollment;

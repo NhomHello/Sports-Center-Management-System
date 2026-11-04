@@ -1,3 +1,4 @@
+import { graceSeconds } from './helpers/payment-deadline.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '../src/config/db.js';
 import { expireOverdueInvoices } from '../src/modules/payment/invoice-expiry.job.js';
@@ -16,7 +17,7 @@ beforeAll(async () => {
 afterAll(() => cleanupGopyFixture(f));
 
 describe('GY-20: khóa học có học phí, kỳ gói theo hóa đơn, check-in theo khung giờ', () => {
-  it('mua khóa online giữ chỗ PENDING_PAYMENT; hết hạn thanh toán thì nhả chỗ', async () => {
+  it('mua khóa online giữ chỗ PENDING_PAYMENT; hết hạn thanh toán và khoảng chờ webhook thì nhả chỗ', async () => {
     const item = await createPaidClass(f, { capacity: 1 });
     expect(item).toMatchObject({ price: 1200000, priceForRemaining: 1200000 });
     const order = await f.call('post', `/classes/${item.id}/orders`, {}, f.memberToken);
@@ -34,7 +35,7 @@ describe('GY-20: khóa học có học phí, kỳ gói theo hóa đơn, check-in
     expect(forOther.body.data).toMatchObject({ seatsRemaining: 0, canEnroll: false });
     await prisma.invoice.update({
       where: { id: order.body.data.id },
-      data: { expiresAt: new Date(Date.now() - 1000) },
+      data: { expiresAt: new Date(Date.now() - ((await graceSeconds()) + 1) * 1000) },
     });
     await expireOverdueInvoices();
     const hold = await prisma.classEnrollment.findUniqueOrThrow({

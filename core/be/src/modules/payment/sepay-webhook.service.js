@@ -1,5 +1,4 @@
-import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
-import { ApiError } from '../../common/errors/api-error.js';
+import { checkCourseTransfer } from './sepay-course-policy.service.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
 import { PRISMA_ERROR, SEPAY } from '../../constants/index.js';
@@ -70,12 +69,15 @@ const toReview = async (tx, payload, { invoiceCode, invoice, reason, note }) => 
   return { log, kase, invoice };
 };
 
-const handleTransfer = async (tx, payload, invoiceCode, invoice) => {
+const handleTransfer = async (tx, payload, invoice, timing) => {
+  const invoiceCode = invoice.code;
   const result = await applyTransfer(tx, invoice, {
     amount: Math.round(payload.transferAmount),
     provider: Enums.PaymentProvider.SEPAY,
     reference: payload.referenceCode ?? payload.id,
-    meta: { sepayId: payload.id },
+    paidAt: timing.paidAt,
+    decisionAt: timing.decisionAt,
+    meta: { sepayId: payload.id, receivedAt: new Date().toISOString() },
   });
   const settled = result.outcome === PAYMENT_OUTCOME.PAID;
   const log = await writeLog(tx, payload, {
@@ -93,9 +95,6 @@ const handleTransfer = async (tx, payload, invoiceCode, invoice) => {
   return { log, kase, invoice, result };
 };
 
-const holdRejectionReason = (error) =>
-  error.details?.type === REASON.SCHEDULE_CONFLICT ? REASON.SCHEDULE_CONFLICT : REASON.LATE;
-
 const handle = async (tx, payload, invoiceCode) => {
   const invoice = invoiceCode ? await lockInvoice(tx, { code: invoiceCode }) : null;
   if (!invoice) {
@@ -111,20 +110,9 @@ const handle = async (tx, payload, invoiceCode) => {
     const note = 'Tài khoản hội viên đã bị khoá';
     return toReview(tx, payload, { invoiceCode, invoice, reason: REASON.NO_MATCH, note });
   }
-  if (invoice.kind === Enums.InvoiceKind.COURSE) {
-    try {
-      await assertCourseHold(tx, invoice);
-    } catch (error) {
-      if (!(error instanceof ApiError)) throw error;
-      return toReview(tx, payload, {
-        invoiceCode,
-        invoice,
-        reason: holdRejectionReason(error),
-        note: error.message,
-      });
-    }
-  }
-  return handleTransfer(tx, payload, invoiceCode, invoice);
+  const timing = await checkCourseTransfer(tx, invoice, payload);
+  if (timing.rejection) return toReview(tx, payload, { invoiceCode, invoice, ...timing.rejection });
+  return handleTransfer(tx, payload, invoice, timing);
 };
 
 const logIgnored = (payload) =>

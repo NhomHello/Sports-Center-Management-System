@@ -45,7 +45,7 @@ export const getInvoice = async (req, res) =>
 export const collectCash = async (req, res) =>
   sendSuccess(res, {
     data: await paymentService.collectCash(req.validated.params.invoiceId, req.user),
-    message: 'Đã ghi nhận tiền mặt và cập nhật gói tập',
+    message: 'Đã ghi nhận tiền mặt và xác nhận giao dịch',
   });
 
 /** POST /memberships/orders: bước tạo hóa đơn cho luồng thu tiền tại quầy. */

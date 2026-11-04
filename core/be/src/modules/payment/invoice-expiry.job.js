@@ -1,3 +1,5 @@
+import { closeRestoredCreditCases } from '../reconciliation/refund-case-closure.service.js';
+import { getPaymentWindow } from './course-payment-window.service.js';
 import { Enums, prisma } from '../../config/db.js';
 import { logger } from '../../config/logger.js';
 import { AUDIT_ACTIONS, ENTITIES, PAYMENT_LIMITS } from '../../constants/index.js';
@@ -13,11 +15,18 @@ import { lockInvoice, sumReceived } from './payment-apply.service.js';
 
 const { ReconciliationStatus: STATUS, ReconciliationReason: REASON } = Enums;
 
-/** BR-PAY-16: quá hạn chuyển bù thì phiếu thiếu tiền chờ Manager hoàn số đã nhận. */
+/** Khóa hết giữ chỗ: phiếu thiếu/thừa chưa chốt đều chờ hoàn toàn bộ số đã nhận. */
 const moveTopupCasesToRefund = (tx, invoiceId) =>
   tx.reconciliationCase.updateMany({
-    where: { invoiceId, reason: REASON.UNDERPAID, status: STATUS.WAITING_TOPUP },
-    data: { status: STATUS.REFUND_PENDING, note: 'Quá hạn chuyển bù, chờ hoàn số đã nhận' },
+    where: {
+      invoiceId,
+      reason: { in: [REASON.UNDERPAID, REASON.OVERPAID] },
+      status: { in: [STATUS.OPEN, STATUS.WAITING_TOPUP, STATUS.WAITING_MEMBER] },
+    },
+    data: {
+      status: STATUS.REFUND_PENDING,
+      note: 'Hết hạn giữ chỗ/thanh toán, chờ hoàn số đã nhận',
+    },
   });
 
 /** Hết hạn một hoá đơn nếu vẫn còn PENDING khi đã khoá hàng (webhook về cùng lúc thì một bên thắng). */
@@ -26,13 +35,16 @@ const expireOne = (id, now) =>
     async (tx) => {
       const invoice = await lockInvoice(tx, { id });
       if (invoice?.status !== Enums.InvoiceStatus.PENDING || invoice.expiresAt > now) return null;
+      const { holdReleaseAt } = await getPaymentWindow(invoice);
+      if (holdReleaseAt > now) return null;
       const received = await sumReceived(tx, id);
-      // Đã nhận đủ hoặc thừa: tiền nằm ở trung tâm, chờ quản lý chấp nhận/hoàn, không tự huỷ.
-      if (received >= invoice.amount) return null;
+      // Lịch sử gói cũ giữ chính sách đối soát; khóa học phải nhả chỗ khi hết khoảng chờ.
+      if (received >= invoice.amount && invoice.kind !== Enums.InvoiceKind.COURSE) return null;
       await tx.invoice.update({ where: { id }, data: { status: Enums.InvoiceStatus.FAILED } });
       // Phần trả bằng số dư quay lại số dư; chỉ tiền chuyển khoản thật mới phải hoàn tay.
       const restored = await restoreCreditPayments(tx, invoice, null);
       await releaseHoldsForInvoice(tx, id);
+      if (restored > 0) await closeRestoredCreditCases(tx, invoice);
       if (received - restored > 0) await moveTopupCasesToRefund(tx, id);
       await tx.auditLog.create({
         data: {
@@ -61,7 +73,7 @@ const expiryNotices = ({ invoice, received }) => {
     title: `Hoá đơn ${invoice.code} đã hết hạn`,
     message:
       received > 0
-        ? `Trung tâm đã nhận ${fmtMoney(received)} nhưng chưa đủ; khoản này sẽ được hoàn lại cho bạn.`
+        ? `Trung tâm đã nhận ${fmtMoney(received)} nhưng đăng ký chưa được xác nhận trước hạn; khoản này cần được đối soát để hoàn lại cho bạn.`
         : 'Nếu bạn đã chuyển khoản, hãy bấm "Tôi đã chuyển khoản" trong lịch sử giao dịch.',
   });
   if (received === 0) return [member];
@@ -76,8 +88,8 @@ const expiryNotices = ({ invoice, received }) => {
 };
 
 /**
- * UC-PAY-04: chuyển hoá đơn online quá hạn sang FAILED. Hoá đơn tại quầy không có hạn online nên
- * không bị đụng. Trả số hoá đơn đã hết hạn để test và log.
+ * UC-PAY-04: hết hạn hóa đơn và nhả chỗ; khóa online chờ hết khoảng nhận webhook trễ.
+ * Khóa tại quầy không có khoảng chờ ngân hàng. Trả số hoá đơn đã hết hạn để test và log.
  * @param {Date} [now]
  */
 export const expireOverdueInvoices = async (now = new Date()) => {
@@ -91,6 +103,7 @@ export const expireOverdueInvoices = async (now = new Date()) => {
       expiresAt: { lte: now },
     },
     select: { id: true },
+    orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
     take: PAYMENT_LIMITS.EXPIRY_BATCH_SIZE,
   });
   let expired = 0;
