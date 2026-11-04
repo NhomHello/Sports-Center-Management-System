@@ -67,3 +67,12 @@ ngăn hoàn lặp và giữ độc lập các khoản tiền chưa được gán
 Nghiệm thu ngày 04/11/2026: 267 test BE và 169 test FE đạt; lint toàn workspace và build FE đạt.
 Hai lỗi treo phiếu được tái hiện bằng test thất bại trước sửa, sau sửa đạt. Nhóm 11 test mới ghi ở
 sheet `TC-PAY-RESOLUTION` của `docs/kiem-thu/SWP391_TestCase.xlsx`.
+
+## Cấu hình phí hủy khóa học
+
+Trên UI: **Hệ thống → Cấu hình → Lớp học → Phí hủy khóa học (%)**, nhập tỷ lệ rồi
+bấm **Lưu thay đổi**. Cần quyền xem và cập nhật cấu hình. Đặt 0 nếu không thu phí hủy;
+setting là `CANCELLATION_FEE_PERCENT`. Phí áp dụng trên giá trị các buổi còn lại, không trên
+cả học phí ban đầu. Chuyển trường khỏi nhóm Hội viên đã ẩn không thay đổi tỷ lệ đang lưu.
+Sau khi cập nhật code, chạy `SEED_MOCK_DATA=false npm run db:seed` để đồng bộ nhóm/nhãn
+trong database rồi tải lại trang cấu hình.
