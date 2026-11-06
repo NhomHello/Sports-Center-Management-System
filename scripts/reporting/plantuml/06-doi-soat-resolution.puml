@@ -1,0 +1,24 @@
+@startuml
+title Resolve a reviewed reconciliation case
+start
+:<b>Center Manager</b>\nSelect case after evidence review and member contact;
+if (Refund required?) then (Yes)
+  :<b>System</b>\nCreate PENDING refund for the eligible amount;
+  :<b>Center Manager</b>\nContinue with refund repayment workflow;
+  stop
+else (No)
+  if (Allocate or accept transfer?) then (Yes)
+    :<b>System</b>\nRecheck amount, invoice, deadline, seat and schedule;
+    if (Settlement valid?) then (Yes)
+      :<b>System</b>\nApply shared payment and closure rules;
+      stop
+    else (No)
+      :<b>System</b>\nKeep unresolved money for another valid decision;
+      stop
+    endif
+  else (Investigate)
+    :<b>Center Manager</b>\nRecord reason and preserve unresolved money;
+    stop
+  endif
+endif
+@enduml

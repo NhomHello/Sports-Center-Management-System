@@ -151,7 +151,7 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
     expect(list.body.data.every((c) => c.coachId === f.coachOther.id)).toBe(true);
     expect(list.body.data.some((c) => c.id === item.id)).toBe(false);
   });
-  it('TC-F2-B09: ngoại lệ chỉ được tạo bởi đổi lịch gây xung đột thực sự', async () => {
+  it('TC-F2-B09: chặn đổi lịch trùng; vẫn xử lý ngoại lệ dữ liệu lịch sử', async () => {
     const a = await create();
     const b = await create({
       roomId: f.roomOther.id,
@@ -164,7 +164,8 @@ describe('Sprint 2: booking toàn lớp và phân quyền lịch', () => {
       .put(apiPath(`/classes/${a.id}`))
       .set(bearer(f.adminToken))
       .send(classPayload(f, { weeklySchedule: b.weeklySchedule }));
-    expect(changed.status).toBe(200);
+    expect(changed.status).toBe(409);
+    // Legacy conflict data can still be resolved without allowing new conflicting edits.
     const first = new Date(Date.now() + 3600000);
     await prisma.classSession.updateMany({
       where: { classId: { in: [a.id, b.id] } },

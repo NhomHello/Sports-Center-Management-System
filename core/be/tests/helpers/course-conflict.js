@@ -21,3 +21,10 @@ export const sendConflictTransfer = (id, invoice) =>
  */
 export const invoiceStatus = async (id) =>
   (await prisma.invoice.findUniqueOrThrow({ where: { id } })).status;
+
+/** Fixture imported from an older deployment that permitted conflicting reschedules. */
+export const importHistoricalConflict = (id, slot) =>
+  prisma.classSession.update({
+    where: { id },
+    data: { startAt: new Date(slot.startAt), endAt: new Date(slot.endAt) },
+  });

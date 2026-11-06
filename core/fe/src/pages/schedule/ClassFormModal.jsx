@@ -45,7 +45,10 @@ function useUpdatePreview(item, save) {
   return async (values) => {
     try {
       const { data } = await service.previewClassUpdate(item.id, classFormPayload(values));
-      const conflicts = data.conflicts.map((c) => `${c.fullName} (trùng "${c.className}")`);
+      if (data.conflicts.length) {
+        message.error('Không thể đổi lịch vì học viên bị trùng lịch');
+        return;
+      }
       modal.confirm({
         title: 'Xác nhận thay đổi lịch lớp',
         width: 520,
@@ -55,14 +58,6 @@ function useUpdatePreview(item, save) {
               Huỷ {data.cancelled} buổi · thêm {data.added} buổi · đổi phòng/HLV/giờ {data.changed}{' '}
               buổi. {data.enrolledCount} học viên đang học sẽ nhận thông báo.
             </p>
-            {conflicts.length > 0 && (
-              <Alert
-                type="warning"
-                showIcon
-                title={`${conflicts.length} học viên bị trùng lịch (được tự huỷ miễn phí)`}
-                description={conflicts.join(', ')}
-              />
-            )}
           </>
         ),
         okText: 'Lưu thay đổi',

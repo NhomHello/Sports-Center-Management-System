@@ -21,6 +21,8 @@ export const loadTargetClass = async (db, classId, enrollment) => {
   if (classId === enrollment.classId) throw ApiError.businessRule('Hãy chọn lớp khác lớp đang học');
   const target = await db.gymClass.findUnique({ where: { id: classId }, include: CLASS_INCLUDE });
   if (!target) throw ApiError.notFound('Không tìm thấy lớp');
+  if (target.subjectId !== enrollment.gymClass.subjectId)
+    throw ApiError.businessRule('Chỉ được đổi sang khóa học cùng bộ môn');
   const state = await getClassActions(
     db,
     { ...target, ignoreClassIds: [enrollment.classId] },

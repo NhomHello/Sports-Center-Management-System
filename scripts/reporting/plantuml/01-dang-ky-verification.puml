@@ -1,0 +1,24 @@
+@startuml
+title Verify the member email
+start
+if (Need reception assistance?) then (Yes)
+  :<b>Receptionist</b>\nVerify member identity and request manual verification;
+  :<b>System</b>\nCheck operator permission;
+  if (Verification allowed?) then (Yes)
+    :<b>System</b>\nMark email verified and record audit;
+  else (No)
+    :<b>System</b>\nReject manual verification;
+    stop
+  endif
+else (No)
+  :<b>Member</b>\nOpen email verification link;
+  if (Token valid, unused and unexpired?) then (Yes)
+    :<b>System</b>\nMark email verified;
+  else (No)
+    :<b>System</b>\nReject link and allow another verification request;
+    stop
+  endif
+endif
+:<b>System</b>\nAccount may proceed to normal sign-in checks;
+stop
+@enduml

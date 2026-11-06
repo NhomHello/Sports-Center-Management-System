@@ -1,0 +1,25 @@
+@startuml
+title Assisted registration and cash collection
+start
+:<b>Member</b>\nProvide identity and requested course;
+:<b>Receptionist</b>\nFind or create the member profile;
+:<b>Receptionist</b>\nSelect course and COUNTER channel;
+if (Member, course, schedule and capacity valid?) then (Yes)
+  :<b>System</b>\nCreate pending invoice and seat hold;
+else (No)
+  :<b>System</b>\nReject order with a reason;
+  stop
+endif
+:<b>Receptionist</b>\nCheck amount due and receive cash;
+:<b>Receptionist</b>\nSubmit collection request;
+:<b>System</b>\nLock invoice and recheck deadline and entitlement;
+if (Collection still valid?) then (Yes)
+  :<b>System</b>\nRecord cash Payment;
+  :<b>System</b>\nSet invoice PAID and enrollment BOOKED atomically;
+  :<b>Receptionist</b>\nPrint or download receipt;
+else (No)
+  :<b>System</b>\nReject collection without recording Payment;
+  :<b>Receptionist</b>\nResolve cash handling at the counter;
+endif
+stop
+@enduml

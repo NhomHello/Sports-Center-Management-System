@@ -1,3 +1,4 @@
+import { withScheduleTransaction } from '../../common/utils/schedule-transaction.js';
 import { checkCourseTransfer } from './sepay-course-policy.service.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums, prisma } from '../../config/db.js';
@@ -15,14 +16,18 @@ import { applyTransfer, lockInvoice, PAYMENT_OUTCOME } from './payment-apply.ser
 const { ReconciliationReason: REASON, WebhookLogStatus: LOG } = Enums;
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/**
- * Mã hoá đơn: ưu tiên trường `code` SePay đã nhận diện, nếu trống thì tìm trong nội dung chuyển khoản
- * (ngân hàng hay chèn thêm chữ/khoảng trắng quanh nội dung). BR-PAY-02.
- */
+/** Only accept a single configured invoice code; fall back to the original bank memo. */
 export const extractInvoiceCode = ({ code, content }, prefix) => {
-  if (code) return code.trim().toUpperCase();
-  const match = new RegExp(`${escapeRegex(prefix)}\\d+`, 'i').exec(content ?? '');
-  return match?.[0]?.toUpperCase() ?? null;
+  const pattern = `${escapeRegex(prefix)}\\d+`;
+  const recognized = typeof code === 'string' ? code.trim() : '';
+  const memoCodes = [
+    ...new Set(
+      (content ?? '').match(new RegExp(pattern, 'gi'))?.map((value) => value.toUpperCase()) ?? [],
+    ),
+  ];
+  if (new RegExp(`^${pattern}$`, 'i').test(recognized)) memoCodes.push(recognized.toUpperCase());
+  const candidates = [...new Set(memoCodes)];
+  return candidates.length === 1 ? candidates[0] : null;
 };
 
 const writeLog = (tx, payload, { status, reason, invoiceCode, invoiceId }) =>
@@ -139,15 +144,14 @@ export const processSepayWebhook = async (payload) => {
     where: { providerTransactionId: payload.id },
   });
   if (existing) return { status: LOG.DUPLICATE };
-  if (payload.transferType !== SEPAY.TRANSFER_IN) {
-    await logIgnored(payload);
-    return { status: LOG.IGNORED };
-  }
   const prefix = await settingService.getValue(SETTING_KEYS.INVOICE_CODE_PREFIX);
   try {
-    const handled = await prisma.$transaction(
-      (tx) => handle(tx, payload, extractInvoiceCode(payload, prefix)),
-      { isolationLevel: Enums.TransactionIsolationLevel.ReadCommitted },
+    if (payload.transferType !== SEPAY.TRANSFER_IN) {
+      await logIgnored(payload);
+      return { status: LOG.IGNORED };
+    }
+    const handled = await withScheduleTransaction((tx) =>
+      handle(tx, payload, extractInvoiceCode(payload, prefix)),
     );
     await sendNotices(buildWebhookNotices(handled));
     return {
@@ -157,7 +161,11 @@ export const processSepayWebhook = async (payload) => {
     };
   } catch (err) {
     // Hai webhook cùng id đến song song: bên đến sau thua unique, coi như đã xử lý.
-    if (err?.code === PRISMA_ERROR.UNIQUE_VIOLATION) return { status: LOG.DUPLICATE };
+    if (
+      err?.code === PRISMA_ERROR.UNIQUE_VIOLATION &&
+      (await prisma.paymentWebhookLog.findUnique({ where: { providerTransactionId: payload.id } }))
+    )
+      return { status: LOG.DUPLICATE };
     throw err;
   }
 };

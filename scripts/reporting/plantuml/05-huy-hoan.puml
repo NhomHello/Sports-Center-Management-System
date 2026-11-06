@@ -1,0 +1,17 @@
+@startuml
+title Cancel a paid course enrollment
+start
+:<b>Member</b>\nRequest preview for a paid enrollment;
+:<b>System</b>\nValidate ownership and cancellation eligibility;
+:<b>System</b>\nQuote unused value, fee and refund amount;
+:<b>Member</b>\nReview quote, enter reason and confirm;
+:<b>System</b>\nRecheck and cancel within transaction;
+:<b>System</b>\nRelease seat and preserve purchase history;
+if (Refund amount positive?) then (Yes)
+  :<b>System</b>\nCreate PENDING refund and HT lookup code;
+  :<b>System</b>\nNotify member and refund processor;
+else (No)
+  :<b>System</b>\nComplete cancellation without a refund request;
+endif
+stop
+@enduml

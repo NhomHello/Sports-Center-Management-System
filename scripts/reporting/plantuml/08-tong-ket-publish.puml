@@ -1,0 +1,16 @@
+@startuml
+title Publish an assigned course summary
+start
+:<b>Coach</b>\nLoad assigned draft and server-calculated attendance;
+:<b>Coach</b>\nEnter results, progress and required comments;
+:<b>Coach</b>\nConfirm missing attendance if necessary;
+:<b>System</b>\nValidate authorship, draft state and required data;
+if (Publication requirements satisfied?) then (Yes)
+  :<b>System</b>\nPublish snapshot and increment revision atomically;
+  :<b>System</b>\nQueue member notifications;
+  :<b>Member</b>\nRead own published results or download result PDF;
+else (No)
+  :<b>System</b>\nKeep DRAFT and return required corrections;
+endif
+stop
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+title Request and pay for a course
+start
+:<b>Member</b>\nChoose course and confirm quoted tuition;
+:<b>System</b>\nCheck member, schedule and registration eligibility;
+if (Eligibility checks pass?) then (Yes)
+else (No)
+  :<b>System</b>\nReject registration;
+  stop
+endif
+if (Seat available?) then (Yes)
+  :<b>System</b>\nSnapshot price and sessions; create invoice and seat hold;
+else (No)
+  :<b>System</b>\nReturn waiting-list option without an invoice;
+  stop
+endif
+:<b>Member</b>\nTransfer the amount with the invoice reference before deadline;
+:<b>System</b>\nKeep PENDING_PAYMENT until payment processing confirms it;
+stop
+@enduml

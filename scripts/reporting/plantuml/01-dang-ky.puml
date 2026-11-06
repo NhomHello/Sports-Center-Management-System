@@ -1,0 +1,14 @@
+@startuml
+title Register an online member account
+start
+:<b>Member</b>\nEnter name, email and password;
+:<b>System</b>\nValidate and normalize contacts;
+if (Contacts unique and default role configured?) then (Yes)
+  :<b>System</b>\nCreate account with the configured default role;
+  :<b>System</b>\nRequest verification email;
+  :<b>System</b>\nReturn account created, not yet enrolled;
+else (No)
+  :<b>System</b>\nReject registration with a reason;
+endif
+stop
+@enduml

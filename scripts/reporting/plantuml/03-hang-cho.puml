@@ -1,0 +1,17 @@
+@startuml
+title Join a full course waiting list
+start
+:<b>Member</b>\nRequest waiting-list entry;
+:<b>System</b>\nPromote due entries and check current member state;
+if (Already WAITING or OFFERED?) then (Yes)
+  :<b>System</b>\nReturn existing entry without duplicating it;
+  stop
+endif
+if (Course full and other eligibility checks pass?) then (Yes)
+  :<b>System</b>\nCreate WAITING entry ordered by joinedAt and ID;
+  :<b>System</b>\nReturn waiting confirmation without an invoice;
+else (No)
+  :<b>System</b>\nReject request or direct member to normal purchase;
+endif
+stop
+@enduml

@@ -14,13 +14,13 @@ const rangeOf = (values) => ({
 async function confirmReschedule({ session, values, mutation, modal, message }) {
   try {
     const { data } = await previewReschedule(session.id, rangeOf(values));
+    if (data.conflicts.length) {
+      message.error('Không thể đổi giờ vì học viên bị trùng lịch');
+      return;
+    }
     modal.confirm({
       title: 'Xác nhận đổi giờ buổi học',
-      content: `${data.enrolledCount} học viên sẽ nhận thông báo giờ mới.${
-        data.conflicts.length
-          ? ` ${data.conflicts.length} người bị trùng lịch: ${data.conflicts.map((c) => c.fullName).join(', ')} (được tự huỷ miễn phí).`
-          : ' Không ai bị trùng lịch.'
-      }`,
+      content: `${data.enrolledCount} học viên sẽ nhận thông báo giờ mới. Lịch đã được kiểm tra thời gian báo trước và xung đột.`,
       okText: 'Đổi giờ',
       cancelText: 'Xem lại',
       onOk: () => mutation.mutateAsync(values),
@@ -30,7 +30,7 @@ async function confirmReschedule({ session, values, mutation, modal, message }) 
   }
 }
 
-/** Chỉ đổi một buổi; cảnh báo và xung đột được backend trả về, không tự hủy booking. */
+/** Chỉ đổi một buổi sau khi backend kiểm tra thời gian báo trước và xung đột. */
 export function SessionActionModal({ session, mode, memberCount, onClose }) {
   const [form] = Form.useForm();
   const { modal, message } = App.useApp();
@@ -63,18 +63,10 @@ export function SessionActionModal({ session, mode, memberCount, onClose }) {
         description={
           cancel
             ? 'Buổi bị hủy vẫn được giữ trong lịch sử và không thể điểm danh.'
-            : 'Nếu trùng lịch của hội viên, hệ thống cảnh báo và cho họ tự hủy miễn phí.'
+            : 'Chỉ đổi khi đủ thời gian báo trước theo cấu hình và không trùng lịch hội viên, HLV hoặc phòng học.'
         }
       />
       {mutation.isError && <Alert showIcon type="error" title={mutation.error.message} />}
-      {mutation.data?.data?.conflicts?.length > 0 && (
-        <Alert
-          showIcon
-          type="warning"
-          title="Đã đổi giờ"
-          description={`${mutation.data.data.conflicts.length} hội viên có lịch trùng. Hệ thống giữ đăng ký và cho phép tự hủy miễn phí.`}
-        />
-      )}
       <Form
         form={form}
         layout="vertical"

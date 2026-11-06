@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Alert, Input, Select, Space, Button, Typography } from 'antd';
 import { TABLE } from '@/constants';
-import { useAuth } from '@/hooks/useAuth';
-import { listClasses } from '@/services/schedule.service';
+import { useChangePurchaseTargets } from './useChangePurchaseTargets';
 
 const buildOptions = (rows, currentId) =>
   rows
@@ -16,15 +14,8 @@ const TARGET_LABELS = Object.freeze({ enrollment: 'Khóa học mới' });
 export function ChangePurchaseTargets({ kind, currentId, memberId, value, onChange, disabled }) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(TABLE.DEFAULT_PAGE);
-  const { user } = useAuth();
-  const params = { page, pageSize: TABLE.DEFAULT_PAGE_SIZE, search };
-  const query = useQuery({
-    queryKey: ['purchase', 'targets', user?.id, kind, memberId, params],
-    queryFn: () =>
-      listClasses({ ...params, status: 'OPEN', ...(memberId !== user?.id && { memberId }) }),
-    retry: false,
-  });
-  const rows = Array.isArray(query.data?.data) ? query.data.data : [];
+  const query = useChangePurchaseTargets({ kind, currentId, memberId, search, page });
+  const rows = query.rows;
   const options = buildOptions(rows, currentId);
   return (
     <Space orientation="vertical" className="scms-full-width">
@@ -46,14 +37,17 @@ export function ChangePurchaseTargets({ kind, currentId, memberId, value, onChan
         onChange={onChange}
         options={options}
         loading={query.isFetching}
-        disabled={disabled || query.isError || query.isFetching}
+        disabled={disabled || query.unavailable}
         notFoundContent="Không có lựa chọn phù hợp"
       />
-      {query.isError && (
+      <Typography.Text type="secondary">
+        Chuyển đăng ký cả khóa sang khóa cùng bộ môn còn chỗ.
+      </Typography.Text>
+      {query.error && (
         <Alert
           type="error"
           title={query.error.message}
-          action={<Button onClick={() => query.refetch()}>Thử lại</Button>}
+          action={<Button onClick={query.refetch}>Thử lại</Button>}
         />
       )}
       <Space>

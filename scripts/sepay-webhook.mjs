@@ -48,7 +48,7 @@ const send = async () => {
       transferType: 'in',
       transferAmount: amount,
       code: invoiceCode,
-      content: invoiceCode ? `${invoiceCode} chuyen khoan goi tap` : 'chuyen tien tap gym',
+      content: invoiceCode ? `${invoiceCode} chuyen khoan khoa hoc` : 'chuyen tien tap gym',
       referenceCode: `FT${Date.now()}`,
     }),
   });

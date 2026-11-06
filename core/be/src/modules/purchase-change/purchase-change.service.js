@@ -1,3 +1,4 @@
+import { assertCourseChangeHold } from './course-change-policy.service.js';
 import { Enums } from '../../config/db.js';
 import { TIME } from '../../constants/index.js';
 import { promoteWaitlist } from '../class/class-waitlist.service.js';
@@ -39,6 +40,7 @@ const completePlanChange = async (db, change, invoice, now) => {
 
 /** Đổi lớp: chỗ ở lớp mới thành chính thức, đăng ký lớp cũ hủy và nhả chỗ cho người chờ. */
 const completeClassChange = async (db, change, invoice, now) => {
+  await assertCourseChangeHold(db, invoice, now);
   const old = await db.classEnrollment.findUnique({ where: { id: change.fromEnrollmentId } });
   if (old.status === Enums.EnrollmentStatus.BOOKED)
     await db.classEnrollment.update({

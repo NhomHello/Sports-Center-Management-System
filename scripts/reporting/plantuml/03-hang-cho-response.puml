@@ -1,0 +1,18 @@
+@startuml
+title Respond to a waiting-list offer
+start
+if (Accept the offer?) then (Yes)
+  :<b>System</b>\nRecheck offer, registration window and eligibility;
+  if (Offer and seat still valid?) then (Yes)
+    :<b>System</b>\nCreate invoice and PENDING_PAYMENT hold;
+    :<b>System</b>\nSet waiting entry ACCEPTED;
+    :<b>System</b>\nAwait valid payment before BOOKED;
+  else (No)
+    :<b>System</b>\nReject purchase and update due waiting entries;
+  endif
+else (Decline or expire)
+  :<b>System</b>\nCancel or expire offer according to the trigger;
+  :<b>System</b>\nReview the next eligible waiting member;
+endif
+stop
+@enduml

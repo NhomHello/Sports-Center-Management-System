@@ -167,7 +167,7 @@ describe('Sprint 3 Bảo: giữ chỗ, đổi buổi, khoá tài khoản', () =>
     );
     expect(res.body.data.every((s) => s.coachId === f.coachOther.id)).toBe(true);
   });
-  it('đổi giờ gây trùng lịch hội viên chỉ cảnh báo và cho huỷ, giữ cả hai booking', async () => {
+  it('đổi giờ gây trùng lịch hội viên bị chặn và giữ nguyên cả hai booking', async () => {
     const otherClass = await createClass({
       roomId: f.roomOther.id,
       coachId: f.coach.id,
@@ -186,8 +186,13 @@ describe('Sprint 3 Bảo: giữ chỗ, đổi buổi, khoá tài khoản', () =>
       startAt: target.startAt,
       endAt: target.endAt,
     });
-    expect(res.status).toBe(200);
-    expect(res.body.data.conflicts.some((c) => c.memberId === f.member.id)).toBe(true);
+    expect(res.status).toBe(409);
+    expect(res.body.details.conflicts.some((c) => c.memberId === f.member.id)).toBe(true);
+    expect(
+      (
+        await prisma.classSession.findUnique({ where: { id: item.sessions[1].id } })
+      ).startAt.toISOString(),
+    ).toBe(item.sessions[1].startAt);
     expect(
       await prisma.classEnrollment.count({ where: { memberId: f.member.id, status: 'BOOKED' } }),
     ).toBe(2);

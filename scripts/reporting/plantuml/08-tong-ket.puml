@@ -1,0 +1,13 @@
+@startuml
+title Complete a course and create draft summary
+start
+:<b>System</b>\nRun course-completion worker;
+if (OPEN or CLOSED with non-cancelled sessions all ended?) then (Yes)
+  :<b>System</b>\nSnapshot eligible members at course end;
+  :<b>System</b>\nSet course COMPLETED and create DRAFT summary;
+  :<b>System</b>\nNotify assigned coach;
+else (No)
+  :<b>System</b>\nLeave course unchanged;
+endif
+stop
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+title Allocate an authorized course transfer
+start
+:<b>System</b>\nReceive transfer after authentication, deduplication and policy checks;
+:<b>System</b>\nApply amount and calculate total received under transaction;
+if (Total below amount due?) then (Yes)
+  :<b>System</b>\nKeep PENDING; open or update underpayment case;
+  stop
+else (No)
+  if (Total above amount due?) then (Yes)
+    :<b>System</b>\nOpen overpayment review without automatic booking;
+    stop
+  else (Exact amount)
+    :<b>System</b>\nSet invoice PAID and enrollment BOOKED atomically;
+    stop
+  endif
+endif
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+title Validate a SePay course transfer
+start
+:<b>SePay</b>\nSend transaction webhook;
+:<b>System</b>\nAuthenticate webhook and check transaction ID;
+if (Already processed?) then (Yes)
+  :<b>System</b>\nReturn previous result without adding money;
+  stop
+endif
+:<b>System</b>\nLock invoice; check bank time, seat hold and schedule;
+if (Transfer valid for this invoice?) then (Yes)
+  :<b>System</b>\nContinue with authorized amount allocation;
+else (No)
+  :<b>System</b>\nRecord transfer for reconciliation; do not restore a lost seat;
+endif
+stop
+@enduml

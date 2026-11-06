@@ -1,3 +1,7 @@
+import {
+  assertRescheduleNotice,
+  assertRescheduleMembers,
+} from './class-reschedule-policy.service.js';
 import { compensateSessionCancelled } from '../cancellation/center-cancel.service.js';
 import { PERMISSIONS as P } from '@scms/shared';
 import { ApiError } from '../../common/errors/api-error.js';
@@ -45,7 +49,7 @@ export const cancelSession = async (db, session, reason, actor) => {
   return result;
 };
 
-/** BR-2.7/2.15: cảnh báo xung đột và ngoại lệ huỷ, không tự huỷ đăng ký của hội viên. */
+/** Đổi giờ đủ thời gian báo trước và không gây xung đột cho tài nguyên/hội viên. */
 export const update = (id, data, actor) =>
   withScheduleTransaction(async (db) => {
     const session = await loadFutureSession(db, id);
@@ -58,6 +62,8 @@ export const update = (id, data, actor) =>
     )
       return { ...session, conflicts: [] };
     if (slot.startAt <= new Date()) throw ApiError.businessRule('Lịch mới phải ở tương lai');
+    await assertRescheduleNotice([session.startAt, slot.startAt]);
+    await assertRescheduleMembers(db, session.classId, [slot]);
     const resources = {
       roomId: session.roomId ?? session.gymClass.roomId,
       coachId: session.coachId ?? session.gymClass.coachId,
@@ -89,15 +95,7 @@ export const update = (id, data, actor) =>
       entityId: id,
       meta: data,
     });
-    const conflicts = await db.classEnrollment.findMany({
-      where: {
-        classId: session.classId,
-        status: Enums.EnrollmentStatus.BOOKED,
-        exceptionUntil: { not: null },
-      },
-      select: { memberId: true, exceptionUntil: true },
-    });
-    return { ...result, conflicts };
+    return { ...result, conflicts: [] };
   });
 
 /** Huỷ một buổi đã chọn, dùng chung với bảo trì phòng. */

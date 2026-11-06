@@ -1,0 +1,14 @@
+@startuml
+title Open and review a reconciliation case
+start
+if (Source is a member claim?) then (Yes)
+  :<b>Member</b>\nSubmit transfer details for an eligible invoice;
+  :<b>System</b>\nCreate MEMBER_CLAIM without setting PAID;
+else (Bank transfer)
+  :<b>SePay</b>\nSend authenticated transaction webhook;
+  :<b>System</b>\nDeduplicate and record the unmatched transfer;
+endif
+:<b>Center Manager</b>\nReview bank evidence and member identity;
+:<b>Center Manager</b>\nRecord contact and proposed resolution;
+stop
+@enduml

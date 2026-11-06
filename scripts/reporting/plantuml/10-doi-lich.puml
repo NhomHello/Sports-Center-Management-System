@@ -1,0 +1,24 @@
+@startuml
+title Reschedule a session or a course timetable
+start
+:<b>Center Manager</b>\nSelect a new time and request preview;
+:<b>System</b>\nCompute the resulting schedule, preserving individual session overrides;
+if (Every affected old and new start meets the notice period?) then (Yes)
+  :<b>System</b>\nCheck operating frames, coach and room availability;
+  :<b>System</b>\nCheck booked members and pending payment seats against other courses;
+  if (Any resource or member conflict?) then (Yes)
+    :<b>System</b>\nReject the request and retain the existing schedule;
+  else (No)
+    :<b>Center Manager</b>\nConfirm the preview;
+    :<b>System</b>\nLock the schedule and repeat all policy checks;
+    if (Still valid?) then (Yes)
+      :<b>System</b>\nSave sessions, notification outbox and audit atomically;
+    else (No)
+      :<b>System</b>\nRoll back and request a new preview;
+    endif
+  endif
+else (No)
+  :<b>System</b>\nReject with the configured notice period (at least 48 hours);
+endif
+stop
+@enduml

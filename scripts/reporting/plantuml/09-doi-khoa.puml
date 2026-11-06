@@ -1,0 +1,19 @@
+@startuml
+title Request a course change
+start
+:<b>Member</b>\nChoose an equivalent course for the whole enrollment;
+:<b>System</b>\nCheck same subject, enrollment window, available seat and member schedule;
+:<b>System</b>\nQuote unused source value and target tuition;
+:<b>Member</b>\nReview quote and confirm;
+:<b>System</b>\nCreate PurchaseChange and adjustment invoice;
+if (Extra payment required?) then (Yes)
+  :<b>System</b>\nHold target seat and retain source entitlement;
+  :<b>System</b>\nAwait adjustment payment or expiry;
+else (No)
+  :<b>System</b>\nSettle zero-value adjustment and switch entitlement;
+  if (Amount to return?) then (Yes)
+    :<b>System</b>\nCreate PENDING refund for Center Manager;
+  endif
+endif
+stop
+@enduml

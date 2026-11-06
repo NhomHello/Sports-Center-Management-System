@@ -1,0 +1,16 @@
+@startuml
+title Authenticate a sign-in request
+start
+:<b>Member</b>\nSubmit email or phone and password;
+:<b>System</b>\nApply login attempt policy and verify credentials;
+if (Credentials and account checks pass?) then (Yes)
+  if (Email absent or already verified?) then (Yes)
+    :<b>System</b>\nIssue JWT and load current permissions;
+  else (No)
+    :<b>System</b>\nReturn email verification required;
+  endif
+else (No)
+  :<b>System</b>\nReject sign-in with the appropriate message;
+endif
+stop
+@enduml

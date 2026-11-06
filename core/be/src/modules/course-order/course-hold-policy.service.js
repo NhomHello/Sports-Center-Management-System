@@ -4,7 +4,7 @@ import { ApiError } from '../../common/errors/api-error.js';
 import { heldSeats } from '../class/class-member-eligibility.service.js';
 
 /** Không phục hồi đăng ký đã huỷ hoặc đổi sang invoice khác khi tiền về trễ. */
-export const assertCourseHold = async (db, invoice, now = new Date()) => {
+export const assertCourseHold = async (db, invoice, now = new Date(), ignoreClassIds = []) => {
   const enrollment = await db.classEnrollment.findFirst({
     where: {
       invoiceId: invoice.id,
@@ -23,7 +23,7 @@ export const assertCourseHold = async (db, invoice, now = new Date()) => {
   });
   if (!enrollment)
     throw ApiError.conflict('Chỗ giữ đã thay đổi, cần đối soát khoản tiền thay vì tự đăng ký');
-  const item = enrollment.gymClass;
+  const item = { ...enrollment.gymClass, ignoreClassIds };
   if (
     ![Enums.ClassStatus.OPEN, Enums.ClassStatus.CLOSED].includes(item.status) ||
     !item.sessions.some((s) => s.status === Enums.SessionStatus.SCHEDULED && s.startAt > now)

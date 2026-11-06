@@ -1,0 +1,31 @@
+@startuml
+title One continuous demo - four happy-path workflows
+start
+partition "WF1 - Course and member preparation" {
+  :Course A ready;
+  :Member M profile and shared training goals ready;
+}
+partition "WF2 - Purchase and successful payment" {
+  :Member M creates invoice I and displays code / QR;
+  :Invoice I is PAID; M is BOOKED in A;
+  :Receptionist opens the same invoice and receipt;
+  :Member transfers the whole A enrollment to equivalent course A2;
+  :A enrollment is CANCELLED; A2 enrollment is BOOKED;
+}
+partition "WF3 - Learning progress" {
+  :Assigned coach records PRESENT and feedback in B within the authorized attendance window;
+  :Member M reads the saved attendance and feedback;
+}
+partition "WF4 - Results, rating and management report" {
+  :Coach publishes completed-course C summary;
+  :Member M reads results and submits course rating;
+  :Center Manager report for A / M includes invoice I;
+}
+stop
+legend bottom
+  One member M throughout the entire demonstration.
+  A = next course; B = ongoing learning course; C = completed course.
+  B and C history are prepared before the demo.
+  WF2 shows code / QR, then success; exact payment is simulated off-screen.
+endlegend
+@enduml

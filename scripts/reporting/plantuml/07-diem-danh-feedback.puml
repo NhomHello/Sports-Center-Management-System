@@ -1,0 +1,18 @@
+@startuml
+title Write feedback independently of attendance
+start
+:<b>Coach</b>\nLoad feedback and submit rating or note with expectedVersion;
+:<b>System</b>\nValidate operator, member, session time and payload;
+if (Feedback request valid?) then (Yes)
+  if (expectedVersion matches?) then (Yes)
+    :<b>System</b>\nSave feedback, author, version and audit;
+    :<b>System</b>\nLeave Attendance unchanged;
+  else (No)
+    :<b>System</b>\nReturn HTTP 409 conflict;
+    :<b>Coach</b>\nReload, review changes and submit a new request;
+  endif
+else (No)
+  :<b>System</b>\nReject invalid feedback request;
+endif
+stop
+@enduml

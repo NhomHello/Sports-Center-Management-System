@@ -1,0 +1,20 @@
+@startuml
+title Reopen a published course summary
+start
+:<b>Center Manager</b>\nSelect published summary and enter reason;
+if (Reopen permission and reason valid?) then (Yes)
+  :<b>System</b>\nSet summary DRAFT and record audit;
+else (No)
+  :<b>System</b>\nReject reopen request;
+  stop
+endif
+:<b>Coach</b>\nRevise the assigned draft;
+:<b>Coach</b>\nSubmit a new publication request;
+if (Publication requirements satisfied?) then (Yes)
+  :<b>System</b>\nPublish a new snapshot and revision;
+  :<b>System</b>\nNotify members of updated results;
+else (No)
+  :<b>System</b>\nKeep DRAFT and return required corrections;
+endif
+stop
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Complete a pending refund
+start
+:<b>Member</b>\nProvide HT lookup code to Center Manager;
+:<b>Center Manager</b>\nVerify refund, recipient and amount;
+if (Refund still pending?) then (Yes)
+  :<b>Center Manager</b>\nRepay outside the application;
+  :<b>Center Manager</b>\nSubmit repayment reference;
+  :<b>System</b>\nVerify refund permission and current state;
+  :<b>System</b>\nRecord repayment once and set DONE;
+  :<b>System</b>\nNotify member of completed repayment;
+else (No)
+  :<b>System</b>\nShow existing status without a second repayment;
+endif
+stop
+@enduml

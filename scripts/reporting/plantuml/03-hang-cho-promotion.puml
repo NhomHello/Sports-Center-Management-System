@@ -1,0 +1,24 @@
+@startuml
+title Promote the next eligible waiting member
+start
+:<b>System</b>\nHandle worker or seat-release event;
+:<b>System</b>\nExpire overdue offers;
+if (Course OPEN and registration active?) then (Yes)
+else (No)
+  :<b>System</b>\nCancel active waiting entries and offers;
+  stop
+endif
+if (Seat available?) then (Yes)
+  :<b>System</b>\nScan candidates in FIFO order and recheck eligibility;
+else (No)
+  :<b>System</b>\nKeep entries WAITING for a later event;
+  stop
+endif
+if (Eligible candidate found?) then (Yes)
+  :<b>System</b>\nSet OFFERED with expiry no later than registration end;
+  :<b>System</b>\nReserve capacity and notify selected member;
+else (No)
+  :<b>System</b>\nLeave seat available;
+endif
+stop
+@enduml

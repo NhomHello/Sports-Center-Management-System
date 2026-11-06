@@ -1,3 +1,4 @@
+import { assertScheduleChange } from './class-schedule-change-policy.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
 import { queueClassEvent } from './class-event.service.js';
@@ -85,6 +86,16 @@ export async function syncFutureSessions(db, { old, actor, sessions, snapshots }
     snapshots,
   });
   if (!cancel.length && !updates.length && !create.length) return false;
+  await assertScheduleChange(
+    db,
+    {
+      old,
+      future,
+      plan: { cancel, updates, create },
+      snapshots,
+    },
+    now,
+  );
   if (cancel.length)
     await db.classSession.updateMany({
       where: { id: { in: cancel.map((s) => s.id) } },

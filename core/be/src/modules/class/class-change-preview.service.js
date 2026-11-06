@@ -1,47 +1,15 @@
+import {
+  assertRescheduleMembers,
+  assertRescheduleNotice,
+} from './class-reschedule-policy.service.js';
+import { assertScheduleChange } from './class-schedule-change-policy.service.js';
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums, prisma } from '../../config/db.js';
 import { assertSessionWithinFrames } from '../operating-frame/operating-frame.service.js';
-import { buildSessions, overlaps, validateResources } from './class-schedule.service.js';
+import { buildSessions, validateResources } from './class-schedule.service.js';
 import { originalStarts, planChanges } from './class-session-sync.service.js';
 import { assertSessionResources } from './session-resource.service.js';
 import { CLASS_INCLUDE } from './class.mapper.js';
-
-const BOOKED = Enums.EnrollmentStatus.BOOKED;
-
-/** Học viên của lớp và những người có buổi khác chồng lên các buổi mới (BR-2.15). */
-const affectedMembers = async (db, classId, slots) => {
-  const enrollments = await db.classEnrollment.findMany({
-    where: { classId, status: BOOKED },
-    select: { memberId: true, member: { select: { fullName: true } } },
-  });
-  const others = await db.classEnrollment.findMany({
-    where: {
-      memberId: { in: enrollments.map((e) => e.memberId) },
-      classId: { not: classId },
-      status: BOOKED,
-    },
-    select: {
-      memberId: true,
-      gymClass: {
-        select: {
-          name: true,
-          sessions: {
-            where: { status: Enums.SessionStatus.SCHEDULED, endAt: { gt: new Date() } },
-            select: { startAt: true, endAt: true },
-          },
-        },
-      },
-    },
-  });
-  const conflicts = others
-    .filter((o) => o.gymClass.sessions.some((s) => slots.some((slot) => overlaps(s, slot))))
-    .map((o) => ({
-      memberId: o.memberId,
-      fullName: enrollments.find((e) => e.memberId === o.memberId).member.fullName,
-      className: o.gymClass.name,
-    }));
-  return { enrolledCount: enrollments.length, conflicts };
-};
 
 /**
  * Xem trước khi sửa lớp: kiểm tra đủ khung giờ, phòng, HLV (ném lỗi như khi lưu) và cho biết số
@@ -60,7 +28,7 @@ export const previewClassUpdate = (id, data) =>
       cancelled: plan.cancel.length,
       added: plan.create.length,
       changed: plan.updates.length,
-      ...(await affectedMembers(db, id, sessions)),
+      ...(await assertScheduleChange(db, { old, future, plan, snapshots })),
     };
   });
 
@@ -72,12 +40,20 @@ export const previewSessionReschedule = (id, data) =>
       include: { gymClass: true },
     });
     if (!session) throw ApiError.notFound('Không tìm thấy buổi học');
+    if (session.status !== Enums.SessionStatus.SCHEDULED || session.startAt <= new Date())
+      throw ApiError.businessRule('Buổi học đã bắt đầu hoặc không còn theo lịch');
     const slot = { startAt: new Date(data.startAt), endAt: new Date(data.endAt) };
+    if (
+      slot.startAt.getTime() === session.startAt.getTime() &&
+      slot.endAt.getTime() === session.endAt.getTime()
+    )
+      return { enrolledCount: 0, conflicts: [] };
+    await assertRescheduleNotice([session.startAt, slot.startAt]);
     await assertSessionWithinFrames(db, slot);
     const resources = {
       roomId: session.roomId ?? session.gymClass.roomId,
       coachId: session.coachId ?? session.gymClass.coachId,
     };
     await assertSessionResources(db, [slot], resources, { ids: [id] });
-    return affectedMembers(db, session.classId, [slot]);
+    return assertRescheduleMembers(db, session.classId, [slot]);
   });

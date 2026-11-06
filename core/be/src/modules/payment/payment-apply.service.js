@@ -1,6 +1,6 @@
 import { closeCoveredPaymentCases } from './payment-case-closure.service.js';
 import { assertCoursePaymentWindow } from './course-payment-window.service.js';
-import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
+import { assertPurchaseHold } from '../purchase-change/course-change-policy.service.js';
 import { lockSchedule } from '../../common/utils/schedule-transaction.js';
 import { SETTING_KEYS } from '@scms/shared';
 import { Enums } from '../../config/db.js';
@@ -96,7 +96,7 @@ const topupDeadline = async (invoice, now) => {
 export const applyTransfer = async (tx, invoice, input) => {
   const now = input.decisionAt ?? new Date();
   await assertCoursePaymentWindow(invoice, { ...input, now });
-  if (invoice.kind === Enums.InvoiceKind.COURSE) await assertCourseHold(tx, invoice, now);
+  await assertPurchaseHold(tx, invoice, now);
   const { amount, provider, reference = null, actorId = null, meta = {} } = input;
   const received = (await sumReceived(tx, invoice.id)) + amount;
   const payment = await tx.payment.create({

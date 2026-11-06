@@ -40,7 +40,8 @@
     "prepare": "husky",
     "db:seed:sprint4": "npm run db:seed:sprint4 -w @scms/be",
     "db:refresh:courses": "npm run db:refresh:courses -w @scms/be --",
-    "verify:course-refresh": "node scripts/verify-course-refresh.mjs"
+    "verify:course-refresh": "node scripts/verify-course-refresh.mjs",
+    "demo:prepare": "node scripts/prepare-council.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",

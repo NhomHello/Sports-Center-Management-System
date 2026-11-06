@@ -1,0 +1,18 @@
+@startuml
+title Settle or expire a pending course change
+start
+:<b>System</b>\nHandle adjustment payment or invoice expiry;
+:<b>System</b>\nRecheck source entitlement, same subject, target hold and schedule under lock;
+if (Valid payment can settle the change?) then (Yes)
+  :<b>System</b>\nCancel source enrollment and book the target;
+  :<b>System</b>\nSet PurchaseChange DONE;
+else (No)
+  if (Adjustment invoice expired or cancelled?) then (Yes)
+    :<b>System</b>\nCancel pending change and release target hold;
+  else (Still pending)
+    :<b>System</b>\nKeep change pending for payment or reconciliation;
+  endif
+  :<b>System</b>\nRetain source entitlement;
+endif
+stop
+@enduml

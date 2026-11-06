@@ -1,6 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { prisma } from '../src/config/db.js';
-import { invoiceStatus, sendConflictTransfer } from './helpers/course-conflict.js';
+import {
+  importHistoricalConflict,
+  invoiceStatus,
+  sendConflictTransfer,
+} from './helpers/course-conflict.js';
 import { createGopyFixture, cleanupGopyFixture, createPaidClass } from './helpers/gopy.js';
 let f;
 let first;
@@ -59,7 +63,9 @@ describe('TC-PAY-CONFLICT: cả tại quầy và online phải kiểm tra trùng
       startAt: first.sessions[0].startAt,
       endAt: first.sessions[0].endAt,
     });
-    expect(changed.status).toBe(200);
+    expect(changed.status).toBe(409);
+    // Import a historical conflict: payment safety must also protect data from older deployments.
+    await importHistoricalConflict(second.sessions[0].id, first.sessions[0]);
     const detail = await f.call('get', `/invoices/${pending.id}`);
     expect(detail.status).toBe(200);
     expect(detail.body.data.paymentBlockReason).toContain('trùng lịch');
@@ -137,7 +143,7 @@ describe('TC-PAY-CONFLICT: cả tại quầy và online phải kiểm tra trùng
     ).toBe('REFUNDED');
   });
   it('05: đổi sang khóa hợp lệ thì gán tiền và tạo giữ chỗ trong cùng transaction', async () => {
-    // Giải trùng để tạo một giữ chỗ mới, rồi tái hiện quản lý đổi lịch trong lúc chờ tiền.
+    // Reproduce an imported historical conflict after creating a new valid hold.
     const start = new Date(new Date(first.sessions[0].startAt).getTime() + 2 * 3600000);
     await f.call('patch', `/classes/sessions/${second.sessions[0].id}`, {
       startAt: start.toISOString(),
@@ -146,10 +152,7 @@ describe('TC-PAY-CONFLICT: cả tại quầy và online phải kiểm tra trùng
     const held = await order(first, f.other.id, 'ONLINE');
     expect(held.status).toBe(201);
     const old = held.body.data;
-    await f.call('patch', `/classes/sessions/${second.sessions[0].id}`, {
-      startAt: first.sessions[0].startAt,
-      endAt: first.sessions[0].endAt,
-    });
+    await importHistoricalConflict(second.sessions[0].id, first.sessions[0]);
     sepayId = `conflict-switch-${Date.now()}`;
     sepayIds.push(sepayId);
     await sendConflictTransfer(sepayId, old);

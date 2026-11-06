@@ -1,12 +1,16 @@
 import { ApiError } from '../../common/errors/api-error.js';
 import { Enums } from '../../config/db.js';
-import { assertCourseHold } from '../course-order/course-hold-policy.service.js';
+import { assertPurchaseHold } from '../purchase-change/course-change-policy.service.js';
 import { assertCoursePaymentWindow } from './course-payment-window.service.js';
 import { bankPaymentTime } from './sepay-time.js';
 
 /** Tiền đã vào ngân hàng nhưng không thể nhận vào khóa thì lưu đối soát, không throw mất log. */
 export const checkCourseTransfer = async (db, invoice, payload) => {
-  if (invoice.kind !== Enums.InvoiceKind.COURSE) return {};
+  if (
+    invoice.kind !== Enums.InvoiceKind.COURSE &&
+    !(invoice.kind === Enums.InvoiceKind.ADJUSTMENT && invoice.classId)
+  )
+    return {};
   const decisionAt = new Date();
   const timing = bankPaymentTime(payload, invoice, decisionAt);
   if (timing.error)
@@ -17,7 +21,7 @@ export const checkCourseTransfer = async (db, invoice, payload) => {
       paidAt: timing.paidAt,
       provider: Enums.PaymentProvider.SEPAY,
     });
-    await assertCourseHold(db, invoice, decisionAt);
+    await assertPurchaseHold(db, invoice, decisionAt);
     return { ...timing, decisionAt };
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;

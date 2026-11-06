@@ -1,0 +1,19 @@
+@startuml
+title Record session attendance
+start
+:<b>Coach</b>\nSelect session and submit attendance entries;
+:<b>System</b>\nCheck scope, session time and all members under lock;
+if (Attendance write allowed?) then (Yes)
+  :<b>System</b>\nPreserve EXCUSED when ABSENT is submitted;
+  :<b>System</b>\nSave Attendance and audit atomically;
+  :<b>System</b>\nRefresh absence-based enrollment block;
+else (No)
+  if (Only issue is a closed edit window?) then (Yes)
+    :<b>Center Manager</b>\nOpen a temporary edit window with a reason;
+    :<b>Coach</b>\nResubmit through the same attendance validation;
+  else (No)
+    :<b>System</b>\nReject request without partial attendance changes;
+  endif
+endif
+stop
+@enduml
