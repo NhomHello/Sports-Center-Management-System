@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Cancel a paid course enrollment
+start
+:<b>Member:</b> Request preview for a paid\nenrollment;
+:<b>System:</b> Validate ownership and\ncancellation eligibility;
+:<b>System:</b> Quote unused value, fee and\nrefund amount;
+:<b>Member:</b> Review quote, enter reason\nand confirm;
+:<b>System:</b> Recheck and cancel within\ntransaction;
+:<b>System:</b> Release seat and preserve\npurchase history;
+if (Refund amount positive?) then (Yes)
+  :<b>System:</b> Create PENDING refund and HT\nlookup code;
+  :<b>System:</b> Notify member and refund\nprocessor;
+else (No)
+  :<b>System:</b> Complete cancellation\nwithout a refund request;
+endif
+stop
+@enduml

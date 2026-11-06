@@ -1,0 +1,43 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Verify the member email
+start
+if (Need reception assistance?) then (Yes)
+  :<b>Receptionist:</b> Verify member identity\nand request manual verification;
+  :<b>System:</b> Check operator permission;
+  if (Verification allowed?) then (Yes)
+    :<b>System:</b> Mark email verified and\nrecord audit;
+  else (No)
+    :<b>System:</b> Reject manual verification;
+    stop
+  endif
+else (No)
+  :<b>Member:</b> Open email verification link;
+  if (Token valid, unused and\nunexpired?) then (Yes)
+    :<b>System:</b> Mark email verified;
+  else (No)
+    :<b>System:</b> Reject link and allow\nanother verification request;
+    stop
+  endif
+endif
+:<b>System:</b> Account may proceed to\nnormal sign-in checks;
+stop
+@enduml

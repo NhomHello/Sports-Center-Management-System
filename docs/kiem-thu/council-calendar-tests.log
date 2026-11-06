@@ -1,0 +1,10 @@
+npm notice run @scms/be@1.0.0 test
+npm notice run vitest run --passWithNoTests --run tests/council-calendar.test.js
+
+ RUN  v5.0.0 /home/aitelecom.guest/code/SWP/SWP309/core/be
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  23:27:42
+   Duration  61ms (transform 41%, tests 38%, import 16%, worker 4%)

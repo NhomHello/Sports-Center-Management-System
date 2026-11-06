@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Use Case - Coach - Part 2
+left to right direction
+actor "Coach" as Actor
+rectangle "Sports Center Management System" {
+  usecase "UC-UM-26\nView permission-based dashboard" as U0
+  usecase "UC-CB-11\nView teaching schedule" as U1
+  usecase "UC-CB-12\nView course roster" as U2
+  usecase "UC-CB-13\nReceive member withdrawal\nnotifications" as U3
+  usecase "UC-CB-15\nView course details" as U4
+  usecase "UC-AT-02\nRecord session attendance" as U5
+  usecase "UC-AT-04\nWrite session feedback" as U6
+  usecase "UC-AT-06\nUpdate session description" as U7
+}
+Actor -- U0
+Actor -- U1
+Actor -- U2
+Actor -- U3
+Actor -- U4
+Actor -- U5
+Actor -- U6
+Actor -- U7
+@enduml

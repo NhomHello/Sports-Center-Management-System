@@ -1,0 +1,3 @@
+{"step":"ONLINE_CHECKOUT","code":"INV003281","amount":1200000,"invoiceStatus":"PENDING","qrHttpStatus":200}
+{"step":"SIMULATED_WEBHOOK","http":200,"invoiceStatus":"PAID","enrollmentStatus":"BOOKED","duplicate":"DUPLICATE","paymentRows":1}
+Removed only the test member and its invoice/payment records; no bank transfer was made.

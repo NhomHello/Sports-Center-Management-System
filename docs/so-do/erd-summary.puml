@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Course summaries and member results
+left to right direction
+hide circle
+hide methods
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 80
+skinparam ArrowFontSize 13
+entity "User\n(users)" as T_User {
+  * id : Int <<PK>>
+  * roleId : Int <<FK>>
+  email : String? <<UQ>>
+  * fullName : String
+  * status : UserStatus
+}
+entity "GymClass\n(gym_classes)" as T_GymClass {
+  * id : Int <<PK>>
+  * subjectId : Int <<FK>>
+  * roomId : Int <<FK>>
+  * coachId : Int <<FK>>
+  * name : String
+  * capacity : Int
+  * registrationStartAt : DateTime
+  * registrationEndAt : DateTime
+  * status : ClassStatus
+  * price : Int
+}
+entity "CourseSummary\n(course_summaries)" as T_CourseSummary {
+  * id : Int <<PK>>
+  * classId : Int <<FK,UQ>>
+  * coachId : Int <<FK>>
+  * status : CourseSummaryStatus
+  * deadlineAt : DateTime
+  publishedAt : DateTime?
+  * revision : Int
+}
+entity "CourseSummaryItem\n(course_summary_items)" as T_CourseSummaryItem {
+  * id : Int <<PK>>
+  * summaryId : Int <<FK>>
+  * memberId : Int <<FK>>
+  result : CourseResult?
+  progress : Int?
+  * comment : String
+  attendanceSnapshot : Json?
+}
+note bottom of T_CourseSummaryItem : Unique together: summaryId, memberId
+T_GymClass ||..o| T_CourseSummary
+T_User ||..o{ T_CourseSummary
+T_CourseSummary ||..o{ T_CourseSummaryItem
+T_User ||..o{ T_CourseSummaryItem
+legend bottom
+  PK = primary key; FK = foreign key; UQ = unique key
+  * = mandatory attribute; ? = nullable type
+  Solid = identifying relationship; dashed = non-identifying relationship
+  Focus: CourseSummary, CourseSummaryItem. Other references are in the full ERD.
+endlegend
+@enduml

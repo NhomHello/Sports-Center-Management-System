@@ -1,104 +1,58 @@
-# Sports-Center-Management-System
+# Sports Center Management System
 
-SWP391 FA26 · Đề tài 4 · GV: MinhTTH5 · Nhóm: Nhanh, Bảo, Khôi, Khải
+SWP391 FA26 · Đề tài 4 · Nhóm Nhanh, Bảo, Khôi, Khải.
 
-Hệ thống quản lý trung tâm thể thao: hội viên & gói tập (Flow 1), lớp học & lịch (Flow 2),
-thanh toán SePay & báo cáo (Flow 3), hồ sơ HLV/hội viên, tổng kết và đánh giá khóa học (Sprint 4). Phân quyền **RBAC động hoàn toàn** (role/permission quản lý trong DB qua UI).
+Hệ thống quản lý trung tâm thể thao kinh doanh **khóa học theo lịch buổi**, phục vụ **Hội viên, Huấn luyện viên, Quản lí trung tâm và Lễ tân**. Phạm vi gồm tài khoản/hội viên, tài nguyên và lịch học, đăng ký/giữ chỗ, thanh toán SePay hoặc tiền mặt, đối soát/hoàn tiền, điểm danh/nhận xét, hồ sơ, tổng kết/đánh giá và báo cáo.
 
-## Tech stack
+## Chạy local
 
-| Phần     | Công nghệ                                                                 |
-| -------- | ------------------------------------------------------------------------- |
-| Frontend | React 19, Vite 8, Ant Design v6, Axios, React Router 7, TanStack Query, Zustand |
-| Backend  | Node 24, Express 5, Prisma 7, Zod 4, JWT, Pino                            |
-| Database | MySQL 8 (Docker)                                                          |
-| Tooling  | npm workspaces, ESLint 10, Prettier, Husky + lint-staged, Commitlint, Vitest |
-
-## Chạy local bằng một script
+Yêu cầu Node.js từ 22, npm từ 10 và Docker có Compose v2. Từ thư mục dự án:
 
 ```bash
-git clone https://github.com/NhomHello/Sports-Center-Management-System.git
-cd Sports-Center-Management-System
 npm run dev
 ```
 
-`npm run dev` tự cài dependency khi thiếu, tạo các file `.env` từ mẫu, bật MySQL,
-chờ database healthy, generate Prisma, apply migration, seed tài khoản cho mọi role rồi
-chạy BE (`:3000`) và FE (`:5173`). Script dùng được trên Windows, macOS và Linux.
+Script chuẩn bị môi trường và chạy backend/frontend. Hướng dẫn từng bước, cấu hình và dữ liệu demo ở [hướng dẫn khởi động](docs/huong-dan/onboarding.md) và [dữ liệu khóa học](docs/huong-dan/refresh-course-data.md). Mật khẩu và khóa tích hợp lấy từ cấu hình trên máy, không lưu trong tài liệu.
 
-Yêu cầu: Node ≥ 22 (khuyên 24), Docker Desktop/Engine có Compose v2, Git. Chi tiết:
-[docs/huong-dan/onboarding.md](docs/huong-dan/onboarding.md).
+## Tài liệu hiện hành
 
-**Tài khoản mẫu** (mật khẩu trong `core/be/.env`): `admin@scms.local` (Center Manager), `letan@scms.local`,
-`coach.yoga@scms.local`, `member1@scms.local`… xem `core/be/prisma/seed/mock/users.mock.js`.
+- [Mục lục tài liệu](docs/README.md)
+- [Báo cáo cuối kỳ Word](docs/bao-cao/SWP391_BaoCaoCuoiKy.docx) · [PDF](docs/bao-cao/SWP391_BaoCaoCuoiKy.pdf)
+- [Slide PowerPoint](docs/bao-cao/SWP391_ThuyetTrinh.pptx) · [Kịch bản demo](docs/bao-cao/SWP391_KichBanDemo.docx)
+- [Đặc tả use case](docs/yeu-cau/01_Use_Case_Tong_Hop.docx) · [Business Rules](docs/yeu-cau/07_Business_Rules.docx)
+- [Task Sprint 1–4 và đối chiếu Git](docs/ke-hoach/)
+- [Test case](docs/kiem-thu/SWP391_TestCase.xlsx)
 
-Frontend local hỗ trợ `localhost:5173` và `127.0.0.1:5173`. Nếu đăng nhập báo "Không thể kết nối máy chủ"
-trong khi health vẫn trả `database: up`, kiểm tra `CORS_ORIGINS` trong `core/be/.env`: phải có origin
-đúng với địa chỉ đang mở. Mẫu `.env.example` khai báo cả hai địa chỉ; với `.env` cũ, bổ sung địa chỉ
-còn thiếu rồi khởi động lại backend. Health kiểm tra API/DB; đăng nhập qua trình duyệt còn cần CORS hợp lệ.
+## Cấu trúc và công nghệ
 
-## Cấu trúc
+| Phần | Nội dung |
+| --- | --- |
+| `core/fe` | React 19, Vite 8, Ant Design 6, Router, Query, Axios, Zustand |
+| `core/be` | Node.js, Express 5, Zod 4, JWT, Prisma 7, MySQL |
+| `core/shared` | Permission, cấu hình và hằng số dùng chung |
+| `tests/e2e` | Playwright |
+| `docs` | Bộ tài liệu hiện hành |
+| `scripts/reporting` | Nguồn sinh tài liệu từ đặc tả đã đối chiếu và schema |
 
+Xem [cấu trúc](docs/huong-dan/cau-truc-du-an.md), [phân quyền](docs/huong-dan/rbac-dong.md), [API](docs/huong-dan/api-convention.md) và [quy ước kiểm thử](docs/huong-dan/viet-test-case.md).
+
+```bash
+npm run lint
+npm test
+npm run build
+npm run test:e2e
 ```
-core/shared   hằng số dùng chung BE + FE (permission registry, setting keys, error codes)
-core/be       Express API - MVC theo module (routes / controller / service / validation), Prisma
-core/fe       React + antd - pages / components / hooks / services / stores
-docs          hướng dẫn, yêu cầu, task sheet, bàn giao và kiểm thử
-outputs       bộ báo cáo cuối kỳ và bằng chứng xuất từ dự án
-scripts       npm run dev / setup
+
+Các lệnh kiểm thử ứng dụng có yêu cầu môi trường riêng, nhất là MySQL và browser Playwright. Kết quả kiểm tra tài liệu không thay thế kết quả chạy các lệnh này.
+
+## Dựng lại tài liệu
+
+Cài các thư viện trong `scripts/reporting/requirements.txt` vào môi trường Python riêng, LibreOffice có Writer/Impress, Java và Graphviz. Dùng PlantUML JAR chính thức để dựng UML/ERD từ nguồn `.puml`; chữ trong sơ đồ là tiếng Anh. Chạy:
+
+```bash
+PLANTUML_JAR=/path/to/plantuml.jar python3 scripts/reporting/build.py
 ```
 
-## Tài liệu bắt buộc đọc
+Nếu LibreOffice nằm ngoài đường dẫn mặc định, đặt `SWP_LIBREOFFICE` tới executable tương ứng. Bộ sinh chỉ đọc nguồn/Git và ghi vào `docs`; không truy cập DB hoặc đọc `.env`. Thông tin phân công nguồn được ghim tại commit trong `new_plan.py`, còn timeline đọc lịch sử Git hiện tại.
 
-1. [docs/huong-dan/quy-tac-code.md](docs/huong-dan/quy-tac-code.md) — giới hạn 200 dòng/file, đặt tên, comment, tái sử dụng, **không hardcode**
-2. [docs/huong-dan/cau-truc-du-an.md](docs/huong-dan/cau-truc-du-an.md) — MVC, thêm module/trang mới theo checklist
-3. [docs/huong-dan/rbac-dong.md](docs/huong-dan/rbac-dong.md) — phân quyền động, thêm permission
-4. [docs/huong-dan/git-workflow.md](docs/huong-dan/git-workflow.md) — nhánh, commit, PR
-5. [docs/huong-dan/api-convention.md](docs/huong-dan/api-convention.md) — chuẩn request/response
-6. [docs/huong-dan/viet-test-case.md](docs/huong-dan/viet-test-case.md) — cách viết test case & test tự động
-
-## Scripts thường dùng (chạy ở thư mục gốc)
-
-| Lệnh                    | Việc                                                     |
-| ----------------------- | -------------------------------------------------------- |
-| `npm run dev`           | Chuẩn bị toàn bộ local, seed tài khoản, chạy MySQL + BE + FE            |
-| `npm run dev -- --prepare-only` | Chỉ chuẩn bị DB/seed để kiểm tra, không chiếm cổng BE/FE         |
-| `npm run db:migrate`    | Tạo migration mới sau khi sửa `schema.prisma` (hỏi tên)  |
-| `npm run db:seed`       | Đồng bộ permission / role / settings / mock user vào DB  |
-| `npm run db:demo`       | Xóa và tạo lại dữ liệu bán khóa học (16 khóa, giữ chỗ, hàng chờ, lịch sử và tổng kết) |
-| `npm run db:clean`      | Chỉ reset: xoá hoá đơn, lớp, hội viên… giữ quyền, vai trò, cấu hình và tài khoản admin |
-| `npm run db:studio`     | Mở Prisma Studio xem DB                                  |
-| `npm run lint`          | Lint toàn bộ (tự chạy khi commit)                        |
-| `npm test`              | Test BE (cần MySQL đang chạy) + FE                       |
-| `npm run verify:sprint2` | Test toàn bộ và migration mới/nâng cấp trên DB tạm; cần quyền CREATE/DROP DATABASE |
-| `npm run test:e2e`       | Playwright: bốn vai trò desktop và mobile 320px; server riêng 3100/5180 |
-
-## Dữ liệu demo
-
-Xem [hướng dẫn thay dữ liệu khóa học](docs/huong-dan/refresh-course-data.md).
-`npm run db:refresh:courses` chỉ xem trước; thêm `-- --yes` để xóa nghiệp vụ cũ và tạo lại
-bộ mẫu có liên kết đúng. `npm run db:demo` thực hiện xóa và tạo lại ngay.
-Giữ admin, phân quyền, settings/SePay và khung hoạt động; lỗi khi tạo/kiểm tra sẽ rollback nghiệp vụ.
-
-Bộ mẫu mới có 16 khóa, 44 đăng ký/hóa đơn, giữ chỗ thanh toán, hàng chờ, mô tả buổi học,
-ghi chú học viên và tổng kết. Không tạo gói tập. Tài khoản HLV `s4.coach@scms.test`,
-học viên `s4.member1@scms.test` đến `s4.member3@scms.test`, mật khẩu `SEED_MOCK_PASSWORD`.
-Dữ liệu demo Sprint 2/3 bên dưới chỉ mô tả bộ seed cũ.
-
-[Xử lý trùng lịch, thanh toán quầy/online và đối soát](docs/huong-dan/course-payment-conflicts.md).
-
-## Sprint 2
-
-Sprint 2 đã tích hợp vào `main`, trên nền Sprint 1. Các nhánh thành viên là `sprint-2/be-bao`, `sprint-2/be-nhanh`, `sprint-2/fe-khai`, `sprint-2/fe-khoi`.
-
-Trang **`/schedule`** gồm danh mục, quản lý lớp, đăng ký/huỷ toàn lớp, xử lý hộ, lịch cá nhân/lịch dạy và roster theo permission. Mobile dùng danh sách chọn màn hình để truy cập đủ các chức năng. Huỷ dùng hạn do backend trả về; đổi lịch giữ buổi cũ và gửi thông báo qua outbox.
-
-Khi `SEED_MOCK_DATA=true`, seed thêm 20 hội viên `member1`…`member20` với email đăng nhập `@scms.local`, 5 gói mẫu và hai lớp `DEMO · …` bắt đầu ngày kế tiếp (Gym 07:00, Yoga 18:00). Mỗi lớp mẫu được lấp đến sức chứa bằng các hội viên mẫu; lịch tạo qua service nên sẽ bỏ qua khung giờ xung đột. Email `@scms.local` chỉ dùng đăng nhập local, không phải hộp thư Gmail. Seed không ghi đè lớp/gói đã sửa. Với DB có sẵn, dùng `migrate deploy` qua `npm run dev`; giữ bảng đăng ký từng buổi và dữ liệu điểm danh cũ.
-
-Chi tiết: task sheet tại `docs/ke-hoach/`, đặc tả tại `docs/yeu-cau/`, bàn giao tại `docs/handover/`, test case tại `docs/kiem-thu/SWP391_TestCase.xlsx`; bộ nộp cuối kỳ ở `outputs/bao-cao-cuoi-ky/`. Để chạy E2E lần đầu, cài Chromium bằng `npx playwright install chromium` sau khi cài dependency và chuẩn bị MySQL.
-
-## Bộ báo cáo cuối kỳ
-
-[Báo cáo Word/PDF, 5 slide PowerPoint/PDF, kịch bản demo 28 phút, task–commit–timeline và ERD](outputs/bao-cao-cuoi-ky/) được tổng hợp từ mã nguồn và tài liệu hiện hành. Xem [mục lục tài liệu](docs/README.md).
-
-Sprint 4: Bảo nhận toàn bộ phần trước đây giao Nhanh (nền dữ liệu, BE tổng kết/đánh giá, báo cáo BE/FE, seed, tài liệu/demo); Khôi hồ sơ full-stack; Khải FE tổng kết/đánh giá và kiểm thử. AI/kế hoạch tập luyện đã loại khỏi phạm vi. Ngày kế hoạch không thay thế ngày Git; tác giả lịch sử được giữ nguyên.
+Dữ liệu gói tự tập cũ được giữ trong DB để bảo toàn tham chiếu; hệ thống không còn luồng bán/gia hạn/bảo lưu gói. Tài liệu bán hàng dùng khóa học. AI/kế hoạch tập luyện bằng AI không thuộc phạm vi hiện hành.

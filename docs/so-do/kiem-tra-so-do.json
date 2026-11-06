@@ -1,0 +1,879 @@
+{
+  "renderer": "PlantUML + Graphviz",
+  "plantumlVersion": "PlantUML version 1.2026.9 / 18d0aae [2026-10-17 08:25:10 UTC]",
+  "graphvizVersion": "dot - graphviz version 14.1.2 (0)",
+  "checks": [
+    {
+      "file": "demo-happy-path.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "demo-happy-path.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "f3191a7fabcdadff27a51b6d39a1ced4ff97b8f1f632aca5007bb2ef25b6d799"
+    },
+    {
+      "file": "01-dang-ky.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "01-dang-ky.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "bebe086a7f7df627ad7e972c5ed995cdf4b3ffc5bb95d15c9b27810130138e2e"
+    },
+    {
+      "file": "01-dang-ky-verification.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "01-dang-ky-verification.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "f9f5f3b0b4f6930815c5d04bf23566f9c04ac6c18fcf2f05b0f30aaf9fa66b2a"
+    },
+    {
+      "file": "01-dang-ky-login.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "01-dang-ky-login.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "a4497350413cafcad824ea3fbba6453f7e30a97f5e2fbd414c39f5e53c650efa"
+    },
+    {
+      "file": "02-mua-khoa.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "02-mua-khoa.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "d23039df3624a2bb73da83edb747a516ee61d63d4561248d93bd1c652eca2b52"
+    },
+    {
+      "file": "02-mua-khoa-webhook.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "02-mua-khoa-webhook.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "e9e659286f60265c17b3723e29f1bb026c88e00fd3e32df17c869f556e98d725"
+    },
+    {
+      "file": "02-mua-khoa-allocation.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "02-mua-khoa-allocation.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "b50018a7fb48cb3e8ec1538719b6ce0cbbcafad3cb61fb8abe252e61165ddc4b"
+    },
+    {
+      "file": "03-hang-cho.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "03-hang-cho.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ab686d83024b9b901e7f34d3463b81521d4b3e16e85d6e5d427ddcc5ae83012d"
+    },
+    {
+      "file": "03-hang-cho-promotion.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "03-hang-cho-promotion.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "a7253866071ceed2cff42b38b8e1e732b6139f51c485e1a8fa43d211c55b09e2"
+    },
+    {
+      "file": "03-hang-cho-response.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "03-hang-cho-response.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "b084c290e73202da43962ac04296f12026531bb627c88fc7dd8f8cdacb60356d"
+    },
+    {
+      "file": "04-thu-quay.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "04-thu-quay.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "13fa5d6acccdd8468baaa8f90a08d10320d39d8529edbce62733979931018d77"
+    },
+    {
+      "file": "05-huy-hoan.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "05-huy-hoan.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "204705c164cc2bb01788ac92cf0621ff7fda97a3b2e079d19b0cfd8044c2f619"
+    },
+    {
+      "file": "05-huy-hoan-repayment.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "05-huy-hoan-repayment.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "17eaad096cc401c3f4ef4cc79c811ebcc3550326fa063916f85e7ccbc86d2d75"
+    },
+    {
+      "file": "06-doi-soat.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "06-doi-soat.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "74c5f4a4d700ef4ac36384b2f18aa703929e3c7e8b0357a4f386f12881c9c81b"
+    },
+    {
+      "file": "06-doi-soat-resolution.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "06-doi-soat-resolution.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "4ad9d5075ca62044fc85cb21d9ccd50705c36c552c1a126f4a4e6f0fd2b42101"
+    },
+    {
+      "file": "07-diem-danh-attendance.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "07-diem-danh-attendance.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ffd154365db8159ef68f2b2b805f3c67aabde2db5c5e39b4605a2cd9ba748b3e"
+    },
+    {
+      "file": "07-diem-danh-feedback.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "07-diem-danh-feedback.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "64f6b74033445a06251b12c8dff1967422d0b1f3003f2ce942e6012897c7997d"
+    },
+    {
+      "file": "08-tong-ket.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "08-tong-ket.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "91c2fff0dba4887ee8ed7f520207e34234bfc53dc63f09d2f1846afe76689215"
+    },
+    {
+      "file": "08-tong-ket-publish.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "08-tong-ket-publish.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "5622dfb7ec3e524a917a28eee01e2d31a3f212e3488a73f18f0e2fa5ceb83fa9"
+    },
+    {
+      "file": "08-tong-ket-reopen.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "08-tong-ket-reopen.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "1477f56e91f6a0194149ccc9f58c83d0c5d28d90eb830495afb2fa687381cf36"
+    },
+    {
+      "file": "09-doi-khoa.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "09-doi-khoa.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "6d312360b68fbd54fc6a19aba8d13da4519bb2062cd678019a3ff417e950a5b6"
+    },
+    {
+      "file": "09-doi-khoa-settlement.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "09-doi-khoa-settlement.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "2151a2dc0bac2c6ea09e06356864f8a50474cdefdd6341a55bd85375bfd3b711"
+    },
+    {
+      "file": "10-doi-lich.svg",
+      "notation": "activity",
+      "renderer": "PlantUML",
+      "sourceFile": "10-doi-lich.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "b802e846c598cc25511ac0c32ee96b40074c2089451fbb194605a17e44189afe"
+    },
+    {
+      "file": "state-invoice.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-invoice.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "5aade52912fb91554352821491ff2ae1efb1dc464589dc4db1f97cc243935e1d"
+    },
+    {
+      "file": "state-enrollment.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-enrollment.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "9f3d53f7fbe819508964572a01cb17bd617428ada2d06723debc520b597968af"
+    },
+    {
+      "file": "state-class.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-class.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "9e8fbf883e7d51f9cdc734d5bb9d598f794895b5893f7a0c641ef48a9716366e"
+    },
+    {
+      "file": "state-waitlist.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-waitlist.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "67095e902f4888f24069fb5674fd0fbc87ba299d281566a685dc638011aec465"
+    },
+    {
+      "file": "state-refund.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-refund.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "0307dc0b6f8dadf2a5dd8bda97cc9a48ccd0b5d518e203470d59f8272fb0d795"
+    },
+    {
+      "file": "state-change.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-change.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ec0ddcad17cfcad51dece7f571146daf2982d5fdb0c2019ddfcd9acc24fa33d1"
+    },
+    {
+      "file": "state-summary.svg",
+      "notation": "state",
+      "renderer": "PlantUML",
+      "sourceFile": "state-summary.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "07cdc30d97ed3712a259a30085474864935f7f61e61d94f01622cd74416158d3"
+    },
+    {
+      "file": "usecase-hoi-vien-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-hoi-vien-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "54cc2f4c9d177806c1657a8ed79eaf44d19c788798a8950fdd711bc6865c6486"
+    },
+    {
+      "file": "usecase-hoi-vien-02.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-hoi-vien-02.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "deb8d5ad47cf719ee7f3186bda0c4de21cde118ba1d30d0669ece8dac7b8b947"
+    },
+    {
+      "file": "usecase-hoi-vien-03.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-hoi-vien-03.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "b89773d45baa737851fd8b61cc1d14b74cd4dd1c256f73e78fbe6bf9ceb1f086"
+    },
+    {
+      "file": "usecase-hoi-vien-04.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-hoi-vien-04.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ae7bae6721b9c9d8317180612847c1bbe30111e352c70efe20d7053c36627d6d"
+    },
+    {
+      "file": "usecase-huan-luyen-vien-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-huan-luyen-vien-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "0fe05d4855e74937a456f54d01c7990eddb82266f19bc061603f773b24402654"
+    },
+    {
+      "file": "usecase-huan-luyen-vien-02.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-huan-luyen-vien-02.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ee2d7248ab71c6f8558266d3f0210347837a678ca7ce5f948cfc36bc4092cc85"
+    },
+    {
+      "file": "usecase-huan-luyen-vien-03.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-huan-luyen-vien-03.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "c2441b278ad9e6d165ff6a801f601c9b0c03c9db4a5271fb0ccf859c7fb5cbdf"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "c2f54f4802cd4ce7b3ef3f1a7d7d6c16a89db35486c342b11a1d7f68123676d6"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-02.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-02.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "1a0da24010c5b741a1b6b6c2de1175cdd1c4cdee096a97db84030103b0057618"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-03.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-03.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ae5850f72ca40ac6673750d4a0c7fc8773a7aeb3f7aa2b641b94251a623f9588"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-04.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-04.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "0046b28ca13ae5f6d820172e412909f8a08a88312fd3771fda8c8d54ac41c35c"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-05.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-05.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "9574f496a04e32339b9c9708f1dac9393c1648ab3c90d5bd0feabf675721f5ef"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-06.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-06.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "e4a3886552e53724ec8203a876e4e030f450e2ea936098622724a4bac27c7d31"
+    },
+    {
+      "file": "usecase-quan-li-trung-tam-07.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-quan-li-trung-tam-07.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "845461ebf75e17f51f0f0cd5da420bd653810e7e7df6e62235a41dac1b26b20b"
+    },
+    {
+      "file": "usecase-le-tan-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-le-tan-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "91df9357adfd120979eea643bc0b1ba06aa2ed4e0370992cfe08d493f494deff"
+    },
+    {
+      "file": "usecase-le-tan-02.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-le-tan-02.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "6e6627b93904f699961a3b37d1ba85b74d699e71ee720044888006e8b1713678"
+    },
+    {
+      "file": "usecase-le-tan-03.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-le-tan-03.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "ba32c6d5b90d05728a0a3dcc552bcb1f1eda4269225dc58c474f762465d4ec52"
+    },
+    {
+      "file": "usecase-le-tan-04.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-le-tan-04.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "e40b2e4301b15a2e4d173499e1a36d2c0abace951f7e92d236c9f5f7e3f09148"
+    },
+    {
+      "file": "usecase-sepay-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-sepay-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "6429a5ddcc06d2aac5b42b0b03697426dd0c808ee71fef4da4478a3be2828b07"
+    },
+    {
+      "file": "usecase-thoi-gian-01.svg",
+      "notation": "usecase",
+      "renderer": "PlantUML",
+      "sourceFile": "usecase-thoi-gian-01.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "5f6e6987bdcc1510da9a0f9066cc7dc9e7efee04144be8e99a987f82f3342504"
+    },
+    {
+      "file": "erd-access.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-access.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "574f6768e7777429b7d0872953d7576e4ceb76fea5f95a1939595b80c56f1943"
+    },
+    {
+      "file": "erd-facilities.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-facilities.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "c6bfbbff4ead22a223420c1cff181698f1125480f7242cec5693c9f13f5a7a24"
+    },
+    {
+      "file": "erd-courses.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-courses.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "f94c2afe79936999e2c619c4cb1bbf382ba666268727c30e4c56b2c41a98e602"
+    },
+    {
+      "file": "erd-sessions.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-sessions.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "c4da2d2ef3503766e17b10c57e463a074251359b423fa0d4a7795c46fb62fbe3"
+    },
+    {
+      "file": "erd-enrollment.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-enrollment.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "9a3586f4bf159bed54a373a87febc7a9d54dbfed725893faa1ce749f94f885df"
+    },
+    {
+      "file": "erd-waiting-list.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-waiting-list.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "5ef9fde3933928258476248770011c98f9503c688ec619143f8ebe1a2ac5d7ff"
+    },
+    {
+      "file": "erd-attendance.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-attendance.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "907be52ad292ab44d56056b900ad206d36e59ae55d463660c431ae6d15b98d6c"
+    },
+    {
+      "file": "erd-billing.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-billing.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "489c0c10982f6c13c82d2681b04285c3b659d7f86ac0813281cc3ae70d875e22"
+    },
+    {
+      "file": "erd-reconciliation.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-reconciliation.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "9bdb306429e88c607466d7e6da1381599deb7e66c421b56d5e5fdc40a57ebfd8"
+    },
+    {
+      "file": "erd-summary.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-summary.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "345f720e52403270c9889388a45071e6c310e1220e786f76650a7d73eae3aef4"
+    },
+    {
+      "file": "erd-profiles.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-profiles.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "f0dd661003340c244668f046d203d5291e18b68e686593be0590679e8bc1b15a"
+    },
+    {
+      "file": "erd-ratings.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-ratings.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "832a5c7f13b02506ab916987d06a50082b63e8b534b801bb841ae41993424ee2"
+    },
+    {
+      "file": "erd-purchase-change.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-purchase-change.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "448962e7413d7cf1a7d8b97774a3bb5f88199da9de3c27e62f16762d6d1f05f5"
+    },
+    {
+      "file": "erd-operations.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-operations.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "39d136e4b869869e4f0725dba48b25feb5200dd8c901b0907b8de5badd3f60f7"
+    },
+    {
+      "file": "erd-vat-ly-day-du.svg",
+      "notation": "erd",
+      "renderer": "PlantUML",
+      "sourceFile": "erd-vat-ly-day-du.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "e187284bcacf39af474598bfd18d09831cc79de4bdf69e5c92fe033b0cc45731"
+    },
+    {
+      "file": "conceptual.svg",
+      "notation": "conceptual",
+      "renderer": "PlantUML",
+      "sourceFile": "conceptual.puml",
+      "englishOnly": true,
+      "syntaxValid": true,
+      "sourceSha256": "965948ff00e0e02237961addd5cfb820bcf1da8409e67e8beda3da9540246916"
+    }
+  ],
+  "useCaseViews": [
+    {
+      "name": "usecase-hoi-vien-01",
+      "title": "Use Case - Member - Part 1",
+      "actor": "Member",
+      "ids": [
+        "UC-UM-01",
+        "UC-UM-02",
+        "UC-UM-11",
+        "UC-UM-12",
+        "UC-UM-13",
+        "UC-UM-17",
+        "UC-UM-23",
+        "UC-UM-24"
+      ]
+    },
+    {
+      "name": "usecase-hoi-vien-02",
+      "title": "Use Case - Member - Part 2",
+      "actor": "Member",
+      "ids": [
+        "UC-UM-26",
+        "UC-CB-05",
+        "UC-CB-06",
+        "UC-CB-07",
+        "UC-CB-13",
+        "UC-CB-15",
+        "UC-CB-16",
+        "UC-CB-19"
+      ]
+    },
+    {
+      "name": "usecase-hoi-vien-03",
+      "title": "Use Case - Member - Part 3",
+      "actor": "Member",
+      "ids": [
+        "UC-CB-21",
+        "UC-CB-22",
+        "UC-PAY-01",
+        "UC-PAY-03",
+        "UC-PAY-07",
+        "UC-PAY-08",
+        "UC-PAY-09",
+        "UC-PAY-10"
+      ]
+    },
+    {
+      "name": "usecase-hoi-vien-04",
+      "title": "Use Case - Member - Part 4",
+      "actor": "Member",
+      "ids": ["UC-PAY-12", "UC-PAY-14", "UC-PAY-19", "UC-AT-03", "UC-AT-05", "UC-TR-06", "UC-TR-07"]
+    },
+    {
+      "name": "usecase-huan-luyen-vien-01",
+      "title": "Use Case - Coach - Part 1",
+      "actor": "Coach",
+      "ids": [
+        "UC-UM-02",
+        "UC-UM-11",
+        "UC-UM-12",
+        "UC-UM-13",
+        "UC-UM-17",
+        "UC-UM-22",
+        "UC-UM-23",
+        "UC-UM-25"
+      ]
+    },
+    {
+      "name": "usecase-huan-luyen-vien-02",
+      "title": "Use Case - Coach - Part 2",
+      "actor": "Coach",
+      "ids": [
+        "UC-UM-26",
+        "UC-CB-11",
+        "UC-CB-12",
+        "UC-CB-13",
+        "UC-CB-15",
+        "UC-AT-02",
+        "UC-AT-04",
+        "UC-AT-06"
+      ]
+    },
+    {
+      "name": "usecase-huan-luyen-vien-03",
+      "title": "Use Case - Coach - Part 3",
+      "actor": "Coach",
+      "ids": ["UC-TR-05"]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-01",
+      "title": "Use Case - Center Manager - Part 1",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-UM-02",
+        "UC-UM-05",
+        "UC-UM-06",
+        "UC-UM-09",
+        "UC-UM-11",
+        "UC-UM-12",
+        "UC-UM-13",
+        "UC-UM-14"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-02",
+      "title": "Use Case - Center Manager - Part 2",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-UM-15",
+        "UC-UM-16",
+        "UC-UM-17",
+        "UC-UM-18",
+        "UC-UM-19",
+        "UC-UM-23",
+        "UC-UM-24",
+        "UC-UM-26"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-03",
+      "title": "Use Case - Center Manager - Part 3",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-CB-01",
+        "UC-CB-02",
+        "UC-CB-03",
+        "UC-CB-04",
+        "UC-CB-09",
+        "UC-CB-10",
+        "UC-CB-12",
+        "UC-CB-13"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-04",
+      "title": "Use Case - Center Manager - Part 4",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-CB-14",
+        "UC-CB-15",
+        "UC-CB-17",
+        "UC-CB-18",
+        "UC-CB-20",
+        "UC-CB-21",
+        "UC-CB-22",
+        "UC-CB-23"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-05",
+      "title": "Use Case - Center Manager - Part 5",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-CB-24",
+        "UC-PAY-03",
+        "UC-PAY-05",
+        "UC-PAY-06",
+        "UC-PAY-07",
+        "UC-PAY-08",
+        "UC-PAY-09",
+        "UC-PAY-10"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-06",
+      "title": "Use Case - Center Manager - Part 6",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-PAY-11",
+        "UC-PAY-12",
+        "UC-PAY-13",
+        "UC-PAY-14",
+        "UC-PAY-19",
+        "UC-AT-01",
+        "UC-AT-02",
+        "UC-AT-03"
+      ]
+    },
+    {
+      "name": "usecase-quan-li-trung-tam-07",
+      "title": "Use Case - Center Manager - Part 7",
+      "actor": "Center Manager",
+      "ids": [
+        "UC-AT-04",
+        "UC-AT-06",
+        "UC-TR-05",
+        "UC-TR-07",
+        "UC-RPT-01",
+        "UC-RPT-02",
+        "UC-RPT-03",
+        "UC-RPT-04"
+      ]
+    },
+    {
+      "name": "usecase-le-tan-01",
+      "title": "Use Case - Receptionist - Part 1",
+      "actor": "Receptionist",
+      "ids": [
+        "UC-UM-02",
+        "UC-UM-05",
+        "UC-UM-06",
+        "UC-UM-11",
+        "UC-UM-12",
+        "UC-UM-13",
+        "UC-UM-14",
+        "UC-UM-17"
+      ]
+    },
+    {
+      "name": "usecase-le-tan-02",
+      "title": "Use Case - Receptionist - Part 2",
+      "actor": "Receptionist",
+      "ids": [
+        "UC-UM-19",
+        "UC-UM-24",
+        "UC-UM-26",
+        "UC-CB-08",
+        "UC-CB-09",
+        "UC-CB-10",
+        "UC-CB-15",
+        "UC-CB-20"
+      ]
+    },
+    {
+      "name": "usecase-le-tan-03",
+      "title": "Use Case - Receptionist - Part 3",
+      "actor": "Receptionist",
+      "ids": [
+        "UC-CB-21",
+        "UC-CB-22",
+        "UC-PAY-03",
+        "UC-PAY-06",
+        "UC-PAY-07",
+        "UC-PAY-08",
+        "UC-PAY-10",
+        "UC-PAY-19"
+      ]
+    },
+    {
+      "name": "usecase-le-tan-04",
+      "title": "Use Case - Receptionist - Part 4",
+      "actor": "Receptionist",
+      "ids": ["UC-AT-01", "UC-AT-05"]
+    },
+    {
+      "name": "usecase-sepay-01",
+      "title": "Use Case - SePay - Part 1",
+      "actor": "SePay",
+      "ids": ["UC-PAY-02"]
+    },
+    {
+      "name": "usecase-thoi-gian-01",
+      "title": "Use Case - Time Trigger - Part 1",
+      "actor": "Time Trigger",
+      "ids": ["UC-CB-13", "UC-PAY-04", "UC-TR-05"]
+    }
+  ],
+  "fullErdPages": 1,
+  "completeSchemaModels": 50,
+  "completeSchemaForeignKeys": 91,
+  "domainForeignKeys": {
+    "erd-access": 4,
+    "erd-facilities": 5,
+    "erd-courses": 3,
+    "erd-sessions": 3,
+    "erd-enrollment": 5,
+    "erd-waiting-list": 2,
+    "erd-attendance": 8,
+    "erd-billing": 4,
+    "erd-reconciliation": 6,
+    "erd-summary": 4,
+    "erd-profiles": 2,
+    "erd-ratings": 3,
+    "erd-purchase-change": 6,
+    "erd-operations": 2,
+    "erd-vat-ly-day-du": 91
+  },
+  "automatedCrossingGuarantee": false
+}

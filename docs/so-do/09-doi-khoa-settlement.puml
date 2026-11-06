@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Settle or expire a pending course change
+start
+:<b>System:</b> Handle adjustment payment or\ninvoice expiry;
+:<b>System:</b> Recheck source entitlement,\nsame subject, target hold and\nschedule under lock;
+if (Valid payment can settle the\nchange?) then (Yes)
+  :<b>System:</b> Cancel source enrollment and\nbook the target;
+  :<b>System:</b> Set PurchaseChange DONE;
+else (No)
+  if (Adjustment invoice expired or\ncancelled?) then (Yes)
+    :<b>System:</b> Cancel pending change and\nrelease target hold;
+  else (Still pending)
+    :<b>System:</b> Keep change pending for\npayment or reconciliation;
+  endif
+  :<b>System:</b> Retain source entitlement;
+endif
+stop
+@enduml

@@ -1,0 +1,6 @@
+npm notice run sports-center-management-system@1.0.0 lint
+npm notice run npm run lint --workspaces --if-present
+npm notice run @scms/shared@1.0.0 lint
+npm notice run eslint .
+npm notice run @scms/be@1.0.0 lint
+npm notice run @scms/fe@1.0.0 lint

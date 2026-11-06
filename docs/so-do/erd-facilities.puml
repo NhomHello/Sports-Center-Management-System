@@ -1,0 +1,73 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Subjects, rooms and operating frames
+left to right direction
+hide circle
+hide methods
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 80
+skinparam ArrowFontSize 13
+entity "CoachSubject\n(coach_subjects)" as T_CoachSubject {
+  * coachId : Int <<PK,FK>>
+  * subjectId : Int <<PK,FK>>
+}
+entity "Subject\n(subjects)" as T_Subject {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+}
+entity "RoomType\n(room_types)" as T_RoomType {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+}
+entity "RoomTypeSubject\n(room_type_subjects)" as T_RoomTypeSubject {
+  * roomTypeId : Int <<PK,FK>>
+  * subjectId : Int <<PK,FK>>
+}
+entity "Room\n(rooms)" as T_Room {
+  * id : Int <<PK>>
+  roomTypeId : Int? <<FK>>
+  * name : String <<UQ>>
+  * capacity : Int
+}
+entity "OperatingFrame\n(operating_frames)" as T_OperatingFrame {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+}
+entity "RoomMaintenance\n(room_maintenance)" as T_RoomMaintenance {
+  * id : Int <<PK>>
+  * roomId : Int <<FK>>
+  * startAt : DateTime
+  * endAt : DateTime
+  * reason : String
+}
+T_RoomType |o..o{ T_Room
+T_RoomType ||--o{ T_RoomTypeSubject
+T_Subject ||--o{ T_RoomTypeSubject
+T_Subject ||--o{ T_CoachSubject
+T_Room ||..o{ T_RoomMaintenance
+legend bottom
+  PK = primary key; FK = foreign key; UQ = unique key
+  * = mandatory attribute; ? = nullable type
+  Solid = identifying relationship; dashed = non-identifying relationship
+  Focus: CoachSubject, Room, RoomMaintenance, RoomTypeSubject. Other references are in the full ERD.
+endlegend
+@enduml

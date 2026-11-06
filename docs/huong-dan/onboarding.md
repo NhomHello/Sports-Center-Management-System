@@ -1,84 +1,30 @@
-# 06 · Onboarding – ngày đầu tiên
+# Chạy hệ thống tại máy cá nhân
 
-## 1. Cài máy (1 lần)
+Yêu cầu: Node.js từ 22, npm từ 10, Git và Docker có Compose v2. Cấu hình engine nằm trong `package.json`; Docker dùng cho MySQL trong `docker-compose.yml` của dự án.
 
-| Cần               | Cài                                                                                  | Kiểm tra                    |
-| ----------------- | ------------------------------------------------------------------------------------ | --------------------------- |
-| Node.js 24 (≥ 22) | https://nodejs.org hoặc nvm (`nvm install 24 && nvm use 24`)                         | `node -v` → v24.x           |
-| Docker Desktop    | https://www.docker.com/products/docker-desktop – bật lên trước khi chạy dự án        | `docker info` không lỗi     |
-| Git               | https://git-scm.com                                                                  | `git -v`                    |
-| VS Code           | + extension gợi ý khi mở repo (ESLint, Prettier, Prisma, EditorConfig)              |                             |
-
-Windows: nên bật WSL2 backend cho Docker; chạy lệnh trong PowerShell hoặc Git Bash đều được.
-
-## 2. Chạy dự án
+Từ thư mục chứa `package.json`:
 
 ```bash
-git clone https://github.com/NhomHello/Sports-Center-Management-System.git
-cd Sports-Center-Management-System
 npm run dev
 ```
 
-`npm run dev` dùng chung trên Windows, macOS và Linux: tự cài dependency khi thiếu → tạo
-`.env` từ `.env.example` (nếu thiếu) → `docker compose up mysql` → chờ healthy →
-`prisma generate` → apply migration → seed (permission, role, admin, settings, user mẫu) →
-in bộ tài khoản demo → chạy BE (`node --watch`) và FE (`vite`) trong một terminal.
-Nhấn Ctrl+C để tắt cả hai server; dữ liệu MySQL vẫn được giữ trong Docker volume.
+`scripts/dev.mjs` và `scripts/setup.mjs` chuẩn bị dependency, file môi trường từ mẫu, MySQL, Prisma/migration và seed trước khi chạy frontend/backend. Mặc định frontend ở cổng 5173 và backend ở cổng 3000; cấu hình thực tế có thể đổi bằng môi trường. Dùng `npm run dev -- --prepare-only` nếu chỉ cần chuẩn bị.
 
-| Địa chỉ                                   | Là gì                    |
-| ----------------------------------------- | ------------------------ |
-| http://localhost:5173                     | Frontend                 |
-| http://localhost:3000/api/v1/health       | Backend health           |
-| `npm run db:studio` → http://localhost:5555 | Prisma Studio (xem DB) |
+Quy trình từng bước khi môi trường đã được cấu hình:
 
-Tuỳ chọn: `npm run dev -- --be-only`, `--fe-only`, `--no-docker` (tự chạy MySQL riêng,
-sửa `DATABASE_URL`), `--no-seed`, hoặc `--prepare-only` để chỉ migrate/seed mà không mở server.
+```bash
+npm install
+npm run db:up
+npm run db:deploy -w @scms/be
+npm run db:generate
+npm run db:seed
+npm run dev:be
+```
 
-## 3. Tài khoản mẫu (dev)
+Mở terminal khác để chạy `npm run dev:fe`. Không đưa `.env`, mật khẩu hoặc khóa SePay lên Git/tài liệu. Các giá trị bắt buộc được mô tả trong `.env.example` và `core/be/src/config/env.js`.
 
-| Email                     | Vai trò seed        | Mật khẩu                        |
-| ------------------------- | ------------------- | ------------------------------- |
-| admin@scms.local          | Quản lý trung tâm   | `SEED_ADMIN_PASSWORD` (Admin@123) |
-| letan@scms.local          | Lễ tân              | `SEED_MOCK_PASSWORD` (Member@123) |
-| coach.yoga@scms.local, coach.gym@scms.local | Huấn luyện viên | Member@123                 |
-| member1…5@scms.local      | Hội viên            | Member@123                      |
+Bốn vai trò mặc định nằm ở `core/be/prisma/seed/roles.seed.js`. Tài khoản Quản lí trung tâm do seed tạo theo `SEED_ADMIN_EMAIL`; đây là tên biến cấu hình, không phải vai trò thứ năm. Tài khoản mẫu khóa học theo seed hiện tại; mật khẩu lấy từ cấu hình trên máy.
 
-Đăng nhập admin → **Hệ thống › Vai trò & quyền** để thấy RBAC động hoạt động: bỏ tick một quyền của "Lễ tân", đăng nhập `letan@` ở tab ẩn danh → menu/nút biến mất ngay.
+Nếu trình duyệt không kết nối được nhưng API health hoạt động, kiểm tra `CORS_ORIGINS` có đúng origin đang mở, gồm `localhost` hoặc `127.0.0.1` tương ứng. Kiểm tra database bằng health theo cấu hình `API_PREFIX`/`HEALTH_PATH`, không suy ra CORS đã đúng chỉ vì health trả thành công.
 
-## 4. Ngày làm việc điển hình
-
-1. `git checkout dev && git pull` → `npm install` (nếu package.json đổi) → `npm run dev`.
-2. Tạo nhánh `feature/…` (xem `huong-dan/git-workflow.md`).
-3. Mở trang tương ứng để tham khảo pattern: BE `modules/role/`, FE `pages/system/roles/`.
-4. Code → lưu là ESLint/Prettier tự sửa → commit (hook kiểm tra) → push → PR.
-
-## 5. Lỗi hay gặp
-
-| Triệu chứng                                                      | Cách xử lý                                                                          |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `Docker chua chay`                                               | Mở Docker Desktop, đợi icon xanh, chạy lại                                          |
-| `port 3306 already in use`                                       | Máy có MySQL cài sẵn → tắt service hoặc đổi `MYSQL_PORT` trong `.env` gốc **và** port trong `DATABASE_URL` của `core/be/.env` |
-| `[ENV] Bien moi truong khong hop le`                              | Đọc dòng báo thiếu gì, so với `core/be/.env.example`                                |
-| `EADDRINUSE :3000` / `:5173`                                     | Tab terminal cũ còn chạy → tắt, hoặc đổi `PORT` / `VITE_PORT`                      |
-| FE gọi API bị CORS                                               | `CORS_ORIGINS` trong `core/be/.env` phải chứa origin FE (`http://localhost:5173`)   |
-| `Cannot find module '.prisma/client'`                            | `npm run db:generate`                                                               |
-| Migration drift / lỗi DB dev                                     | `npm run db:reset` (xoá DB dev + seed lại)                                          |
-| Commit bị chặn                                                   | Đọc lỗi ESLint (đa số là file > 200 dòng, magic number, console.log). Sửa, `git add`, commit lại |
-| Windows: `'husky' is not recognized`                             | `npm install` ở thư mục gốc (script `prepare` cài hook)                             |
-| Đổi `schema.prisma` mà `node --watch` không nhận                 | Ctrl+C, `npm run dev` lại (generate lại client)                                     |
-
-## 6. Đọc tiếp
-
-`docs/huong-dan/quy-tac-code.md` (bắt buộc) → `huong-dan/cau-truc-du-an.md` → `huong-dan/rbac-dong.md`.
-
-## Gửi email (xác minh tài khoản)
-
-BE gửi mail qua SMTP bằng `nodemailer` (`core/be/src/common/mail/mailer.js`), cấu hình hoàn toàn bằng biến `MAIL_*` và `APP_BASE_URL` trong `core/be/.env` (xem `.env.example`).
-
-| Tình huống | Cấu hình |
-| --- | --- |
-| Chạy local, chưa cần mail thật | Để trống `MAIL_HOST`: BE không gửi, chỉ in nội dung mail (có link xác minh) ra log |
-| Dev/test nhóm | Mailtrap Sandbox: `MAIL_HOST=sandbox.smtp.mailtrap.io`, `MAIL_PORT=2525`, user/pass lấy ở Mailtrap |
-| Demo với giảng viên | Brevo (`smtp-relay.brevo.com:587`, miễn phí 300 mail/ngày) hoặc Gmail (`smtp.gmail.com:587` + App Password) |
-
-Hạn link và thời gian chờ giữa hai lần gửi nằm ở System Settings (nhóm "Tài khoản"). Không commit mật khẩu SMTP.
+Nguồn: `package.json`, `scripts/dev.mjs`, `scripts/setup.mjs`, `core/be/package.json`, `core/be/src/app.js` và `core/be/src/config/env.js`.

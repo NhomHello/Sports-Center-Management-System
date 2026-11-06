@@ -1,0 +1,58 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Coach and member profiles
+left to right direction
+hide circle
+hide methods
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 80
+skinparam ArrowFontSize 13
+entity "User\n(users)" as T_User {
+  * id : Int <<PK>>
+  * roleId : Int <<FK>>
+  email : String? <<UQ>>
+  * fullName : String
+  * status : UserStatus
+}
+entity "CoachProfile\n(coach_profiles)" as T_CoachProfile {
+  * userId : Int <<PK,FK>>
+  * bio : String
+  * experienceYears : Int
+  publicEmail : String?
+  publicPhone : String?
+  * showContact : Boolean
+}
+entity "MemberProfile\n(member_profiles)" as T_MemberProfile {
+  * userId : Int <<PK,FK>>
+  * goals : String
+  * healthNotes : String
+  * shareWithCoach : Boolean
+}
+T_User ||--o| T_CoachProfile
+T_User ||--o| T_MemberProfile
+legend bottom
+  PK = primary key; FK = foreign key; UQ = unique key
+  * = mandatory attribute; ? = nullable type
+  Solid = identifying relationship; dashed = non-identifying relationship
+  Focus: CoachProfile, MemberProfile. Other references are in the full ERD.
+endlegend
+@enduml

@@ -1,0 +1,85 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Bank transfers and reconciliation
+left to right direction
+hide circle
+hide methods
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 80
+skinparam ArrowFontSize 13
+entity "Invoice\n(invoices)" as T_Invoice {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  planId : Int? <<FK>>
+  membershipId : Int? <<FK>>
+  classId : Int? <<FK>>
+  * code : String <<UQ>>
+  planName : String?
+  * amount : Int
+  * status : InvoiceStatus
+  paidAt : DateTime?
+  * kind : InvoiceKind
+  sessionCount : Int?
+  totalSessions : Int?
+}
+entity "PaymentWebhookLog\n(payment_webhook_logs)" as T_PaymentWebhookLog {
+  * id : Int <<PK>>
+  invoiceId : Int? <<FK>>
+  * status : WebhookLogStatus
+  reason : String?
+}
+entity "ReconciliationCase\n(reconciliation_cases)" as T_ReconciliationCase {
+  * id : Int <<PK>>
+  webhookLogId : Int? <<FK,UQ>>
+  invoiceId : Int? <<FK>>
+  * reason : ReconciliationReason
+  * status : ReconciliationStatus
+  * amount : Int
+  excessAmount : Int?
+}
+entity "ReconciliationContact\n(reconciliation_contacts)" as T_ReconciliationContact {
+  * id : Int <<PK>>
+  * caseId : Int <<FK>>
+  result : String?
+}
+entity "Refund\n(refunds)" as T_Refund {
+  * id : Int <<PK>>
+  invoiceId : Int? <<FK>>
+  caseId : Int? <<FK>>
+  * amount : Int
+  * reason : String
+  * status : RefundStatus
+  reference : String?
+}
+T_Invoice |o..o{ T_PaymentWebhookLog
+T_PaymentWebhookLog |o..o| T_ReconciliationCase
+T_Invoice |o..o{ T_ReconciliationCase
+T_ReconciliationCase ||..o{ T_ReconciliationContact
+T_Invoice |o..o{ T_Refund
+T_ReconciliationCase |o..o{ T_Refund
+legend bottom
+  PK = primary key; FK = foreign key; UQ = unique key
+  * = mandatory attribute; ? = nullable type
+  Solid = identifying relationship; dashed = non-identifying relationship
+  Focus: PaymentWebhookLog, ReconciliationCase, ReconciliationContact, Refund. Other references are in the full ERD.
+endlegend
+@enduml

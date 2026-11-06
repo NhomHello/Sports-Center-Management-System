@@ -1,48 +1,29 @@
-# Tài liệu dự án
+# Tài liệu báo cáo cuối kỳ
 
-Bộ tài liệu bám theo chức năng hiện có trên `main`. Quy tắc cũ được giữ trong phần lịch sử thay đổi; phạm vi hiện hành không gồm AI hoặc kế hoạch tập luyện.
+Hệ thống quản lý trung tâm thể thao · SWP391 · Nhóm Nhanh, Bảo, Khôi, Khải.
 
-| Vị trí | Nội dung |
+Bộ tài liệu được viết mới theo mã nguồn hiện tại, phục vụ đúng bốn vai trò: **Hội viên, Huấn luyện viên, Quản lí trung tâm, Lễ tân**. Sản phẩm kinh doanh là khóa học theo lịch buổi.
+
+| Phần | Tài liệu |
 | --- | --- |
-| [huong-dan/](huong-dan/) | Quy tắc code, cài đặt, API, phân quyền và demo |
-| [yeu-cau/](yeu-cau/) | Đặc tả UC, Business Rules và sơ đồ Word; Prisma là nguồn mô hình dữ liệu vật lý |
-| [ke-hoach/](ke-hoach/) | Task sheet Excel từng sprint và bảng phân chia UC |
-| [handover/](handover/) | Bàn giao theo nhánh và bằng chứng tại thời điểm bàn giao |
-| [kiem-thu/](kiem-thu/) | Test case Excel và bằng chứng kiểm thử |
-| [Bộ báo cáo cuối kỳ](../outputs/bao-cao-cuoi-ky/) | Báo cáo Word/PDF, 5 slide PowerPoint/PDF, kịch bản 28 phút, bảng task–commit–timeline và ERD |
+| Báo cáo tổng hợp | [Word](bao-cao/SWP391_BaoCaoCuoiKy.docx) · [PDF](bao-cao/SWP391_BaoCaoCuoiKy.pdf) |
+| Thuyết trình | [PowerPoint 5 slide](bao-cao/SWP391_ThuyetTrinh.pptx) · [PDF](bao-cao/SWP391_ThuyetTrinh.pdf) |
+| Demo | [Kịch bản 30 phút](bao-cao/SWP391_KichBanDemo.docx) · [Lời thuyết trình 4 người](bao-cao/SWP391_BaiThuyetTrinh4Nguoi.docx) · [Bộ dữ liệu thực theo ngày](bao-cao/SWP391_DemoData.xlsx) |
+| Góp ý giảng viên 06/11 | [Bổ sung nghiệp vụ và hội đồng](bao-cao/SWP391_BoSungTheoGopYGiangVien.docx) · [Kết quả kiểm thử](kiem-thu/ket-qua-bo-sung-2026-11-06.json) · [Kiểm tra SePay](huong-dan/sepay-webhook.md) |
+| Chức năng | Sơ đồ UML và đặc tả đầy đủ trong báo cáo; [bản tra cứu Use Case](yeu-cau/01_Use_Case_Tong_Hop.docx) · [Đối chiếu UC–code](yeu-cau/SWP391_DoiChieuUseCaseCode.xlsx) |
+| Luồng và trạng thái | [Đặc tả sơ đồ](yeu-cau/02_Flow_Va_StateChart.docx) · [Nguồn và ảnh sơ đồ](so-do/) |
+| Dữ liệu | [Conceptual model và ERD](yeu-cau/03_Mo_Hinh_Du_Lieu.docx) · [Từ điển dữ liệu](yeu-cau/SWP391_TuDienDuLieu.xlsx) · [ERD vật lý đầy đủ](so-do/erd-vat-ly-day-du.pdf) |
+| Business Rules | [Func / Rule](yeu-cau/07_Business_Rules.docx) |
+| Sprint 4 | [Hồ sơ, tổng kết, đánh giá, báo cáo](yeu-cau/08_Sprint4_UseCases_BusinessRules.docx) |
+| Sprint 1–4 | [Task Sprint 1](ke-hoach/SWP391_TaskSheet_Sprint1.xlsx) · [Sprint 2](ke-hoach/SWP391_TaskSheet_Sprint2.xlsx) · [Sprint 3](ke-hoach/SWP391_TaskSheet_Sprint3.xlsx) · [Sprint 4](ke-hoach/SWP391_TaskSheet_Sprint4.xlsx) |
+| Phân công | [Phân chia UC](ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx) · [Đối chiếu task và Git](ke-hoach/SWP391_DoiChieuTaskGit.xlsx) |
+| Kiểm thử | [Test case](kiem-thu/SWP391_TestCase.xlsx) · [Quy ước ghi kết quả](huong-dan/viet-test-case.md) |
+| Chạy local | [Khởi động](huong-dan/onboarding.md) · [Dữ liệu demo](huong-dan/refresh-course-data.md) |
+| Kỹ thuật | [Cấu trúc](huong-dan/cau-truc-du-an.md) · [Phân quyền](huong-dan/rbac-dong.md) · [API](huong-dan/api-convention.md) |
 
-## Bộ nộp cuối kỳ
+Sơ đồ được dựng bằng **PlantUML + Graphviz**, có nguồn `.puml` và bản SVG/PNG. Toàn bộ chữ bên trong sơ đồ dùng tiếng Anh: UML Use Case/Activity/State và ERD Information Engineering (Crow's Foot). Báo cáo chọn trang ngang hoặc dọc theo tỷ lệ hình. Các sơ đồ miền tập trung vào những FK được nêu trong chú giải; ERD vật lý đầy đủ giữ tất cả FK trong schema.
 
-Đã đồng bộ ngày **05/11/2026** theo runtime `main` **801f9e6**: chỉ bán khóa học, deadline/grace, hoàn HT qua admin, lịch sử hủy/thông báo và lịch sử Buổi 1–N. Kết quả kiểm thử ghi đúng lần kiểm tra 04/11; tài liệu bàn giao Sprint 3 là lịch sử.
 
-- [Báo cáo đồ án](../outputs/bao-cao-cuoi-ky/SWP391_BaoCaoDoAn_v1.docx): tính năng, swimlane, state chart, conceptual model, ERD và bảng Func | Rule.
-- [Slide thuyết trình](../outputs/bao-cao-cuoi-ky/SWP391_ThuyetTrinh_v2.pptx): 5 slide, có ghi chú người trình bày; tổng nói và demo 28 phút.
-- [Kịch bản và hướng dẫn](../outputs/bao-cao-cuoi-ky/SWP391_KichBanDemo_v1.docx): chuẩn bị máy, từng bước demo, kết quả mong đợi và phương án dự phòng.
-- [Bằng chứng task và Git](../outputs/bao-cao-cuoi-ky/SWP391_TaskTraceability_v1.xlsx): phân công, trạng thái nguồn, ngày kế hoạch, author/committer date và liên kết commit.
-- [ERD đầy đủ](../outputs/bao-cao-cuoi-ky/SWP391_ERD_DayDu_v1.pdf): toàn bộ model và FK thuộc phạm vi đang triển khai; ảnh SVG và nguồn sơ đồ ở `so-do/`.
+Task sheet giữ ID và thông tin phân công/ngày/trạng thái từ task đã lưu trong Git. Nội dung hiện hành đã đối chiếu lại theo khóa học; trạng thái nguồn không chứng nhận rằng mọi thay đổi sau sprint đã được nghiệm thu lại. Công việc không có quy tắc nghiệp vụ riêng để trống BR.
 
-PDF của bốn đặc tả Word hiện hành nằm trong [bộ đặc tả PDF](../outputs/bao-cao-cuoi-ky/dac-ta/). Nguồn sinh và kiểm tra tại `scripts/reporting/build.py`; không chạy `reconcile.py` chỉ để dựng tài liệu.
-
-## Phân công Sprint 4 hiện hành
-
-Bảo nhận toàn bộ task Sprint 4 trước đây giao Nhanh, gồm nền dữ liệu, migration, tổng kết/đánh giá BE, báo cáo BE/FE, seed và tài liệu/demo. Khôi làm hồ sơ HLV/hội viên full-stack và kiểm thử hồ sơ. Khải làm FE tổng kết/đánh giá, báo cáo tổng kết và kiểm thử.
-
-Nguồn phân công: [task sheet Sprint 4](ke-hoach/SWP391_TaskSheet_Sprint4.xlsx) và [bảng phân chia UC](ke-hoach/SWP391_UCP_Sprint_Role_Split.xlsx). Các mục AI/kế hoạch tập luyện cũ đã đánh dấu ngoài phạm vi; không tính là công việc còn phải làm của Sprint 4. Mục diễn tập trực tiếp vẫn cần cả nhóm thực hiện.
-
-Ngày Bắt đầu/Hạn là kế hoạch; ngày Git mô tả lịch sử thực hiện. Trạng thái Review không tự đổi thành Done chỉ vì đã merge. Phân công được cập nhật theo quyết định nhóm, còn author/commit lịch sử giữ nguyên để đối chiếu.
-
-## Quy tắc duy trì
-
-Sửa nội dung tại nguồn hiện hành thay vì tạo thêm kế hoạch cạnh tranh. Báo cáo cuối kỳ là bản tổng hợp từ mã nguồn và các nguồn trên; có generator trong `scripts/reporting/`. Không ghi mật khẩu, token hoặc `.env` vào bộ nộp. Tên tài liệu dùng `SWP391_<Loại>_<Phiên bản>`.
-
-## Phạm vi mới từ 03/11/2026
-
-[Bán khóa học, hàng chờ và nhận xét theo buổi](huong-dan/course-only-2026-11-03.md) thay thế luồng bán gói tự tập trong tài liệu cũ. Giá trọn khóa, tính phần còn lại theo số buổi. SePay và dữ liệu hóa đơn lịch sử được giữ.
-
-[Xử lý hạn giữ chỗ, webhook sát hạn và thu tiền tại quầy](huong-dan/course-payment-deadlines.md).
-
-[Kết thúc các nhánh chuyển thiếu, thừa và chuyển nhiều lần](huong-dan/course-payment-resolution.md).
-
-[Hủy khóa học, tra mã hoàn và người nhận thông báo](huong-dan/course-cancellation-history.md).
-
-[Điểm danh và nhận xét gộp theo khóa học/từng buổi](huong-dan/course-session-history.md).
+`kiem-tra-tai-lieu.json` ghi kết quả kiểm tra cấu trúc, nguồn tham chiếu và các artifact. Nó không phải kết quả chạy test ứng dụng. Bộ sinh ở `scripts/reporting/build.py`; không sử dụng hoặc tái tạo thư mục `outputs/bao-cao-cuoi-ky`.

@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Use Case - Center Manager - Part 5
+left to right direction
+actor "Center Manager" as Actor
+rectangle "Sports Center Management System" {
+  usecase "UC-CB-24\nManage operating time frames" as U0
+  usecase "UC-PAY-03\nTrack payment status" as U1
+  usecase "UC-PAY-05\nReview reconciliation cases" as U2
+  usecase "UC-PAY-06\nCollect cash at reception" as U3
+  usecase "UC-PAY-07\nDownload or print receipt" as U4
+  usecase "UC-PAY-08\nView payment history" as U5
+  usecase "UC-PAY-09\nTrack and complete refunds" as U6
+  usecase "UC-PAY-10\nView invoice details" as U7
+}
+Actor -- U0
+Actor -- U1
+Actor -- U2
+Actor -- U3
+Actor -- U4
+Actor -- U5
+Actor -- U6
+Actor -- U7
+@enduml

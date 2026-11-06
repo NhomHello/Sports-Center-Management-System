@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Use Case - Center Manager - Part 6
+left to right direction
+actor "Center Manager" as Actor
+rectangle "Sports Center Management System" {
+  usecase "UC-PAY-11\nAllocate unmatched transfers / accept\noverpayment" as U0
+  usecase "UC-PAY-12\nTop up an underpaid invoice" as U1
+  usecase "UC-PAY-13\nResolve duplicate transfers and record\ncontact" as U2
+  usecase "UC-PAY-14\nReview transfer claims / synchronize\nSePay" as U3
+  usecase "UC-PAY-19\nChange to another course" as U4
+  usecase "UC-AT-01\nCheck in at reception" as U5
+  usecase "UC-AT-02\nRecord session attendance" as U6
+  usecase "UC-AT-03\nView member learning history" as U7
+}
+Actor -- U0
+Actor -- U1
+Actor -- U2
+Actor -- U3
+Actor -- U4
+Actor -- U5
+Actor -- U6
+Actor -- U7
+@enduml

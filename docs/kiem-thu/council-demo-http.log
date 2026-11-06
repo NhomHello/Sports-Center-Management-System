@@ -1,0 +1,68 @@
+Loaded Prisma config from prisma.config.mjs.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": MySQL database "scms_council_test_1793982907797" at "localhost:3306"
+
+18 migrations found in prisma/migrations
+
+Applying migration `20260908152208_init`
+Applying migration `20260924120000_add_flow1_membership`
+Applying migration `20260924150000_add_flows_2_4`
+Applying migration `20260930145241_add_membership_plan`
+Applying migration `20260930160000_fe_khoi_sprint1`
+Applying migration `20260930163001_add_membership`
+Applying migration `20260930173218_allow_member_email_null`
+Applying migration `20261005100000_sprint2_class_booking`
+Applying migration `20261007100000_add_email_verification`
+Applying migration `20261013120000_email_token_purpose`
+Applying migration `20261014140000_sepay_reconciliation`
+Applying migration `20261014143000_bao_sprint3`
+Applying migration `20261014150000_khoi_login_lock`
+Applying migration `20261020035822_operating_frames_room_types_coach_subjects`
+Applying migration `20261021092803_gopy_gd2_4`
+Applying migration `20261029073309_sprint4_profiles_summaries_ratings`
+Applying migration `20261103044229_course_session_descriptions_and_feedback`
+Applying migration `20261103140224_course_schedule_conflict_reconciliation_reason`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260908152208_init/
+    └─ migration.sql
+  └─ 20260924120000_add_flow1_membership/
+    └─ migration.sql
+  └─ 20260924150000_add_flows_2_4/
+    └─ migration.sql
+  └─ 20260930145241_add_membership_plan/
+    └─ migration.sql
+  └─ 20260930160000_fe_khoi_sprint1/
+    └─ migration.sql
+  └─ 20260930163001_add_membership/
+    └─ migration.sql
+  └─ 20260930173218_allow_member_email_null/
+    └─ migration.sql
+  └─ 20261005100000_sprint2_class_booking/
+    └─ migration.sql
+  └─ 20261007100000_add_email_verification/
+    └─ migration.sql
+  └─ 20261013120000_email_token_purpose/
+    └─ migration.sql
+  └─ 20261014140000_sepay_reconciliation/
+    └─ migration.sql
+  └─ 20261014143000_bao_sprint3/
+    └─ migration.sql
+  └─ 20261014150000_khoi_login_lock/
+    └─ migration.sql
+  └─ 20261020035822_operating_frames_room_types_coach_subjects/
+    └─ migration.sql
+  └─ 20261021092803_gopy_gd2_4/
+    └─ migration.sql
+  └─ 20261029073309_sprint4_profiles_summaries_ratings/
+    └─ migration.sql
+  └─ 20261103044229_course_session_descriptions_and_feedback/
+    └─ migration.sql
+  └─ 20261103140224_course_schedule_conflict_reconciliation_reason/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+{"replayUtility":{"invoice":"INV000005","http":200,"status":"DUPLICATE","paymentsBefore":1,"paymentsAfter":1,"sameTransactionIdReplayed":true},"passed":true,"checks":["WF1: create A and update the same member profile","WF2: online QR, authenticated webhook, same receipt and whole-course transfer A to A2","WF3: authorized attendance and feedback visible to the same member","WF4: publish C, member PDF and rating, filtered A/M financial report","EX1: insufficient reschedule notice rejected","EX1 reserve: MEMBER_CONFLICT rejected independently","EX1 reserve: COACH_CONFLICT rejected independently","EX1 reserve: ROOM_CONFLICT rejected independently","EX2: full/wrong-subject targets blocked; repeated webhook does not add payment","EX3: future attendance rejected","EX4: incomplete C_BAD stays DRAFT"],"invoiceCode":"INV000005","amount":1200000,"scope":"Isolated HTTP rehearsal; payment callback simulated; no actual bank transfer","executedAt":"2026-11-06T16:35:11.577Z","database":"Isolated temporary database; removed after verification; active council demo dataset preserved"}

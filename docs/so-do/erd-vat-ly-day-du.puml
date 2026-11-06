@@ -1,0 +1,684 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Complete physical schema
+left to right direction
+hide circle
+hide methods
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 80
+skinparam ArrowFontSize 13
+entity "LoginThrottle\n(login_throttles)" as T_LoginThrottle {
+  * key : String <<PK>>
+  * attempts : Int
+  lockedUntil : DateTime?
+}
+entity "User\n(users)" as T_User {
+  * id : Int <<PK>>
+  * roleId : Int <<FK>>
+  email : String? <<UQ>>
+  phone : String? <<UQ>>
+  * passwordHash : String
+  bookingBlockedUntil : DateTime?
+  noShowWaivedAt : DateTime?
+  * tokenVersion : Int
+  * fullName : String
+  * status : UserStatus
+  emailVerifiedAt : DateTime?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  * creditBalance : Int
+  check_in_code : String? <<UQ>>
+}
+entity "EmailVerificationToken\n(email_verification_tokens)" as T_EmailVerificationToken {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  * email : String
+  * purpose : EmailTokenPurpose
+  * tokenHash : String <<UQ>>
+  * expiresAt : DateTime
+  usedAt : DateTime?
+  * createdAt : DateTime
+}
+entity "Role\n(roles)" as T_Role {
+  * id : Int <<PK>>
+  * code : String <<UQ>>
+  * name : String
+  description : String?
+  * isSystem : Boolean
+  * isDefault : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "Permission\n(permissions)" as T_Permission {
+  * id : Int <<PK>>
+  * code : String <<UQ>>
+  * module : String
+  * moduleLabel : String
+  * action : String
+  * label : String
+}
+entity "RolePermission\n(role_permissions)" as T_RolePermission {
+  * roleId : Int <<PK,FK>>
+  * permissionId : Int <<PK,FK>>
+}
+entity "SystemSetting\n(system_settings)" as T_SystemSetting {
+  * key : String <<PK>>
+  * value : String
+  * type : SettingType
+  * label : String
+  description : String?
+  * group : String
+  * updatedAt : DateTime
+}
+entity "AuditLog\n(audit_logs)" as T_AuditLog {
+  * id : Int <<PK>>
+  userId : Int? <<FK>>
+  * action : String
+  * entity : String
+  entityId : String?
+  meta : Json?
+  ip : String?
+  * createdAt : DateTime
+}
+entity "MembershipPlan\n(membership_plans)" as T_MembershipPlan {
+  * id : Int <<PK>>
+  * code : String <<UQ>>
+  * name : String <<UQ>>
+  description : String?
+  * durationDays : Int
+  * price : Int
+  benefits : Json?
+  * isActive : Boolean
+  * status : MembershipPlanStatus
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "Membership\n(memberships)" as T_Membership {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  * planId : Int <<FK>>
+  invoiceId : Int? <<FK,UQ>>
+  activeUserId : Int? <<UQ>>
+  * startDate : DateTime
+  * endDate : DateTime
+  * status : MembershipStatus
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  cancelledAt : DateTime?
+}
+entity "Invoice\n(invoices)" as T_Invoice {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  planId : Int? <<FK>>
+  membershipId : Int? <<FK>>
+  classId : Int? <<FK>>
+  * code : String <<UQ>>
+  planName : String?
+  durationDays : Int?
+  * amount : Int
+  * status : InvoiceStatus
+  * channel : InvoiceChannel
+  * expiresAt : DateTime
+  paidAt : DateTime?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  * kind : InvoiceKind
+  sessionCount : Int?
+  totalSessions : Int?
+  changeId : Int?
+  refund_reason : String?
+  refund_reference : String?
+  refunded_at : DateTime?
+}
+entity "Payment\n(payments)" as T_Payment {
+  * id : Int <<PK>>
+  * invoiceId : Int <<FK>>
+  * provider : PaymentProvider
+  * requestedAmount : Int
+  * receivedAmount : Int
+  reference : String?
+  * paidAt : DateTime
+  actorId : Int?
+  * createdAt : DateTime
+  provider_transaction_id : String? <<UQ>>
+}
+entity "PaymentWebhookLog\n(payment_webhook_logs)" as T_PaymentWebhookLog {
+  * id : Int <<PK>>
+  invoiceId : Int? <<FK>>
+  providerTransactionId : String? <<UQ>>
+  invoiceCode : String?
+  transferType : String?
+  transferAmount : Int?
+  * status : WebhookLogStatus
+  reason : String?
+  * payload : Json
+  reviewedById : Int?
+  reviewedAt : DateTime?
+  * createdAt : DateTime
+}
+entity "ReconciliationCase\n(reconciliation_cases)" as T_ReconciliationCase {
+  * id : Int <<PK>>
+  webhookLogId : Int? <<FK,UQ>>
+  invoiceId : Int? <<FK>>
+  * reason : ReconciliationReason
+  * status : ReconciliationStatus
+  userId : Int?
+  * amount : Int
+  excessAmount : Int?
+  claim : Json?
+  note : String?
+  resolvedById : Int?
+  resolvedAt : DateTime?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "ReconciliationContact\n(reconciliation_contacts)" as T_ReconciliationContact {
+  * id : Int <<PK>>
+  * caseId : Int <<FK>>
+  * channel : ContactChannel
+  * content : String
+  result : String?
+  * actorId : Int
+  * createdAt : DateTime
+}
+entity "Refund\n(refunds)" as T_Refund {
+  * id : Int <<PK>>
+  invoiceId : Int? <<FK>>
+  caseId : Int? <<FK>>
+  * amount : Int
+  * reason : String
+  * status : RefundStatus
+  reference : String?
+  * requestedById : Int
+  completedById : Int?
+  completedAt : DateTime?
+  * createdAt : DateTime
+}
+entity "Notification\n(notifications)" as T_Notification {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  membershipId : Int? <<FK>>
+  * kind : NotificationKind
+  * title : String
+  * message : String
+  readAt : DateTime?
+  dedupeKey : String? <<UQ>>
+  * createdAt : DateTime
+}
+note bottom of T_Notification : Unique together: membershipId, kind
+entity "Subject\n(subjects)" as T_Subject {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+  description : String?
+  * isActive : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "Room\n(rooms)" as T_Room {
+  * id : Int <<PK>>
+  roomTypeId : Int? <<FK>>
+  * name : String <<UQ>>
+  * capacity : Int
+  description : String?
+  * isActive : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "RoomType\n(room_types)" as T_RoomType {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+  description : String?
+  * isSelfTrainingArea : Boolean
+  * isActive : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "RoomTypeSubject\n(room_type_subjects)" as T_RoomTypeSubject {
+  * roomTypeId : Int <<PK,FK>>
+  * subjectId : Int <<PK,FK>>
+}
+entity "CoachSubject\n(coach_subjects)" as T_CoachSubject {
+  * coachId : Int <<PK,FK>>
+  * subjectId : Int <<PK,FK>>
+}
+entity "OperatingFrame\n(operating_frames)" as T_OperatingFrame {
+  * id : Int <<PK>>
+  * name : String <<UQ>>
+  * startTime : String
+  * endTime : String
+  * sortOrder : Int
+  * isActive : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "GymClass\n(gym_classes)" as T_GymClass {
+  * id : Int <<PK>>
+  * subjectId : Int <<FK>>
+  * roomId : Int <<FK>>
+  * coachId : Int <<FK>>
+  * name : String
+  description : String?
+  * capacity : Int
+  * startsOn : DateTime
+  * endsOn : DateTime
+  * weeklySchedule : Json
+  * registrationStartAt : DateTime
+  * registrationEndAt : DateTime
+  * status : ClassStatus
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  * price : Int
+}
+entity "ClassSession\n(class_sessions)" as T_ClassSession {
+  * id : Int <<PK>>
+  * classId : Int <<FK>>
+  roomId : Int? <<FK>>
+  coachId : Int? <<FK>>
+  description : String?
+  * startAt : DateTime
+  * endAt : DateTime
+  rescheduledAt : DateTime?
+  attendanceUnlockedUntil : DateTime?
+  roomName : String?
+  coachName : String?
+  * status : SessionStatus
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "ClassEnrollment\n(class_enrollments)" as T_ClassEnrollment {
+  * id : Int <<PK>>
+  * classId : Int <<FK>>
+  * memberId : Int <<FK>>
+  * enrolledBy : Int <<FK>>
+  cancelledBy : Int? <<FK>>
+  invoiceId : Int? <<FK>>
+  * status : EnrollmentStatus
+  * enrolledAt : DateTime
+  cancelledAt : DateTime?
+  exceptionUntil : DateTime?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  holdExpiresAt : DateTime?
+}
+note bottom of T_ClassEnrollment : Unique together: classId, memberId
+entity "ClassEvent\n(class_events)" as T_ClassEvent {
+  * id : Int <<PK>>
+  * classId : Int <<FK>>
+  * kind : NotificationKind
+  * title : String
+  * message : String
+  * recipientIds : Json
+  * changes : Json
+  * attempts : Int
+  sentAt : DateTime?
+  lastError : String?
+  * createdAt : DateTime
+}
+entity "ScheduleLock\n(schedule_locks)" as T_ScheduleLock {
+  * id : Int <<PK>>
+}
+entity "MembershipFreeze\n(membership_freezes)" as T_MembershipFreeze {
+  * id : Int <<PK>>
+  * membershipId : Int <<FK>>
+  * startAt : DateTime
+  * endAt : DateTime
+  endedAt : DateTime?
+  creditedDays : Int?
+  * actorId : Int
+  * createdAt : DateTime
+}
+entity "CheckIn\n(check_ins)" as T_CheckIn {
+  * id : Int <<PK>>
+  * memberId : Int <<FK>>
+  * actorId : Int <<FK>>
+  sessionId : Int? <<FK>>
+  * kind : CheckInKind
+  * code : String
+  * scannedAt : DateTime
+  warning : String?
+  * createdAt : DateTime
+}
+note bottom of T_CheckIn : Unique together: memberId, sessionId
+entity "Attendance\n(attendance)" as T_Attendance {
+  * id : Int <<PK>>
+  * sessionId : Int <<FK>>
+  * memberId : Int <<FK>>
+  * actorId : Int
+  * status : AttendanceStatus
+  * createdAt : DateTime
+  * updatedAt : DateTime
+  excusedAt : DateTime?
+}
+note bottom of T_Attendance : Unique together: sessionId, memberId
+entity "ClassWaitlist\n(class_waitlist)" as T_ClassWaitlist {
+  * id : Int <<PK>>
+  * classId : Int <<FK>>
+  * memberId : Int <<FK>>
+  * status : WaitlistStatus
+  offeredUntil : DateTime?
+  * joinedAt : DateTime
+  * updatedAt : DateTime
+}
+note bottom of T_ClassWaitlist : Unique together: classId, memberId
+entity "RoomMaintenance\n(room_maintenance)" as T_RoomMaintenance {
+  * id : Int <<PK>>
+  * roomId : Int <<FK>>
+  * startAt : DateTime
+  * endAt : DateTime
+  * reason : String
+  * actorId : Int
+  * createdAt : DateTime
+}
+entity "PlanFrame\n(plan_frames)" as T_PlanFrame {
+  * planId : Int <<PK,FK>>
+  * frameId : Int <<PK,FK>>
+}
+entity "PlanRoomType\n(plan_room_types)" as T_PlanRoomType {
+  * planId : Int <<PK,FK>>
+  * roomTypeId : Int <<PK,FK>>
+}
+entity "CreditTransaction\n(credit_transactions)" as T_CreditTransaction {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  invoiceId : Int? <<FK>>
+  changeId : Int? <<FK>>
+  * actorId : Int <<FK>>
+  * amount : Int
+  * balanceAfter : Int
+  * reason : CreditReason
+  note : String?
+  * createdAt : DateTime
+}
+entity "PurchaseChange\n(purchase_changes)" as T_PurchaseChange {
+  * id : Int <<PK>>
+  * userId : Int <<FK>>
+  * actorId : Int <<FK>>
+  * fromInvoiceId : Int <<FK>>
+  fromMembershipId : Int? <<FK>>
+  fromEnrollmentId : Int? <<FK>>
+  toPlanId : Int? <<FK>>
+  toClassId : Int? <<FK>>
+  refundId : Int? <<FK>>
+  * kind : PurchaseChangeKind
+  * status : PurchaseChangeStatus
+  * paidAmount : Int
+  * remainingValue : Int
+  * fee : Int
+  * newPrice : Int
+  * difference : Int
+  * settlement : SettlementMode
+  adjustmentInvoiceId : Int?
+  creditTransactionId : Int?
+  * createdAt : DateTime
+  completedAt : DateTime?
+}
+entity "attendances\n(attendances)" as T_attendances {
+  * id : Int <<PK>>
+  * session_id : Int <<FK>>
+  * enrollment_id : Int <<FK,UQ>>
+  * member_id : Int <<FK>>
+  * marked_by_id : Int <<FK>>
+  * status : attendances_status
+  note : String?
+  * marked_at : DateTime
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+entity "enrollments\n(enrollments)" as T_enrollments {
+  * id : Int <<PK>>
+  * session_id : Int <<FK>>
+  * user_id : Int <<FK>>
+  * status : enrollments_status
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+note bottom of T_enrollments : Unique together: session_id, user_id
+entity "exercise_completions\n(exercise_completions)" as T_exercise_completions {
+  * id : Int <<PK>>
+  * exercise_id : Int <<FK>>
+  * member_id : Int <<FK>>
+  * completed_at : DateTime
+}
+note bottom of T_exercise_completions : Unique together: exercise_id, member_id
+entity "password_reset_tokens\n(password_reset_tokens)" as T_password_reset_tokens {
+  * id : Int <<PK>>
+  * user_id : Int <<FK>>
+  * token_hash : String <<UQ>>
+  * expires_at : DateTime
+  used_at : DateTime?
+  * created_at : DateTime
+}
+entity "training_exercises\n(training_exercises)" as T_training_exercises {
+  * id : Int <<PK>>
+  * plan_id : Int <<FK>>
+  * name : String
+  * sets : Int
+  * repetitions : String
+  load : String?
+  notes : String?
+  * order : Int
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+entity "training_plans\n(training_plans)" as T_training_plans {
+  * id : Int <<PK>>
+  * member_id : Int <<FK>>
+  * coach_id : Int <<FK>>
+  * title : String
+  notes : String?
+  * status : training_plans_status
+  published_at : DateTime?
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+entity "training_results\n(training_results)" as T_training_results {
+  * id : Int <<PK>>
+  * member_id : Int <<FK>>
+  * coach_id : Int <<FK>>
+  session_id : Int? <<FK>>
+  plan_id : Int? <<FK>>
+  effort : Int?
+  * comment : String
+  guidance : String?
+  * created_at : DateTime
+  * updated_at : DateTime
+}
+entity "CoachProfile\n(coach_profiles)" as T_CoachProfile {
+  * userId : Int <<PK,FK>>
+  * bio : String
+  * experienceYears : Int
+  certifications : Json?
+  publicEmail : String?
+  publicPhone : String?
+  zalo : String?
+  * showContact : Boolean
+  avatarData : Bytes?
+  avatarMime : String?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "MemberProfile\n(member_profiles)" as T_MemberProfile {
+  * userId : Int <<PK,FK>>
+  birthDate : DateTime?
+  gender : String?
+  heightCm : Float?
+  weightKg : Float?
+  * goals : String
+  * level : String
+  * healthNotes : String
+  emergencyName : String?
+  emergencyPhone : String?
+  * shareWithCoach : Boolean
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "CourseSummary\n(course_summaries)" as T_CourseSummary {
+  * id : Int <<PK>>
+  * classId : Int <<FK,UQ>>
+  * coachId : Int <<FK>>
+  * status : CourseSummaryStatus
+  * deadlineAt : DateTime
+  publishedAt : DateTime?
+  * revision : Int
+  reopenedReason : String?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+entity "CourseSummaryItem\n(course_summary_items)" as T_CourseSummaryItem {
+  * id : Int <<PK>>
+  * summaryId : Int <<FK>>
+  * memberId : Int <<FK>>
+  result : CourseResult?
+  progress : Int?
+  * comment : String
+  * nextCourse : String
+  attendanceSnapshot : Json?
+  * lookupCode : String <<UQ>>
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+note bottom of T_CourseSummaryItem : Unique together: summaryId, memberId
+entity "CourseRating\n(course_ratings)" as T_CourseRating {
+  * id : Int <<PK>>
+  * classId : Int <<FK>>
+  * memberId : Int <<FK>>
+  * coachId : Int <<FK>>
+  * courseStars : Int
+  * coachStars : Int
+  * comment : String
+  hiddenAt : DateTime?
+  hiddenById : Int?
+  hiddenReason : String?
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+note bottom of T_CourseRating : Unique together: classId, memberId
+entity "SessionFeedback\n(session_feedback)" as T_SessionFeedback {
+  * id : Int <<PK>>
+  * sessionId : Int <<FK>>
+  * memberId : Int <<FK>>
+  * authorId : Int <<FK>>
+  * version : Int
+  rating : Int?
+  * note : String
+  * createdAt : DateTime
+  * updatedAt : DateTime
+}
+note bottom of T_SessionFeedback : Unique together: sessionId, memberId
+T_Role ||..o{ T_User
+T_User ||..o{ T_EmailVerificationToken
+T_Role ||--o{ T_RolePermission
+T_Permission ||--o{ T_RolePermission
+T_User |o..o{ T_AuditLog
+T_User ||..o{ T_Membership
+T_MembershipPlan ||..o{ T_Membership
+T_Invoice |o..o| T_Membership
+T_User ||..o{ T_Invoice
+T_MembershipPlan |o..o{ T_Invoice
+T_Membership |o..o{ T_Invoice
+T_GymClass |o..o{ T_Invoice
+T_Invoice ||..o{ T_Payment
+T_Invoice |o..o{ T_PaymentWebhookLog
+T_PaymentWebhookLog |o..o| T_ReconciliationCase
+T_Invoice |o..o{ T_ReconciliationCase
+T_ReconciliationCase ||..o{ T_ReconciliationContact
+T_Invoice |o..o{ T_Refund
+T_ReconciliationCase |o..o{ T_Refund
+T_User ||..o{ T_Notification
+T_Membership |o..o{ T_Notification
+T_RoomType |o..o{ T_Room
+T_RoomType ||--o{ T_RoomTypeSubject
+T_Subject ||--o{ T_RoomTypeSubject
+T_User ||--o{ T_CoachSubject
+T_Subject ||--o{ T_CoachSubject
+T_Subject ||..o{ T_GymClass
+T_Room ||..o{ T_GymClass
+T_User ||..o{ T_GymClass
+T_Room |o..o{ T_ClassSession
+T_User |o..o{ T_ClassSession
+T_GymClass ||..o{ T_ClassSession
+T_GymClass ||..o{ T_ClassEnrollment
+T_User ||..o{ T_ClassEnrollment : member
+T_User ||..o{ T_ClassEnrollment : enrolledByUser
+T_User |o..o{ T_ClassEnrollment : cancelledByUser
+T_Invoice |o..o{ T_ClassEnrollment
+T_GymClass ||..o{ T_ClassEvent
+T_Membership ||..o{ T_MembershipFreeze
+T_User ||..o{ T_CheckIn : actor
+T_ClassSession |o..o{ T_CheckIn
+T_User ||..o{ T_CheckIn : member
+T_ClassSession ||..o{ T_Attendance
+T_User ||..o{ T_Attendance
+T_GymClass ||..o{ T_ClassWaitlist
+T_User ||..o{ T_ClassWaitlist
+T_Room ||..o{ T_RoomMaintenance
+T_MembershipPlan ||--o{ T_PlanFrame
+T_OperatingFrame ||--o{ T_PlanFrame
+T_MembershipPlan ||--o{ T_PlanRoomType
+T_RoomType ||--o{ T_PlanRoomType
+T_User ||..o{ T_CreditTransaction : user
+T_User ||..o{ T_CreditTransaction : actor
+T_Invoice |o..o{ T_CreditTransaction
+T_PurchaseChange |o..o{ T_CreditTransaction
+T_User ||..o{ T_PurchaseChange : user
+T_User ||..o{ T_PurchaseChange : actor
+T_Invoice ||..o{ T_PurchaseChange
+T_Membership |o..o{ T_PurchaseChange
+T_ClassEnrollment |o..o{ T_PurchaseChange
+T_MembershipPlan |o..o{ T_PurchaseChange
+T_GymClass |o..o{ T_PurchaseChange
+T_Refund |o..o{ T_PurchaseChange
+T_enrollments ||..o| T_attendances
+T_User ||..o{ T_attendances : users_attendances_marked_by_idTousers
+T_User ||..o{ T_attendances : users_attendances_member_idTousers
+T_ClassSession ||..o{ T_attendances
+T_ClassSession ||..o{ T_enrollments
+T_User ||..o{ T_enrollments
+T_training_exercises ||..o{ T_exercise_completions
+T_User ||..o{ T_exercise_completions
+T_User ||..o{ T_password_reset_tokens
+T_training_plans ||..o{ T_training_exercises
+T_User ||..o{ T_training_plans : users_training_plans_coach_idTousers
+T_User ||..o{ T_training_plans : users_training_plans_member_idTousers
+T_User ||..o{ T_training_results : users_training_results_coach_idTousers
+T_User ||..o{ T_training_results : users_training_results_member_idTousers
+T_training_plans |o..o{ T_training_results
+T_ClassSession |o..o{ T_training_results
+T_User ||--o| T_CoachProfile
+T_User ||--o| T_MemberProfile
+T_GymClass ||..o| T_CourseSummary
+T_User ||..o{ T_CourseSummary
+T_CourseSummary ||..o{ T_CourseSummaryItem
+T_User ||..o{ T_CourseSummaryItem
+T_GymClass ||..o{ T_CourseRating
+T_User ||..o{ T_CourseRating : member
+T_User ||..o{ T_CourseRating : coach
+T_ClassSession ||..o{ T_SessionFeedback
+T_User ||..o{ T_SessionFeedback : member
+T_User ||..o{ T_SessionFeedback : author
+legend bottom
+  PK = primary key; FK = foreign key; UQ = unique key
+  * = mandatory attribute; ? = nullable type
+  Solid = identifying relationship; dashed = non-identifying relationship
+  Complete physical schema, including retained legacy tables.
+endlegend
+@enduml

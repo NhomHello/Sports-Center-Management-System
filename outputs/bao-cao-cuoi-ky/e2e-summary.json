@@ -1,9 +1,0 @@
-{
-  "runtimeBaseline": "801f9e6",
-  "verificationDate": "2026-11-04",
-  "scope": ["tests/e2e/course-only.spec.mjs", "tests/e2e/course-session-history.spec.mjs"],
-  "passedByFile": 2,
-  "claimsWholeRepositorySuite": false,
-  "bankTransfersSimulated": true,
-  "note": "Kết quả đã kiểm tra theo từng file; dựng tài liệu không chạy lại E2E."
-}

@@ -1,31 +1,18 @@
-# Viết test case và test tự động
+# Ghi nhận kiểm thử và nghiệm thu
 
-Test case của mỗi flow ghi trong file Excel `SWP391_TestCase.xlsx` (mỗi flow một sheet: `TC-AUTH-RBAC`, `TC-F1`, `TC-F2`, `TC-F3`) và có **test tự động** tương ứng ở `core/be/tests/*.test.js` (API) hoặc `core/fe/src/**/*.test.js` (logic thuần). ID trong file Excel trùng với tên `it('TC-XXX-01: …')` trong code để đối chiếu.
+`SWP391_TestCase.xlsx` là danh mục tình huống đối chiếu chức năng. Kết quả thực chạy bổ sung ngày 06/11 nằm trong `docs/kiem-thu/ket-qua-bo-sung-2026-11-06.json` cùng các log riêng. Mỗi ca gồm use case, điều kiện/tình huống, kết quả mong đợi và file test liên quan. Trạng thái danh mục phản ánh việc đối chiếu từng ca, tách với kết quả chạy toàn bộ BE/FE. Các ca bổ sung TC-21–24 chỉ được ghi Passed khi bằng chứng chạy và hash mã nguồn còn khớp; các ca khác chưa được nghiệm thu riêng theo danh mục. Sinh Word/PDF không tự tạo kết quả Passed.
 
-## Mẫu bảng
-
-| ID          | Mục tiêu                          | Tiền điều kiện                 | Bước thực hiện                          | Dữ liệu                      | Kết quả mong đợi                            | Tự động? | Trạng thái |
-| ----------- | --------------------------------- | ------------------------------ | --------------------------------------- | ---------------------------- | ------------------------------------------- | -------- | ---------- |
-| TC-F1-01    | Đăng ký tài khoản thành công       | Email chưa tồn tại             | POST /auth/register                     | email mới, pass ≥ 8          | 201, user có role mặc định                  | ✅ auth.test | Pass    |
-
-Quy ước ID: `TC-<khu vực>-<số>`; khu vực = `AUTH`, `RBAC`, `ROLE`, `USER`, `SET` (setting), `F1`, `F2`, `F3`, `UI`.
-Trạng thái: `Pass` / `Fail` / `Blocked` / `Chưa chạy`. Cập nhật khi review PR.
-
-## Nguyên tắc viết test case
-
-1. Mỗi **business rule** trong kế hoạch = ít nhất 1 test case dương + 1 âm (ví dụ BR "không đăng ký khi lớp đầy": TC đăng ký lớp còn chỗ → 201; TC lớp đầy → 422).
-2. Luôn có test **không có quyền → 403** cho mỗi endpoint mới.
-3. Test API dùng supertest + DB dev (docker). Dữ liệu tạo trong test có tiền tố `TEST_` và tự dọn trong `afterAll`.
-4. Test FE bằng Vitest cho logic thuần; Playwright cho luồng UI gọi API/DB thật, loading/error và desktop (giảng viên chỉ yêu cầu desktop, không kiểm thử mobile). Báo cáo, ảnh/trace nằm trong `playwright-report/`, `test-results/`.
-5. Không test thứ thư viện đã đảm bảo (antd render đúng, Prisma ghi được).
-
-## Chạy
+Các lệnh có trong dự án:
 
 ```bash
-npm test                    # tất cả workspace
-npm test -w @scms/be        # BE (cần MySQL đang chạy: npm run db:up)
-npm test -w @scms/fe        # FE
-npm run verify:sprint2     # toàn bộ test và migration trên DB tạm
-npm run test:e2e           # bốn vai trò, chỉ desktop 1366×900
-npx vitest --project ... -t "TC-RBAC-02"   # một case (trong core/be)
+npm run lint
+npm test
+npm run build
+npm run test:e2e
 ```
+
+Test backend cần MySQL và môi trường kiểm thử thích hợp. Playwright cần browser được cài và cấu hình trong `playwright.config.mjs`; xem file thực tế trước khi đổi cổng/DB. Chỉ chạy kiểm thử làm thay dữ liệu trên cơ sở dữ liệu thử nghiệm.
+
+Khi ghi kết quả, lưu commit, ngày giờ, phiên bản môi trường, lệnh và exit code/log; phân biệt BE, FE và từng file E2E. Giao dịch mô phỏng không được mô tả là đã chuyển khoản/hoàn tiền thật. Một file test có tên phù hợp chưa tự chứng minh mọi ngoại lệ của use case đã có assertion.
+
+Các nhóm cần kiểm tra: mua giữa khóa, tranh chỗ/bấm lặp, FIFO, chuyển thiếu/thừa/lặp/trễ, thu quầy sát hạn, hủy và mã hoàn, xin nghỉ/điểm danh/nhận xét, phạm vi hồ sơ, tổng kết và báo cáo.

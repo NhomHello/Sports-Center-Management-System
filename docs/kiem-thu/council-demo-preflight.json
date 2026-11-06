@@ -1,0 +1,55 @@
+{
+  "replayUtility": {
+    "invoice": "INV000005",
+    "http": 200,
+    "status": "DUPLICATE",
+    "paymentsBefore": 1,
+    "paymentsAfter": 1,
+    "sameTransactionIdReplayed": true
+  },
+  "passed": true,
+  "checks": [
+    "WF1: create A and update the same member profile",
+    "WF2: online QR, authenticated webhook, same receipt and whole-course transfer A to A2",
+    "WF3: authorized attendance and feedback visible to the same member",
+    "WF4: publish C, member PDF and rating, filtered A/M financial report",
+    "EX1: insufficient reschedule notice rejected",
+    "EX1 reserve: MEMBER_CONFLICT rejected independently",
+    "EX1 reserve: COACH_CONFLICT rejected independently",
+    "EX1 reserve: ROOM_CONFLICT rejected independently",
+    "EX2: full/wrong-subject targets blocked; repeated webhook does not add payment",
+    "EX3: future attendance rejected",
+    "EX4: incomplete C_BAD stays DRAFT"
+  ],
+  "invoiceCode": "INV000005",
+  "amount": 1200000,
+  "scope": "Isolated HTTP rehearsal; payment callback simulated; no actual bank transfer",
+  "executedAt": "2026-11-06T16:35:11.577Z",
+  "database": "Isolated temporary database; removed after verification; active council demo dataset preserved",
+  "calendarTests": {
+    "passed": 3,
+    "command": "npm run test -w @scms/be -- --run tests/council-calendar.test.js",
+    "cases": [
+      "Vietnam calendar date and year rollover",
+      "One-day rating eligibility and coherent weekly sessions",
+      "Reject absent operating frames"
+    ]
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0
+  },
+  "sourceHashes": {
+    "core/be/prisma/seed/council/courses.js": "f5cefd46cc22c9a2e4dca726f36ef6a9bcd1e2f40ab77f21290ebb3e9fe70263",
+    "core/be/prisma/seed/council/calendar.js": "4e2bd61f890202a90de3592833a5581c77a6218c5214f502f37cf141f13fd656",
+    "core/be/prisma/seed/council/service.js": "1bcaf0eab0c569054576ebe55154c1a0ee78c2eba39ebac0fca21d305fd5caeb",
+    "core/be/prisma/seed/council/index.js": "2d3b9732580170f91fef0e6b7deebf16aa42ec572ef7f830e03fb373a5962d96",
+    "core/be/prisma/seed/council/catalog.js": "092531345ab61ee88457d6549f9258a862b5df1ede8cda451794d0155fa71b84",
+    "scripts/prepare-council.mjs": "72b168152e3359f5b11450b7661eae209c51d4f6b45d2a87d8d1dcee0a2781c8",
+    "scripts/verify-council-demo.mjs": "a71190757b89704301ee8dad923b3fb2a9a79cac3a3622dd1fa3cbdb90195b2f",
+    "scripts/council-demo-checks.mjs": "0ef9036178eed430271295424925fc0800ee30085db90febbd600a2b183df6a2",
+    "scripts/council-check-workflows.mjs": "7e3e7bd2a6663d02f99708d6f1b04f6b09e62bfe8e1f69e876a58063d1b46f30",
+    "scripts/council-check-exceptions.mjs": "f68149ad3f11612fa781f3d5bb5d1552cb0eab0feda3a2f3e1f5b7302bcde801",
+    "scripts/replay-demo-webhook.mjs": "8b9108e1edcabf41f20291028dfd6a81a13e6afd5080a1a3c2c1ac9676ab41c5"
+  }
+}

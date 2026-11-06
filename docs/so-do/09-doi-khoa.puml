@@ -1,0 +1,38 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Request a course change
+start
+:<b>Member:</b> Choose an equivalent course\nfor the whole enrollment;
+:<b>System:</b> Check same subject,\nenrollment window, available seat\nand member schedule;
+:<b>System:</b> Quote unused source value\nand target tuition;
+:<b>Member:</b> Review quote and confirm;
+:<b>System:</b> Create PurchaseChange and\nadjustment invoice;
+if (Extra payment required?) then (Yes)
+  :<b>System:</b> Hold target seat and retain\nsource entitlement;
+  :<b>System:</b> Await adjustment payment or\nexpiry;
+else (No)
+  :<b>System:</b> Settle zero-value adjustment\nand switch entitlement;
+  if (Amount to return?) then (Yes)
+    :<b>System:</b> Create PENDING refund for\nCenter Manager;
+  endif
+endif
+stop
+@enduml

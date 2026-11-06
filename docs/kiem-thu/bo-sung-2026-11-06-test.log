@@ -1,0 +1,90 @@
+Testing lecturer changes on an isolated database; application data is preserved.
+Loaded Prisma config from prisma.config.mjs.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": MySQL database "scms_lecturer_test_1793979944190" at "localhost:3306"
+
+18 migrations found in prisma/migrations
+
+Applying migration `20260908152208_init`
+Applying migration `20260924120000_add_flow1_membership`
+Applying migration `20260924150000_add_flows_2_4`
+Applying migration `20260930145241_add_membership_plan`
+Applying migration `20260930160000_fe_khoi_sprint1`
+Applying migration `20260930163001_add_membership`
+Applying migration `20260930173218_allow_member_email_null`
+Applying migration `20261005100000_sprint2_class_booking`
+Applying migration `20261007100000_add_email_verification`
+Applying migration `20261013120000_email_token_purpose`
+Applying migration `20261014140000_sepay_reconciliation`
+Applying migration `20261014143000_bao_sprint3`
+Applying migration `20261014150000_khoi_login_lock`
+Applying migration `20261020035822_operating_frames_room_types_coach_subjects`
+Applying migration `20261021092803_gopy_gd2_4`
+Applying migration `20261029073309_sprint4_profiles_summaries_ratings`
+Applying migration `20261103044229_course_session_descriptions_and_feedback`
+Applying migration `20261103140224_course_schedule_conflict_reconciliation_reason`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260908152208_init/
+    └─ migration.sql
+  └─ 20260924120000_add_flow1_membership/
+    └─ migration.sql
+  └─ 20260924150000_add_flows_2_4/
+    └─ migration.sql
+  └─ 20260930145241_add_membership_plan/
+    └─ migration.sql
+  └─ 20260930160000_fe_khoi_sprint1/
+    └─ migration.sql
+  └─ 20260930163001_add_membership/
+    └─ migration.sql
+  └─ 20260930173218_allow_member_email_null/
+    └─ migration.sql
+  └─ 20261005100000_sprint2_class_booking/
+    └─ migration.sql
+  └─ 20261007100000_add_email_verification/
+    └─ migration.sql
+  └─ 20261013120000_email_token_purpose/
+    └─ migration.sql
+  └─ 20261014140000_sepay_reconciliation/
+    └─ migration.sql
+  └─ 20261014143000_bao_sprint3/
+    └─ migration.sql
+  └─ 20261014150000_khoi_login_lock/
+    └─ migration.sql
+  └─ 20261020035822_operating_frames_room_types_coach_subjects/
+    └─ migration.sql
+  └─ 20261021092803_gopy_gd2_4/
+    └─ migration.sql
+  └─ 20261029073309_sprint4_profiles_summaries_ratings/
+    └─ migration.sql
+  └─ 20261103044229_course_session_descriptions_and_feedback/
+    └─ migration.sql
+  └─ 20261103140224_course_schedule_conflict_reconciliation_reason/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+npm notice run sports-center-management-system@1.0.0 test
+npm notice run npm run test --workspaces --if-present
+npm notice run @scms/be@1.0.0 test
+npm notice run vitest run --passWithNoTests
+
+ RUN  v5.0.0 /home/aitelecom.guest/code/SWP/SWP309/core/be
+
+
+ Test Files  67 passed (67)
+      Tests  292 passed (292)
+   Start at  22:45:47
+   Duration  64.52s (tests 77%, import 22%, transform 1%)
+
+npm notice run @scms/fe@1.0.0 test
+
+ RUN  v5.0.0 /home/aitelecom.guest/code/SWP/SWP309/core/fe
+
+
+ Test Files  31 passed (31)
+      Tests  172 passed (172)
+   Start at  22:46:51
+   Duration  602ms (import 55%, transform 35%, tests 7%, worker 3%)

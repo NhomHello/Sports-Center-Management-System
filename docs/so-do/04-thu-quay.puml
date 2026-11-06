@@ -1,0 +1,44 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam titleFontSize 22
+skinparam ArrowColor #25465E
+skinparam ArrowThickness 1.3
+skinparam defaultTextAlignment center
+skinparam activityBackgroundColor #F0F5F9
+skinparam activityBorderColor #25465E
+skinparam stateBackgroundColor #F0F5F9
+skinparam stateBorderColor #25465E
+skinparam classBackgroundColor #F0F5F9
+skinparam classBorderColor #25465E
+skinparam usecaseBackgroundColor #F0F5F9
+skinparam usecaseBorderColor #25465E
+skinparam conditionStyle diamond
+!pragma useVerticalIf on
+
+title Assisted registration and cash collection
+start
+:<b>Member:</b> Provide identity and\nrequested course;
+:<b>Receptionist:</b> Find or create the\nmember profile;
+:<b>Receptionist:</b> Select course and\nCOUNTER channel;
+if (Member, course, schedule and\ncapacity valid?) then (Yes)
+  :<b>System:</b> Create pending invoice and\nseat hold;
+else (No)
+  :<b>System:</b> Reject order with a reason;
+  stop
+endif
+:<b>Receptionist:</b> Check amount due and\nreceive cash;
+:<b>Receptionist:</b> Submit collection\nrequest;
+:<b>System:</b> Lock invoice and recheck\ndeadline and entitlement;
+if (Collection still valid?) then (Yes)
+  :<b>System:</b> Record cash Payment;
+  :<b>System:</b> Set invoice PAID and\nenrollment BOOKED atomically;
+  :<b>Receptionist:</b> Print or download\nreceipt;
+else (No)
+  :<b>System:</b> Reject collection without\nrecording Payment;
+  :<b>Receptionist:</b> Resolve cash handling\nat the counter;
+endif
+stop
+@enduml
